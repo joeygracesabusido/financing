@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional,List
 from pydantic import condecimal
 from sqlmodel import Field, Session, SQLModel, create_engine,select,func,funcfilter,within_group,Relationship
 
@@ -37,32 +37,50 @@ roles = [{
     #         can access basic Function CRUD 
     # manager = can do basic function (CRUD) but cannot access to database
 
-class role(SQLModel, table=True):
+class Role(SQLModel, table=True):
     """This is to create role"""
     id: Optional[int] = Field(default=None, primary_key=True)
     roles: str = Field(index=True, default=None)
-    date_updated: datetime = Field(default=None)
-    date_credited: datetime
+    approvalAmount: condecimal
+    date_updated: Optional[datetime] = Field(default=None)
+    date_credited: datetime = Field(default_factory=datetime.utcnow)
 
-class user(SQLModel, table=True):
+
+    users: List["User"] = Relationship(back_populates="Role")
+   
+
+
+class User(SQLModel, table=True):
     """This is to create user Table"""
     id: Optional[int] = Field(default=None, primary_key=True)
-    username: str = Field(index=True)
-    password: str = Field(default=None)
-    email_add: str = Field(default=None)
+    username: str = Field(index=True,unique=True)
+    hashed_password: str = Field(nullable=False)
+    email_add: str = Field(nullable=False)
+    is_active: bool = Field(default=False)
     role_id:  Optional[int] = Field(foreign_key="role.id")
     date_updated: Optional[datetime] = Field(default=None)
-    date_credited: Optional[datetime] = Field(default=datetime.now())
+    date_credited: datetime = Field(default_factory=datetime.utcnow)
 
-class account(SQLModel, table=True):
+    role: Optional[role] = Relationship(back_populates="users")
+    account_taggings: List["UserRoleAccessTagging"] = Relationship("UserRoleAccessTagging",back_populates="User")
+
+
+class Account(SQLModel, table=True):
     """This is account info for Clients"""
     id: Optional[int] = Field(default=None, primary_key=True)
+    user_account_taggings: List['UserRoleAccessTagging'] = Relationship('UserRoleAccessTagging', back_populates='Account')
 
-class userAccountTagging(SQLModel, table=True):
+class UserRoleAccessTagging(SQLModel, table=True):
     """This is for tag for user account"""  
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id:  Optional[int] = Field(foreign_key="user.id")
-    account_id: Optional[int] = Field(foreign_key="account.id")
+    user_id:  Optional[int] = Field(foreign_key="User.id")
+    account_id: Optional[int] = Field(foreign_key="Account.id")
+
+    read_loan: bool = Field(default=False)
+    write_loan: bool = Field(default=False)
+
+    user: Optional['User'] = Relationship('User', back_populates='account_taggings')
+    account: Optional['Account'] = Relationship('Account', back_populates='user_account_taggings')
 
 class employee(SQLModel, table=True):
     """"""
