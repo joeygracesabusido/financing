@@ -75,17 +75,17 @@ from views.views import getuser
 def authenticate_user(username, password):
     # user = mydb.login.find({"username":username})
     user = getuser(username=username)
+    
+    print(user)
+    username = user.username
+    hashed_password = user.hashed_password
 
-    for i in user:
-        username = i['username']
-        hashed_password = i['hashed_password']
-   
-        if user:
-            password_check = pwd_context.verify(password,hashed_password)
-            return password_check
+    if user:
+        password_check = pwd_context.verify(password,hashed_password)
+        return password_check
 
-        else :
-            False
+    else :
+        False
 
 @admin.post('/token')
 def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
@@ -112,7 +112,35 @@ def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
 #======================================Starting to Post/Get/Delete/Update Function==========================
 from basemodel.basemodels import User
 
-from views.views import insertuser
+from views.views import (insertuser,insertRole,getRoles,getuser)
+
+@admin.post('/insert-role/')
+def insertRoles(roles: str, approvalAmount: float,username:str = Depends(oauth_scheme)):
+    """This function is for inserting Roles"""
+    insertRole(roles=roles,approvalAmount=approvalAmount)
+    return {"messege": 'Roles has been created'}
+
+@admin.get("/api-get-roles/")
+async def getRoles_api(username:str = Depends(oauth_scheme)):
+    """This function is to get Roles data Details"""
+    results = getRoles()
+
+    rolesData = [
+        
+            {
+                "id": x.id,
+                "roles": x.roles,
+                "approvalAmount": x.approvalAmount,
+                "date_updated": x.date_updated,
+                "date_credited": x.date_credited,
+                
+            }
+            for x in results
+        ]
+    
+    
+    return rolesData
+
 
 @admin.post('/sign-up')
 def sign_up(items: User):
@@ -125,8 +153,35 @@ def sign_up(items: User):
     #     "is_active": items.is_active,
     #     "role_id": items.role_id
     #     }
-    insertuser(username=items.username,hashed_password=items.hashed_password,
+    insertuser(username=items.username,hashed_password=get_password_hash(items.hashed_password),
                email_add=items.email_add,is_active=items.is_active,role_id=items.role_id)
     
     return {"message":"User has been save"} 
+
+
+@admin.get("/api-get-users/")
+async def getRoles_api(username:str = Depends(oauth_scheme)):
+    """This function is to get Roles data Details"""
+    results = getuser()
+
+    userData = [
+        
+            {
+                "id": x.id,
+                "username": x.username,
+                "hashed_password": x.hashed_password,
+                "email_add": x.email_add,
+                "is_active": x.is_active,
+                "role_id": x.role_id.roles,
+                "is_active": x.is_active,
+                "date_updated": x.date_updated,
+                "date_credited": x.date_credited,
+
+                
+            }
+            for x in results
+        ]
+    
+    
+    return userData
 
