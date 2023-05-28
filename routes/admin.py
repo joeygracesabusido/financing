@@ -112,7 +112,7 @@ def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
 #======================================Starting to Post/Get/Delete/Update Function==========================
 from basemodel.basemodels import User
 
-from views.views import (insertuser,insertRole,getRoles,getuser)
+from views.views import (insertuser,insertRole,getRoles,getuser,getUsers)
 
 @admin.post('/insert-role/')
 def insertRoles(roles: str, approvalAmount: float,username:str = Depends(oauth_scheme)):
@@ -162,7 +162,12 @@ def sign_up(items: User):
 @admin.get("/api-get-users/")
 async def getRoles_api(username:str = Depends(oauth_scheme)):
     """This function is to get Roles data Details"""
-    results = getuser()
+    roleData = getRoles()  # Retrieve all roles
+    # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
+    role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
+
+    results = getUsers()
+    
 
     userData = [
         
@@ -172,7 +177,8 @@ async def getRoles_api(username:str = Depends(oauth_scheme)):
                 "hashed_password": x.hashed_password,
                 "email_add": x.email_add,
                 "is_active": x.is_active,
-                "role_id": x.role_id.roles,
+                "role_id": x.role_id,
+                "role_name": role_dict.get(x.role_id),  # Get the role name from the dictionary
                 "is_active": x.is_active,
                 "date_updated": x.date_updated,
                 "date_credited": x.date_credited,

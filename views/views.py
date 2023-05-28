@@ -25,6 +25,17 @@ def getuser(username):
         
         return data
     
+def getUsers():
+    """This function is querying user """
+    with Session(engine) as session:
+        statement = select(User).order_by(User.id)
+                    
+        results = session.exec(statement)
+
+        data = results.all()
+        
+        return data
+    
 def insertuser(username,hashed_password,email_add,
                is_active,role_id):
     """This function is for inserting user"""

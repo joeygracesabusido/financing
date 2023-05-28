@@ -75,12 +75,15 @@ class UserRoleAccessTagging(SQLModel, table=True):
     user_id: int = Field(foreign_key=User.id)
     account_id: int = Field(foreign_key=Account.id)
 
+    
     read_loan: bool = Field(default=False)
     write_loan: bool = Field(default=False)
     read_deposit: bool = Field(default=False)
     write_deposit: bool = Field(default=False)
     read_withdrawal: bool = Field(default=False)
     write_withdrawal: bool = Field(default=False)
+    read_accounting: bool = Field(default=False)
+    write_accounting: bool = Field(default=False)
 
     user: Optional['User'] = Relationship(back_populates='account_taggings')
     account: Optional['Account'] = Relationship(back_populates='user_account_taggings')
