@@ -17,6 +17,7 @@ from typing import Optional
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
+import sqlalchemy.dialects.mysql
 
 # from config.database import Base
 

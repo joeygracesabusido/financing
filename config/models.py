@@ -63,17 +63,17 @@ class User(SQLModel, table=True):
     account_taggings: List["UserRoleAccessTagging"] = Relationship(back_populates="user")
 
 
-class Account(SQLModel, table=True):
-    """This is account info for Clients"""
-    id: Optional[int] = Field(default=None, primary_key=True)
-    user_account_taggings: List['UserRoleAccessTagging'] = Relationship(back_populates='account')
+# class Account(SQLModel, table=True):
+#     """This is account info for Clients"""
+#     id: Optional[int] = Field(default=None, primary_key=True)
+#     user_account_taggings: List['UserRoleAccessTagging'] = Relationship(back_populates='account')
 
 
 class UserRoleAccessTagging(SQLModel, table=True):
     """This is for tag for user account"""
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key=User.id)
-    account_id: int = Field(foreign_key=Account.id)
+    # account_id: int = Field(foreign_key=Account.id)
 
     
     read_loan: bool = Field(default=False)
@@ -86,7 +86,7 @@ class UserRoleAccessTagging(SQLModel, table=True):
     write_accounting: bool = Field(default=False)
 
     user: Optional['User'] = Relationship(back_populates='account_taggings')
-    account: Optional['Account'] = Relationship(back_populates='user_account_taggings')
+    # account: Optional['Account'] = Relationship(back_populates='user_account_taggings')
 
 # class employee(SQLModel, table=True):
 #     """"""
