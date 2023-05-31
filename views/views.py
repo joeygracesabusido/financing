@@ -24,6 +24,7 @@ def getuser(username):
         data = results.one()
         
         return data
+
     
 def getUsers():
     """This function is querying user """

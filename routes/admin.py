@@ -78,7 +78,7 @@ def authenticate_user(username, password):
     # user = mydb.login.find({"username":username})
     user = getuser(username=username)
     
-    print(user)
+    # print(user)
     username = user.username
     hashed_password = user.hashed_password
 
@@ -93,6 +93,27 @@ def authenticate_user(username, password):
 def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
     username = form_data.username
     password = form_data.password
+
+
+    user = authenticate_user(username,password)
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": username},
+        expires_delta=access_token_expires,
+    )
+
+    data = {"sub": username}
+    jwt_token = jwt.encode(data,SECRET_KEY,algorithm=ALGORITHM)
+    response.set_cookie(key="access_token", value=f'Bearer {jwt_token}',httponly=True)
+    
+    return {"access_token": jwt_token, "token_type": "bearer"}
+
+@admin.get('/api-login/')
+def login(username1: Optional[str],password1:Optional[str],response:Response):
+    username = username1
+    password = password1
 
 
     user = authenticate_user(username,password)

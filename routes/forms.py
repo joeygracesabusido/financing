@@ -76,34 +76,37 @@ def authenticate_user(username, password):
     else :
         False
 
-@form_htlm.post('/login/')
-async def login(response:Response, request:Request, response_model=None):
+# @form_htlm.post('/login/')
+# async def login(response:Response, request:Request, response_model=None):
 
-    form =  await request.form()
-    username = form.get('username')
-    password = form.get('password')
+#     form =  await request.form()
+#     username = form.get('username')
+#     password = form.get('password')
     
 
 
-    user = authenticate_user(username,password)
-    if not user:
+#     user = authenticate_user(username,password)
+#     msg = []
+#     if not user:
+#         msg.append('User/Password did not match')
+#         return templates.TemplateResponse("login/login.html", {"request":request,"msg":msg})
         
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+#         # raise HTTPException(status_code=400, detail="Incorrect username or password")
 
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": username},
-        expires_delta=access_token_expires,
-    )
+#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+#     access_token = create_access_token(
+#         data={"sub": username},
+#         expires_delta=access_token_expires,
+#     )
 
         
 
-    data = {"sub": username}
-    jwt_token = jwt.encode(data,SECRET_KEY,algorithm=ALGORITHM)
+#     data = {"sub": username}
+#     jwt_token = jwt.encode(data,SECRET_KEY,algorithm=ALGORITHM)
     
-    response.set_cookie(key="access_token", value=f'Bearer {jwt_token}',httponly=True)
-    return response
+#     response.set_cookie(key="access_token", value=f'Bearer {jwt_token}',httponly=True)
+#     return response
 
 @form_htlm.get("/login/", response_class=HTMLResponse)
 async def api_login(request: Request):
