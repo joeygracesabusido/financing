@@ -86,8 +86,17 @@ def authenticate_user(username, password):
         password_check = pwd_context.verify(password,hashed_password)
         return password_check
 
+    elif user == None:
+        return{'Error'}
     else :
-        False
+        # False
+        print("error")
+
+    # if user is not None:
+    #     password_check = pwd_context.verify(password,user.hashed_password)
+    #     return password_check
+    
+    # return None
 
 @admin.post('/token')
 def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
@@ -119,6 +128,8 @@ def login(username1: Optional[str],password1:Optional[str],response:Response):
     user = authenticate_user(username,password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
+        # return {'Message': 'Incorrect username or password'}
+        pass
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": username},

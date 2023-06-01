@@ -2,6 +2,9 @@ from typing import Optional,List
 from sqlmodel import Field, Session, SQLModel, create_engine,select,func,funcfilter,within_group
 import urllib.parse
 
+
+from sqlalchemy.orm.exc import NoResultFound
+
 from config.models import User,Role
 
 connection_string = "mysql+pymysql://{user}:{password}@{host}:{port}/{database}".format(
@@ -17,14 +20,16 @@ engine = create_engine(connection_string, echo=True)
 def getuser(username):
     """This function is querying user """
     with Session(engine) as session:
-        statement = select(User).filter(User.username == username)
-                    
-        results = session.exec(statement) 
+        try:
+            statement = select(User).filter(User.username == username)
+                        
+            results = session.exec(statement) 
 
-        data = results.one()
-        
-        return data
-
+            data = results.one()
+            
+            return data
+        except NoResultFound:
+            return None
     
 def getUsers():
     """This function is querying user """

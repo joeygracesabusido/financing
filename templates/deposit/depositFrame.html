@@ -1,0 +1,101 @@
+{% extends 'login/dashboard.html' %}
+
+{% block content %}
+<body>
+
+    
+    <div class="container">
+        <div class="container mt-3">
+            <!-- <a href="#" id="depositorsList"
+            data-toggle="modal" data-target="#staticBackdrop"
+            >Depositors List</a> -->
+
+            <a id="depositorsList" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color: blue;text-decoration: underline;" >
+                Depositor's List
+            </a>
+            
+        </div>
+
+
+
+
+         <!-- Modal for printing Voucher -->
+
+         <!-- Button trigger modal -->
+            
+            
+            <!-- Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">List of Depositor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table id="myTable" class="table table-bordered"  style="text-align: center;">
+                            <thead class="table-dark">
+                            
+                                    <td>Account #</td>
+                                    <td>Account Name</td>
+                                    <td>Balance</td>
+                                    <td>Date Opened</td>
+                                    <td>Status</td>
+                                    
+                                    
+                                </tr>
+                            </thead>
+                            <tbody id="table_body">
+                            
+                                    
+                                    <tr>
+                                        
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                       
+                                    </tr>
+                                
+                                
+                            </tbody>
+            
+                        
+            
+                            </table>
+            
+                    
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+
+
+    <script type="text/javascript">
+        var underlineButton = document.querySelector('#depositorsList');
+        underlineButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        $('#test').modal('show'); // Open the modal
+        // Add your button functionality here
+        
+
+        $('#test').on('hidden.bs.modal', function (e) {
+                // Clear input fields or perform any necessary actions when modal is closed
+                document.getElementById('referenceNum').value = '';
+            });
+        });
+
+    </script>
+
+    <!-- <script src="/static/deposit.js"></script> -->
+
+</body>
+
+{% endblock %}
+
