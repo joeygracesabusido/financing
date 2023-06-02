@@ -5,6 +5,9 @@ from re import I
 from urllib import response
 from urllib.request import Request
 from fastapi import APIRouter, Body, HTTPException, Depends,status,Response
+
+import logging
+
 from typing import Union, List
 from datetime import datetime
 
@@ -44,6 +47,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
+logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+logger = logging.getLogger(__name__)
 
 admin = APIRouter()
 
@@ -73,6 +78,18 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     return to_encode
 
 from views.views import getuser
+
+@admin.get("/users/{user_id}")
+async def get_user(user_id: int):
+    # Log user activity
+    logger.info(f"User {user_id} accessed the user details")
+
+    # Your logic to retrieve user details
+    # ...
+
+    return {"user_id": user_id}
+
+
 
 def authenticate_user(username, password):
     # user = mydb.login.find({"username":username})
@@ -139,9 +156,22 @@ def login(username1: Optional[str],password1:Optional[str],response:Response):
     data = {"sub": username}
     jwt_token = jwt.encode(data,SECRET_KEY,algorithm=ALGORITHM)
     response.set_cookie(key="access_token", value=f'Bearer {jwt_token}',httponly=True)
+    # return response
     
     return {"access_token": jwt_token, "token_type": "bearer"}
 
+    # user = authenticate_user(username, password)
+    # if not user:
+    #     raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    # access_token = create_access_token(
+    #             data = {"sub": username}, 
+    #             expires_delta=timedelta(minutes=30)
+    #                                 )
+
+    # token = jwt.encode(access_token, JWT_SECRET,algorithm=ALGORITHM)
+    # response.set_cookie(key="access_token", value=f'Bearer {token}',httponly=True)
+    # return response
 
 #======================================Starting to Post/Get/Delete/Update Function==========================
 from basemodel.basemodels import User
@@ -152,11 +182,13 @@ from views.views import (insertuser,insertRole,getRoles,getuser,getUsers)
 def insertRoles(roles: str, approvalAmount: float,username:str = Depends(oauth_scheme)):
     """This function is for inserting Roles"""
     insertRole(roles=roles,approvalAmount=approvalAmount)
+    
     return {"messege": 'Roles has been created'}
 
 @admin.get("/api-get-roles/")
 async def getRoles_api(username:str = Depends(oauth_scheme)):
     """This function is to get Roles data Details"""
+    print(username)
     results = getRoles()
 
     rolesData = [

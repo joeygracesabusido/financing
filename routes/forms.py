@@ -38,54 +38,64 @@ templates = Jinja2Templates(directory="templates")
 
 
 #==================================================User Data ==========================================
-
-from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 oauth_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
-    to_encode = data.copy()
-
-    expire = datetime.utcnow() + expires_delta
-
-    to_encode.update({"exp": expire})
-
-    
-    return to_encode
-
 from views.views import getuser
 
-def authenticate_user(username, password):
-    # user = mydb.login.find({"username":username})
-    user = getuser(username=username)
-    
-    print(user)
-    username = user.username
-    hashed_password = user.hashed_password
+# def validateLogin(request:Request):
 
-    if user:
-        password_check = pwd_context.verify(password,hashed_password)
-        return password_check
+#     try :
+#         token = request.cookies.get('access_token')
+#         if token is None:
+#             raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail= "Not Authorized",
+           
+#             )
+#         else:
+#             scheme, _, param = token.partition(" ")
+#             payload = jwt.decode(param, JWT_SECRET, algorithms=ALGORITHM)
+        
+#             username = payload.get("sub")
+#             user =  getuser(username=username)
+            
 
-    else :
-        False
+#             if user == [] :
+#                  raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail= "Not Authorized",
+                
+#                 )
+#             else:
+                
+#                 return username
+
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail= "Not Authorized please Login",
+#             # headers={"WWW-Authenticate": "Basic"},
+#         )
 
 
-
-@form_htlm.get("/login/", response_class=HTMLResponse)
+@form_htlm.get("/", response_class=HTMLResponse)
 async def api_login(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
+
+@form_htlm.get("/logs/")
+async def display_logs(request: Request, token: str = Depends(oauth_scheme)):
+    # Read the log file
+    with open("app.log", "r") as file:
+        logs = file.readlines()
+    return templates.TemplateResponse("logs/logs.html", {"request": request,"logs":logs})
 
 @form_htlm.get("/dashboard/", response_class=HTMLResponse)
 async def api_login(request: Request):
     return templates.TemplateResponse("login/dashboard.html", {"request": request})
 
 @form_htlm.get("/deposit/", response_class=HTMLResponse)
+async def api_login(request: Request):
+    return templates.TemplateResponse("deposit/depositFrame.html", {"request": request})
+
+@form_htlm.get("/user/", response_class=HTMLResponse)
 async def api_login(request: Request):
     return templates.TemplateResponse("deposit/depositFrame.html", {"request": request})
