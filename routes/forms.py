@@ -1,12 +1,8 @@
-import json
-from lib2to3.pgen2 import token
-from pyexpat import model
-from re import I
-from urllib import response
-from urllib.request import Request
+
+
 from typing import Union, List
 from datetime import datetime
-from typing import Optional
+from typing import Optional,Annotated
 from fastapi.responses import HTMLResponse
 
 
@@ -76,14 +72,82 @@ from views.views import getuser
 #             # headers={"WWW-Authenticate": "Basic"},
 #         )
 
+from basemodel.basemodels import User
+from views.views import getRoles
+
+
+@form_htlm.get("/current-user/")
+async def get_current_user(request:Request):
+
+    try :
+        token = request.cookies.get('access_token')
+        # print(token)
+        if token is None:
+            raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Not Authorized",
+            # headers={"WWW-Authenticate": "Basic"},
+            )
+        else:
+            scheme, _, param = token.partition(" ")
+            payload = jwt.decode(param, SECRET_KEY, algorithms=ALGORITHM)
+        
+            username = payload.get("sub")    
+            response_data = {"username": username}
+            # return JSONResponse(content=response_data)
+            return response_data
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Not Authorized Please login",
+            # headers={"WWW-Authenticate": "Basic"},
+        )
+
+    # token = request.cookies.get('access_token')
+    # scheme, _, param = token.partition(" ")
+    # payload = jwt.decode(param, SECRET_KEY, algorithms=ALGORITHM)
+
+    # username = payload.get("sub")
+    # response_data = {"username": username}
+    # # return JSONResponse(content=response_data)
+    # return response_data
+
 
 @form_htlm.get("/", response_class=HTMLResponse)
 async def api_login(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
 
 @form_htlm.get("/logs/")
-async def display_logs(request: Request, token: str = Depends(oauth_scheme)):
-    # Read the log file
+async def display_logs(request: Request,current_user: Annotated[User, Depends(get_current_user)]):
+   
+    
+    username = current_user['username']
+    x = getuser(username=username)
+    roleData = getRoles()  # Retrieve all roles
+    # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
+    role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
+
+    userData = [
+        
+            {
+                "id": x.id,
+                "username": x.username,
+                "role_name": role_dict.get(x.role_id),  # Get the role name from the dictionary
+            }
+           
+        ]
+    
+    
+    if userData[0]['role_name'] != 'Admin':
+
+         raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail= "Your Credential is Not Authorized",
+                
+                )
+
+     # Read the log file
     with open("app.log", "r") as file:
         logs = file.readlines()
     return templates.TemplateResponse("logs/logs.html", {"request": request,"logs":logs})

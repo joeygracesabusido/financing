@@ -1,10 +1,8 @@
-import json
-from lib2to3.pgen2 import token
-from pyexpat import model
-from re import I
-from urllib import response
-from urllib.request import Request
-from fastapi import APIRouter, Body, HTTPException, Depends,status,Response
+
+from fastapi import APIRouter, Body, HTTPException, Depends,status,Response,Security,Request
+from fastapi.responses import JSONResponse
+from starlette.responses import JSONResponse
+from fastapi import Header
 
 import logging
 
@@ -13,6 +11,11 @@ from datetime import datetime
 
 
 from typing import Optional
+
+
+from jose import JWTError, jwt
+from pydantic import BaseModel, ValidationError
+from typing import Annotated
 
 
 
@@ -39,7 +42,7 @@ from datetime import datetime, date
 from datetime import timedelta
 
 
-from jose import jwt
+
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 JWT_SECRET = 'myjwtsecret'
@@ -56,13 +59,14 @@ admin = APIRouter()
 
 
 #==================================================User Data ==========================================
-
+from basemodel.basemodels import User,TokenData, Token,RoleData
 from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm,SecurityScopes
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
+# oauth_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_password_hash(password):
     return pwd_context.hash(password)
@@ -79,15 +83,15 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
 
 from views.views import getuser
 
-@admin.get("/users/{user_id}")
-async def get_user(user_id: int):
-    # Log user activity
-    logger.info(f"User {user_id} accessed the user details")
+# @admin.get("/users/{user_id}")
+# async def get_user(user_id: int):
+#     # Log user activity
+#     logger.info(f"User {user_id} accessed the user details")
 
-    # Your logic to retrieve user details
-    # ...
+#     # Your logic to retrieve user details
+#     # ...
 
-    return {"user_id": user_id}
+#     return {"user_id": user_id}
 
 
 
@@ -115,7 +119,7 @@ def authenticate_user(username, password):
     
     # return None
 
-@admin.post('/token')
+@admin.post('/token',response_model=Token)
 def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
     username = form_data.username
     password = form_data.password
@@ -173,40 +177,61 @@ def login(username1: Optional[str],password1:Optional[str],response:Response):
     # response.set_cookie(key="access_token", value=f'Bearer {token}',httponly=True)
     # return response
 
+
+
 #======================================Starting to Post/Get/Delete/Update Function==========================
-from basemodel.basemodels import User
+
 
 from views.views import (insertuser,insertRole,getRoles,getuser,getUsers)
 
 @admin.post('/insert-role/')
-def insertRoles(roles: str, approvalAmount: float,username:str = Depends(oauth_scheme)):
+def insertRoles(roles: str, approvalAmount: float,token:str = Depends(oauth_scheme)):
     """This function is for inserting Roles"""
     insertRole(roles=roles,approvalAmount=approvalAmount)
     
     return {"messege": 'Roles has been created'}
 
-@admin.get("/api-get-roles/")
-async def getRoles_api(username:str = Depends(oauth_scheme)):
+class UserResponse(BaseModel):
+    username: str
+    email: str
+
+# how to get the user through authentication
+@admin.get("/current-user/")
+async def get_current_user(request:Request):
+
+    token = request.cookies.get('access_token')
+    scheme, _, param = token.partition(" ")
+    payload = jwt.decode(param, SECRET_KEY, algorithms=ALGORITHM)
+
+    username = payload.get("sub")
+    response_data = {"username": username}
+    # return JSONResponse(content=response_data)
+    return response_data
+
+
+@admin.get("/api-get-roles/", response_model=List[RoleData])
+async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
+
     """This function is to get Roles data Details"""
-    print(username)
+    print(current_user['username'])
+
     results = getRoles()
 
     rolesData = [
-        
-            {
-                "id": x.id,
-                "roles": x.roles,
-                "approvalAmount": x.approvalAmount,
-                "date_updated": x.date_updated,
-                "date_credited": x.date_credited,
-                
-            }
-            for x in results
-        ]
-    
-    
+        {
+            "id": x.id,
+            "roles": x.roles,
+            "approvalAmount": x.approvalAmount,
+            "date_updated": x.date_updated,
+            "date_credited": x.date_credited,
+        }
+        for x in results
+    ]
+
     return rolesData
 
+   
+    
 
 @admin.post('/sign-up')
 def sign_up(items: User):
@@ -226,7 +251,7 @@ def sign_up(items: User):
 
 
 @admin.get("/api-get-users/")
-async def getRoles_api(username:str = Depends(oauth_scheme)):
+async def getRoles_api(token:str = Depends(oauth_scheme)):
     """This function is to get Roles data Details"""
     roleData = getRoles()  # Retrieve all roles
     # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
@@ -256,4 +281,35 @@ async def getRoles_api(username:str = Depends(oauth_scheme)):
     
     
     return userData
+
+
+@admin.get("/api-get-role-by-username/")
+async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
+    """This function is to get Roles data Details"""
+    username = current_user['username']
+    x = getuser(username=username)
+
+
+
+    roleData = getRoles()  # Retrieve all roles
+    # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
+    role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
+
+    
+    
+    userData = [
+        
+            {
+                "id": x.id,
+                "username": x.username,
+                "role_name": role_dict.get(x.role_id),  # Get the role name from the dictionary
+               
+                
+            }
+           
+        ]
+    
+    
+    return userData
+
 

@@ -84,6 +84,12 @@ class UserRoleAccessTagging(SQLModel, table=True):
     write_withdrawal: bool = Field(default=False)
     read_accounting: bool = Field(default=False)
     write_accounting: bool = Field(default=False)
+    read_accesstagging: bool = Field(default=False)
+    write_accesstagging: bool = Field(default=False)
+    read_accounts: bool = Field(default=False)
+    write_accounts: bool = Field(default=False)
+    read_userLog: bool = Field(default=False)
+    write_userLog: bool = Field(default=False)
 
     user: Optional['User'] = Relationship(back_populates='account_taggings')
     # account: Optional['Account'] = Relationship(back_populates='user_account_taggings')
