@@ -58,7 +58,7 @@ def insertuser(username,hashed_password,email_add,
     session.close()
 
 
-def insertRole(roles,approvalAmount,):
+def insertRole(roles,approvalAmount):
     """This function is for """
     insertData = Role(roles=roles,approvalAmount=approvalAmount)
     
@@ -82,3 +82,21 @@ def getRoles():
         
         return data
 
+#===================================================USER ACCESS FUNCTION =======================================
+# from config.models import UserRoleAccessTagging
+# def insertaccess_tags(user_id,read_loan,
+#                         write_loan,read_deposit,write_deposit,read_withdrawal,
+#                         write_withdrawal,read_accounting,write_accounting,
+#                         read_accesstagging,write_accesstagging,read_accounts,
+#                         write_accounts,read_userLog,write_userLog):
+#     """This function is for insert user access tags"""
+#     insertData = UserRoleAccessTagging(user_id=user_id,)
+    
+
+#     session = Session(engine)
+
+#     session.add(insertData)
+    
+#     session.commit()
+
+#     session.close()

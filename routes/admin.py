@@ -199,21 +199,37 @@ class UserResponse(BaseModel):
 @admin.get("/current-user/")
 async def get_current_user(request:Request):
 
-    token = request.cookies.get('access_token')
-    scheme, _, param = token.partition(" ")
-    payload = jwt.decode(param, SECRET_KEY, algorithms=ALGORITHM)
+    try :
+        token = request.cookies.get('access_token')
+        # print(token)
+        if token is None:
+            raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Not Authorized",
+            # headers={"WWW-Authenticate": "Basic"},
+            )
+        else:
+            scheme, _, param = token.partition(" ")
+            payload = jwt.decode(param, SECRET_KEY, algorithms=ALGORITHM)
+        
+            username = payload.get("sub")    
+            response_data = {"username": username}
+            # return JSONResponse(content=response_data)
+            return username
 
-    username = payload.get("sub")
-    response_data = {"username": username}
-    # return JSONResponse(content=response_data)
-    return response_data
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Not Authorized Please login",
+            # headers={"WWW-Authenticate": "Basic"},
+        )
 
 
 @admin.get("/api-get-roles/", response_model=List[RoleData])
 async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
 
     """This function is to get Roles data Details"""
-    print(current_user['username'])
+    # print(current_user['username'])
 
     results = getRoles()
 
@@ -286,8 +302,8 @@ async def getRoles_api(token:str = Depends(oauth_scheme)):
 @admin.get("/api-get-role-by-username/")
 async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
     """This function is to get Roles data Details"""
-    username = current_user['username']
-    x = getuser(username=username)
+    
+    x = getuser(username=current_user)
 
 
 

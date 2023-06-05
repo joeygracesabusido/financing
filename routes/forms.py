@@ -95,7 +95,7 @@ async def get_current_user(request:Request):
             username = payload.get("sub")    
             response_data = {"username": username}
             # return JSONResponse(content=response_data)
-            return response_data
+            return username
 
     except Exception as e:
         raise HTTPException(
@@ -122,8 +122,8 @@ async def api_login(request: Request):
 async def display_logs(request: Request,current_user: Annotated[User, Depends(get_current_user)]):
    
     
-    username = current_user['username']
-    x = getuser(username=username)
+    
+    x = getuser(username=current_user)
     roleData = getRoles()  # Retrieve all roles
     # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
     role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
