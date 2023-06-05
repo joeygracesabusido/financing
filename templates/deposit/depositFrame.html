@@ -1,19 +1,107 @@
 {% extends 'login/dashboard.html' %}
 
 {% block content %}
+<style>
+    .custom-border {
+        border: 1px solid black;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+        width: 20%;
+        height: auto;
+        /* Add any other desired border styles */
+        }
+    #depositorsList{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    .oblong-input {
+        flex: 1; /* Divide the available space evenly between the input fields */
+        margin: 0 5px; /* Add some margin between the input fields */
+        border-radius: 20px; /* round the corners of the input field */
+        border: 2px solid lightskyblue;
+        padding: 10px;
+        background-color: whitesmoke;
+        }
+</style>
 <body>
 
     
     <div class="container">
-        <div class="container mt-3">
-            <!-- <a href="#" id="depositorsList"
-            data-toggle="modal" data-target="#staticBackdrop"
-            >Depositors List</a> -->
+        <div class="row">
+            <div class="col-md-3 custom-border">
+                <a id="depositorsList" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color: blue;text-decoration: underline;">
+                    Depositor's List
+                </a>
 
-            <a id="depositorsList" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="color: blue;text-decoration: underline;" >
-                Depositor's List
-            </a>
+                <a id="depositorsList"  style="color: blue;text-decoration: underline;">
+                    Add Accounts
+                </a>
+
+                <a id="depositorsList"  style="color: blue;text-decoration: underline;">
+                    Active Accounts
+                </a>
+
+                <a id="depositorsList"  style="color: blue;text-decoration: underline;">
+                    Dromant Accounts
+                </a>
+            </div>
+            <div class="col-md-9">
+                <!-- Add your frame or list content here -->
+                
+                    <input 
+                    type="text"
+                    name="searchinput"
+                    id="searchinput"
+                    placeholder="Search"
+                    class="oblong-input"
+                    >
+              
+                
+                    </input>
+                
+                
+                <div class="container mt-3">
+                    <table id="myTable" class="table table-bordered"  style="text-align: center;">
+                        <thead class="table-dark">
+                        
+                                <td>Account #</td>
+                                <td>Account Name</td>
+                                <td>Balance</td>
+                                <td>Date Opened</td>
+                                <td>Status</td>
+                                
+                                
+                            </tr>
+                        </thead>
+                        <tbody id="table_body">
+                        
+                                
+                                <tr>
+                                    
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                   
+                                </tr>
+                            
+                            
+                        </tbody>
+        
+                    
+        
+                        </table>
+        
+
+                </div>
+
+
+                
             
+            </div>
         </div>
 
 
