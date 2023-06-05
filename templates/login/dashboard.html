@@ -78,6 +78,24 @@
         width: 100%;
     }
 
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #ccc;
+        margin: 10px;
+    }
+/* 
+    .role-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .role-list li {
+        margin: 5px 0;
+    } */
+
 </style>
 <body>
     <nav class="navbar">
@@ -105,6 +123,19 @@
     </nav>
     <div id="side-menu" class="side-nav">
         <a href="#" class="btn-close" onclick="closeSideMune()">&times;</a>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="avatar"></div>
+            </div>
+            <!-- <div class="col-md-8">
+                <h3>User Name</h3>
+                <ul class="role-list">
+                    <li>Role 1</li>
+                    <li>Role 2</li>
+                    <li>Role 3</li>
+                </ul>
+            </div> -->
+        </div>
         <a href="#">Accounting</a>
         <li class="dropdown">
             <a href="#" class="dropdown-toggle">Financing</a>
@@ -128,6 +159,7 @@
     </div>
     <div id="main">
         <!-- <h1>DashBoard</h1> -->
+       
     </div>
 
     <script>

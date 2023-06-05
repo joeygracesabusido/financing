@@ -91,6 +91,9 @@ class UserRoleAccessTagging(SQLModel, table=True):
     read_userLog: bool = Field(default=False)
     write_userLog: bool = Field(default=False)
 
+    date_updated: Optional[datetime] = Field(default=None)
+    date_credited: datetime = Field(default_factory=datetime.utcnow)
+
     user: Optional['User'] = Relationship(back_populates='account_taggings')
     # account: Optional['Account'] = Relationship(back_populates='user_account_taggings')
 
@@ -99,5 +102,6 @@ class UserRoleAccessTagging(SQLModel, table=True):
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+    # sqlmodel-db generate
 
-create_db_and_tables()
+# create_db_and_tables()

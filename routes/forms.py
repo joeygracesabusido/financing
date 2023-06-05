@@ -23,7 +23,7 @@ from jose import jwt
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 JWT_SECRET = 'myjwtsecret'
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 
 
 
@@ -119,33 +119,33 @@ async def api_login(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
 
 @form_htlm.get("/logs/")
-async def display_logs(request: Request,current_user: Annotated[User, Depends(get_current_user)]):
+async def display_logs(request: Request):
    
     
-    
-    x = getuser(username=current_user)
-    roleData = getRoles()  # Retrieve all roles
-    # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
-    role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
+    # current_user: Annotated[User, Depends(get_current_user)]
+    # x = getuser(username=current_user)
+    # roleData = getRoles()  # Retrieve all roles
+    # # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
+    # role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
 
-    userData = [
+    # userData = [
         
-            {
-                "id": x.id,
-                "username": x.username,
-                "role_name": role_dict.get(x.role_id),  # Get the role name from the dictionary
-            }
+    #         {
+    #             "id": x.id,
+    #             "username": x.username,
+    #             "role_name": role_dict.get(x.role_id),  # Get the role name from the dictionary
+    #         }
            
-        ]
+    #     ]
     
     
-    if userData[0]['role_name'] != 'Admin':
+    # if userData[0]['role_name'] != 'Admin':
 
-         raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail= "Your Credential is Not Authorized",
+    #      raise HTTPException(
+    #             status_code=status.HTTP_401_UNAUTHORIZED,
+    #             detail= "Your Credential is Not Authorized",
                 
-                )
+    #             )
 
      # Read the log file
     with open("app.log", "r") as file:

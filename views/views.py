@@ -83,20 +83,27 @@ def getRoles():
         return data
 
 #===================================================USER ACCESS FUNCTION =======================================
-# from config.models import UserRoleAccessTagging
-# def insertaccess_tags(user_id,read_loan,
-#                         write_loan,read_deposit,write_deposit,read_withdrawal,
-#                         write_withdrawal,read_accounting,write_accounting,
-#                         read_accesstagging,write_accesstagging,read_accounts,
-#                         write_accounts,read_userLog,write_userLog):
-#     """This function is for insert user access tags"""
-#     insertData = UserRoleAccessTagging(user_id=user_id,)
+from config.models import UserRoleAccessTagging
+
+def insertaccess_tags(user_id,read_loan,
+                        write_loan,read_deposit,write_deposit,read_withdrawal,
+                        write_withdrawal,read_accounting,write_accounting,
+                        read_accesstagging,write_accesstagging,read_accounts,
+                        write_accounts,read_userLog,write_userLog):
+    """This function is for insert user access tags"""
+    insertData = UserRoleAccessTagging(user_id=user_id,read_loan=read_loan,write_loan=write_loan,
+                                        read_deposit=read_deposit,write_deposit=write_deposit,
+                                        read_withdrawal=read_withdrawal,write_withdrawal=write_withdrawal,
+                                        read_accounting=read_accounting,write_accounting=write_accounting,
+                                        read_accesstagging=read_accesstagging,write_accesstagging=write_accesstagging,
+                                        read_accounts=read_accounts,write_accounts=write_accounts,
+                                        read_userLog=read_userLog,write_userLog=write_userLog)
     
 
-#     session = Session(engine)
+    session = Session(engine)
 
-#     session.add(insertData)
+    session.add(insertData)
     
-#     session.commit()
+    session.commit()
 
-#     session.close()
+    session.close()

@@ -47,7 +47,7 @@ from datetime import timedelta
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 JWT_SECRET = 'myjwtsecret'
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1
 
 
 logging.basicConfig(filename='app.log', level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
@@ -128,7 +128,7 @@ def login(response:Response,form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(username,password)
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=1)
     access_token = create_access_token(
         data={"sub": username},
         expires_delta=access_token_expires,
@@ -151,7 +151,7 @@ def login(username1: Optional[str],password1:Optional[str],response:Response):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
         # return {'Message': 'Incorrect username or password'}
         pass
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=1)
     access_token = create_access_token(
         data={"sub": username},
         expires_delta=access_token_expires,
@@ -226,8 +226,8 @@ async def get_current_user(request:Request):
 
 
 @admin.get("/api-get-roles/", response_model=List[RoleData])
-async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
-
+async def getRoles_api():
+    # current_user: Annotated[User, Depends(get_current_user)]
     """This function is to get Roles data Details"""
     # print(current_user['username'])
 
@@ -300,10 +300,10 @@ async def getRoles_api(token:str = Depends(oauth_scheme)):
 
 
 @admin.get("/api-get-role-by-username/")
-async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
+async def getRoles_api(token:str = Depends(oauth_scheme)):
     """This function is to get Roles data Details"""
-    
-    x = getuser(username=current_user)
+    # current_user: Annotated[User, Depends(get_current_user)],
+    x = getuser(username='joeysabusido')
 
 
 
@@ -328,4 +328,42 @@ async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)])
     
     return userData
 
+#===================================================User Role Access Tagging=======================================
+from views.views import insertaccess_tags
+from basemodel.basemodels import UserAccessTags
+@admin.post('/insert-user-role-access-tagging/')
+def insertUserAccessTags(items:UserAccessTags,token:str = Depends(oauth_scheme)):
+    """This function is for inserting Roles"""
+    # current_user: Annotated[User, Depends(get_current_user)]
+    # x = getuser(username=current_user)
+    # roleData = getRoles()  # Retrieve all roles
+    # # role_dict = {role.id: role.approvalAmount for role in roleData} #retrieving the approval amount
+    # role_dict = {role.id: role.roles for role in roleData} #retrieving the roles in Roles table
 
+    # userData = [
+        
+    #         {
+    #             "id": x.id,
+    #             "username": x.username,
+    #             "role_name": role_dict.get(x.role_id),  # Get the role name from the dictionary
+    #         }
+           
+    #     ]
+    
+    # if userData[0]['role_name'] != 'Admin':
+
+    #      raise HTTPException(
+    #             status_code=status.HTTP_401_UNAUTHORIZED,
+    #             detail= "Your Credential is Not Authorized",
+                
+    #             )
+
+    insertaccess_tags(user_id=items.user_id,read_loan=items.read_loan,write_loan=items.write_loan,
+                        read_deposit=items.read_deposit,write_deposit=items.write_deposit,
+                        read_withdrawal=items.read_withdrawal,write_withdrawal=items.write_withdrawal,
+                        read_accounting=items.read_accounting,write_accounting=items.write_accounting,
+                        read_accesstagging=items.read_accesstagging,write_accesstagging=items.write_accesstagging,
+                        read_accounts=items.read_accounts,write_accounts=items.write_accounts,
+                        read_userLog=items.read_userLog,write_userLog=items.write_userLog)
+    
+    return {"messege": 'User Access Tag Has been created'}
