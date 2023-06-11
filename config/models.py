@@ -117,40 +117,39 @@ class Accounttype(SQLModel, table = True):
 
 
 
-class Account(SQLModel, table = True):
+class Account(SQLModel, table=True):
     """This function is for creating account per Holder"""
     id: Optional[int] = Field(default=None, primary_key=True)
-    first_name: str = Field()
-    middle_name: str = Field()
-    last_name: str = Field()
-    suffix: str = Field()
+    first_name: str = Field(default=None, nullable=False)
+    middle_name: str = Field(default=None, nullable=False)
+    last_name: str = Field(default=None, nullable=False)
+    suffix: str = Field(default=None, nullable=False)
     date_of_birth: date
     age: int = Field(default=0)
-    permanent_addrees: str = Field()
-    lenght_stay: int = Field(default=0)
-    civil_status: str = Field()
-    contact_num:  str = Field()
-    email_add:  str = Field()
-    date_of_birth: date
-    place_of_birth:  str = Field()
-    nationality:  str = Field()
-    religion:  str = Field()
-    tin:  str = Field()
-    sss_gsis_no:  str = Field()
-    philsys_no:  str = Field()
-    sex:  str = Field()
-    name_of_spouce_co_borrower =  str = Field(default=None)
-    date_of_birth_spouce: date
-    age_spouce: int = Field(default=None)
+    permanent_address: str = Field(default=None, nullable=False)
+    length_stay: int = Field(default=0)
+    civil_status: str = Field(default=None, nullable=False)
+    contact_num: str = Field(default=None, nullable=False)
+    email_add: str = Field(default=None, nullable=False)
+    place_of_birth: str = Field(default=None, nullable=False)
+    nationality: str = Field(default=None, nullable=False)
+    religion: str = Field(default=None, nullable=False)
+    tin: str = Field(default=None, nullable=False)
+    sss_gsis_no: str = Field(default=None, nullable=False)
+    philsys_no: str = Field(default=None, nullable=False)
+    sex: str = Field(default=None, nullable=False)
+    name_of_spouse_co_borrower: str = Field(default=None)
+    date_of_birth_spouse: date
+    age_spouse: int = Field(default=None)
     source_of_income: str = Field(default=None)
-    date_of_bussiness_registration: str = Field()
-    dti_sec_registration_no: str = Field()
-    brgy_mayor_permit_no: str = Field()
-    principal_business_address: str = Field()
+    date_of_business_registration: str = Field(default=None, nullable=False)
+    dti_sec_registration_no: str = Field(default=None, nullable=False)
+    brgy_mayor_permit_no: str = Field(default=None, nullable=False)
+    principal_business_address: str = Field(default=None, nullable=False)
     nature_of_business: str = Field(default=None)
     number_of_branch: int = Field(default=None)
-    business_address_wnership: str = Field(default=None)
-    
+    business_address_ownership: str = Field(default=None)
+
 
 class AccountTagging(SQLModel, table = True):
     """This is for tagging for every account holder

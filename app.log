@@ -3942,3 +3942,511 @@ FROM user
 WHERE user.username = %(username_1)s
 2023-06-11 21:43:01,487 INFO:[cached since 283.9s ago] {'username_1': 'joeysabusido'}
 2023-06-11 21:43:01,551 INFO:ROLLBACK
+2023-06-11 23:44:59,481 INFO:SELECT DATABASE()
+2023-06-11 23:44:59,482 INFO:[raw sql] {}
+2023-06-11 23:44:59,544 INFO:SELECT @@sql_mode
+2023-06-11 23:44:59,551 INFO:[raw sql] {}
+2023-06-11 23:44:59,583 INFO:SELECT @@lower_case_table_names
+2023-06-11 23:44:59,596 INFO:[raw sql] {}
+2023-06-11 23:44:59,661 INFO:BEGIN (implicit)
+2023-06-11 23:44:59,753 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:44:59,756 INFO:[generated in 0.00144s] {}
+2023-06-11 23:44:59,799 INFO:ROLLBACK
+2023-06-11 23:44:59,875 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 71, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 71, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 23:47:37,669 INFO:SELECT DATABASE()
+2023-06-11 23:47:37,670 INFO:[raw sql] {}
+2023-06-11 23:47:37,735 INFO:SELECT @@sql_mode
+2023-06-11 23:47:37,736 INFO:[raw sql] {}
+2023-06-11 23:47:37,768 INFO:SELECT @@lower_case_table_names
+2023-06-11 23:47:37,776 INFO:[raw sql] {}
+2023-06-11 23:47:37,841 INFO:BEGIN (implicit)
+2023-06-11 23:47:37,869 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:47:37,880 INFO:[generated in 0.01358s] {}
+2023-06-11 23:47:37,915 INFO:ROLLBACK
+2023-06-11 23:47:37,990 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 72, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 72, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 23:49:37,234 INFO:SELECT DATABASE()
+2023-06-11 23:49:37,235 INFO:[raw sql] {}
+2023-06-11 23:49:37,298 INFO:SELECT @@sql_mode
+2023-06-11 23:49:37,299 INFO:[raw sql] {}
+2023-06-11 23:49:37,332 INFO:SELECT @@lower_case_table_names
+2023-06-11 23:49:37,333 INFO:[raw sql] {}
+2023-06-11 23:49:37,396 INFO:BEGIN (implicit)
+2023-06-11 23:49:37,428 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:49:37,434 INFO:[generated in 0.00565s] {}
+2023-06-11 23:49:37,469 INFO:ROLLBACK
+2023-06-11 23:49:37,548 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{id}
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 62, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 64, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 23:50:25,174 INFO:SELECT DATABASE()
+2023-06-11 23:50:25,175 INFO:[raw sql] {}
+2023-06-11 23:50:25,238 INFO:SELECT @@sql_mode
+2023-06-11 23:50:25,242 INFO:[raw sql] {}
+2023-06-11 23:50:25,277 INFO:SELECT @@lower_case_table_names
+2023-06-11 23:50:25,281 INFO:[raw sql] {}
+2023-06-11 23:50:25,345 INFO:BEGIN (implicit)
+2023-06-11 23:50:25,382 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:50:25,387 INFO:[generated in 0.00574s] {}
+2023-06-11 23:50:25,423 INFO:ROLLBACK
+2023-06-11 23:50:25,501 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id}
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 62, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 64, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 23:52:14,473 INFO:SELECT DATABASE()
+2023-06-11 23:52:14,474 INFO:[raw sql] {}
+2023-06-11 23:52:14,538 INFO:SELECT @@sql_mode
+2023-06-11 23:52:14,542 INFO:[raw sql] {}
+2023-06-11 23:52:14,575 INFO:SELECT @@lower_case_table_names
+2023-06-11 23:52:14,589 INFO:[raw sql] {}
+2023-06-11 23:52:14,653 INFO:BEGIN (implicit)
+2023-06-11 23:52:14,681 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:52:14,686 INFO:[generated in 0.00553s] {}
+2023-06-11 23:52:14,724 INFO:ROLLBACK
+2023-06-11 23:52:14,789 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 73, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 73, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 23:53:39,048 INFO:SELECT DATABASE()
+2023-06-11 23:53:39,049 INFO:[raw sql] {}
+2023-06-11 23:53:39,112 INFO:SELECT @@sql_mode
+2023-06-11 23:53:39,117 INFO:[raw sql] {}
+2023-06-11 23:53:39,149 INFO:SELECT @@lower_case_table_names
+2023-06-11 23:53:39,151 INFO:[raw sql] {}
+2023-06-11 23:53:39,216 INFO:BEGIN (implicit)
+2023-06-11 23:53:39,247 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:53:39,250 INFO:[generated in 0.00335s] {}
+2023-06-11 23:53:39,296 INFO:ROLLBACK
+2023-06-11 23:53:50,372 INFO:BEGIN (implicit)
+2023-06-11 23:53:50,373 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 23:53:50,375 INFO:[cached since 11.13s ago] {}
+2023-06-11 23:53:50,410 INFO:ROLLBACK
+2023-06-12 00:10:42,158 INFO:SELECT DATABASE()
+2023-06-12 00:10:42,159 INFO:[raw sql] {}
+2023-06-12 00:10:42,223 INFO:SELECT @@sql_mode
+2023-06-12 00:10:42,225 INFO:[raw sql] {}
+2023-06-12 00:10:42,257 INFO:SELECT @@lower_case_table_names
+2023-06-12 00:10:42,265 INFO:[raw sql] {}
+2023-06-12 00:10:42,328 INFO:BEGIN (implicit)
+2023-06-12 00:10:42,348 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:10:42,349 INFO:[generated in 0.00149s] {}
+2023-06-12 00:10:42,384 INFO:ROLLBACK
+2023-06-12 00:10:42,448 ERROR:RoleType.__init__() missing 2 required keyword-only arguments: 'approvalAmount' and 'date_credited'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 65, in roles
+    role_types = [RoleType(id=role[0].id, roles=role[0].roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 65, in <listcomp>
+    role_types = [RoleType(id=role[0].id, roles=role[0].roles) for role in data]
+TypeError: RoleType.__init__() missing 2 required keyword-only arguments: 'approvalAmount' and 'date_credited'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 00:17:11,397 INFO:SELECT DATABASE()
+2023-06-12 00:17:11,397 INFO:[raw sql] {}
+2023-06-12 00:17:11,461 INFO:SELECT @@sql_mode
+2023-06-12 00:17:11,461 INFO:[raw sql] {}
+2023-06-12 00:17:11,494 INFO:SELECT @@lower_case_table_names
+2023-06-12 00:17:11,503 INFO:[raw sql] {}
+2023-06-12 00:17:11,567 INFO:BEGIN (implicit)
+2023-06-12 00:17:11,599 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:17:11,608 INFO:[generated in 0.00889s] {}
+2023-06-12 00:17:11,643 INFO:ROLLBACK
+2023-06-12 00:17:23,973 INFO:BEGIN (implicit)
+2023-06-12 00:17:23,975 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:17:23,976 INFO:[cached since 12.38s ago] {}
+2023-06-12 00:17:24,011 INFO:ROLLBACK
+2023-06-12 00:18:01,415 INFO:SELECT DATABASE()
+2023-06-12 00:18:01,415 INFO:[raw sql] {}
+2023-06-12 00:18:01,478 INFO:SELECT @@sql_mode
+2023-06-12 00:18:01,487 INFO:[raw sql] {}
+2023-06-12 00:18:01,518 INFO:SELECT @@lower_case_table_names
+2023-06-12 00:18:01,520 INFO:[raw sql] {}
+2023-06-12 00:18:01,586 INFO:BEGIN (implicit)
+2023-06-12 00:18:01,602 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 00:18:01,626 INFO:[generated in 0.02378s] {'username_1': 'joeysabusido'}
+2023-06-12 00:18:01,662 INFO:ROLLBACK
+2023-06-12 00:19:32,086 ERROR:Cannot query field 'date_credited' on type 'RoleType'. Did you mean 'dateCredited'?
+
+GraphQL request:7:5
+6 |     approvalAmount
+7 |     date_credited
+  |     ^
+8 |   }
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-06-12 00:20:16,183 ERROR:Cannot query field 'date_credited' on type 'RoleType'. Did you mean 'dateCredited'?
+
+GraphQL request:7:5
+6 |     approvalAmount
+7 |     date_credited
+  |     ^
+8 |   }
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-06-12 00:21:28,779 INFO:BEGIN (implicit)
+2023-06-12 00:21:28,780 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:21:28,781 INFO:[cached since 257.2s ago] {}
+2023-06-12 00:21:50,418 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:3
+2 | query {
+3 |   roles {
+  |   ^
+4 |     id 
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 58, in roles
+    results = session.execute(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 101, in execute
+    return super().execute(  # type: ignore
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 00:21:50,658 INFO:BEGIN (implicit)
+2023-06-12 00:21:50,660 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:21:50,661 INFO:[cached since 279.1s ago] {}
+2023-06-12 00:21:50,696 INFO:ROLLBACK
+2023-06-12 00:21:52,578 INFO:BEGIN (implicit)
+2023-06-12 00:21:52,579 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:21:52,580 INFO:[cached since 281s ago] {}
+2023-06-12 00:21:52,613 INFO:ROLLBACK
+2023-06-12 00:22:26,178 INFO:BEGIN (implicit)
+2023-06-12 00:22:26,180 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:22:26,181 INFO:[cached since 314.6s ago] {}
+2023-06-12 00:22:26,215 INFO:ROLLBACK
+2023-06-12 00:36:50,512 INFO:SELECT DATABASE()
+2023-06-12 00:36:50,512 INFO:[raw sql] {}
+2023-06-12 00:36:50,577 INFO:SELECT @@sql_mode
+2023-06-12 00:36:50,587 INFO:[raw sql] {}
+2023-06-12 00:36:50,621 INFO:SELECT @@lower_case_table_names
+2023-06-12 00:36:50,623 INFO:[raw sql] {}
+2023-06-12 00:36:50,686 INFO:BEGIN (implicit)
+2023-06-12 00:36:50,713 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 00:36:50,714 INFO:[generated in 0.00133s] {}
+2023-06-12 00:36:50,752 INFO:ROLLBACK

@@ -8,7 +8,7 @@ from strawberry.fastapi import GraphQLRouter
 from sqlmodel import Field, Session, SQLModel, create_engine,select,func,funcfilter,within_group
 import urllib.parse
 
-
+from datetime import datetime, date
 
 connection_string = "mysql+pymysql://{user}:{password}@{host}:{port}/{database}".format(
     user="joeysabusido",
@@ -46,6 +46,8 @@ from typing import Optional,List
 class RoleType:
     id: int
     roles: str
+    approvalAmount: float
+    date_credited: datetime
 
 @strawberry.type
 class Query:
@@ -56,22 +58,17 @@ class Query:
             results = session.execute(statement) 
             data = results.all()
             
-        result = data
-    
-        # rolesData = [
-        #             {
-        #                 "id": x.id,
-        #                 "roles": x.roles,
-                    
-        #             }
-        #             for x in result
-        #         ]
-        # print(rolesData)
+            result = data
+            
+            
         # Convert the data to RoleType objects
-        role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+        role_types = [RoleType(id=role[0].id, 
+                               roles=role[0].roles, approvalAmount=role[0].approvalAmount,
+                               date_credited=role[0].date_credited
+                               ) for role in data]
        
        
-        return data
+        return role_types
 
 # Create a Strawberry schema
 schema = strawberry.Schema(query=Query)
@@ -84,21 +81,3 @@ graph = APIRouter()
 graph.add_route('/graphql',graphql_app)
 graph.add_websocket_route("/graphql", graphql_app)
 
-# # Add a route for the /graphql endpoint
-# @graph.get("/graphql")
-# async def graphql(request: Request):
-#     try:
-#         request_data = await request.json()
-#     except Exception as e:
-#         return JSONResponse({"error": "Invalid JSON data"}, status_code=400)
-
-#     query = request_data.get("query")
-#     variables = request_data.get("variables")
-#     operation_name = request_data.get("operationName")
-
-#     if not query:
-#         return JSONResponse({"error": "Missing 'query' field in request"}, status_code=400)
-
-#     # Process the GraphQL query and return the response
-
-#     return {"message": "GraphQL request received"}
