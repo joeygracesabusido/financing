@@ -2007,3 +2007,1938 @@ FROM user
 WHERE user.username = %(username_1)s
 2023-06-05 23:35:33,623 INFO:[generated in 0.00354s] {'username_1': 'joeysabusido'}
 2023-06-05 23:35:33,779 INFO:ROLLBACK
+2023-06-11 18:32:47,753 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 18:45:49,224 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 18:46:08,056 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 18:48:30,483 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 18:56:28,578 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:03:05,994 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:03:48,256 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:04:49,822 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:05:58,963 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:12:01,120 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:44:37,062 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:49:16,971 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:51:35,579 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:52:51,390 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:53:15,393 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:55:30,903 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 19:57:38,504 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 20:37:58,080 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 20:44:35,470 ERROR:Syntax Error: Unexpected <EOF>.
+
+GraphQL request:26:2
+25 | #   Auto Complete:  Ctrl-Space (or just start typing)
+26 | #
+   |  ^
+27 |
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-11 20:47:01,536 ERROR:Field 'user' of type 'User!' must have a selection of subfields. Did you mean 'user { ... }'?
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-06-11 20:48:27,172 INFO:SELECT DATABASE()
+2023-06-11 20:48:27,173 INFO:[raw sql] {}
+2023-06-11 20:48:27,245 INFO:SELECT @@sql_mode
+2023-06-11 20:48:27,246 INFO:[raw sql] {}
+2023-06-11 20:48:27,287 INFO:SELECT @@lower_case_table_names
+2023-06-11 20:48:27,290 INFO:[raw sql] {}
+2023-06-11 20:48:27,358 INFO:BEGIN (implicit)
+2023-06-11 20:48:27,378 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 20:48:27,382 INFO:[generated in 0.00377s] {}
+2023-06-11 20:48:27,457 INFO:ROLLBACK
+2023-06-11 20:48:27,540 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 62, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 62, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 20:49:12,489 INFO:SELECT DATABASE()
+2023-06-11 20:49:12,490 INFO:[raw sql] {}
+2023-06-11 20:49:12,556 INFO:SELECT @@sql_mode
+2023-06-11 20:49:12,557 INFO:[raw sql] {}
+2023-06-11 20:49:12,591 INFO:SELECT @@lower_case_table_names
+2023-06-11 20:49:12,592 INFO:[raw sql] {}
+2023-06-11 20:49:12,678 INFO:BEGIN (implicit)
+2023-06-11 20:49:12,698 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 20:49:12,700 INFO:[generated in 0.00220s] {}
+2023-06-11 20:49:12,739 INFO:ROLLBACK
+2023-06-11 20:49:12,822 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 62, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 62, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 20:58:05,005 INFO:SELECT DATABASE()
+2023-06-11 20:58:05,006 INFO:[raw sql] {}
+2023-06-11 20:58:05,083 INFO:SELECT @@sql_mode
+2023-06-11 20:58:05,084 INFO:[raw sql] {}
+2023-06-11 20:58:05,123 INFO:SELECT @@lower_case_table_names
+2023-06-11 20:58:05,129 INFO:[raw sql] {}
+2023-06-11 20:58:05,201 INFO:BEGIN (implicit)
+2023-06-11 20:58:05,221 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 20:58:05,230 INFO:[generated in 0.00849s] {}
+2023-06-11 20:58:05,273 INFO:ROLLBACK
+2023-06-11 20:58:05,345 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 60, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 60, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:00:05,762 INFO:SELECT DATABASE()
+2023-06-11 21:00:05,763 INFO:[raw sql] {}
+2023-06-11 21:00:05,838 INFO:SELECT @@sql_mode
+2023-06-11 21:00:05,839 INFO:[raw sql] {}
+2023-06-11 21:00:05,890 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:00:05,896 INFO:[raw sql] {}
+2023-06-11 21:00:05,967 INFO:BEGIN (implicit)
+2023-06-11 21:00:05,988 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:00:05,992 INFO:[generated in 0.00461s] {}
+2023-06-11 21:00:06,036 INFO:ROLLBACK
+2023-06-11 21:00:06,115 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 60, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 60, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:01:08,521 INFO:SELECT DATABASE()
+2023-06-11 21:01:08,521 INFO:[raw sql] {}
+2023-06-11 21:01:08,589 INFO:SELECT @@sql_mode
+2023-06-11 21:01:08,590 INFO:[raw sql] {}
+2023-06-11 21:01:08,624 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:01:08,625 INFO:[raw sql] {}
+2023-06-11 21:01:08,691 INFO:BEGIN (implicit)
+2023-06-11 21:01:08,712 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:01:08,713 INFO:[generated in 0.00162s] {}
+2023-06-11 21:01:08,761 INFO:ROLLBACK
+2023-06-11 21:01:08,829 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 63, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:01:21,929 INFO:BEGIN (implicit)
+2023-06-11 21:01:21,930 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:01:21,931 INFO:[cached since 13.22s ago] {}
+2023-06-11 21:01:21,967 INFO:ROLLBACK
+2023-06-11 21:01:22,037 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     roles
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 63, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:01:49,896 INFO:SELECT DATABASE()
+2023-06-11 21:01:49,896 INFO:[raw sql] {}
+2023-06-11 21:01:49,970 INFO:SELECT @@sql_mode
+2023-06-11 21:01:49,971 INFO:[raw sql] {}
+2023-06-11 21:01:50,014 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:01:50,016 INFO:[raw sql] {}
+2023-06-11 21:01:50,080 INFO:BEGIN (implicit)
+2023-06-11 21:01:50,101 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:01:50,103 INFO:[generated in 0.00224s] {}
+2023-06-11 21:01:50,154 INFO:ROLLBACK
+2023-06-11 21:01:50,231 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     roles
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 63, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:02:30,921 INFO:SELECT DATABASE()
+2023-06-11 21:02:30,922 INFO:[raw sql] {}
+2023-06-11 21:02:30,993 INFO:SELECT @@sql_mode
+2023-06-11 21:02:30,994 INFO:[raw sql] {}
+2023-06-11 21:02:31,038 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:02:31,044 INFO:[raw sql] {}
+2023-06-11 21:02:31,117 INFO:BEGIN (implicit)
+2023-06-11 21:02:31,137 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:02:31,139 INFO:[generated in 0.00218s] {}
+2023-06-11 21:02:31,179 INFO:ROLLBACK
+2023-06-11 21:02:31,262 ERROR:Could not locate column in row for column 'roles'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     roles
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 64, in <listcomp>
+    "roles": x.roles,
+AttributeError: Could not locate column in row for column 'roles'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:03:40,606 INFO:SELECT DATABASE()
+2023-06-11 21:03:40,607 INFO:[raw sql] {}
+2023-06-11 21:03:40,685 INFO:SELECT @@sql_mode
+2023-06-11 21:03:40,685 INFO:[raw sql] {}
+2023-06-11 21:03:40,720 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:03:40,721 INFO:[raw sql] {}
+2023-06-11 21:03:40,801 INFO:BEGIN (implicit)
+2023-06-11 21:03:40,822 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:03:40,825 INFO:[generated in 0.00227s] {}
+2023-06-11 21:03:40,866 INFO:ROLLBACK
+2023-06-11 21:03:40,982 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 60, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 60, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:05:16,891 INFO:SELECT DATABASE()
+2023-06-11 21:05:16,892 INFO:[raw sql] {}
+2023-06-11 21:05:16,962 INFO:SELECT @@sql_mode
+2023-06-11 21:05:16,962 INFO:[raw sql] {}
+2023-06-11 21:05:17,006 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:05:17,007 INFO:[raw sql] {}
+2023-06-11 21:05:17,083 INFO:BEGIN (implicit)
+2023-06-11 21:05:17,104 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:05:17,106 INFO:[generated in 0.00296s] {}
+2023-06-11 21:05:17,144 INFO:ROLLBACK
+2023-06-11 21:05:17,236 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 60, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 60, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:06:45,965 INFO:SELECT DATABASE()
+2023-06-11 21:06:45,966 INFO:[raw sql] {}
+2023-06-11 21:06:46,050 INFO:SELECT @@sql_mode
+2023-06-11 21:06:46,051 INFO:[raw sql] {}
+2023-06-11 21:06:46,086 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:06:46,098 INFO:[raw sql] {}
+2023-06-11 21:06:46,175 INFO:BEGIN (implicit)
+2023-06-11 21:06:46,197 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:06:46,198 INFO:[generated in 0.00168s] {}
+2023-06-11 21:06:46,246 INFO:ROLLBACK
+2023-06-11 21:06:46,319 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 60, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 60, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:09:19,543 INFO:SELECT DATABASE()
+2023-06-11 21:09:19,544 INFO:[raw sql] {}
+2023-06-11 21:09:19,613 INFO:SELECT @@sql_mode
+2023-06-11 21:09:19,614 INFO:[raw sql] {}
+2023-06-11 21:09:19,659 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:09:19,660 INFO:[raw sql] {}
+2023-06-11 21:09:19,731 INFO:BEGIN (implicit)
+2023-06-11 21:09:19,751 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:09:19,753 INFO:[generated in 0.00203s] {}
+2023-06-11 21:09:19,792 INFO:ROLLBACK
+2023-06-11 21:09:19,860 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 63, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:10:53,430 INFO:SELECT DATABASE()
+2023-06-11 21:10:53,431 INFO:[raw sql] {}
+2023-06-11 21:10:53,518 INFO:SELECT @@sql_mode
+2023-06-11 21:10:53,519 INFO:[raw sql] {}
+2023-06-11 21:10:53,565 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:10:53,570 INFO:[raw sql] {}
+2023-06-11 21:10:53,667 INFO:BEGIN (implicit)
+2023-06-11 21:10:53,687 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:10:53,690 INFO:[generated in 0.00226s] {}
+2023-06-11 21:10:53,736 INFO:ROLLBACK
+2023-06-11 21:10:53,824 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 71, in roles
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+  File "D:\financing-apps\routes\graph.py", line 71, in <listcomp>
+    role_types = [RoleType(id=role.id, roles=role.roles) for role in data]
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:12:34,312 INFO:SELECT DATABASE()
+2023-06-11 21:12:34,313 INFO:[raw sql] {}
+2023-06-11 21:12:34,387 INFO:SELECT @@sql_mode
+2023-06-11 21:12:34,392 INFO:[raw sql] {}
+2023-06-11 21:12:34,448 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:12:34,449 INFO:[raw sql] {}
+2023-06-11 21:12:34,526 INFO:BEGIN (implicit)
+2023-06-11 21:12:34,547 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:12:34,548 INFO:[generated in 0.00183s] {}
+2023-06-11 21:12:34,586 INFO:ROLLBACK
+2023-06-11 21:12:34,664 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 63, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:13:32,386 INFO:SELECT DATABASE()
+2023-06-11 21:13:32,386 INFO:[raw sql] {}
+2023-06-11 21:13:32,450 INFO:SELECT @@sql_mode
+2023-06-11 21:13:32,451 INFO:[raw sql] {}
+2023-06-11 21:13:32,491 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:13:32,494 INFO:[raw sql] {}
+2023-06-11 21:13:32,569 INFO:BEGIN (implicit)
+2023-06-11 21:13:32,589 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:13:32,591 INFO:[generated in 0.00152s] {}
+2023-06-11 21:13:32,631 INFO:ROLLBACK
+2023-06-11 21:13:32,710 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{id}
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 62, in roles
+    rolesData = [
+  File "D:\financing-apps\routes\graph.py", line 64, in <listcomp>
+    "id": x.id,
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:15:16,395 INFO:SELECT DATABASE()
+2023-06-11 21:15:16,396 INFO:[raw sql] {}
+2023-06-11 21:15:16,470 INFO:SELECT @@sql_mode
+2023-06-11 21:15:16,470 INFO:[raw sql] {}
+2023-06-11 21:15:16,515 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:15:16,516 INFO:[raw sql] {}
+2023-06-11 21:15:16,594 INFO:BEGIN (implicit)
+2023-06-11 21:15:16,614 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:15:16,619 INFO:[generated in 0.00463s] {}
+2023-06-11 21:15:16,667 INFO:ROLLBACK
+2023-06-11 21:15:16,749 ERROR:Could not locate column in row for column 'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{id}
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    id = x.id
+AttributeError: Could not locate column in row for column 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:17:01,785 INFO:SELECT DATABASE()
+2023-06-11 21:17:01,786 INFO:[raw sql] {}
+2023-06-11 21:17:01,867 INFO:SELECT @@sql_mode
+2023-06-11 21:17:01,867 INFO:[raw sql] {}
+2023-06-11 21:17:01,909 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:17:01,917 INFO:[raw sql] {}
+2023-06-11 21:17:01,998 INFO:BEGIN (implicit)
+2023-06-11 21:17:02,020 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:17:02,024 INFO:[generated in 0.00442s] {}
+2023-06-11 21:17:02,068 INFO:ROLLBACK
+2023-06-11 21:17:02,155 ERROR:'id'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 60, in roles
+    print(result[0]['id'])
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\result.py", line 72, in _key_fallback
+    util.raise_(KeyError(key), replace_context=err)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+KeyError: 'id'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-11 21:38:17,218 INFO:SELECT DATABASE()
+2023-06-11 21:38:17,219 INFO:[raw sql] {}
+2023-06-11 21:38:17,337 INFO:SELECT @@sql_mode
+2023-06-11 21:38:17,344 INFO:[raw sql] {}
+2023-06-11 21:38:17,382 INFO:SELECT @@lower_case_table_names
+2023-06-11 21:38:17,388 INFO:[raw sql] {}
+2023-06-11 21:38:17,521 INFO:BEGIN (implicit)
+2023-06-11 21:38:17,577 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-11 21:38:17,588 INFO:[generated in 0.01155s] {'username_1': 'joeysabusido1'}
+2023-06-11 21:38:17,639 INFO:ROLLBACK
+2023-06-11 21:38:33,898 INFO:BEGIN (implicit)
+2023-06-11 21:38:33,900 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-11 21:38:33,948 INFO:[cached since 16.37s ago] {'username_1': 'joeysabusido'}
+2023-06-11 21:38:34,049 INFO:ROLLBACK
+2023-06-11 21:38:43,297 INFO:BEGIN (implicit)
+2023-06-11 21:38:43,299 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-11 21:38:43,301 INFO:[cached since 25.72s ago] {'username_1': 'joeysabusido'}
+2023-06-11 21:38:43,345 INFO:ROLLBACK
+2023-06-11 21:38:43,429 INFO:BEGIN (implicit)
+2023-06-11 21:38:43,433 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:38:43,435 INFO:[generated in 0.00208s] {}
+2023-06-11 21:38:43,489 INFO:ROLLBACK
+2023-06-11 21:39:18,504 INFO:BEGIN (implicit)
+2023-06-11 21:39:18,513 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-11 21:39:18,515 INFO:[cached since 60.94s ago] {'username_1': 'joeysabusido'}
+2023-06-11 21:39:18,559 INFO:ROLLBACK
+2023-06-11 21:39:18,665 INFO:BEGIN (implicit)
+2023-06-11 21:39:18,680 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-11 21:39:18,685 INFO:[cached since 35.25s ago] {}
+2023-06-11 21:39:18,728 INFO:ROLLBACK
+2023-06-11 21:43:01,483 INFO:BEGIN (implicit)
+2023-06-11 21:43:01,485 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-11 21:43:01,487 INFO:[cached since 283.9s ago] {'username_1': 'joeysabusido'}
+2023-06-11 21:43:01,551 INFO:ROLLBACK
