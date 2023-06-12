@@ -4450,3 +4450,1148 @@ FROM `role` ORDER BY `role`.roles
 FROM `role` ORDER BY `role`.roles
 2023-06-12 00:36:50,714 INFO:[generated in 0.00133s] {}
 2023-06-12 00:36:50,752 INFO:ROLLBACK
+2023-06-12 13:11:43,467 INFO:SELECT DATABASE()
+2023-06-12 13:11:43,473 INFO:[raw sql] {}
+2023-06-12 13:11:43,555 INFO:SELECT @@sql_mode
+2023-06-12 13:11:43,558 INFO:[raw sql] {}
+2023-06-12 13:11:43,600 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:11:43,603 INFO:[raw sql] {}
+2023-06-12 13:11:43,687 INFO:BEGIN (implicit)
+2023-06-12 13:11:43,712 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 13:11:43,714 INFO:[generated in 0.00161s] {}
+2023-06-12 13:11:43,763 INFO:ROLLBACK
+2023-06-12 13:11:43,855 ERROR:'Role' object is not subscriptable
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 67, in roles
+    role_types = [RoleType(id=role[0].id,
+  File "D:\financing-apps\routes\graph.py", line 67, in <listcomp>
+    role_types = [RoleType(id=role[0].id,
+TypeError: 'Role' object is not subscriptable
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:12:34,731 INFO:SELECT DATABASE()
+2023-06-12 13:12:34,732 INFO:[raw sql] {}
+2023-06-12 13:12:34,799 INFO:SELECT @@sql_mode
+2023-06-12 13:12:34,801 INFO:[raw sql] {}
+2023-06-12 13:12:34,834 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:12:34,835 INFO:[raw sql] {}
+2023-06-12 13:12:34,900 INFO:BEGIN (implicit)
+2023-06-12 13:12:34,928 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 13:12:34,938 INFO:[generated in 0.01061s] {}
+2023-06-12 13:12:34,973 INFO:ROLLBACK
+2023-06-12 13:12:35,083 ERROR:'Role' object is not subscriptable
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 67, in roles
+    role_types = [RoleType(id=role[0].id,
+  File "D:\financing-apps\routes\graph.py", line 67, in <listcomp>
+    role_types = [RoleType(id=role[0].id,
+TypeError: 'Role' object is not subscriptable
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:13:47,348 INFO:SELECT DATABASE()
+2023-06-12 13:13:47,348 INFO:[raw sql] {}
+2023-06-12 13:13:47,412 INFO:SELECT @@sql_mode
+2023-06-12 13:13:47,415 INFO:[raw sql] {}
+2023-06-12 13:13:47,448 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:13:47,451 INFO:[raw sql] {}
+2023-06-12 13:13:47,518 INFO:BEGIN (implicit)
+2023-06-12 13:13:47,543 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 13:13:47,544 INFO:[generated in 0.00162s] {}
+2023-06-12 13:13:47,583 INFO:ROLLBACK
+2023-06-12 13:13:47,651 ERROR:'Role' object is not subscriptable
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 67, in roles
+    role_types = [RoleType(id=role[0].id,
+  File "D:\financing-apps\routes\graph.py", line 67, in <listcomp>
+    role_types = [RoleType(id=role[0].id,
+TypeError: 'Role' object is not subscriptable
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:15:20,150 INFO:SELECT DATABASE()
+2023-06-12 13:15:20,151 INFO:[raw sql] {}
+2023-06-12 13:15:20,214 INFO:SELECT @@sql_mode
+2023-06-12 13:15:20,218 INFO:[raw sql] {}
+2023-06-12 13:15:20,252 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:15:20,258 INFO:[raw sql] {}
+2023-06-12 13:15:20,325 INFO:BEGIN (implicit)
+2023-06-12 13:15:20,356 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 13:15:20,389 INFO:[generated in 0.03332s] {}
+2023-06-12 13:15:20,425 INFO:ROLLBACK
+2023-06-12 13:15:20,493 ERROR:'Role' object is not subscriptable
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles{
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 69, in roles
+    role_types = [RoleType(id=role[0].id,
+  File "D:\financing-apps\routes\graph.py", line 69, in <listcomp>
+    role_types = [RoleType(id=role[0].id,
+TypeError: 'Role' object is not subscriptable
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:16:40,005 INFO:SELECT DATABASE()
+2023-06-12 13:16:40,006 INFO:[raw sql] {}
+2023-06-12 13:16:40,069 INFO:SELECT @@sql_mode
+2023-06-12 13:16:40,071 INFO:[raw sql] {}
+2023-06-12 13:16:40,104 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:16:40,104 INFO:[raw sql] {}
+2023-06-12 13:16:40,168 INFO:BEGIN (implicit)
+2023-06-12 13:16:40,199 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 13:16:40,203 INFO:[generated in 0.00347s] {}
+2023-06-12 13:16:40,240 INFO:ROLLBACK
+2023-06-12 13:38:43,604 INFO:SELECT DATABASE()
+2023-06-12 13:38:43,605 INFO:[raw sql] {}
+2023-06-12 13:38:43,675 INFO:SELECT @@sql_mode
+2023-06-12 13:38:43,676 INFO:[raw sql] {}
+2023-06-12 13:38:43,718 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:38:43,720 INFO:[raw sql] {}
+2023-06-12 13:38:43,790 INFO:BEGIN (implicit)
+2023-06-12 13:38:43,817 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:38:43,823 INFO:[generated in 0.00695s] {'username_1': 'joeysabusido'}
+2023-06-12 13:38:43,862 INFO:ROLLBACK
+2023-06-12 13:38:56,457 INFO:BEGIN (implicit)
+2023-06-12 13:38:56,458 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:38:56,460 INFO:[cached since 12.64s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:38:56,495 INFO:ROLLBACK
+2023-06-12 13:38:56,564 ERROR:'User' object has no attribute 'emailAdd'
+
+GraphQL request:4:5
+3 |     id
+4 |     emailAdd
+  |     ^
+5 |   }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'User' object has no attribute 'emailAdd'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:39:18,142 INFO:BEGIN (implicit)
+2023-06-12 13:39:18,147 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:39:18,148 INFO:[cached since 34.33s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:39:18,187 INFO:ROLLBACK
+2023-06-12 13:39:18,250 ERROR:'User' object has no attribute 'emailAdd'
+
+GraphQL request:4:5
+3 |     id
+4 |     emailAdd
+  |     ^
+5 |   }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'User' object has no attribute 'emailAdd'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:39:25,188 INFO:BEGIN (implicit)
+2023-06-12 13:39:25,190 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:39:25,191 INFO:[cached since 41.37s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:39:25,234 INFO:ROLLBACK
+2023-06-12 13:40:02,222 INFO:BEGIN (implicit)
+2023-06-12 13:40:02,223 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:40:02,225 INFO:[cached since 78.41s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:40:02,263 INFO:ROLLBACK
+2023-06-12 13:40:08,383 INFO:BEGIN (implicit)
+2023-06-12 13:40:08,384 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:40:08,385 INFO:[cached since 84.57s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:40:08,433 INFO:ROLLBACK
+2023-06-12 13:40:08,521 ERROR:'User' object has no attribute 'roleID'
+
+GraphQL request:5:5
+4 |     username
+5 |     roleID
+  |     ^
+6 |   }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'User' object has no attribute 'roleID'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:40:13,479 INFO:BEGIN (implicit)
+2023-06-12 13:40:13,481 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:40:13,482 INFO:[cached since 89.67s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:40:13,523 INFO:ROLLBACK
+2023-06-12 13:40:30,521 INFO:BEGIN (implicit)
+2023-06-12 13:40:30,523 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:40:30,524 INFO:[cached since 106.7s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:40:30,558 INFO:ROLLBACK
+2023-06-12 13:40:30,630 ERROR:'User' object has no attribute 'isActive'
+
+GraphQL request:5:5
+4 |     username
+5 |     isActive
+  |     ^
+6 |   }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'User' object has no attribute 'isActive'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:41:23,078 INFO:SELECT DATABASE()
+2023-06-12 13:41:23,079 INFO:[raw sql] {}
+2023-06-12 13:41:23,146 INFO:SELECT @@sql_mode
+2023-06-12 13:41:23,147 INFO:[raw sql] {}
+2023-06-12 13:41:23,182 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:41:23,188 INFO:[raw sql] {}
+2023-06-12 13:41:23,259 INFO:BEGIN (implicit)
+2023-06-12 13:41:23,274 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:41:23,275 INFO:[generated in 0.00129s] {'username_1': 'joeysabusido'}
+2023-06-12 13:41:23,313 INFO:ROLLBACK
+2023-06-12 13:41:27,086 INFO:BEGIN (implicit)
+2023-06-12 13:41:27,087 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:41:27,088 INFO:[cached since 3.814s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:41:27,125 INFO:ROLLBACK
+2023-06-12 13:41:31,948 INFO:BEGIN (implicit)
+2023-06-12 13:41:31,950 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:41:31,951 INFO:[cached since 8.676s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:41:31,994 INFO:ROLLBACK
+2023-06-12 13:41:32,073 ERROR:'User' object has no attribute 'roleID'
+
+GraphQL request:6:5
+5 |     emailAdd
+6 |     roleID
+  |     ^
+7 |     username
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'User' object has no attribute 'roleID'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:41:43,438 INFO:BEGIN (implicit)
+2023-06-12 13:41:43,440 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:41:43,441 INFO:[cached since 20.17s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:41:43,478 INFO:ROLLBACK
+2023-06-12 13:41:54,040 INFO:BEGIN (implicit)
+2023-06-12 13:41:54,041 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:41:54,042 INFO:[cached since 30.77s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:41:54,091 INFO:ROLLBACK
+2023-06-12 13:41:59,877 INFO:BEGIN (implicit)
+2023-06-12 13:41:59,878 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:41:59,879 INFO:[cached since 36.61s ago] {'username_1': 'joeysabusido'}
+2023-06-12 13:41:59,918 INFO:ROLLBACK
+2023-06-12 13:41:59,988 ERROR:'User' object has no attribute 'roleID'
+
+GraphQL request:6:5
+5 |     isActive
+6 |     roleID
+  |     ^
+7 |   }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'User' object has no attribute 'roleID'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 13:42:18,726 ERROR:Cannot query field 'roleID' on type 'User'. Did you mean 'roleId'?
+
+GraphQL request:6:5
+5 |     isActive
+6 |     roleID
+  |     ^
+7 |     username
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-06-12 13:42:47,551 INFO:SELECT DATABASE()
+2023-06-12 13:42:47,552 INFO:[raw sql] {}
+2023-06-12 13:42:47,619 INFO:SELECT @@sql_mode
+2023-06-12 13:42:47,620 INFO:[raw sql] {}
+2023-06-12 13:42:47,655 INFO:SELECT @@lower_case_table_names
+2023-06-12 13:42:47,659 INFO:[raw sql] {}
+2023-06-12 13:42:47,732 INFO:BEGIN (implicit)
+2023-06-12 13:42:47,750 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 13:42:47,752 INFO:[generated in 0.00157s] {'username_1': 'joeysabusido'}
+2023-06-12 13:42:47,798 INFO:ROLLBACK
+2023-06-12 14:02:14,328 INFO:SELECT DATABASE()
+2023-06-12 14:02:14,329 INFO:[raw sql] {}
+2023-06-12 14:02:14,518 INFO:SELECT @@sql_mode
+2023-06-12 14:02:14,519 INFO:[raw sql] {}
+2023-06-12 14:02:14,614 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:02:14,614 INFO:[raw sql] {}
+2023-06-12 14:02:14,815 INFO:BEGIN (implicit)
+2023-06-12 14:02:14,819 INFO:INSERT INTO `role` (roles, `approvalAmount`, date_updated, date_credited) VALUES (%(roles)s, %(approvalAmount)s, %(date_updated)s, %(date_credited)s)
+2023-06-12 14:02:14,822 INFO:[generated in 0.00319s] {'roles': 'Bookeepper', 'approvalAmount': Decimal('15000000.0'), 'date_updated': None, 'date_credited': datetime.datetime(2023, 6, 12, 11, 2, 13, 557028)}
+2023-06-12 14:02:14,926 INFO:COMMIT
+2023-06-12 14:02:15,142 ERROR:'NoneType' object has no attribute 'inserted_primary_key'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertRoleGrphql(approvalAmount: 15000000, roles: "Bookeepper")
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 96, in insertRole_grphql
+    return int(result.inserted_primary_key[0])
+AttributeError: 'NoneType' object has no attribute 'inserted_primary_key'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 14:03:01,054 INFO:SELECT DATABASE()
+2023-06-12 14:03:01,055 INFO:[raw sql] {}
+2023-06-12 14:03:01,130 INFO:SELECT @@sql_mode
+2023-06-12 14:03:01,131 INFO:[raw sql] {}
+2023-06-12 14:03:01,163 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:03:01,164 INFO:[raw sql] {}
+2023-06-12 14:03:01,228 INFO:BEGIN (implicit)
+2023-06-12 14:03:01,253 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:03:01,257 INFO:[generated in 0.00373s] {}
+2023-06-12 14:03:01,292 INFO:ROLLBACK
+2023-06-12 14:04:21,359 INFO:BEGIN (implicit)
+2023-06-12 14:04:21,362 INFO:INSERT INTO `role` (roles, `approvalAmount`, date_updated, date_credited) VALUES (%(roles)s, %(approvalAmount)s, %(date_updated)s, %(date_credited)s)
+2023-06-12 14:04:21,363 INFO:[generated in 0.00123s] {'roles': 'Supervisor', 'approvalAmount': Decimal('5000000.0'), 'date_updated': None, 'date_credited': datetime.datetime(2023, 6, 12, 11, 4, 21, 358885)}
+2023-06-12 14:04:21,405 INFO:COMMIT
+2023-06-12 14:04:21,496 ERROR:int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+
+GraphQL request:2:3
+1 | mutation MyMutation2 {
+2 |   insertRoleGrphql(approvalAmount: 5000000, roles: "Supervisor")
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 96, in insertRole_grphql
+    return int(result)
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 14:05:54,318 INFO:SELECT DATABASE()
+2023-06-12 14:05:54,319 INFO:[raw sql] {}
+2023-06-12 14:05:54,829 INFO:SELECT @@sql_mode
+2023-06-12 14:05:54,830 INFO:[raw sql] {}
+2023-06-12 14:05:55,099 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:05:55,099 INFO:[raw sql] {}
+2023-06-12 14:05:55,718 INFO:BEGIN (implicit)
+2023-06-12 14:05:55,743 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:05:55,744 INFO:[generated in 0.00181s] {}
+2023-06-12 14:05:56,000 INFO:ROLLBACK
+2023-06-12 14:07:31,324 INFO:SELECT DATABASE()
+2023-06-12 14:07:31,324 INFO:[raw sql] {}
+2023-06-12 14:07:31,902 INFO:SELECT @@sql_mode
+2023-06-12 14:07:31,903 INFO:[raw sql] {}
+2023-06-12 14:07:32,212 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:07:32,213 INFO:[raw sql] {}
+2023-06-12 14:07:32,743 INFO:BEGIN (implicit)
+2023-06-12 14:07:32,746 INFO:INSERT INTO `role` (roles, `approvalAmount`, date_updated, date_credited) VALUES (%(roles)s, %(approvalAmount)s, %(date_updated)s, %(date_credited)s)
+2023-06-12 14:07:32,747 INFO:[generated in 0.00099s] {'roles': 'Account Office', 'approvalAmount': Decimal('50000.0'), 'date_updated': None, 'date_credited': datetime.datetime(2023, 6, 12, 11, 7, 29, 831942)}
+2023-06-12 14:07:33,027 INFO:COMMIT
+2023-06-12 14:07:33,662 ERROR:Boolean cannot represent a non boolean value: 'Data has been Save'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertRoleGrphql(approvalAmount: 50000, roles: "Account Office")
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 612, in complete_value
+    completed = self.complete_value(
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 639, in complete_value
+    return self.complete_leaf_value(cast(GraphQLLeafType, return_type), result)
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 774, in complete_leaf_value
+    serialized_result = return_type.serialize(result)
+  File "D:\financing-apps\venv\lib\site-packages\graphql\type\scalars.py", line 218, in serialize_boolean
+    raise GraphQLError(
+graphql.error.graphql_error.GraphQLError: Boolean cannot represent a non boolean value: 'Data has been Save'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 14:08:12,165 INFO:SELECT DATABASE()
+2023-06-12 14:08:12,166 INFO:[raw sql] {}
+2023-06-12 14:08:12,770 INFO:SELECT @@sql_mode
+2023-06-12 14:08:12,771 INFO:[raw sql] {}
+2023-06-12 14:08:13,078 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:08:13,079 INFO:[raw sql] {}
+2023-06-12 14:08:13,612 INFO:BEGIN (implicit)
+2023-06-12 14:08:13,638 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:08:13,639 INFO:[generated in 0.00149s] {}
+2023-06-12 14:08:13,946 INFO:ROLLBACK
+2023-06-12 14:08:54,868 INFO:BEGIN (implicit)
+2023-06-12 14:08:54,871 INFO:INSERT INTO `role` (roles, `approvalAmount`, date_updated, date_credited) VALUES (%(roles)s, %(approvalAmount)s, %(date_updated)s, %(date_credited)s)
+2023-06-12 14:08:54,872 INFO:[generated in 0.00127s] {'roles': 'Janitor', 'approvalAmount': Decimal('1000.0'), 'date_updated': None, 'date_credited': datetime.datetime(2023, 6, 12, 11, 8, 54, 867284)}
+2023-06-12 14:08:55,180 INFO:COMMIT
+2023-06-12 14:51:59,499 INFO:SELECT DATABASE()
+2023-06-12 14:51:59,500 INFO:[raw sql] {}
+2023-06-12 14:51:59,588 INFO:SELECT @@sql_mode
+2023-06-12 14:51:59,589 INFO:[raw sql] {}
+2023-06-12 14:51:59,633 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:51:59,641 INFO:[raw sql] {}
+2023-06-12 14:51:59,742 INFO:BEGIN (implicit)
+2023-06-12 14:51:59,771 INFO:ROLLBACK
+2023-06-12 14:51:59,953 ERROR:reverse_property 'branch_tag' on relationship Branch.accounttaggings references relationship AccountTagging.branch_tag, which does not reference mapper mapped class Branch->branch
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles {
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    data = getRoles()
+  File "D:\financing-apps\views\views.py", line 79, in getRoles
+    results = session.exec(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1564, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 531, in _compile_w_cache
+    compiled_sql = self._compiler(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 566, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 790, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 463, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 498, in process
+    return obj._compiler_dispatch(self, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\visitors.py", line 82, in _compiler_dispatch
+    return meth(self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 3301, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\base.py", line 510, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 699, in create_for_statement
+    _QueryEntity.to_compile_state(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2451, in to_compile_state
+    _MapperEntity(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2524, in __init__
+    entity._post_inspect
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 1184, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 2182, in _post_inspect
+    self._check_configure()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1924, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3483, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3522, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1941, in _post_configure_properties
+    prop.init()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\interfaces.py", line 231, in init
+    self.do_init()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2150, in do_init
+    self._generate_backref()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2486, in _generate_backref
+    self._add_reverse_property(self.back_populates)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2078, in _add_reverse_property
+    raise sa_exc.ArgumentError(
+sqlalchemy.exc.ArgumentError: reverse_property 'branch_tag' on relationship Branch.accounttaggings references relationship AccountTagging.branch_tag, which does not reference mapper mapped class Branch->branch
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 14:52:25,791 INFO:BEGIN (implicit)
+2023-06-12 14:52:25,793 INFO:ROLLBACK
+2023-06-12 14:52:25,907 ERROR:One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'mapped class Branch->branch'. Original exception was: reverse_property 'branch_tag' on relationship Branch.accounttaggings references relationship AccountTagging.branch_tag, which does not reference mapper mapped class Branch->branch
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getUserWithID(username: "joeysabusido") {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 79, in getUserWithID
+    user = getuser(username=username)
+  File "D:\financing-apps\views\views.py", line 26, in getuser
+    results = session.exec(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1564, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 531, in _compile_w_cache
+    compiled_sql = self._compiler(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 566, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 790, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 463, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 498, in process
+    return obj._compiler_dispatch(self, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\visitors.py", line 82, in _compiler_dispatch
+    return meth(self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 3301, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\base.py", line 510, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 699, in create_for_statement
+    _QueryEntity.to_compile_state(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2451, in to_compile_state
+    _MapperEntity(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2524, in __init__
+    entity._post_inspect
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 1184, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 2182, in _post_inspect
+    self._check_configure()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1924, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3483, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3518, in _do_configure_registries
+    raise e
+sqlalchemy.exc.InvalidRequestError: One or more mappers failed to initialize - can't proceed with initialization of other mappers. Triggering mapper: 'mapped class Branch->branch'. Original exception was: reverse_property 'branch_tag' on relationship Branch.accounttaggings references relationship AccountTagging.branch_tag, which does not reference mapper mapped class Branch->branch
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 14:55:05,182 INFO:SELECT DATABASE()
+2023-06-12 14:55:05,183 INFO:[raw sql] {}
+2023-06-12 14:55:05,277 INFO:SELECT @@sql_mode
+2023-06-12 14:55:05,278 INFO:[raw sql] {}
+2023-06-12 14:55:05,330 INFO:SELECT @@lower_case_table_names
+2023-06-12 14:55:05,331 INFO:[raw sql] {}
+2023-06-12 14:55:05,420 INFO:BEGIN (implicit)
+2023-06-12 14:55:05,446 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:55:05,452 INFO:[generated in 0.00677s] {}
+2023-06-12 14:55:05,501 INFO:ROLLBACK
+2023-06-12 14:55:23,694 INFO:BEGIN (implicit)
+2023-06-12 14:55:23,695 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:55:23,696 INFO:[cached since 18.25s ago] {}
+2023-06-12 14:55:23,759 INFO:ROLLBACK
+2023-06-12 14:55:27,899 INFO:BEGIN (implicit)
+2023-06-12 14:55:27,900 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:55:27,901 INFO:[cached since 22.46s ago] {}
+2023-06-12 14:55:27,948 INFO:ROLLBACK
+2023-06-12 14:55:41,705 INFO:BEGIN (implicit)
+2023-06-12 14:55:41,728 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:55:41,729 INFO:[cached since 36.28s ago] {}
+2023-06-12 14:55:41,773 INFO:ROLLBACK
+2023-06-12 14:55:41,884 INFO:BEGIN (implicit)
+2023-06-12 14:55:41,911 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 14:55:41,913 INFO:[generated in 0.00160s] {'username_1': 'joeysabusido'}
+2023-06-12 14:55:41,976 INFO:ROLLBACK
+2023-06-12 14:55:59,691 INFO:BEGIN (implicit)
+2023-06-12 14:55:59,693 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 14:55:59,695 INFO:[cached since 17.78s ago] {'username_1': 'joeysabusido'}
+2023-06-12 14:55:59,749 INFO:ROLLBACK
+2023-06-12 14:56:07,810 INFO:BEGIN (implicit)
+2023-06-12 14:56:07,813 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 14:56:07,818 INFO:[cached since 62.37s ago] {}
+2023-06-12 14:56:07,875 INFO:ROLLBACK
+2023-06-12 16:43:23,331 INFO:SELECT DATABASE()
+2023-06-12 16:43:23,332 INFO:[raw sql] {}
+2023-06-12 16:43:23,407 INFO:SELECT @@sql_mode
+2023-06-12 16:43:23,408 INFO:[raw sql] {}
+2023-06-12 16:43:23,441 INFO:SELECT @@lower_case_table_names
+2023-06-12 16:43:23,442 INFO:[raw sql] {}
+2023-06-12 16:43:23,509 INFO:BEGIN (implicit)
+2023-06-12 16:43:23,529 INFO:ROLLBACK
+2023-06-12 16:43:23,605 ERROR:reverse_property 'account_type_tag' on relationship Branch.accounttaggings references relationship Account.account_type_tag, which does not reference mapper mapped class Branch->branch
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles {
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    data = getRoles()
+  File "D:\financing-apps\views\views.py", line 79, in getRoles
+    results = session.exec(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1564, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 531, in _compile_w_cache
+    compiled_sql = self._compiler(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 566, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 790, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 463, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 498, in process
+    return obj._compiler_dispatch(self, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\visitors.py", line 82, in _compiler_dispatch
+    return meth(self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 3301, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\base.py", line 510, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 699, in create_for_statement
+    _QueryEntity.to_compile_state(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2451, in to_compile_state
+    _MapperEntity(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2524, in __init__
+    entity._post_inspect
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 1184, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 2182, in _post_inspect
+    self._check_configure()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1924, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3483, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3522, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1941, in _post_configure_properties
+    prop.init()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\interfaces.py", line 231, in init
+    self.do_init()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2150, in do_init
+    self._generate_backref()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2486, in _generate_backref
+    self._add_reverse_property(self.back_populates)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2078, in _add_reverse_property
+    raise sa_exc.ArgumentError(
+sqlalchemy.exc.ArgumentError: reverse_property 'account_type_tag' on relationship Branch.accounttaggings references relationship Account.account_type_tag, which does not reference mapper mapped class Branch->branch
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 16:44:34,713 INFO:SELECT DATABASE()
+2023-06-12 16:44:34,714 INFO:[raw sql] {}
+2023-06-12 16:44:34,778 INFO:SELECT @@sql_mode
+2023-06-12 16:44:34,779 INFO:[raw sql] {}
+2023-06-12 16:44:34,812 INFO:SELECT @@lower_case_table_names
+2023-06-12 16:44:34,813 INFO:[raw sql] {}
+2023-06-12 16:44:34,878 INFO:BEGIN (implicit)
+2023-06-12 16:44:34,897 INFO:ROLLBACK
+2023-06-12 16:44:34,963 ERROR:reverse_property 'account_type_tag' on relationship Branch.accounttaggings references relationship Account.account_type_tag, which does not reference mapper mapped class Branch->branch
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   roles {
+  |   ^
+3 |     roles
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 61, in roles
+    data = getRoles()
+  File "D:\financing-apps\views\views.py", line 79, in getRoles
+    results = session.exec(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1564, in _execute_clauseelement
+    compiled_sql, extracted_params, cache_hit = elem._compile_w_cache(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 531, in _compile_w_cache
+    compiled_sql = self._compiler(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 566, in _compiler
+    return dialect.statement_compiler(dialect, self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 790, in __init__
+    Compiled.__init__(self, dialect, statement, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 463, in __init__
+    self.string = self.process(self.statement, **compile_kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 498, in process
+    return obj._compiler_dispatch(self, **kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\visitors.py", line 82, in _compiler_dispatch
+    return meth(self, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\compiler.py", line 3301, in visit_select
+    compile_state = select_stmt._compile_state_factory(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\base.py", line 510, in create_for_statement
+    return klass.create_for_statement(statement, compiler, **kw)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 699, in create_for_statement
+    _QueryEntity.to_compile_state(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2451, in to_compile_state
+    _MapperEntity(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\context.py", line 2524, in __init__
+    entity._post_inspect
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 1184, in __get__
+    obj.__dict__[self.__name__] = result = self.fget(obj)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 2182, in _post_inspect
+    self._check_configure()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1924, in _check_configure
+    _configure_registries({self.registry}, cascade=True)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3483, in _configure_registries
+    _do_configure_registries(registries, cascade)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 3522, in _do_configure_registries
+    mapper._post_configure_properties()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\mapper.py", line 1941, in _post_configure_properties
+    prop.init()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\interfaces.py", line 231, in init
+    self.do_init()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2150, in do_init
+    self._generate_backref()
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2486, in _generate_backref
+    self._add_reverse_property(self.back_populates)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\relationships.py", line 2078, in _add_reverse_property
+    raise sa_exc.ArgumentError(
+sqlalchemy.exc.ArgumentError: reverse_property 'account_type_tag' on relationship Branch.accounttaggings references relationship Account.account_type_tag, which does not reference mapper mapped class Branch->branch
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-12 16:48:39,444 INFO:SELECT DATABASE()
+2023-06-12 16:48:39,445 INFO:[raw sql] {}
+2023-06-12 16:48:39,513 INFO:SELECT @@sql_mode
+2023-06-12 16:48:39,514 INFO:[raw sql] {}
+2023-06-12 16:48:39,547 INFO:SELECT @@lower_case_table_names
+2023-06-12 16:48:39,548 INFO:[raw sql] {}
+2023-06-12 16:48:39,615 INFO:BEGIN (implicit)
+2023-06-12 16:48:39,646 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 16:48:39,648 INFO:[generated in 0.00250s] {'username_1': 'joeysabusido'}
+2023-06-12 16:48:39,699 INFO:ROLLBACK
+2023-06-12 16:48:52,389 INFO:BEGIN (implicit)
+2023-06-12 16:48:52,392 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 16:48:52,393 INFO:[generated in 0.00136s] {}
+2023-06-12 16:48:52,443 INFO:ROLLBACK
+2023-06-12 16:49:33,250 INFO:BEGIN (implicit)
+2023-06-12 16:49:33,251 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 16:49:33,252 INFO:[cached since 40.86s ago] {}
+2023-06-12 16:49:33,287 INFO:ROLLBACK
+2023-06-12 16:51:34,991 INFO:SELECT DATABASE()
+2023-06-12 16:51:34,992 INFO:[raw sql] {}
+2023-06-12 16:51:35,065 INFO:SELECT @@sql_mode
+2023-06-12 16:51:35,065 INFO:[raw sql] {}
+2023-06-12 16:51:35,098 INFO:SELECT @@lower_case_table_names
+2023-06-12 16:51:35,102 INFO:[raw sql] {}
+2023-06-12 16:51:35,172 INFO:BEGIN (implicit)
+2023-06-12 16:51:35,210 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-12 16:51:35,212 INFO:[generated in 0.00235s] {'username_1': 'joeysabusido'}
+2023-06-12 16:51:35,252 INFO:ROLLBACK
+2023-06-12 16:52:17,090 INFO:BEGIN (implicit)
+2023-06-12 16:52:17,093 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 16:52:17,094 INFO:[generated in 0.00142s] {}
+2023-06-12 16:52:17,131 INFO:ROLLBACK
+2023-06-12 16:59:42,886 INFO:SELECT DATABASE()
+2023-06-12 16:59:42,887 INFO:[raw sql] {}
+2023-06-12 16:59:42,968 INFO:SELECT @@sql_mode
+2023-06-12 16:59:42,969 INFO:[raw sql] {}
+2023-06-12 16:59:43,014 INFO:SELECT @@lower_case_table_names
+2023-06-12 16:59:43,015 INFO:[raw sql] {}
+2023-06-12 16:59:43,101 INFO:BEGIN (implicit)
+2023-06-12 16:59:43,148 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-12 16:59:43,149 INFO:[generated in 0.00122s] {}
+2023-06-12 16:59:43,195 INFO:ROLLBACK

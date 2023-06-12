@@ -7,7 +7,7 @@ class User(BaseModel):
     username: str 
     hashed_password: str 
     email_add: str
-    is_active: str 
+    is_active: bool 
     role_id: int
 
 class TokenData(BaseModel):
