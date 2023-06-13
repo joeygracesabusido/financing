@@ -154,7 +154,7 @@ class Branch(SQLModel, table=True):
 class Accounttype(SQLModel, table=True):
     """This table is for creating account type for Account Holder"""
     id: Optional[int] = Field(default=None, primary_key=True)
-    type_of_account: str = Field()
+    type_of_account: str = Field(default=None, nullable=False)
     date_updated: Optional[datetime] = Field(default=None)
     date_created: datetime = Field(default_factory=datetime.utcnow)
 

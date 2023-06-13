@@ -5595,3 +5595,72 @@ FROM `role` ORDER BY `role`.roles
 FROM `role` ORDER BY `role`.roles
 2023-06-12 16:59:43,149 INFO:[generated in 0.00122s] {}
 2023-06-12 16:59:43,195 INFO:ROLLBACK
+2023-06-13 21:38:17,648 INFO:SELECT DATABASE()
+2023-06-13 21:38:17,649 INFO:[raw sql] {}
+2023-06-13 21:38:17,816 INFO:SELECT @@sql_mode
+2023-06-13 21:38:17,816 INFO:[raw sql] {}
+2023-06-13 21:38:17,900 INFO:SELECT @@lower_case_table_names
+2023-06-13 21:38:17,901 INFO:[raw sql] {}
+2023-06-13 21:38:18,073 INFO:BEGIN (implicit)
+2023-06-13 21:38:18,131 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 21:38:18,133 INFO:[generated in 0.00266s] {'username_1': 'jjasdfasdf'}
+2023-06-13 21:38:18,235 INFO:ROLLBACK
+2023-06-13 21:38:32,973 INFO:BEGIN (implicit)
+2023-06-13 21:38:32,975 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 21:38:32,977 INFO:[cached since 14.85s ago] {'username_1': 'joeysabusido'}
+2023-06-13 21:38:33,068 INFO:ROLLBACK
+2023-06-13 21:38:45,647 INFO:BEGIN (implicit)
+2023-06-13 21:38:45,654 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 21:38:45,658 INFO:[cached since 27.53s ago] {'username_1': 'joeysabusido'}
+2023-06-13 21:38:45,758 INFO:ROLLBACK
+2023-06-13 21:39:08,082 INFO:BEGIN (implicit)
+2023-06-13 21:39:08,086 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 21:39:08,087 INFO:[cached since 49.96s ago] {'username_1': 'joeysabusido'}
+2023-06-13 21:39:08,193 INFO:ROLLBACK
+2023-06-13 21:39:08,389 INFO:BEGIN (implicit)
+2023-06-13 21:39:08,393 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-13 21:39:08,404 INFO:[generated in 0.01127s] {}
+2023-06-13 21:39:08,499 INFO:ROLLBACK
+2023-06-13 22:19:43,165 INFO:SELECT DATABASE()
+2023-06-13 22:19:43,174 INFO:[raw sql] {}
+2023-06-13 22:19:43,665 INFO:SELECT @@sql_mode
+2023-06-13 22:19:43,666 INFO:[raw sql] {}
+2023-06-13 22:19:43,913 INFO:SELECT @@lower_case_table_names
+2023-06-13 22:19:43,914 INFO:[raw sql] {}
+2023-06-13 22:19:44,407 INFO:BEGIN (implicit)
+2023-06-13 22:19:44,458 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 22:19:44,461 INFO:[generated in 0.00228s] {'username_1': 'joeysabusido'}
+2023-06-13 22:19:44,707 INFO:ROLLBACK
+2023-06-13 22:19:58,969 INFO:BEGIN (implicit)
+2023-06-13 22:19:58,971 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 22:19:58,972 INFO:[cached since 14.51s ago] {'username_1': 'joeysabusido'}
+2023-06-13 22:19:59,182 INFO:ROLLBACK
+2023-06-13 22:20:18,261 INFO:BEGIN (implicit)
+2023-06-13 22:20:18,265 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-13 22:20:18,266 INFO:[generated in 0.00171s] {}
+2023-06-13 22:20:18,483 INFO:ROLLBACK
+2023-06-13 22:22:25,800 INFO:BEGIN (implicit)
+2023-06-13 22:22:25,840 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-13 22:22:25,847 INFO:[cached since 127.6s ago] {}
+2023-06-13 22:22:26,098 INFO:ROLLBACK
+2023-06-13 22:24:34,504 INFO:BEGIN (implicit)
+2023-06-13 22:24:34,506 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-13 22:24:34,508 INFO:[cached since 290s ago] {'username_1': 'joeysabusido'}
+2023-06-13 22:24:34,695 INFO:ROLLBACK
