@@ -143,7 +143,8 @@ class Branch(SQLModel, table=True):
     for layway of the branch to put any of the characters
     """
     id: Optional[int] = Field(default=None, primary_key=True, unique=True)
-    branch_name: str = Field(default=None, nullable=False)
+    branch_name: str = Field(default=None, nullable=False, unique=True)
+    branch_code: str = Field(default=None, nullable=True, unique=True)
     address: str = Field(default=None, nullable=False)
     date_updated: Optional[datetime] = Field(default=None)
     date_created: datetime = Field(default_factory=datetime.utcnow)
@@ -154,7 +155,9 @@ class Branch(SQLModel, table=True):
 class Accounttype(SQLModel, table=True):
     """This table is for creating account type for Account Holder"""
     id: Optional[int] = Field(default=None, primary_key=True)
-    type_of_account: str = Field(default=None, nullable=False)
+    accountTypeCode: str = Field(default=None, nullable=False, unique=True)
+    type_of_account: str = Field(default=None, nullable=False, unique=True)
+    type_of_deposit: str = Field(default=None, nullable=False)
     date_updated: Optional[datetime] = Field(default=None)
     date_created: datetime = Field(default_factory=datetime.utcnow)
 
@@ -191,54 +194,6 @@ class Account(SQLModel, table=True):
 #     date_credited: datetime = Field(default_factory=datetime.utcnow)
 
 
-# branch = [
-#     {"id": 1, "branchcode": 301, "branchName": "Madrid"},
-#     {"id": 2, "branchcode": 302, "branchName": "Carmen"},
-#     {"id": 3, "branchcode": 303, "branchName": "Lanuza"}
-# ]
-
-# account_type = [
-#     {"id": 1, "accountTypeCode": "01", "accountType": "time deposit"},
-#     {"id": 2, "accountTypeCode": "02", "accountType": "regular deposit"},
-#     {"id": 3, "accountTypeCode": "03", "accountType": "regular deposit 6 mos"}
-# ]
-
-# account = [
-#     {'branch_id': 1, 'account_type_id': 3, 'account_number': '301030000001', 'account_name': 'JEROME SABUSIDO'}
-#     ]
-    
-# print(branch)
-# print(account_type)
-# branch_id = int(input("Enter Branch ID: "))
-# account_type_id = int(input("Enter Account Type ID:  "))
-# account_name = input('Enter Account Name: ')
-# # Find the branch with the given ID
-# selected_branch = next((b for b in branch if b["id"] == branch_id), None)
-
-# # Find the account type with the given ID
-# selected_account_type = next((a for a in account_type if a["id"] == account_type_id), None)
-
-# if selected_branch and selected_account_type:
-#     # Generate account number with an incrementing last digit
-#     account_number = f"{selected_branch['branchcode']}{selected_account_type['accountTypeCode']}0000001"
-#     if account:
-#         last_account = account[-1]
-#         last_account_number = last_account["account_number"]
-#         last_digit = int(last_account_number[-1])
-#         incremented_last_digit = last_digit + 1
-#         account_number = f"{selected_branch['branchcode']}{selected_account_type['accountTypeCode']}000000{incremented_last_digit:03}"
-    
-#     # Insert the new account into the list
-#     new_account = {
-#         "branch_id": branch_id,
-#         "account_type_id": account_type_id,
-#         "account_number": account_number,
-#         "account_name": account_name
-#     }
-#     account.append(new_account)
-#     print(f"Account inserted: {new_account}")
-# else:
-#     print("Branch or account type not found for the given ID")
 
 
 
