@@ -1,7 +1,9 @@
-from fastapi import FastAPI,APIRouter,Request,Response,HTTPException,status
+from fastapi import FastAPI,APIRouter,Request,Response,HTTPException,status,Depends,Header
 import strawberry
 import json
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
 
 from strawberry.asgi import GraphQL
 from strawberry.fastapi import GraphQLRouter
@@ -11,22 +13,42 @@ import urllib.parse
 
 from jose import JWTError, jwt
 
+# from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
+
 from datetime import datetime, date
+
+from strawberry.types import Info
+
+import starlette.requests
+
+
+from strawberry.permission import BasePermission
+from strawberry.types import Info
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 JWT_SECRET = 'myjwtsecret'
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+security = HTTPBearer()
+
+
+
+import typing
+import strawberry
+from strawberry.permission import BasePermission
+from strawberry.types import Info
 
 
 
 
+
+    
 
 from config.models import User,Role
 from typing import Optional,List,Annotated
 
-
+admin = APIRouter()
 # @strawberry.type
 # class User:
 #     name: str
@@ -39,42 +61,26 @@ from typing import Optional,List,Annotated
 #     async def user(self) -> User:
 #         return User(name="Patrick", age=100) 
 
-
-async def authenticate_user(authorization: str):
+async def get_user_from_token(authorization: Optional[str] = Header(default=None)) -> Optional[str]:
     if authorization is None:
-        # Access token is missing, handle accordingly
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization header missing")
 
-    # Extract the access token from the header
-    token = authorization.replace("Bearer ", "")
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication scheme")
 
     try:
-        # Verify and decode the access token
-        decoded_token = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
-
-        # Retrieve user information from the decoded token and return it
-        user = User(id=decoded_token["sub"], username=decoded_token["username"])
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user = decoded_token.get("sub")
+        
+        if not user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token")
+        
         return user
+        
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token")
 
-    except jwt.ExpiredSignatureError:
-        # Access token has expired, handle accordingly
-        raise HTTPException(status_code=401, detail="Access token expired")
-
-    except jwt.InvalidTokenError:
-        # Invalid access token, handle accordingly
-        raise HTTPException(status_code=401, detail="Invalid access token")
-
-# @strawberry.field
-# async def my_resolver(parent, info, some_argument: str, user: User = strawberry.field(default_value=None)):
-#     if user is None:
-#         # User is not authenticated, handle accordingly
-#         raise Exception("Unauthorized")
-
-#     # Perform any authorization checks based on the authenticated user
-    
-#     # Process the resolver logic
-    
-#     return user
 
 
 
@@ -82,6 +88,15 @@ from views.views import (getRoles,getuser,insertRole,get_access_tags,
                         updateAccessTags,insertBranch,getBranch,
                         insertAccountType,getAccountType)
 from basemodel.basemodels import User
+
+
+
+
+
+
+
+
+
 @strawberry.type
 class RoleType:
     id: int
@@ -132,11 +147,62 @@ class AccountType:
     accountTypeCode: str
     type_of_account: str
     type_of_deposit: str
+
+# class IsAuthenticated():
+#     message = "User is not authenticated"
+
+    # This method can also be async!
+
+@admin.get("/current-user/")
+async def has_permission(request:Request):
+    try :
+        token = request.cookies.get('access_token')
+        
+        # print(token)
+        if token is None:
+            raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Not Authorized",
+            # headers={"WWW-Authenticate": "Basic"},
+            )
+        else:
+            scheme, _, param = token.partition(" ")
+            payload = jwt.decode(param, SECRET_KEY, algorithms=ALGORITHM)
+        
+            username = payload.get("sub")    
+            
+            expiration_time = datetime.fromtimestamp(payload.get("exp"))
+            # print(expiration_time)
+            # print(datetime.utcnow())
+
+            
+            if datetime.utcnow() > expiration_time:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token has expired. Please login again.",
+                )
+
+            # response_data = {"username": username}
+            return username
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail= "Session has expired",
+            # headers={"WWW-Authenticate": "Basic"},
+        )
+        
+
     
 @strawberry.type
 class Query:
+    # @strawberry.field
+    # async def getcurrentUser(current_user: Annotated[User, Depends(has_permission)]) -> User:
+    #     return current_user
+    
+    
     @strawberry.field
-    async def roles(self) -> List[RoleType]:
+    async def roles(self, user: str = Depends(get_user_from_token)) -> List[RoleType]:
        
         data = getRoles()
         

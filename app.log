@@ -8500,3 +8500,1294 @@ FROM accounttype
 FROM accounttype
 2023-06-14 19:51:18,479 INFO:[cached since 75.87s ago] {}
 2023-06-14 19:51:18,516 INFO:ROLLBACK
+2023-06-14 22:04:35,927 INFO:SELECT DATABASE()
+2023-06-14 22:04:35,928 INFO:[raw sql] {}
+2023-06-14 22:04:36,029 INFO:SELECT @@sql_mode
+2023-06-14 22:04:36,030 INFO:[raw sql] {}
+2023-06-14 22:04:36,089 INFO:SELECT @@lower_case_table_names
+2023-06-14 22:04:36,090 INFO:[raw sql] {}
+2023-06-14 22:04:36,194 INFO:BEGIN (implicit)
+2023-06-14 22:04:36,246 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:04:36,257 INFO:[generated in 0.01263s] {}
+2023-06-14 22:04:36,326 INFO:ROLLBACK
+2023-06-14 22:08:40,586 INFO:SELECT DATABASE()
+2023-06-14 22:08:40,587 INFO:[raw sql] {}
+2023-06-14 22:08:40,694 INFO:SELECT @@sql_mode
+2023-06-14 22:08:40,695 INFO:[raw sql] {}
+2023-06-14 22:08:40,747 INFO:SELECT @@lower_case_table_names
+2023-06-14 22:08:40,748 INFO:[raw sql] {}
+2023-06-14 22:08:40,870 INFO:BEGIN (implicit)
+2023-06-14 22:08:40,931 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:08:40,934 INFO:[generated in 0.00249s] {}
+2023-06-14 22:08:40,993 INFO:ROLLBACK
+2023-06-14 22:09:57,675 INFO:SELECT DATABASE()
+2023-06-14 22:09:57,676 INFO:[raw sql] {}
+2023-06-14 22:09:57,741 INFO:SELECT @@sql_mode
+2023-06-14 22:09:57,741 INFO:[raw sql] {}
+2023-06-14 22:09:57,785 INFO:SELECT @@lower_case_table_names
+2023-06-14 22:09:57,786 INFO:[raw sql] {}
+2023-06-14 22:09:57,877 INFO:BEGIN (implicit)
+2023-06-14 22:09:57,939 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:09:57,966 INFO:[generated in 0.02663s] {}
+2023-06-14 22:09:58,052 INFO:ROLLBACK
+2023-06-14 22:10:03,791 INFO:BEGIN (implicit)
+2023-06-14 22:10:03,792 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:10:03,793 INFO:[cached since 5.854s ago] {}
+2023-06-14 22:10:03,855 INFO:ROLLBACK
+2023-06-14 22:28:10,006 INFO:SELECT DATABASE()
+2023-06-14 22:28:10,007 INFO:[raw sql] {}
+2023-06-14 22:28:10,074 INFO:SELECT @@sql_mode
+2023-06-14 22:28:10,074 INFO:[raw sql] {}
+2023-06-14 22:28:10,107 INFO:SELECT @@lower_case_table_names
+2023-06-14 22:28:10,108 INFO:[raw sql] {}
+2023-06-14 22:28:10,188 INFO:BEGIN (implicit)
+2023-06-14 22:28:10,224 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:28:10,228 INFO:[generated in 0.00351s] {}
+2023-06-14 22:28:10,271 INFO:ROLLBACK
+2023-06-14 22:28:15,306 INFO:BEGIN (implicit)
+2023-06-14 22:28:15,307 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:28:15,308 INFO:[cached since 5.084s ago] {}
+2023-06-14 22:28:15,344 INFO:ROLLBACK
+2023-06-14 22:36:36,001 INFO:SELECT DATABASE()
+2023-06-14 22:36:36,001 INFO:[raw sql] {}
+2023-06-14 22:36:36,121 INFO:SELECT @@sql_mode
+2023-06-14 22:36:36,122 INFO:[raw sql] {}
+2023-06-14 22:36:36,184 INFO:SELECT @@lower_case_table_names
+2023-06-14 22:36:36,185 INFO:[raw sql] {}
+2023-06-14 22:36:36,276 INFO:BEGIN (implicit)
+2023-06-14 22:36:36,324 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 22:36:36,326 INFO:[generated in 0.00152s] {}
+2023-06-14 22:36:36,379 INFO:ROLLBACK
+2023-06-14 22:51:33,639 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 22:51:42,367 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 22:52:00,329 INFO:SELECT DATABASE()
+2023-06-14 22:52:00,330 INFO:[raw sql] {}
+2023-06-14 22:52:00,417 INFO:SELECT @@sql_mode
+2023-06-14 22:52:00,418 INFO:[raw sql] {}
+2023-06-14 22:52:00,465 INFO:SELECT @@lower_case_table_names
+2023-06-14 22:52:00,466 INFO:[raw sql] {}
+2023-06-14 22:52:00,561 INFO:BEGIN (implicit)
+2023-06-14 22:52:00,614 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-14 22:52:00,616 INFO:[generated in 0.00229s] {'username_1': 'joeysabusido'}
+2023-06-14 22:52:00,668 INFO:ROLLBACK
+2023-06-14 22:52:10,824 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 22:53:49,930 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:03:02,521 ERROR:'dict' object has no attribute 'headers'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 155, in has_permission
+    token = info.context.headers.get('access_token')
+AttributeError: 'dict' object has no attribute 'headers'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:03:35,878 ERROR:'dict' object has no attribute 'headers'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 155, in has_permission
+    token = info.context.headers.get('access_token')
+AttributeError: 'dict' object has no attribute 'headers'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:04:40,075 ERROR:'dict' object has no attribute 'headers'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 155, in has_permission
+    token = info.context.headers.get('access_token')
+AttributeError: 'dict' object has no attribute 'headers'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:07:21,246 ERROR:'dict' object has no attribute 'cookies'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 155, in has_permission
+    token = info.context.cookies.get('access_token')
+AttributeError: 'dict' object has no attribute 'cookies'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:26:25,712 ERROR:'dict' object has no attribute 'cookies'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 164, in has_permission
+    token = info.context.cookies.get('access_token')
+AttributeError: 'dict' object has no attribute 'cookies'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:28:45,553 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:29:17,524 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:29:53,628 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:32:36,150 ERROR:'Info' object has no attribute 'cookies'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 156, in has_permission
+    token = info.cookies.get('access_token')
+AttributeError: 'Info' object has no attribute 'cookies'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:33:47,287 ERROR:IsAuthenticated.has_permission() missing 1 required positional argument: 'info'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 536, in _check_permissions_async
+    permission.has_permission(source, info, **kwargs)
+TypeError: IsAuthenticated.has_permission() missing 1 required positional argument: 'info'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:34:08,641 ERROR:'Info' object has no attribute 'cookies'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 535, in _check_permissions_async
+    has_permission = await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 156, in has_permission
+    token = request.cookies.get('access_token')
+AttributeError: 'Info' object has no attribute 'cookies'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:34:39,298 ERROR:IsAuthenticated.has_permission() takes 2 positional arguments but 3 were given
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 536, in _check_permissions_async
+    permission.has_permission(source, info, **kwargs)
+TypeError: IsAuthenticated.has_permission() takes 2 positional arguments but 3 were given
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:35:23,204 ERROR:IsAuthenticated.has_permission() takes 2 positional arguments but 3 were given
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 536, in _check_permissions_async
+    permission.has_permission(source, info, **kwargs)
+TypeError: IsAuthenticated.has_permission() takes 2 positional arguments but 3 were given
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:35:57,943 ERROR:IsAuthenticated.has_permission() takes 1 positional argument but 3 were given
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 536, in _check_permissions_async
+    permission.has_permission(source, info, **kwargs)
+TypeError: IsAuthenticated.has_permission() takes 1 positional argument but 3 were given
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:37:30,059 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:37:50,419 INFO:SELECT DATABASE()
+2023-06-14 23:37:50,419 INFO:[raw sql] {}
+2023-06-14 23:37:50,483 INFO:SELECT @@sql_mode
+2023-06-14 23:37:50,484 INFO:[raw sql] {}
+2023-06-14 23:37:50,517 INFO:SELECT @@lower_case_table_names
+2023-06-14 23:37:50,518 INFO:[raw sql] {}
+2023-06-14 23:37:50,587 INFO:BEGIN (implicit)
+2023-06-14 23:37:50,641 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-14 23:37:50,643 INFO:[generated in 0.00160s] {'username_1': 'joeysabusido'}
+2023-06-14 23:37:50,679 INFO:ROLLBACK
+2023-06-14 23:38:02,201 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:39:13,247 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:45:45,620 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:46:14,168 INFO:SELECT DATABASE()
+2023-06-14 23:46:14,168 INFO:[raw sql] {}
+2023-06-14 23:46:14,247 INFO:SELECT @@sql_mode
+2023-06-14 23:46:14,248 INFO:[raw sql] {}
+2023-06-14 23:46:14,288 INFO:SELECT @@lower_case_table_names
+2023-06-14 23:46:14,288 INFO:[raw sql] {}
+2023-06-14 23:46:14,363 INFO:BEGIN (implicit)
+2023-06-14 23:46:14,413 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-14 23:46:14,415 INFO:[generated in 0.00189s] {'username_1': 'joeysabusido'}
+2023-06-14 23:46:14,453 INFO:ROLLBACK
+2023-06-14 23:46:28,730 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:47:39,126 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 626, in _async_resolver
+    _get_result_with_extensions(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:48:38,087 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 626, in _async_resolver
+    _get_result_with_extensions(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:48:46,810 INFO:SELECT DATABASE()
+2023-06-14 23:48:46,810 INFO:[raw sql] {}
+2023-06-14 23:48:46,911 INFO:SELECT @@sql_mode
+2023-06-14 23:48:46,912 INFO:[raw sql] {}
+2023-06-14 23:48:46,958 INFO:SELECT @@lower_case_table_names
+2023-06-14 23:48:46,959 INFO:[raw sql] {}
+2023-06-14 23:48:47,056 INFO:BEGIN (implicit)
+2023-06-14 23:48:47,104 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-14 23:48:47,105 INFO:[generated in 0.00123s] {}
+2023-06-14 23:48:47,151 INFO:ROLLBACK
+2023-06-14 23:48:47,245 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 626, in _async_resolver
+    _get_result_with_extensions(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:49:07,027 INFO:BEGIN (implicit)
+2023-06-14 23:49:07,031 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-14 23:49:07,032 INFO:[generated in 0.00147s] {}
+2023-06-14 23:49:07,071 INFO:ROLLBACK
+2023-06-14 23:49:16,873 INFO:BEGIN (implicit)
+2023-06-14 23:49:16,878 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-14 23:49:16,879 INFO:[generated in 0.00154s] {'username_1': ''}
+2023-06-14 23:49:16,924 INFO:ROLLBACK
+2023-06-14 23:49:17,016 ERROR:Cannot return null for non-nullable field Query.getUserWithID.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getUserWithID(username: "") {
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 620, in complete_value
+    raise TypeError(
+TypeError: Cannot return null for non-nullable field Query.getUserWithID.
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:49:27,921 INFO:BEGIN (implicit)
+2023-06-14 23:49:27,924 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-14 23:49:27,926 INFO:[cached since 11.05s ago] {'username_1': 'joeysabusido'}
+2023-06-14 23:49:27,967 INFO:ROLLBACK
+2023-06-14 23:49:33,492 INFO:BEGIN (implicit)
+2023-06-14 23:49:33,493 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-14 23:49:33,494 INFO:[cached since 16.62s ago] {'username_1': 'joeysabusido'}
+2023-06-14 23:49:33,530 INFO:ROLLBACK
+2023-06-14 23:50:44,290 ERROR:User is not authenticated
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 541, in _check_permissions_async
+    raise PermissionError(message)
+PermissionError: User is not authenticated
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:51:48,527 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 626, in _async_resolver
+    _get_result_with_extensions(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:54:13,868 ERROR:'NoneType' object has no attribute 'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 626, in _async_resolver
+    _get_result_with_extensions(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'user'
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:55:35,290 ERROR:IsAuthenticated.has_permission() takes 1 positional argument but 3 were given
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   user {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 623, in _async_resolver
+    await _check_permissions_async(_source, strawberry_info, kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 536, in _check_permissions_async
+    permission.has_permission(source, info, **kwargs)
+TypeError: IsAuthenticated.has_permission() takes 1 positional argument but 3 were given
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:58:19,520 ERROR:'NoneType' object has no attribute 'current_user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   currentUser {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'current_user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-14 23:59:47,923 ERROR:'NoneType' object has no attribute 'current_user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   currentUser {
+  |   ^
+3 |     emailAdd
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'NoneType' object has no attribute 'current_user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-15 00:02:31,042 INFO:SELECT DATABASE()
+2023-06-15 00:02:31,043 INFO:[raw sql] {}
+2023-06-15 00:02:31,107 INFO:SELECT @@sql_mode
+2023-06-15 00:02:31,107 INFO:[raw sql] {}
+2023-06-15 00:02:31,139 INFO:SELECT @@lower_case_table_names
+2023-06-15 00:02:31,144 INFO:[raw sql] {}
+2023-06-15 00:02:31,209 INFO:BEGIN (implicit)
+2023-06-15 00:02:31,254 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-15 00:02:31,255 INFO:[generated in 0.00140s] {}
+2023-06-15 00:02:31,290 INFO:ROLLBACK
+2023-06-15 00:02:36,325 INFO:BEGIN (implicit)
+2023-06-15 00:02:36,327 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-15 00:02:36,328 INFO:[cached since 5.074s ago] {}
+2023-06-15 00:02:36,361 INFO:ROLLBACK
