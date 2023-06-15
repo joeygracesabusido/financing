@@ -253,3 +253,61 @@ def getAccountType():
         data = results.all()
         
         return data
+
+
+#===================================================This is for Personal Info========================================
+from config.models import PersonalInfo
+def insertPersonalInfo( first_name,
+                        middle_name,
+                        last_name,
+                        suffix,
+                        date_of_birth,
+                        age,
+                        permanent_address,
+                        length_stay,
+                        civil_status,
+                        contact_num,
+                        email_add,
+                        place_of_birth,
+                        nationality,
+                        religion,
+                        tin,
+                        sss_gsis_no,
+                        philsys_no,
+                        sex,
+                        name_of_spouse_co_borrower,
+                        date_of_birth_spouse,
+                        age_spouse,
+                        source_of_income,
+                        date_of_business_registration,
+                        dti_sec_registration_no,
+                        brgy_mayor_permit_no,
+                        principal_business_address,
+                        nature_of_business,
+                        number_of_branch,
+                        business_address_ownership):
+    """This function is for inserting Personal Info"""
+
+    try:
+        session = Session(engine)
+        session.begin()
+
+        insertData = PersonalInfo()
+        
+
+        session = Session(engine)
+
+        session.add(insertData)
+        
+        session.commit()
+
+        
+
+    except Exception as e:
+        # Something went wrong, rollback the transaction
+        session.rollback()
+        raise Exception("Failed to update access tags: {}".format(str(e)))
+
+    finally:
+        # Close the session
+        session.close()

@@ -10,6 +10,9 @@ from strawberry.fastapi import GraphQLRouter
 from sqlmodel import Field, Session, SQLModel, create_engine,select,func,funcfilter,within_group
 import urllib.parse
 
+from passlib.context import CryptContext
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 from jose import JWTError, jwt
 
@@ -35,9 +38,8 @@ security = HTTPBearer()
 
 
 import typing
-import strawberry
-from strawberry.permission import BasePermission
-from strawberry.types import Info
+
+
 
 
 
@@ -61,25 +63,6 @@ admin = APIRouter()
 #     async def user(self) -> User:
 #         return User(name="Patrick", age=100) 
 
-async def get_user_from_token(authorization: Optional[str] = Header(default=None)) -> Optional[str]:
-    if authorization is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authorization header missing")
-
-    scheme, _, token = authorization.partition(" ")
-    if scheme.lower() != "bearer":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication scheme")
-
-    try:
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user = decoded_token.get("sub")
-        
-        if not user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token")
-        
-        return user
-        
-    except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid access token")
 
 
 
@@ -91,7 +74,35 @@ from basemodel.basemodels import User
 
 
 
+#=====================================================Authentication==========================================
+from functools import cached_property
+import strawberry
+from strawberry.fastapi import BaseContext, GraphQLRouter
+from strawberry.types import Info as _Info
+from strawberry.types.info import RootValueType
 
+@strawberry.type
+class LoginSuccess:
+    user: str  
+
+
+@strawberry.type
+class LoginError:
+    message: str
+
+LoginResult = strawberry.union("LoginResult", (LoginSuccess, LoginError))
+
+class Context(BaseContext):
+    @cached_property
+    def user(self) -> User | None:
+        if not self.request:
+            return None
+
+        authorization = self.request.headers.get("Authorization", None)
+        return authorization_service.authorize(authorization)
+
+
+Info = _Info[Context, RootValueType]
 
 
 
@@ -106,11 +117,12 @@ class RoleType:
 
 @strawberry.type
 class User:
-    id: int
+    # id: int
     username: str
-    email_add: str
-    is_active: bool
-    role_id: int
+    # password: str
+    # email_add: str
+    # is_active: bool
+    # role_id: int
 
 
 @strawberry.type
@@ -147,6 +159,10 @@ class AccountType:
     accountTypeCode: str
     type_of_account: str
     type_of_deposit: str
+
+@strawberry.input
+class UserInput:
+    username: str
 
 # class IsAuthenticated():
 #     message = "User is not authenticated"
@@ -191,7 +207,38 @@ async def has_permission(request:Request):
             detail= "Session has expired",
             # headers={"WWW-Authenticate": "Basic"},
         )
-        
+
+class AuthenticationMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, request, handler):
+        # Perform authentication logic here
+        authenticated_user = self.authenticate(request)
+
+        # Add the authenticated_user to the context
+        request.context["authenticated_user"] = authenticated_user
+
+        # Call the next middleware or handler
+        return await self.app(request, handler)
+
+    def authenticate(self, request):
+        # Your authentication logic here
+        # Return the authenticated user or None
+        # Example implementation:
+        username = request.headers.get("username")
+        password = request.headers.get("password")
+
+        user = getuser(username=username)
+        if user:
+            username = user.username
+            hashed_password = user.hashed_password
+            password_check = pwd_context.verify(password, hashed_password)
+            if password_check:
+                return User(username=username)
+
+        return None
+
 
     
 @strawberry.type
@@ -199,11 +246,50 @@ class Query:
     # @strawberry.field
     # async def getcurrentUser(current_user: Annotated[User, Depends(has_permission)]) -> User:
     #     return current_user
-    
+
+    authenticated_user: User
+
+    @strawberry.field
+    def authenticated_user(self, info,username: str, password: str) -> User:
+        user = getuser(username=username)
+        if user:
+            username = user.username
+            hashed_password = user.hashed_password
+            password_check = pwd_context.verify(password, hashed_password)
+            if password_check:
+                return User(username=username)
+        return None
+
+        
+
+    # @strawberry.field
+    # def authorize(self, username: str, password: str) -> User | None:
+    # #  actual authentication and authorization logic
+    #     user = getuser(username=username)
+    #     if user:
+    #         username = user.username
+    #         hashed_password = user.hashed_password
+    #         password_check = pwd_context.verify(password, hashed_password)
+    #         if password_check:
+    #             return User(username=username)
+    #     return None
     
     @strawberry.field
-    async def roles(self, user: str = Depends(get_user_from_token)) -> List[RoleType]:
-       
+    async def get_authenticated_user(self, info: Info) -> User | None:
+        return info.context.user    
+  
+    # @strawberry.field
+    # def authenticated_user2(
+    #     self, info,  authenticated_user: str=Depends(authenticated_user)
+    # ) -> User:
+    #     return authenticated_user
+    
+    @strawberry.field
+    async def roles(self) -> List[RoleType]:
+        
+
+        
+    
         data = getRoles()
         
         # for role in data:
@@ -211,11 +297,11 @@ class Query:
         #     print(id)
         # Convert the data to RoleType objects
         role_types = [RoleType(id=role.id, 
-                               roles=role.roles, approvalAmount=role.approvalAmount,
-                               date_credited=role.date_credited
-                               ) for role in data]
-       
-       
+                            roles=role.roles, approvalAmount=role.approvalAmount,
+                            date_credited=role.date_credited
+                            ) for role in data]
+    
+    
         return role_types
     
     @strawberry.field # this is for getting the approval amount for roles
@@ -400,7 +486,33 @@ class Mutation:
             return str('Error: {}'.format(str(e)))
         return str('Data has been Save')
 
+    #==================================Login==================================
+    @strawberry.mutation
+    async def login(self, username: str, password: str) -> LoginResult:
+        user = getuser(username=username)
+        
+        if user:
+            username = user.username
+            hashed_password = user.hashed_password
+           
+
+            password_check = pwd_context.verify(password, hashed_password)
+            if password_check:
+                return LoginSuccess(user=User(username=username))
+                # return username
+
+        return LoginError(message="Invalid username or password") 
+
     
+
+     
+     
+           
+
+async def get_context() -> Context:
+    return Context()  
+
+
 
 
 # Create a Strawberry schema
@@ -408,9 +520,24 @@ schema = strawberry.Schema(query=Query,mutation=Mutation)
  
 graphql_app = GraphQL(schema)
 
+# graphql_app = GraphQLRouter(
+#     schema,
+#     context_getter=get_context,
+# )
+
+
 
 graph = APIRouter()
 
 graph.add_route('/graphql',graphql_app)
 graph.add_websocket_route("/graphql", graphql_app)
+
+# schema_with_middleware = schema.middleware(AuthenticationMiddleware)
+
+# app = GraphQL(schema_with_middleware, debug=True)
+
+
+# graph = APIRouter()
+# graph.add_route('/graphql', app)
+# graph.add_websocket_route("/graphql", app)
 
