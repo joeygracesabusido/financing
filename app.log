@@ -16414,3 +16414,131 @@ FROM accounttype
 FROM `role` ORDER BY `role`.roles
 2023-06-16 14:37:37,118 INFO:[generated in 0.00145s] {}
 2023-06-16 14:37:37,155 INFO:ROLLBACK
+2023-06-16 16:39:40,421 INFO:SELECT DATABASE()
+2023-06-16 16:39:40,422 INFO:[raw sql] {}
+2023-06-16 16:39:40,491 INFO:SELECT @@sql_mode
+2023-06-16 16:39:40,492 INFO:[raw sql] {}
+2023-06-16 16:39:40,526 INFO:SELECT @@lower_case_table_names
+2023-06-16 16:39:40,527 INFO:[raw sql] {}
+2023-06-16 16:39:40,595 INFO:BEGIN (implicit)
+2023-06-16 16:39:40,633 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-16 16:39:40,636 INFO:[generated in 0.00409s] {'username_1': 'joeysabusido'}
+2023-06-16 16:39:40,678 INFO:ROLLBACK
+2023-06-16 17:54:12,402 INFO:BEGIN (implicit)
+2023-06-16 17:54:12,404 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-16 17:54:12,405 INFO:[generated in 0.00099s] {}
+2023-06-16 17:54:31,624 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getAccountTypeGraphql {
+  |   ^
+3 |     accountTypeCode
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 395, in getAccountTypeGraphql
+    data = getAccountType()
+  File "C:\financing\financing\views\views.py", line 251, in getAccountType
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-16 17:57:41,704 INFO:BEGIN (implicit)
+2023-06-16 17:57:41,707 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-16 17:57:41,709 INFO:[generated in 0.00138s] {}
+2023-06-16 17:57:41,748 INFO:ROLLBACK
+2023-06-16 18:17:36,424 INFO:SELECT DATABASE()
+2023-06-16 18:17:36,425 INFO:[raw sql] {}
+2023-06-16 18:17:36,496 INFO:SELECT @@sql_mode
+2023-06-16 18:17:36,497 INFO:[raw sql] {}
+2023-06-16 18:17:36,534 INFO:SELECT @@lower_case_table_names
+2023-06-16 18:17:36,535 INFO:[raw sql] {}
+2023-06-16 18:17:36,609 INFO:BEGIN (implicit)
+2023-06-16 18:17:36,643 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-16 18:17:36,645 INFO:[generated in 0.00170s] {}
+2023-06-16 18:17:36,701 INFO:ROLLBACK
