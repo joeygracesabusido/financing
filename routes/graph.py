@@ -69,7 +69,7 @@ admin = APIRouter()
 
 from views.views import (getRoles,getuser,insertRole,get_access_tags,
                         updateAccessTags,insertBranch,getBranch,
-                        insertAccountType,getAccountType)
+                        insertAccountType,getAccountType,insertAccount,getAccount)
 from views.views import insertPersonalInfo
 from basemodel.basemodels import User
 
@@ -165,6 +165,16 @@ class AccountType:
 class UserInput:
     username: str
 
+@strawberry.type
+class AccountList:
+    id:int
+    # personal_info_id: int
+    # account_type_id: int
+    # branch_id: int
+    account_name: str
+    account_number: str
+    # accountTypeCode: str
+
 # class IsAuthenticated():
 #     message = "User is not authenticated"
 
@@ -251,7 +261,7 @@ class Query:
     authenticated_user: User
 
     @strawberry.field
-    def authenticated_user(self, info,username: str, password: str) -> User:
+    async def authenticated_user(self, info,username: str, password: str) -> User:
         user = getuser(username=username)
         if user:
             username = user.username
@@ -404,6 +414,21 @@ class Query:
        
        
         return branch_types
+    
+
+    @strawberry.field # this is to query Accounts
+    async def getAccount_grphql(self) -> List[AccountList]:
+        """this is to query Branches"""
+        data = getAccount()
+        
+       
+        account_list = [AccountList(id=x.id,
+                                    account_number=x.account_number,
+                                    account_name=x.account_name
+                               ) for x in data]
+       
+       
+        return account_list
        
 
 #=================================================Mutation space=======================================================
@@ -464,7 +489,7 @@ class Mutation:
 
 
     @strawberry.mutation # this is for inserting Branch
-    def insertBranchGraphql(self, info, branch_name: str, branch_code: str, address:str) -> str:
+    async def insertBranchGraphql(self, info, branch_name: str, branch_code: str, address:str) -> str:
         """This function is for inserting Branch"""
         try:
             if len(branch_code) != 3 or not branch_code.isdigit():
@@ -475,7 +500,7 @@ class Mutation:
         return str('Data has been Save')
 
     @strawberry.mutation # this is for inserting Account Type
-    def insertAccountTypeGraphql(self, info, accountTypeCode: str, type_of_account: str, type_of_deposit:str) -> str:
+    async def insertAccountTypeGraphql(self, info, accountTypeCode: str, type_of_account: str, type_of_deposit:str) -> str:
         """This function is for inserting Account"""
         try:
             if len(accountTypeCode) != 2 or not accountTypeCode.isdigit():
@@ -511,7 +536,7 @@ class Mutation:
                         middle_name: str,
                         last_name:str,
                         suffix:str,
-                        date_of_birth:str,
+                        date_of_birth:date,
                         age:int,
                         permanent_address:str,
                         length_stay:int,
@@ -572,6 +597,56 @@ class Mutation:
                         nature_of_business=nature_of_business,
                         number_of_branch=number_of_branch,
                         business_address_ownership=business_address_ownership
+                        )
+
+        except Exception as e:
+            return str('Error: {}'.format(str(e)))
+        return str('Data has been Save')
+    
+
+    #=====================================insert Accounts====================================
+    
+    @strawberry.mutation
+    async def insertAccount_gql(personal_info_id: int,account_type_id: int,
+                                branch_id: int,account_name: str,accountTypeCode: str
+                        ) -> str:
+        """This function is for inserting Personal info for Accounts"""
+
+        branch = getBranch()
+        
+        
+        account_type =  getAccountType()
+        account = getAccount()
+
+        # Find the branch with the given ID
+        # selected_branch = next((b for b in branch if b[0]["id"] == branch_id), None)
+        selected_branch = next((b for b in branch if b.id == branch_id), None)
+        
+        # Find the account type with the given ID
+        selected_account_type = next((a for a in account_type if a.accountTypeCode == accountTypeCode), None)
+        # print(selected_account_type.accountTypeCode)
+        
+        if selected_branch and selected_account_type:
+            # Generate account number with an incrementing last digit
+            account_number = f"{selected_branch.branch_code}{selected_account_type.accountTypeCode}0000001"
+            if account:
+                last_account = account[-1]
+                last_account_number = last_account.account_number
+                last_digit = int(last_account_number[-1])
+                incremented_last_digit = last_digit + 1
+                account_number = f"{selected_branch.branch_code}{selected_account_type.accountTypeCode}000000{incremented_last_digit:03}"
+
+        current_datetime = datetime.now()
+        date_updated = current_datetime.isoformat()
+
+        print(personal_info_id,account_number)
+
+        try:
+            result = insertAccount( personal_info_id=personal_info_id,
+                             account_type_id=account_type_id,
+                             branch_id=branch_id,
+                             account_number=account_number,
+                             account_name=account_name
                         )
 
         except Exception as e:

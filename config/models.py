@@ -169,6 +169,7 @@ class Account(SQLModel, table=True):
     personal_info_id: int = Field(foreign_key=PersonalInfo.id)
     account_type_id: int = Field(foreign_key=Accounttype.id)
     branch_id: int = Field(foreign_key=Branch.id)
+    account_number: str = Field(default=None, nullable=False)
     account_name: str = Field(default=None, nullable=False)
     date_updated: Optional[datetime] = Field(default=None)
     date_created: datetime = Field(default_factory=datetime.utcnow)

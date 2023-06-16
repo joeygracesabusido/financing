@@ -341,3 +341,48 @@ def insertPersonalInfo( first_name,
     finally:
         # Close the session
         session.close()
+
+
+#======================================This is for Accounts========================================
+from config.models import Account
+def insertAccount(personal_info_id,account_type_id,branch_id,account_number,account_name):
+    """This function is for inserting account type"""
+
+    try:
+        session = Session(engine)
+        session.begin()
+
+        insertData = Account(personal_info_id=personal_info_id,
+                             account_type_id=account_type_id,
+                             branch_id=branch_id,
+                             account_number=account_number,
+                             account_name=account_name)
+        
+
+        session = Session(engine)
+
+        session.add(insertData)
+        
+        session.commit()
+
+        
+
+    except Exception as e:
+        # Something went wrong, rollback the transaction
+        session.rollback()
+        raise Exception("Failed to update access tags: {}".format(str(e)))
+
+    finally:
+        # Close the session
+        session.close()
+
+def getAccount():
+    """This function is for querying access tags"""
+    with Session(engine) as session:
+        statement = select(Account)
+                    
+        results = session.exec(statement) 
+
+        data = results.all()
+        
+        return data
