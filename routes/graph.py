@@ -70,6 +70,7 @@ admin = APIRouter()
 from views.views import (getRoles,getuser,insertRole,get_access_tags,
                         updateAccessTags,insertBranch,getBranch,
                         insertAccountType,getAccountType)
+from views.views import insertPersonalInfo
 from basemodel.basemodels import User
 
 
@@ -503,7 +504,80 @@ class Mutation:
 
         return LoginError(message="Invalid username or password") 
 
+#=====================================insert Personal Info====================================
     
+    @strawberry.mutation
+    async def insertPersonalInfo_gql(first_name:str,
+                        middle_name: str,
+                        last_name:str,
+                        suffix:str,
+                        date_of_birth:str,
+                        age:int,
+                        permanent_address:str,
+                        length_stay:int,
+                        civil_status:str,
+                        contact_num:str,
+                        email_add:str,
+                        place_of_birth:str,
+                        nationality:str,
+                        religion:str,
+                        tin:str,
+                        sss_gsis_no:str,
+                        philsys_no:str,
+                        sex:str,
+                        name_of_spouse_co_borrower:str,
+                        date_of_birth_spouse:date,
+                        age_spouse:str,
+                        source_of_income:str,
+                        date_of_business_registration:str,
+                        dti_sec_registration_no:str,
+                        brgy_mayor_permit_no:str,
+                        principal_business_address:str,
+                        nature_of_business:str,
+                        number_of_branch:int,
+                        business_address_ownership:str,
+                        ) -> str:
+        """This function is for inserting Personal info for Accounts"""
+
+        current_datetime = datetime.now()
+        date_updated = current_datetime.isoformat()
+
+        try:
+            result = insertPersonalInfo(first_name=first_name,
+                        middle_name=middle_name,
+                        last_name=last_name,
+                        suffix=suffix,
+                        date_of_birth=date_of_birth,
+                        age=age,
+                        permanent_address=permanent_address,
+                        length_stay=length_stay,
+                        civil_status=civil_status,
+                        contact_num=contact_num,
+                        email_add=contact_num,
+                        place_of_birth=email_add,
+                        nationality=place_of_birth,
+                        religion=nationality,
+                        tin=tin,
+                        sss_gsis_no=sss_gsis_no,
+                        philsys_no=philsys_no,
+                        sex=sex,
+                        name_of_spouse_co_borrower=name_of_spouse_co_borrower,
+                        date_of_birth_spouse=date_of_birth_spouse,
+                        age_spouse=age_spouse,
+                        source_of_income=source_of_income,
+                        date_of_business_registration=date_of_business_registration,
+                        dti_sec_registration_no=dti_sec_registration_no,
+                        brgy_mayor_permit_no=brgy_mayor_permit_no,
+                        principal_business_address=principal_business_address,
+                        nature_of_business=nature_of_business,
+                        number_of_branch=number_of_branch,
+                        business_address_ownership=business_address_ownership
+                        )
+
+        except Exception as e:
+            return str('Error: {}'.format(str(e)))
+        return str('Data has been Save')
+
 
      
      
