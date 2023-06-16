@@ -11,7 +11,7 @@ class User(BaseModel):
     role_id: int
 
 class TokenData(BaseModel):
-    username: str | None = None
+    username: str 
     scopes: list[str] = []
 
 
