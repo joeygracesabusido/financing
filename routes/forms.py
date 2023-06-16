@@ -2,7 +2,7 @@
 
 from typing import Union, List
 from datetime import datetime
-from typing import Optional,Annotated
+from typing import Optional
 from fastapi.responses import HTMLResponse
 
 
@@ -130,7 +130,7 @@ async def api_login(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
 
 @form_htlm.get("/logs/")
-async def display_logs(request: Request,current_user: Annotated[User, Depends(get_current_user)]):
+async def display_logs(request: Request,current_user: str = Depends(get_current_user)):
    
     
     # current_user: Annotated[User, Depends(get_current_user)]
