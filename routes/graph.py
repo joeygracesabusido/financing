@@ -48,7 +48,7 @@ import typing
     
 
 from config.models import User,Role
-from typing import Optional,List,Annotated
+from typing import Optional,List
 
 admin = APIRouter()
 # @strawberry.type
@@ -92,17 +92,17 @@ class LoginError:
 
 LoginResult = strawberry.union("LoginResult", (LoginSuccess, LoginError))
 
-class Context(BaseContext):
-    @cached_property
-    def user(self) -> User | None:
-        if not self.request:
-            return None
+# class Context(BaseContext):
+#     @cached_property
+#     def user(self) -> User | None:
+#         if not self.request:
+#             return None
 
-        authorization = self.request.headers.get("Authorization", None)
-        return authorization_service.authorize(authorization)
+#         authorization = self.request.headers.get("Authorization", None)
+#         return authorization_service.authorize(authorization)
 
 
-Info = _Info[Context, RootValueType]
+# Info = _Info[Context, RootValueType]
 
 
 
@@ -509,8 +509,8 @@ class Mutation:
      
            
 
-async def get_context() -> Context:
-    return Context()  
+# async def get_context() -> Context:
+#     return Context()  
 
 
 

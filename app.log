@@ -16328,3 +16328,89 @@ Stack (most recent call last):
 FROM accounttype
 2023-06-16 14:19:54,252 INFO:[generated in 0.00099s] {}
 2023-06-16 14:19:54,292 INFO:ROLLBACK
+2023-06-16 14:37:09,202 ERROR:Field 'authenticatedUser' of type 'User!' must have a selection of subfields. Did you mean 'authenticatedUser { ... }'?
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   authenticatedUser(password: "", username: "")
+  |   ^
+3 |   getAccountTypeGraphql {
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-06-16 14:37:29,194 INFO:SELECT DATABASE()
+2023-06-16 14:37:29,195 INFO:[raw sql] {}
+2023-06-16 14:37:29,263 INFO:SELECT @@sql_mode
+2023-06-16 14:37:29,264 INFO:[raw sql] {}
+2023-06-16 14:37:29,298 INFO:SELECT @@lower_case_table_names
+2023-06-16 14:37:29,299 INFO:[raw sql] {}
+2023-06-16 14:37:29,368 INFO:BEGIN (implicit)
+2023-06-16 14:37:29,400 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-16 14:37:29,400 INFO:[generated in 0.00095s] {}
+2023-06-16 14:37:29,439 INFO:ROLLBACK
+2023-06-16 14:37:37,009 INFO:BEGIN (implicit)
+2023-06-16 14:37:37,010 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-16 14:37:37,010 INFO:[cached since 7.61s ago] {}
+2023-06-16 14:37:37,046 INFO:ROLLBACK
+2023-06-16 14:37:37,114 INFO:BEGIN (implicit)
+2023-06-16 14:37:37,117 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-16 14:37:37,118 INFO:[generated in 0.00145s] {}
+2023-06-16 14:37:37,155 INFO:ROLLBACK
