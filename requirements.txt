@@ -4,7 +4,6 @@ anyio==3.6.2
 asgiref==3.5.2
 astroid==2.15.5
 autopep8==1.5.5
-Babel==2.10.3
 bcrypt==4.0.1
 beautifulsoup4==4.11.1
 certifi==2022.6.15
@@ -16,12 +15,6 @@ cycler==0.11.0
 databases==0.6.1
 dill==0.3.6
 distlib==0.3.4
-Django==3.2.8
-django-bootstrap-v5==1.0.6
-django-bootstrap4==3.0.1
-django-cors-headers==3.10.0
-django-filter==21.1
-djangorestframework==3.12.4
 dnspython==2.2.1
 ecdsa==0.18.0
 example-package==0.0.1
@@ -97,8 +90,6 @@ sqlmodel==0.0.8
 sqlparse==0.4.2
 starlette==0.27.0
 strawberry-graphql==0.184.1
-tabulate==0.8.10
-tkcalendar==1.6.1
 toml==0.10.2
 tomli==2.0.1
 tomlkit==0.11.8
