@@ -40,7 +40,6 @@ MarkupSafe==2.1.2
 matplotlib==3.5.2
 mccabe==0.6.1
 mysql-connector-python==8.0.30
-numpy==1.22.4
 packaging==23.1
 pandas==1.4.2
 parso==0.7.1
