@@ -15,7 +15,7 @@ from typing import Optional
 
 from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
-from typing import Annotated
+# from typing import Annotated
 
 
 
@@ -243,7 +243,7 @@ async def get_current_user(request:Request):
 
 
 @admin.get("/api-get-roles/", response_model=List[RoleData])
-async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
+async def getRoles_api(current_user: str =  Depends(get_current_user)):
     # current_user: Annotated[User, Depends(get_current_user)]
     """This function is to get Roles data Details"""
     # print(current_user['username'])
@@ -284,7 +284,7 @@ def sign_up(items: User):
 
 
 @admin.get("/api-get-users/")
-async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
+async def getRoles_api(current_user: str =  Depends(get_current_user)):
     """This function is to get Roles data Details"""
     
     roleData = getRoles()  # Retrieve all roles
@@ -318,7 +318,7 @@ async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)])
 
 
 @admin.get("/api-get-role-by-username/")
-async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)]):
+async def getRoles_api(current_user: str =  Depends(get_current_user)):
     """This function is to get Roles data Details"""
     # current_user: Annotated[User, Depends(get_current_user)],
     x = getuser(username=current_user)
@@ -350,7 +350,7 @@ async def getRoles_api(current_user: Annotated[User, Depends(get_current_user)])
 from views.views import insertaccess_tags
 from basemodel.basemodels import UserAccessTags
 @admin.post('/insert-user-role-access-tagging/')
-async def insertUserAccessTags(items:UserAccessTags,current_user: Annotated[User, Depends(get_current_user)]):
+async def insertUserAccessTags(items:UserAccessTags,current_user: str =  Depends(get_current_user)):
     """This function is for inserting Roles"""
     # current_user: Annotated[User, Depends(get_current_user)]
     x = getuser(username=current_user)
