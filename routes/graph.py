@@ -274,9 +274,9 @@ class Query:
     #             return User(username=username)
     #     return None
     
-    @strawberry.field
-    async def get_authenticated_user(self, info: Info) -> User | None:
-        return info.context.user    
+    # @strawberry.field
+    # async def get_authenticated_user(self, info: Info) -> User | None:
+    #     return info.context.user    
   
     # @strawberry.field
     # def authenticated_user2(
