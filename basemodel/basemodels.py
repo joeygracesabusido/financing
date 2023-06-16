@@ -12,7 +12,7 @@ class User(BaseModel):
 
 class TokenData(BaseModel):
     username: str 
-    scopes: list[str] = []
+    scopes: str
 
 
 class Token(BaseModel):
