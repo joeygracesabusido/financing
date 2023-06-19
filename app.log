@@ -19983,3 +19983,1881 @@ FROM account
 FROM account
 2023-06-19 19:55:02,326 INFO:[cached since 6880s ago] {}
 2023-06-19 19:55:02,361 INFO:ROLLBACK
+2023-06-19 22:05:32,247 INFO:SELECT DATABASE()
+2023-06-19 22:05:32,248 INFO:[raw sql] {}
+2023-06-19 22:05:32,468 INFO:SELECT @@sql_mode
+2023-06-19 22:05:32,468 INFO:[raw sql] {}
+2023-06-19 22:05:32,561 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:05:32,564 INFO:[raw sql] {}
+2023-06-19 22:05:32,768 INFO:BEGIN (implicit)
+2023-06-19 22:05:32,834 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:05:32,837 INFO:[generated in 0.00212s] {}
+2023-06-19 22:05:32,945 INFO:ROLLBACK
+2023-06-19 22:07:15,260 INFO:SELECT DATABASE()
+2023-06-19 22:07:15,261 INFO:[raw sql] {}
+2023-06-19 22:07:15,469 INFO:SELECT @@sql_mode
+2023-06-19 22:07:15,470 INFO:[raw sql] {}
+2023-06-19 22:07:15,576 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:07:15,577 INFO:[raw sql] {}
+2023-06-19 22:07:15,795 INFO:BEGIN (implicit)
+2023-06-19 22:07:15,849 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:07:15,861 INFO:[generated in 0.01372s] {}
+2023-06-19 22:07:15,971 INFO:ROLLBACK
+2023-06-19 22:07:53,135 INFO:BEGIN (implicit)
+2023-06-19 22:07:53,138 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:07:53,140 INFO:[generated in 0.00161s] {}
+2023-06-19 22:07:53,244 INFO:ROLLBACK
+2023-06-19 22:08:22,783 ERROR:Syntax Error: Invalid number, unexpected digit after 0: '1'.
+
+GraphQL request:5:21
+4 |     accountTypeCode: "01"
+5 |     accountTypeId: 01
+  |                     ^
+6 |     branchId: 1
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 101, in execute
+    process_errors([error], execution_context)
+2023-06-19 22:10:49,907 INFO:SELECT DATABASE()
+2023-06-19 22:10:49,909 INFO:[raw sql] {}
+2023-06-19 22:10:50,008 INFO:SELECT @@sql_mode
+2023-06-19 22:10:50,016 INFO:[raw sql] {}
+2023-06-19 22:10:50,061 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:10:50,063 INFO:[raw sql] {}
+2023-06-19 22:10:50,158 INFO:BEGIN (implicit)
+2023-06-19 22:10:50,189 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:10:50,191 INFO:[generated in 0.00188s] {}
+2023-06-19 22:10:50,244 INFO:ROLLBACK
+2023-06-19 22:10:50,346 INFO:BEGIN (implicit)
+2023-06-19 22:10:50,349 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:10:50,350 INFO:[generated in 0.00109s] {}
+2023-06-19 22:10:50,410 INFO:ROLLBACK
+2023-06-19 22:10:50,522 INFO:BEGIN (implicit)
+2023-06-19 22:10:50,524 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:10:50,525 INFO:[generated in 0.00127s] {}
+2023-06-19 22:10:50,585 INFO:ROLLBACK
+2023-06-19 22:10:50,713 ERROR:'int' object has no attribute 'id'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEY GRACE"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 648, in insertAccount_gql
+    existing_accounts = [acc for acc in account if acc.id == branch_id and acc.id == account_type_id.id]
+  File "D:\financing-apps\routes\graph.py", line 648, in <listcomp>
+    existing_accounts = [acc for acc in account if acc.id == branch_id and acc.id == account_type_id.id]
+AttributeError: 'int' object has no attribute 'id'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:13:23,934 INFO:SELECT DATABASE()
+2023-06-19 22:13:23,936 INFO:[raw sql] {}
+2023-06-19 22:13:24,137 INFO:SELECT @@sql_mode
+2023-06-19 22:13:24,140 INFO:[raw sql] {}
+2023-06-19 22:13:24,241 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:13:24,242 INFO:[raw sql] {}
+2023-06-19 22:13:24,427 INFO:BEGIN (implicit)
+2023-06-19 22:13:24,487 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:13:24,488 INFO:[generated in 0.00152s] {}
+2023-06-19 22:13:24,578 INFO:ROLLBACK
+2023-06-19 22:13:24,761 INFO:BEGIN (implicit)
+2023-06-19 22:13:24,770 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:13:24,782 INFO:[generated in 0.01185s] {}
+2023-06-19 22:13:24,880 INFO:ROLLBACK
+2023-06-19 22:13:25,062 INFO:BEGIN (implicit)
+2023-06-19 22:13:25,065 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:13:25,066 INFO:[generated in 0.00128s] {}
+2023-06-19 22:13:25,158 INFO:ROLLBACK
+2023-06-19 22:13:25,365 ERROR:'int' object has no attribute 'id'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEY GRACE"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 648, in insertAccount_gql
+    existing_accounts = [acc for acc in account if acc.id == branch_id and acc.id == account_type_id.id]
+  File "D:\financing-apps\routes\graph.py", line 648, in <listcomp>
+    existing_accounts = [acc for acc in account if acc.id == branch_id and acc.id == account_type_id.id]
+AttributeError: 'int' object has no attribute 'id'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:14:15,830 INFO:SELECT DATABASE()
+2023-06-19 22:14:15,832 INFO:[raw sql] {}
+2023-06-19 22:14:16,026 INFO:SELECT @@sql_mode
+2023-06-19 22:14:16,026 INFO:[raw sql] {}
+2023-06-19 22:14:16,125 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:14:16,126 INFO:[raw sql] {}
+2023-06-19 22:14:16,646 INFO:BEGIN (implicit)
+2023-06-19 22:14:16,709 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:14:16,710 INFO:[generated in 0.00167s] {}
+2023-06-19 22:14:16,807 INFO:ROLLBACK
+2023-06-19 22:14:16,991 INFO:BEGIN (implicit)
+2023-06-19 22:14:17,009 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:14:17,013 INFO:[generated in 0.00402s] {}
+2023-06-19 22:14:17,104 INFO:ROLLBACK
+2023-06-19 22:14:17,302 INFO:BEGIN (implicit)
+2023-06-19 22:14:17,305 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:14:17,308 INFO:[generated in 0.00323s] {}
+2023-06-19 22:14:17,410 INFO:ROLLBACK
+2023-06-19 22:14:17,681 ERROR:'int' object has no attribute 'id'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEY GRACE"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 648, in insertAccount_gql
+    existing_accounts = [acc for acc in account if acc.id == branch_id and acc.id == account_type_id.id]
+  File "D:\financing-apps\routes\graph.py", line 648, in <listcomp>
+    existing_accounts = [acc for acc in account if acc.id == branch_id and acc.id == account_type_id.id]
+AttributeError: 'int' object has no attribute 'id'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:16:44,542 INFO:SELECT DATABASE()
+2023-06-19 22:16:44,543 INFO:[raw sql] {}
+2023-06-19 22:16:44,671 INFO:SELECT @@sql_mode
+2023-06-19 22:16:44,671 INFO:[raw sql] {}
+2023-06-19 22:16:44,737 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:16:44,738 INFO:[raw sql] {}
+2023-06-19 22:16:44,863 INFO:BEGIN (implicit)
+2023-06-19 22:16:44,889 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:16:44,890 INFO:[generated in 0.00200s] {}
+2023-06-19 22:16:44,959 INFO:ROLLBACK
+2023-06-19 22:16:45,089 INFO:BEGIN (implicit)
+2023-06-19 22:16:45,092 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:16:45,094 INFO:[generated in 0.00144s] {}
+2023-06-19 22:16:45,164 INFO:ROLLBACK
+2023-06-19 22:16:45,280 INFO:BEGIN (implicit)
+2023-06-19 22:16:45,283 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:16:45,284 INFO:[generated in 0.00148s] {}
+2023-06-19 22:16:45,352 INFO:ROLLBACK
+2023-06-19 22:16:45,507 ERROR:'int' object has no attribute 'accountTypeCode_id'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEY GRACE"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 649, in insertAccount_gql
+    existing_accounts = [acc for acc in account if acc.id == branchcode and acc.id == account_type_id.accountTypeCode_id]
+  File "D:\financing-apps\routes\graph.py", line 649, in <listcomp>
+    existing_accounts = [acc for acc in account if acc.id == branchcode and acc.id == account_type_id.accountTypeCode_id]
+AttributeError: 'int' object has no attribute 'accountTypeCode_id'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:18:41,900 INFO:SELECT DATABASE()
+2023-06-19 22:18:41,903 INFO:[raw sql] {}
+2023-06-19 22:18:42,014 INFO:SELECT @@sql_mode
+2023-06-19 22:18:42,017 INFO:[raw sql] {}
+2023-06-19 22:18:42,078 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:18:42,080 INFO:[raw sql] {}
+2023-06-19 22:18:42,188 INFO:BEGIN (implicit)
+2023-06-19 22:18:42,243 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:18:42,254 INFO:[generated in 0.01378s] {}
+2023-06-19 22:18:42,306 INFO:ROLLBACK
+2023-06-19 22:18:42,405 INFO:BEGIN (implicit)
+2023-06-19 22:18:42,408 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:18:42,409 INFO:[generated in 0.00114s] {}
+2023-06-19 22:18:42,459 INFO:ROLLBACK
+2023-06-19 22:18:42,563 INFO:BEGIN (implicit)
+2023-06-19 22:18:42,565 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:18:42,566 INFO:[generated in 0.00122s] {}
+2023-06-19 22:18:42,622 INFO:ROLLBACK
+2023-06-19 22:18:42,754 ERROR:'Account' object is not subscriptable
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEY GRACE"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 652, in insertAccount_gql
+    last_digit = int(last_account_number[-7:])
+TypeError: 'Account' object is not subscriptable
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:21:17,844 INFO:BEGIN (implicit)
+2023-06-19 22:21:17,845 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:21:17,847 INFO:[cached since 155.6s ago] {}
+2023-06-19 22:21:17,914 INFO:ROLLBACK
+2023-06-19 22:21:18,029 INFO:BEGIN (implicit)
+2023-06-19 22:21:18,030 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:21:18,031 INFO:[cached since 155.6s ago] {}
+2023-06-19 22:21:18,093 INFO:ROLLBACK
+2023-06-19 22:21:18,205 INFO:BEGIN (implicit)
+2023-06-19 22:21:18,206 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:21:18,207 INFO:[cached since 155.6s ago] {}
+2023-06-19 22:21:18,260 INFO:ROLLBACK
+2023-06-19 22:21:18,372 ERROR:'Account' object is not subscriptable
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 652, in insertAccount_gql
+    last_digit = int(last_account_number[-7:])
+TypeError: 'Account' object is not subscriptable
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:24:59,590 INFO:SELECT DATABASE()
+2023-06-19 22:24:59,592 INFO:[raw sql] {}
+2023-06-19 22:24:59,696 INFO:SELECT @@sql_mode
+2023-06-19 22:24:59,696 INFO:[raw sql] {}
+2023-06-19 22:24:59,751 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:24:59,753 INFO:[raw sql] {}
+2023-06-19 22:24:59,874 INFO:BEGIN (implicit)
+2023-06-19 22:24:59,919 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:24:59,921 INFO:[generated in 0.00240s] {}
+2023-06-19 22:24:59,991 INFO:ROLLBACK
+2023-06-19 22:25:00,102 INFO:BEGIN (implicit)
+2023-06-19 22:25:00,105 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:25:00,106 INFO:[generated in 0.00110s] {}
+2023-06-19 22:25:00,163 INFO:ROLLBACK
+2023-06-19 22:25:00,264 INFO:BEGIN (implicit)
+2023-06-19 22:25:00,267 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:25:00,268 INFO:[generated in 0.00110s] {}
+2023-06-19 22:25:00,314 INFO:ROLLBACK
+2023-06-19 22:25:00,418 ERROR:'Account' object is not subscriptable
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 651, in insertAccount_gql
+    last_account_number = max(existing_accounts, key=lambda x: int(x['account_number']))
+  File "D:\financing-apps\routes\graph.py", line 651, in <lambda>
+    last_account_number = max(existing_accounts, key=lambda x: int(x['account_number']))
+TypeError: 'Account' object is not subscriptable
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:25:48,327 INFO:SELECT DATABASE()
+2023-06-19 22:25:48,329 INFO:[raw sql] {}
+2023-06-19 22:25:48,400 INFO:SELECT @@sql_mode
+2023-06-19 22:25:48,406 INFO:[raw sql] {}
+2023-06-19 22:25:48,438 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:25:48,441 INFO:[raw sql] {}
+2023-06-19 22:25:48,506 INFO:BEGIN (implicit)
+2023-06-19 22:25:48,555 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:25:48,568 INFO:[generated in 0.01338s] {}
+2023-06-19 22:25:48,604 INFO:ROLLBACK
+2023-06-19 22:25:48,671 INFO:BEGIN (implicit)
+2023-06-19 22:25:48,675 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:25:48,677 INFO:[generated in 0.00187s] {}
+2023-06-19 22:25:48,714 INFO:ROLLBACK
+2023-06-19 22:25:48,793 INFO:BEGIN (implicit)
+2023-06-19 22:25:48,796 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:25:48,797 INFO:[generated in 0.00150s] {}
+2023-06-19 22:25:48,839 INFO:ROLLBACK
+2023-06-19 22:25:48,944 ERROR:'Account' object is not subscriptable
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 652, in insertAccount_gql
+    last_account_number = max(existing_accounts, key=lambda x: int(x['account_number']))
+  File "D:\financing-apps\routes\graph.py", line 652, in <lambda>
+    last_account_number = max(existing_accounts, key=lambda x: int(x['account_number']))
+TypeError: 'Account' object is not subscriptable
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:28:34,500 INFO:SELECT DATABASE()
+2023-06-19 22:28:34,501 INFO:[raw sql] {}
+2023-06-19 22:28:34,606 INFO:SELECT @@sql_mode
+2023-06-19 22:28:34,606 INFO:[raw sql] {}
+2023-06-19 22:28:34,663 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:28:34,663 INFO:[raw sql] {}
+2023-06-19 22:28:34,779 INFO:BEGIN (implicit)
+2023-06-19 22:28:34,826 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:28:34,838 INFO:[generated in 0.01257s] {}
+2023-06-19 22:28:34,899 INFO:ROLLBACK
+2023-06-19 22:28:35,007 INFO:BEGIN (implicit)
+2023-06-19 22:28:35,010 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:28:35,011 INFO:[generated in 0.00141s] {}
+2023-06-19 22:28:35,069 INFO:ROLLBACK
+2023-06-19 22:28:35,169 INFO:BEGIN (implicit)
+2023-06-19 22:28:35,171 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:28:35,172 INFO:[generated in 0.00117s] {}
+2023-06-19 22:28:35,222 INFO:ROLLBACK
+2023-06-19 22:28:35,342 ERROR:'list' object has no attribute 'account_number'
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 652, in insertAccount_gql
+    last_account_number = max(existing_accounts, key=lambda x: int(x[existing_accounts.account_number]))
+  File "D:\financing-apps\routes\graph.py", line 652, in <lambda>
+    last_account_number = max(existing_accounts, key=lambda x: int(x[existing_accounts.account_number]))
+AttributeError: 'list' object has no attribute 'account_number'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:30:54,942 INFO:SELECT DATABASE()
+2023-06-19 22:30:54,945 INFO:[raw sql] {}
+2023-06-19 22:30:55,010 INFO:SELECT @@sql_mode
+2023-06-19 22:30:55,012 INFO:[raw sql] {}
+2023-06-19 22:30:55,045 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:30:55,052 INFO:[raw sql] {}
+2023-06-19 22:30:55,115 INFO:BEGIN (implicit)
+2023-06-19 22:30:55,173 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:30:55,175 INFO:[generated in 0.00194s] {}
+2023-06-19 22:30:55,211 INFO:ROLLBACK
+2023-06-19 22:30:55,275 INFO:BEGIN (implicit)
+2023-06-19 22:30:55,278 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:30:55,279 INFO:[generated in 0.00113s] {}
+2023-06-19 22:30:55,316 INFO:ROLLBACK
+2023-06-19 22:30:55,393 INFO:BEGIN (implicit)
+2023-06-19 22:30:55,396 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:30:55,398 INFO:[generated in 0.00266s] {}
+2023-06-19 22:30:55,437 INFO:ROLLBACK
+2023-06-19 22:30:55,533 ERROR:Cannot return null for non-nullable field Mutation.insertAccountGql.
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 620, in complete_value
+    raise TypeError(
+TypeError: Cannot return null for non-nullable field Mutation.insertAccountGql.
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:32:51,306 INFO:SELECT DATABASE()
+2023-06-19 22:32:51,309 INFO:[raw sql] {}
+2023-06-19 22:32:51,419 INFO:SELECT @@sql_mode
+2023-06-19 22:32:51,422 INFO:[raw sql] {}
+2023-06-19 22:32:51,483 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:32:51,485 INFO:[raw sql] {}
+2023-06-19 22:32:51,596 INFO:BEGIN (implicit)
+2023-06-19 22:32:51,625 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:32:51,627 INFO:[generated in 0.00214s] {}
+2023-06-19 22:32:51,682 INFO:ROLLBACK
+2023-06-19 22:32:51,778 INFO:BEGIN (implicit)
+2023-06-19 22:32:51,781 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:32:51,782 INFO:[generated in 0.00149s] {}
+2023-06-19 22:32:51,830 INFO:ROLLBACK
+2023-06-19 22:32:51,905 INFO:BEGIN (implicit)
+2023-06-19 22:32:51,913 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:32:51,914 INFO:[generated in 0.00158s] {}
+2023-06-19 22:32:51,949 INFO:ROLLBACK
+2023-06-19 22:32:52,037 ERROR:Cannot return null for non-nullable field Mutation.insertAccountGql.
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 620, in complete_value
+    raise TypeError(
+TypeError: Cannot return null for non-nullable field Mutation.insertAccountGql.
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:34:36,769 INFO:SELECT DATABASE()
+2023-06-19 22:34:36,770 INFO:[raw sql] {}
+2023-06-19 22:34:36,864 INFO:SELECT @@sql_mode
+2023-06-19 22:34:36,873 INFO:[raw sql] {}
+2023-06-19 22:34:36,922 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:34:36,924 INFO:[raw sql] {}
+2023-06-19 22:34:37,025 INFO:BEGIN (implicit)
+2023-06-19 22:34:37,082 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:34:37,099 INFO:[generated in 0.01773s] {}
+2023-06-19 22:34:37,174 INFO:ROLLBACK
+2023-06-19 22:34:37,289 INFO:BEGIN (implicit)
+2023-06-19 22:34:37,292 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:34:37,293 INFO:[generated in 0.00106s] {}
+2023-06-19 22:34:37,352 INFO:ROLLBACK
+2023-06-19 22:34:37,460 INFO:BEGIN (implicit)
+2023-06-19 22:34:37,463 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:34:37,464 INFO:[generated in 0.00184s] {}
+2023-06-19 22:34:37,527 INFO:ROLLBACK
+2023-06-19 22:34:37,658 ERROR:Cannot return null for non-nullable field Mutation.insertAccountGql.
+
+GraphQL request:2:3
+1 | mutation MyMutation {
+2 |   insertAccountGql(
+  |   ^
+3 |     accountName: "JOEYSABUSIDO"
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 620, in complete_value
+    raise TypeError(
+TypeError: Cannot return null for non-nullable field Mutation.insertAccountGql.
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\server.py", line 59, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 628, in run_until_complete
+    self.run_forever()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 595, in run_forever
+    self._run_once()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1881, in _run_once
+    handle._run()
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 436, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "D:\financing-apps\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 92, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\cors.py", line 147, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "D:\financing-apps\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "D:\financing-apps\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 22:37:56,456 INFO:SELECT DATABASE()
+2023-06-19 22:37:56,457 INFO:[raw sql] {}
+2023-06-19 22:37:56,563 INFO:SELECT @@sql_mode
+2023-06-19 22:37:56,564 INFO:[raw sql] {}
+2023-06-19 22:37:56,622 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:37:56,632 INFO:[raw sql] {}
+2023-06-19 22:37:56,745 INFO:BEGIN (implicit)
+2023-06-19 22:37:56,797 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:37:56,809 INFO:[generated in 0.01281s] {}
+2023-06-19 22:37:56,878 INFO:ROLLBACK
+2023-06-19 22:38:24,565 INFO:BEGIN (implicit)
+2023-06-19 22:38:24,568 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:38:24,570 INFO:[generated in 0.00147s] {}
+2023-06-19 22:38:24,627 INFO:ROLLBACK
+2023-06-19 22:38:24,736 INFO:BEGIN (implicit)
+2023-06-19 22:38:24,739 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:38:24,740 INFO:[generated in 0.00111s] {}
+2023-06-19 22:38:24,798 INFO:ROLLBACK
+2023-06-19 22:38:24,915 INFO:BEGIN (implicit)
+2023-06-19 22:38:24,916 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:38:24,917 INFO:[cached since 28.12s ago] {}
+2023-06-19 22:38:24,980 INFO:ROLLBACK
+2023-06-19 22:40:31,317 INFO:SELECT DATABASE()
+2023-06-19 22:40:31,320 INFO:[raw sql] {}
+2023-06-19 22:40:31,432 INFO:SELECT @@sql_mode
+2023-06-19 22:40:31,432 INFO:[raw sql] {}
+2023-06-19 22:40:31,489 INFO:SELECT @@lower_case_table_names
+2023-06-19 22:40:31,491 INFO:[raw sql] {}
+2023-06-19 22:40:31,597 INFO:BEGIN (implicit)
+2023-06-19 22:40:31,630 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:40:31,637 INFO:[generated in 0.00179s] {}
+2023-06-19 22:40:31,701 INFO:ROLLBACK
+2023-06-19 22:40:31,796 INFO:BEGIN (implicit)
+2023-06-19 22:40:31,799 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:40:31,800 INFO:[generated in 0.00142s] {}
+2023-06-19 22:40:31,851 INFO:ROLLBACK
+2023-06-19 22:40:31,947 INFO:BEGIN (implicit)
+2023-06-19 22:40:31,950 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:40:31,951 INFO:[generated in 0.00117s] {}
+2023-06-19 22:40:32,000 INFO:ROLLBACK
+2023-06-19 22:40:32,100 INFO:BEGIN (implicit)
+2023-06-19 22:40:32,103 INFO:INSERT INTO account (personal_info_id, account_type_id, branch_id, account_number, account_name, date_updated, date_created) VALUES (%(personal_info_id)s, %(account_type_id)s, %(branch_id)s, %(account_number)s, %(account_name)s, %(date_updated)s, %(date_created)s)
+2023-06-19 22:40:32,104 INFO:[generated in 0.00123s] {'personal_info_id': 1, 'account_type_id': 1, 'branch_id': 1, 'account_number': '303010000004', 'account_name': 'JOEYSABUSIDO', 'date_updated': None, 'date_created': datetime.datetime(2023, 6, 19, 19, 40, 32, 98612)}
+2023-06-19 22:40:32,189 INFO:COMMIT
+2023-06-19 22:40:45,094 INFO:BEGIN (implicit)
+2023-06-19 22:40:45,095 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:40:45,096 INFO:[cached since 13.15s ago] {}
+2023-06-19 22:40:45,154 INFO:ROLLBACK
+2023-06-19 22:41:34,135 INFO:BEGIN (implicit)
+2023-06-19 22:41:34,136 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:41:34,138 INFO:[cached since 62.19s ago] {}
+2023-06-19 22:41:34,182 INFO:ROLLBACK
+2023-06-19 22:42:17,138 INFO:BEGIN (implicit)
+2023-06-19 22:42:17,139 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:42:17,141 INFO:[cached since 105.5s ago] {}
+2023-06-19 22:42:17,194 INFO:ROLLBACK
+2023-06-19 22:42:17,302 INFO:BEGIN (implicit)
+2023-06-19 22:42:17,303 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:42:17,304 INFO:[cached since 105.5s ago] {}
+2023-06-19 22:42:17,357 INFO:ROLLBACK
+2023-06-19 22:42:17,451 INFO:BEGIN (implicit)
+2023-06-19 22:42:17,452 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:42:17,454 INFO:[cached since 105.5s ago] {}
+2023-06-19 22:42:17,503 INFO:ROLLBACK
+2023-06-19 22:42:17,593 INFO:BEGIN (implicit)
+2023-06-19 22:42:17,593 INFO:INSERT INTO account (personal_info_id, account_type_id, branch_id, account_number, account_name, date_updated, date_created) VALUES (%(personal_info_id)s, %(account_type_id)s, %(branch_id)s, %(account_number)s, %(account_name)s, %(date_updated)s, %(date_created)s)
+2023-06-19 22:42:17,595 INFO:[cached since 105.5s ago] {'personal_info_id': 1, 'account_type_id': 1, 'branch_id': 1, 'account_number': '303010000004', 'account_name': 'JOEYSABUSIDO', 'date_updated': None, 'date_created': datetime.datetime(2023, 6, 19, 19, 42, 17, 592573)}
+2023-06-19 22:42:17,639 INFO:COMMIT
+2023-06-19 22:42:21,685 INFO:BEGIN (implicit)
+2023-06-19 22:42:21,685 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:42:21,687 INFO:[cached since 109.7s ago] {}
+2023-06-19 22:42:21,720 INFO:ROLLBACK
+2023-06-19 22:45:24,435 INFO:BEGIN (implicit)
+2023-06-19 22:45:24,436 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:45:24,437 INFO:[cached since 292.5s ago] {}
+2023-06-19 22:45:24,499 INFO:ROLLBACK
+2023-06-19 22:45:33,313 INFO:BEGIN (implicit)
+2023-06-19 22:45:33,314 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:45:33,315 INFO:[cached since 301.7s ago] {}
+2023-06-19 22:45:33,357 INFO:ROLLBACK
+2023-06-19 22:45:33,445 INFO:BEGIN (implicit)
+2023-06-19 22:45:33,457 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:45:33,459 INFO:[cached since 301.7s ago] {}
+2023-06-19 22:45:33,503 INFO:ROLLBACK
+2023-06-19 22:45:33,595 INFO:BEGIN (implicit)
+2023-06-19 22:45:33,599 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:45:33,600 INFO:[cached since 301.6s ago] {}
+2023-06-19 22:45:33,646 INFO:ROLLBACK
+2023-06-19 22:45:33,741 INFO:BEGIN (implicit)
+2023-06-19 22:45:33,750 INFO:INSERT INTO account (personal_info_id, account_type_id, branch_id, account_number, account_name, date_updated, date_created) VALUES (%(personal_info_id)s, %(account_type_id)s, %(branch_id)s, %(account_number)s, %(account_name)s, %(date_updated)s, %(date_created)s)
+2023-06-19 22:45:33,751 INFO:[cached since 301.6s ago] {'personal_info_id': 1, 'account_type_id': 1, 'branch_id': 1, 'account_number': '303010000002', 'account_name': 'JOEYSABUSIDO', 'date_updated': None, 'date_created': datetime.datetime(2023, 6, 19, 19, 45, 33, 740321)}
+2023-06-19 22:45:33,812 INFO:COMMIT
+2023-06-19 22:45:39,421 INFO:BEGIN (implicit)
+2023-06-19 22:45:39,422 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:45:39,423 INFO:[cached since 307.5s ago] {}
+2023-06-19 22:45:39,479 INFO:ROLLBACK
+2023-06-19 22:45:58,347 INFO:BEGIN (implicit)
+2023-06-19 22:45:58,347 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-19 22:45:58,348 INFO:[cached since 326.7s ago] {}
+2023-06-19 22:45:58,385 INFO:ROLLBACK
+2023-06-19 22:45:58,460 INFO:BEGIN (implicit)
+2023-06-19 22:45:58,464 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-06-19 22:45:58,468 INFO:[cached since 326.7s ago] {}
+2023-06-19 22:45:58,506 INFO:ROLLBACK
+2023-06-19 22:45:58,580 INFO:BEGIN (implicit)
+2023-06-19 22:45:58,593 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:45:58,594 INFO:[cached since 326.6s ago] {}
+2023-06-19 22:45:58,633 INFO:ROLLBACK
+2023-06-19 22:45:58,707 INFO:BEGIN (implicit)
+2023-06-19 22:45:58,719 INFO:INSERT INTO account (personal_info_id, account_type_id, branch_id, account_number, account_name, date_updated, date_created) VALUES (%(personal_info_id)s, %(account_type_id)s, %(branch_id)s, %(account_number)s, %(account_name)s, %(date_updated)s, %(date_created)s)
+2023-06-19 22:45:58,720 INFO:[cached since 326.6s ago] {'personal_info_id': 1, 'account_type_id': 1, 'branch_id': 2, 'account_number': '302010000001', 'account_name': 'JOEYSABUSIDO', 'date_updated': None, 'date_created': datetime.datetime(2023, 6, 19, 19, 45, 58, 707947)}
+2023-06-19 22:45:58,760 INFO:COMMIT
+2023-06-19 22:46:05,079 INFO:BEGIN (implicit)
+2023-06-19 22:46:05,080 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 22:46:05,082 INFO:[cached since 333.1s ago] {}
+2023-06-19 22:46:05,132 INFO:ROLLBACK
+2023-06-19 22:58:55,234 INFO:BEGIN (implicit)
+2023-06-19 22:58:55,253 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 22:58:55,255 INFO:[generated in 0.00243s] {'username_1': 'joeysabusido'}
+2023-06-19 22:59:14,918 INFO:BEGIN (implicit)
+2023-06-19 22:59:14,919 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 22:59:14,921 INFO:[cached since 19.67s ago] {'username_1': 'joeysabusido'}
+2023-06-19 22:59:14,983 INFO:ROLLBACK
+2023-06-19 22:59:58,285 INFO:BEGIN (implicit)
+2023-06-19 22:59:58,287 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 22:59:58,289 INFO:[cached since 63.04s ago] {'username_1': 'joeysabusido'}
+2023-06-19 22:59:58,349 INFO:ROLLBACK
+2023-06-19 23:01:14,457 INFO:BEGIN (implicit)
+2023-06-19 23:01:14,459 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 23:01:14,463 INFO:[cached since 139.2s ago] {'username_1': 'joeysabusido'}
+2023-06-19 23:01:14,541 INFO:ROLLBACK
+2023-06-19 23:01:25,644 INFO:BEGIN (implicit)
+2023-06-19 23:01:25,646 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:01:25,647 INFO:[cached since 1254s ago] {}
+2023-06-19 23:01:25,695 INFO:ROLLBACK
+2023-06-19 23:01:31,772 INFO:BEGIN (implicit)
+2023-06-19 23:01:31,773 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:01:31,775 INFO:[cached since 1260s ago] {}
+2023-06-19 23:01:31,813 INFO:ROLLBACK
+2023-06-19 23:01:34,830 INFO:BEGIN (implicit)
+2023-06-19 23:01:34,831 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:01:34,833 INFO:[cached since 1263s ago] {}
+2023-06-19 23:01:34,876 INFO:ROLLBACK
+2023-06-19 23:01:51,265 INFO:BEGIN (implicit)
+2023-06-19 23:01:51,266 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:01:51,267 INFO:[cached since 1279s ago] {}
+2023-06-19 23:01:51,312 INFO:ROLLBACK
+2023-06-19 23:01:55,610 INFO:BEGIN (implicit)
+2023-06-19 23:01:55,611 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:01:55,613 INFO:[cached since 1284s ago] {}
+2023-06-19 23:01:55,667 INFO:ROLLBACK
+2023-06-19 23:03:56,753 INFO:BEGIN (implicit)
+2023-06-19 23:03:56,754 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:03:56,756 INFO:[cached since 1405s ago] {}
+2023-06-19 23:03:56,815 INFO:ROLLBACK
+2023-06-19 23:04:01,248 INFO:BEGIN (implicit)
+2023-06-19 23:04:01,250 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:04:01,251 INFO:[cached since 1409s ago] {}
+2023-06-19 23:04:01,309 INFO:ROLLBACK
+2023-06-19 23:04:03,327 INFO:BEGIN (implicit)
+2023-06-19 23:04:03,328 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:04:03,329 INFO:[cached since 1411s ago] {}
+2023-06-19 23:04:03,371 INFO:ROLLBACK
+2023-06-19 23:07:36,195 INFO:BEGIN (implicit)
+2023-06-19 23:07:36,195 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:07:36,197 INFO:[cached since 1624s ago] {}
+2023-06-19 23:07:36,255 INFO:ROLLBACK
+2023-06-19 23:08:07,789 INFO:BEGIN (implicit)
+2023-06-19 23:08:07,790 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:08:07,791 INFO:[cached since 1656s ago] {}
+2023-06-19 23:08:07,831 INFO:ROLLBACK
+2023-06-19 23:08:09,936 INFO:BEGIN (implicit)
+2023-06-19 23:08:09,937 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:08:09,938 INFO:[cached since 1658s ago] {}
+2023-06-19 23:08:09,977 INFO:ROLLBACK
+2023-06-19 23:08:11,527 INFO:BEGIN (implicit)
+2023-06-19 23:08:11,528 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:08:11,529 INFO:[cached since 1660s ago] {}
+2023-06-19 23:08:11,576 INFO:ROLLBACK
+2023-06-19 23:08:13,764 INFO:BEGIN (implicit)
+2023-06-19 23:08:13,765 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:08:13,766 INFO:[cached since 1662s ago] {}
+2023-06-19 23:08:13,825 INFO:ROLLBACK
+2023-06-19 23:13:57,524 INFO:BEGIN (implicit)
+2023-06-19 23:13:57,525 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:13:57,526 INFO:[cached since 2006s ago] {}
+2023-06-19 23:14:16,743 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         accountName
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 426, in getAccount_grphql
+    data = getAccount()
+  File "D:\financing-apps\views\views.py", line 384, in getAccount
+    results = session.exec(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 23:14:32,149 INFO:BEGIN (implicit)
+2023-06-19 23:14:32,152 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:14:32,156 INFO:[cached since 2040s ago] {}
+2023-06-19 23:14:32,224 INFO:ROLLBACK
+2023-06-19 23:14:35,509 INFO:BEGIN (implicit)
+2023-06-19 23:14:35,509 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:14:35,511 INFO:[cached since 2044s ago] {}
+2023-06-19 23:14:35,558 INFO:ROLLBACK
+2023-06-19 23:14:43,884 INFO:BEGIN (implicit)
+2023-06-19 23:14:43,885 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:14:43,888 INFO:[cached since 2052s ago] {}
+2023-06-19 23:14:43,933 INFO:ROLLBACK
+2023-06-19 23:15:26,475 INFO:BEGIN (implicit)
+2023-06-19 23:15:26,476 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:15:26,477 INFO:[cached since 2095s ago] {}
+2023-06-19 23:15:26,527 INFO:ROLLBACK
+2023-06-19 23:15:28,668 INFO:BEGIN (implicit)
+2023-06-19 23:15:28,669 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:15:28,670 INFO:[cached since 2097s ago] {}
+2023-06-19 23:15:28,719 INFO:ROLLBACK
+2023-06-19 23:15:31,901 INFO:BEGIN (implicit)
+2023-06-19 23:15:31,902 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:15:31,904 INFO:[cached since 2100s ago] {}
+2023-06-19 23:15:31,963 INFO:ROLLBACK
+2023-06-19 23:16:15,554 INFO:BEGIN (implicit)
+2023-06-19 23:16:15,555 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:16:15,557 INFO:[cached since 2144s ago] {}
+2023-06-19 23:16:15,601 INFO:ROLLBACK
+2023-06-19 23:17:00,984 INFO:BEGIN (implicit)
+2023-06-19 23:17:00,985 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:17:00,987 INFO:[cached since 2189s ago] {}
+2023-06-19 23:17:01,043 INFO:ROLLBACK
+2023-06-19 23:17:46,221 INFO:BEGIN (implicit)
+2023-06-19 23:17:46,223 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:17:46,224 INFO:[cached since 2234s ago] {}
+2023-06-19 23:17:46,272 INFO:ROLLBACK
+2023-06-19 23:28:54,880 INFO:BEGIN (implicit)
+2023-06-19 23:28:54,881 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:28:54,882 INFO:[cached since 2903s ago] {}
+2023-06-19 23:29:14,117 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         accountName
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\User\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "D:\financing-apps\routes\graph.py", line 426, in getAccount_grphql
+    data = getAccount()
+  File "D:\financing-apps\views\views.py", line 384, in getAccount
+    results = session.exec(statement)
+  File "D:\financing-apps\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "D:\financing-apps\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "D:\financing-apps\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\schema.py", line 248, in execute
+    result = await execute(
+  File "D:\financing-apps\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 23:29:54,985 INFO:BEGIN (implicit)
+2023-06-19 23:29:54,986 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:29:54,988 INFO:[cached since 2963s ago] {}
+2023-06-19 23:29:55,035 INFO:ROLLBACK
+2023-06-19 23:30:36,405 INFO:BEGIN (implicit)
+2023-06-19 23:30:36,406 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:30:36,407 INFO:[cached since 3004s ago] {}
+2023-06-19 23:30:36,442 INFO:ROLLBACK
+2023-06-19 23:31:52,445 INFO:BEGIN (implicit)
+2023-06-19 23:31:52,446 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:31:52,447 INFO:[cached since 3080s ago] {}
+2023-06-19 23:31:52,493 INFO:ROLLBACK
+2023-06-19 23:32:39,043 INFO:BEGIN (implicit)
+2023-06-19 23:32:39,044 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:32:39,045 INFO:[cached since 3127s ago] {}
+2023-06-19 23:32:39,096 INFO:ROLLBACK
+2023-06-19 23:33:47,446 INFO:BEGIN (implicit)
+2023-06-19 23:33:47,447 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:33:47,449 INFO:[cached since 3195s ago] {}
+2023-06-19 23:33:47,484 INFO:ROLLBACK
+2023-06-19 23:36:23,631 INFO:BEGIN (implicit)
+2023-06-19 23:36:23,632 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:36:23,633 INFO:[cached since 3352s ago] {}
+2023-06-19 23:36:23,675 INFO:ROLLBACK
+2023-06-19 23:37:54,817 INFO:BEGIN (implicit)
+2023-06-19 23:37:54,818 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:37:54,820 INFO:[cached since 3443s ago] {}
+2023-06-19 23:37:54,873 INFO:ROLLBACK
+2023-06-19 23:41:08,908 INFO:BEGIN (implicit)
+2023-06-19 23:41:08,909 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:41:08,911 INFO:[cached since 3637s ago] {}
+2023-06-19 23:41:08,967 INFO:ROLLBACK
+2023-06-19 23:41:38,949 INFO:BEGIN (implicit)
+2023-06-19 23:41:38,950 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:41:38,951 INFO:[cached since 3667s ago] {}
+2023-06-19 23:41:39,006 INFO:ROLLBACK
+2023-06-19 23:42:28,782 INFO:BEGIN (implicit)
+2023-06-19 23:42:28,783 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:42:28,784 INFO:[cached since 3717s ago] {}
+2023-06-19 23:42:28,847 INFO:ROLLBACK
+2023-06-19 23:42:35,494 INFO:BEGIN (implicit)
+2023-06-19 23:42:35,494 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:42:35,496 INFO:[cached since 3724s ago] {}
+2023-06-19 23:42:35,533 INFO:ROLLBACK
+2023-06-19 23:43:03,454 INFO:BEGIN (implicit)
+2023-06-19 23:43:03,455 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:43:03,456 INFO:[cached since 3752s ago] {}
+2023-06-19 23:43:03,511 INFO:ROLLBACK
+2023-06-19 23:44:11,732 INFO:BEGIN (implicit)
+2023-06-19 23:44:11,734 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:44:11,736 INFO:[cached since 3820s ago] {}
+2023-06-19 23:44:11,776 INFO:ROLLBACK
+2023-06-19 23:46:51,207 INFO:BEGIN (implicit)
+2023-06-19 23:46:51,209 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:46:51,210 INFO:[cached since 3979s ago] {}
+2023-06-19 23:46:51,265 INFO:ROLLBACK
+2023-06-19 23:46:56,079 INFO:BEGIN (implicit)
+2023-06-19 23:46:56,080 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:46:56,081 INFO:[cached since 3984s ago] {}
+2023-06-19 23:46:56,127 INFO:ROLLBACK
+2023-06-19 23:47:22,076 INFO:BEGIN (implicit)
+2023-06-19 23:47:22,077 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:47:22,079 INFO:[cached since 4010s ago] {}
+2023-06-19 23:47:22,123 INFO:ROLLBACK
+2023-06-19 23:47:54,163 INFO:BEGIN (implicit)
+2023-06-19 23:47:54,164 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:47:54,166 INFO:[cached since 4042s ago] {}
+2023-06-19 23:47:54,222 INFO:ROLLBACK
+2023-06-19 23:47:55,336 INFO:BEGIN (implicit)
+2023-06-19 23:47:55,337 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:47:55,338 INFO:[cached since 4043s ago] {}
+2023-06-19 23:47:55,375 INFO:ROLLBACK
+2023-06-19 23:47:56,399 INFO:BEGIN (implicit)
+2023-06-19 23:47:56,399 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:47:56,401 INFO:[cached since 4044s ago] {}
+2023-06-19 23:47:56,458 INFO:ROLLBACK
+2023-06-19 23:47:58,460 INFO:BEGIN (implicit)
+2023-06-19 23:47:58,462 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:47:58,463 INFO:[cached since 4047s ago] {}
+2023-06-19 23:47:58,504 INFO:ROLLBACK
+2023-06-19 23:48:06,025 INFO:BEGIN (implicit)
+2023-06-19 23:48:06,026 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:48:06,027 INFO:[cached since 4054s ago] {}
+2023-06-19 23:48:06,067 INFO:ROLLBACK
+2023-06-19 23:49:47,759 INFO:BEGIN (implicit)
+2023-06-19 23:49:47,760 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:49:47,762 INFO:[cached since 4156s ago] {}
+2023-06-19 23:49:47,805 INFO:ROLLBACK
+2023-06-19 23:49:59,765 INFO:BEGIN (implicit)
+2023-06-19 23:49:59,766 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 23:49:59,767 INFO:[cached since 4168s ago] {}
+2023-06-19 23:49:59,801 INFO:ROLLBACK

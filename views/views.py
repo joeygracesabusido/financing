@@ -386,3 +386,33 @@ def getAccount():
         data = results.all()
         
         return data
+    
+
+def updateAccount(personal_info_id,account_type_id,branch_id,account_number,account_name,date_updated, id):
+    """This function is for updating access Tags"""
+
+    try:
+        with Session(engine) as session:
+            session.begin()
+            statement = select(Account).where(Account.id == id)
+            results = session.exec(statement)
+            result = results.one()
+
+            result.personal_info_id = personal_info_id
+            result.account_type_id = account_type_id
+            result.branch_id = branch_id
+            result.account_number = account_number
+            result.account_name = account_name
+            result.date_updated = date_updated
+
+            # Commit the changes
+            session.commit()
+
+    except Exception as e:
+        # Something went wrong, rollback the transaction
+        session.rollback()
+        raise Exception("Failed to update access tags: {}".format(str(e)))
+
+    finally:
+        # Close the session
+        session.close()

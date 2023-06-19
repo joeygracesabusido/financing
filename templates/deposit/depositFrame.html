@@ -28,11 +28,14 @@
 
     #main-section {
     display: flex;
+    
     }
 
     #main-section > div {
     flex-grow: 1;
     padding: 20px;
+    border: 1px solid black;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
     }
 
     #main-section > div:not(:first-child) {
@@ -43,6 +46,16 @@
     display: block;
     /* Add any other desired styles for the Active Accounts frame */
     }
+
+    .input-box {
+        flex: 1; /* Divide the available space evenly between the input fields */
+        margin: 0 5px; /* Add some margin between the input fields */
+        border-radius: 20px; /* round the corners of the input field */
+        border: 2px solid lightskyblue;
+        padding: 10px;
+        background-color: whitesmoke;
+        width: 35%;
+    }
 </style>
 <body>
 
@@ -50,7 +63,7 @@
         <div class="row">
           <div class="col-md-3 custom-border">
             <div class="transButton">
-              <a id="depositor-list" data-frame="account-frame" style="color: blue;text-decoration: underline;">
+              <a id="add-accounts" data-frame="add-account-frame" style="color: blue;text-decoration: underline;">
                 Depositor's List
               </a>
               <a id="account-list" data-frame="account-list-frame" style="color: blue;text-decoration: underline;margin-top: 10px;">
@@ -66,18 +79,28 @@
           </div>
           <div class="col-md-9">
             <main id="main-section">
-              <div id="account-frame" style="display: none;">
+              <div id="add-account-frame" style="display: none;">
                 <!-- Account List Content -->
               </div>
               <div id="active-account-frame" style="display: none;">
                 <!-- Active Accounts Content -->
+                <div class="container">
+                  <input 
+                        type="text"
+                        name="autoSearch_account"
+                        id="autoSearch_account"
+                        placeholder="Account Number / Account Name"
+                        class="input-box"
+                        
+                   >
+                </div>
                 <div class="container -mt4">
                    <div class="modal-header">
                     <button type="button" id="SearchActive" class="btn btn-primary" style="display: none;"
                     >Search</button>
                     </div>
                 
-                  <table id="myTable" class="table table-bordered" style="text-align: center;">
+                  <table id="myTable3" class="table table-bordered" style="text-align: center;">
                     
                     <thead class="table-dark">
                       <tr>
@@ -186,6 +209,15 @@
         </div>
     </div>
 
+    <!-- <script>
+      $(document).ready(function () {
+                $('#myTable3').DataTable();
+            });
+
+    </script> -->
+
+    
+
     <script>
 
             document.addEventListener("DOMContentLoaded", function() {
@@ -205,6 +237,8 @@
             });
 
     </script>
+
+    
 
 
     

@@ -69,7 +69,8 @@ admin = APIRouter()
 
 from views.views import (getRoles,getuser,insertRole,get_access_tags,
                         updateAccessTags,insertBranch,getBranch,
-                        insertAccountType,getAccountType,insertAccount,getAccount)
+                        insertAccountType,getAccountType,insertAccount,
+                        getAccount,updateAccount)
 from views.views import insertPersonalInfo
 from basemodel.basemodels import User
 
@@ -433,9 +434,9 @@ class Query:
        
         return account_list
 
-    @strawberry.field
-    async def get_authenticated_user(self, info: Info) -> User | None:
-        return info.context.user
+    # @strawberry.field
+    # async def get_authenticated_user(self, info: Info) -> User | None:
+    #     return info.context.user
 
     
        
@@ -634,25 +635,46 @@ class Mutation:
         # Find the branch with the given ID
         # selected_branch = next((b for b in branch if b[0]["id"] == branch_id), None)
         selected_branch = next((b for b in branch if b.id == branch_id), None)
-        
+        # print(selected_branch.id)
         # Find the account type with the given ID
         selected_account_type = next((a for a in account_type if a.accountTypeCode == accountTypeCode), None)
         # print(selected_account_type.accountTypeCode)
-        
+
         if selected_branch and selected_account_type:
             # Generate account number with an incrementing last digit
-            account_number = f"{selected_branch.branch_code}{selected_account_type.accountTypeCode}0000001"
-            if account:
-                last_account = account[-1]
-                last_account_number = last_account.account_number
-                last_digit = int(last_account_number[-1])
+            branchcode = selected_branch.branch_code
+            accountTypeCode = selected_account_type.accountTypeCode
+            accountTypeCode_id = selected_account_type.id
+
+            existing_accounts = [acc for acc in account if acc.branch_id == branch_id and acc.account_type_id == account_type_id]
+            # print(existing_accounts)
+            if existing_accounts:
+                last_account_number = max(existing_accounts, key=lambda x: int(x.account_number))
+                last_digit = int(last_account_number.account_number[-7:])
                 incremented_last_digit = last_digit + 1
-                account_number = f"{selected_branch.branch_code}{selected_account_type.accountTypeCode}000000{incremented_last_digit:03}"
+                account_number = f"{branchcode:03}{accountTypeCode:02}{incremented_last_digit:07}"
+            else:
+                account_number = f"{branchcode:03}{accountTypeCode:02}0000001"
 
-        current_datetime = datetime.now()
-        date_updated = current_datetime.isoformat()
+                        # Ensure account number is always 12 digits
+            account_number = account_number.zfill(12)
 
-        print(personal_info_id,account_number)
+            # print(account_number)
+        
+        # if selected_branch and selected_account_type:
+        #     # Generate account number with an incrementing last digit
+        #     account_number = f"{selected_branch.branch_code}{selected_account_type.accountTypeCode}0000001"
+        #     if account:
+        #         last_account = account[-1]
+        #         last_account_number = last_account.account_number
+        #         last_digit = int(last_account_number[-1])
+        #         incremented_last_digit = last_digit + 1
+        #         account_number = f"{selected_branch.branch_code}{selected_account_type.accountTypeCode}000000{incremented_last_digit:03}"
+
+        # current_datetime = datetime.now()
+        # date_updated = current_datetime.isoformat()
+
+        # print(personal_info_id,account_number)
 
         try:
             result = insertAccount( personal_info_id=personal_info_id,
@@ -666,6 +688,69 @@ class Mutation:
             return str('Error: {}'.format(str(e)))
         return str('Data has been Save')
 
+#=================================This is for Updating Account ===================================
+    @strawberry.mutation
+    async def updateAccount_graphql(self, info,   # this is for update function
+                                        personal_info_id: int,
+                                        account_type_id: int,
+                                        branch_id: int,
+                                        # account_number: str,
+                                        account_name: str, 
+                                        accountTypeCode: str, 
+                                        id:int
+                                ) -> str:
+        """This function is to insert or roles to database"""
+        current_datetime = datetime.now()
+        date_updated = current_datetime.isoformat()
+
+        branch = getBranch()
+        
+        
+        account_type =  getAccountType()
+        account = getAccount()
+
+        # Find the branch with the given ID
+        # selected_branch = next((b for b in branch if b[0]["id"] == branch_id), None)
+        selected_branch = next((b for b in branch if b.id == branch_id), None)
+        
+        # Find the account type with the given ID
+        selected_account_type = next((a for a in account_type if a.accountTypeCode == accountTypeCode), None)
+        # print(selected_account_type.accountTypeCode)
+        if selected_branch and selected_account_type:
+            # Generate account number with an incrementing last digit
+            branchcode = selected_branch.branch_code
+            accountTypeCode = selected_account_type.accountTypeCode
+            accountTypeCode_id = selected_account_type.id
+
+            existing_accounts = [acc for acc in account if acc.branch_id == branch_id and acc.account_type_id == account_type_id]
+            # print(existing_accounts)
+            if existing_accounts:
+                last_account_number = max(existing_accounts, key=lambda x: int(x.account_number))
+                last_digit = int(last_account_number.account_number[-7:])
+                incremented_last_digit = last_digit + 1
+                account_number = f"{branchcode:03}{accountTypeCode:02}{incremented_last_digit:07}"
+            else:
+                account_number = f"{branchcode:03}{accountTypeCode:02}0000001"
+
+                        # Ensure account number is always 12 digits
+            
+        
+            account_number = account_number.zfill(12)
+
+            print(account_number)
+
+        try:
+            result = updateAccount(id=id, 
+                                        personal_info_id=personal_info_id,
+                                        account_type_id=account_type_id,
+                                        branch_id=branch_id,
+                                        account_number=account_number,
+                                        account_name=account_name,  
+                                            date_updated=date_updated)
+
+        except Exception as e:
+            return str('Error: {}'.format(str(e)))
+        return str('Data has been updated')
 
      
      
@@ -692,7 +777,7 @@ graphql_app = GraphQLRouter(
 # )
 
 
-graph = APIRouter()
+# graph = APIRouter()
 
 # graph.add_route('/graphql',graphql_app)
 # graph.add_websocket_route("/graphql", graphql_app)

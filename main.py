@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes.admin import admin
 from routes.forms import form_htlm
-from routes.graph import graph, graphql_app
+from routes.graph import  graphql_app
 
 
 app = FastAPI()
