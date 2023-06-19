@@ -18489,3 +18489,1497 @@ FROM account
 FROM account
 2023-06-17 00:47:46,529 INFO:[cached since 27.89s ago] {}
 2023-06-17 00:47:46,563 INFO:ROLLBACK
+2023-06-19 12:01:34,322 ERROR:Cannot query field 'getAuthenticatedUser' on type 'Query'. Did you mean 'authenticatedUser'?
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getAuthenticatedUser {
+  |   ^
+3 |     username
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-06-19 12:02:06,812 INFO:SELECT DATABASE()
+2023-06-19 12:02:06,813 INFO:[raw sql] {}
+2023-06-19 12:02:06,882 INFO:SELECT @@sql_mode
+2023-06-19 12:02:06,883 INFO:[raw sql] {}
+2023-06-19 12:02:06,917 INFO:SELECT @@lower_case_table_names
+2023-06-19 12:02:06,918 INFO:[raw sql] {}
+2023-06-19 12:02:06,986 INFO:BEGIN (implicit)
+2023-06-19 12:02:07,024 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 12:02:07,026 INFO:[generated in 0.00195s] {'username_1': 'joeysabusido'}
+2023-06-19 12:02:07,063 INFO:ROLLBACK
+2023-06-19 13:18:28,329 ERROR:Authentication required.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 46, in hello
+    raise Exception("Authentication required.")
+Exception: Authentication required.
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:19:08,020 ERROR:Authentication required.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 46, in hello
+    raise Exception("Authentication required.")
+Exception: Authentication required.
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:21:49,414 ERROR:Authentication required.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 46, in hello
+    raise Exception("Authentication required.")
+Exception: Authentication required.
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:25:00,059 INFO:SELECT DATABASE()
+2023-06-19 13:25:00,060 INFO:[raw sql] {}
+2023-06-19 13:25:00,127 INFO:SELECT @@sql_mode
+2023-06-19 13:25:00,127 INFO:[raw sql] {}
+2023-06-19 13:25:00,161 INFO:SELECT @@lower_case_table_names
+2023-06-19 13:25:00,162 INFO:[raw sql] {}
+2023-06-19 13:25:00,230 INFO:BEGIN (implicit)
+2023-06-19 13:25:00,265 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-19 13:25:00,266 INFO:[generated in 0.00141s] {}
+2023-06-19 13:25:00,305 INFO:ROLLBACK
+2023-06-19 13:39:41,824 ERROR:IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 48, in hello
+    if not IsAuthenticated().has_permission(info):
+TypeError: IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:39:59,920 ERROR:IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+
+GraphQL request:6:3
+5 | mutation MyMutation {
+6 |   me {
+  |   ^
+7 |     id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 35, in me
+    if not IsAuthenticated().has_permission(info):
+TypeError: IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:41:41,610 ERROR:IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 48, in hello
+    if not IsAuthenticated().has_permission(info):
+TypeError: IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:43:35,688 ERROR:IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 48, in hello
+    if not IsAuthenticated().has_permission(info):
+TypeError: IsAuthenticated.has_permission() missing 1 required positional argument: 'username'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:44:32,333 ERROR:'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 48, in hello
+    if not IsAuthenticated().has_permission(info, info.context["user"].username):
+KeyError: 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:50:59,840 ERROR:'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 48, in hello
+    if not IsAuthenticated().has_permission(info, info.context["user"].username):
+KeyError: 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 13:52:48,300 ERROR:'user'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   hello
+  |   ^
+3 | }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 613, in _resolver
+    return _get_result_with_extensions(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 599, in extension_resolver
+    return reduce(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 594, in wrapped_get_result
+    return _get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 555, in _get_result
+    return field.get_result(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 178, in get_result
+    return self.base_resolver(*args, **kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\types\fields\resolver.py", line 187, in __call__
+    return self.wrapped_func(*args, **kwargs)
+  File "C:\financing\financing\routes\authentication.py", line 48, in hello
+    if not IsAuthenticated().has_permission(info, info.context["user"].username):
+KeyError: 'user'
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\base.py", line 70, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 111, in __call__
+    return await self.handle_http(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\asgi\__init__.py", line 178, in handle_http
+    response = await self.run(request)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 15:35:39,024 INFO:SELECT DATABASE()
+2023-06-19 15:35:39,025 INFO:[raw sql] {}
+2023-06-19 15:35:39,100 INFO:SELECT @@sql_mode
+2023-06-19 15:35:39,101 INFO:[raw sql] {}
+2023-06-19 15:35:39,136 INFO:SELECT @@lower_case_table_names
+2023-06-19 15:35:39,137 INFO:[raw sql] {}
+2023-06-19 15:35:39,206 INFO:BEGIN (implicit)
+2023-06-19 15:35:39,245 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 15:35:39,246 INFO:[generated in 0.00106s] {'username_1': 'joeysabusido'}
+2023-06-19 15:35:39,286 INFO:ROLLBACK
+2023-06-19 15:38:28,385 ERROR:name 'authorization_service' is not defined
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getAuthenticatedUser {
+  |   ^
+3 |     username
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 442, in get_authenticated_user
+    return info.context.user
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\functools.py", line 981, in __get__
+    val = self.func(instance)
+  File "C:\financing\financing\routes\graph.py", line 103, in user
+    return authorization_service.authorize(authorization)
+NameError: name 'authorization_service' is not defined
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 15:41:19,613 INFO:SELECT DATABASE()
+2023-06-19 15:41:19,614 INFO:[raw sql] {}
+2023-06-19 15:41:19,681 INFO:SELECT @@sql_mode
+2023-06-19 15:41:19,682 INFO:[raw sql] {}
+2023-06-19 15:41:19,716 INFO:SELECT @@lower_case_table_names
+2023-06-19 15:41:19,717 INFO:[raw sql] {}
+2023-06-19 15:41:19,786 INFO:BEGIN (implicit)
+2023-06-19 15:41:19,823 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 15:41:19,825 INFO:[generated in 0.00260s] {'username_1': 'joeysabusido'}
+2023-06-19 15:41:19,866 INFO:ROLLBACK
+2023-06-19 15:41:45,465 INFO:BEGIN (implicit)
+2023-06-19 15:41:45,466 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-19 15:41:45,467 INFO:[generated in 0.00085s] {}
+2023-06-19 15:41:45,511 INFO:ROLLBACK
+2023-06-19 15:42:09,503 ERROR:name 'authorization_service' is not defined
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getAuthenticatedUser {
+  |   ^
+3 |     username
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 438, in get_authenticated_user
+    return info.context.user
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\functools.py", line 981, in __get__
+    val = self.func(instance)
+  File "C:\financing\financing\routes\graph.py", line 103, in user
+    return authorization_service.authorize(authorization)
+NameError: name 'authorization_service' is not defined
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 17:06:40,018 INFO:SELECT DATABASE()
+2023-06-19 17:06:40,034 INFO:[raw sql] {}
+2023-06-19 17:06:40,087 INFO:SELECT @@sql_mode
+2023-06-19 17:06:40,087 INFO:[raw sql] {}
+2023-06-19 17:06:40,136 INFO:SELECT @@lower_case_table_names
+2023-06-19 17:06:40,137 INFO:[raw sql] {}
+2023-06-19 17:06:40,204 INFO:BEGIN (implicit)
+2023-06-19 17:06:40,239 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 17:06:40,239 INFO:[generated in 0.00112s] {'username_1': 'joeysabusido'}
+2023-06-19 17:06:40,279 INFO:ROLLBACK
+2023-06-19 17:06:49,440 INFO:BEGIN (implicit)
+2023-06-19 17:06:49,442 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-19 17:06:49,443 INFO:[generated in 0.00087s] {}
+2023-06-19 17:06:49,469 INFO:ROLLBACK
+2023-06-19 17:26:01,350 INFO:BEGIN (implicit)
+2023-06-19 17:26:01,350 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 17:26:01,357 INFO:[cached since 1161s ago] {'username_1': 'joeysabusido'}
+2023-06-19 17:26:23,364 INFO:BEGIN (implicit)
+2023-06-19 17:26:23,364 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 17:26:23,364 INFO:[cached since 1183s ago] {'username_1': 'joeysabusido'}
+2023-06-19 17:26:23,400 INFO:ROLLBACK
+2023-06-19 17:26:31,975 INFO:BEGIN (implicit)
+2023-06-19 17:26:31,976 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-19 17:26:31,976 INFO:[cached since 1183s ago] {}
+2023-06-19 17:26:32,012 INFO:ROLLBACK
+2023-06-19 17:27:05,381 INFO:BEGIN (implicit)
+2023-06-19 17:27:05,381 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-19 17:27:05,382 INFO:[cached since 1225s ago] {'username_1': 'joeysabusido'}
+2023-06-19 17:27:05,418 INFO:ROLLBACK
+2023-06-19 17:28:30,999 INFO:SELECT DATABASE()
+2023-06-19 17:28:30,999 INFO:[raw sql] {}
+2023-06-19 17:28:31,071 INFO:SELECT @@sql_mode
+2023-06-19 17:28:31,071 INFO:[raw sql] {}
+2023-06-19 17:28:31,092 INFO:SELECT @@lower_case_table_names
+2023-06-19 17:28:31,092 INFO:[raw sql] {}
+2023-06-19 17:28:31,171 INFO:BEGIN (implicit)
+2023-06-19 17:28:31,209 INFO:SELECT `role`.id, `role`.roles, `role`.`approvalAmount`, `role`.date_updated, `role`.date_credited 
+FROM `role` ORDER BY `role`.roles
+2023-06-19 17:28:31,209 INFO:[generated in 0.00088s] {}
+2023-06-19 17:28:31,232 INFO:ROLLBACK
+2023-06-19 18:00:22,608 INFO:BEGIN (implicit)
+2023-06-19 18:00:22,610 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:00:22,611 INFO:[generated in 0.00089s] {}
+2023-06-19 18:00:41,842 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         accountName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 425, in getAccount_grphql
+    data = getAccount()
+  File "C:\financing\financing\views\views.py", line 384, in getAccount
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 18:03:26,824 INFO:BEGIN (implicit)
+2023-06-19 18:03:26,825 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:03:26,826 INFO:[cached since 184.2s ago] {}
+2023-06-19 18:03:26,862 INFO:ROLLBACK
+2023-06-19 18:04:44,364 INFO:BEGIN (implicit)
+2023-06-19 18:04:44,364 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:04:44,364 INFO:[cached since 261.8s ago] {}
+2023-06-19 18:04:44,402 INFO:ROLLBACK
+2023-06-19 18:06:59,099 INFO:BEGIN (implicit)
+2023-06-19 18:06:59,100 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:06:59,100 INFO:[cached since 396.5s ago] {}
+2023-06-19 18:06:59,139 INFO:ROLLBACK
+2023-06-19 18:07:50,113 INFO:BEGIN (implicit)
+2023-06-19 18:07:50,114 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:07:50,114 INFO:[cached since 447.5s ago] {}
+2023-06-19 18:07:50,154 INFO:ROLLBACK
+2023-06-19 18:08:38,890 INFO:BEGIN (implicit)
+2023-06-19 18:08:38,890 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:08:38,891 INFO:[cached since 496.3s ago] {}
+2023-06-19 18:08:38,926 INFO:ROLLBACK
+2023-06-19 18:11:15,568 INFO:BEGIN (implicit)
+2023-06-19 18:11:15,569 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:11:15,569 INFO:[cached since 653s ago] {}
+2023-06-19 18:11:15,608 INFO:ROLLBACK
+2023-06-19 18:14:35,161 INFO:BEGIN (implicit)
+2023-06-19 18:14:35,162 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:14:35,162 INFO:[cached since 852.6s ago] {}
+2023-06-19 18:14:35,200 INFO:ROLLBACK
+2023-06-19 18:15:21,433 INFO:BEGIN (implicit)
+2023-06-19 18:15:21,433 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:15:21,434 INFO:[cached since 898.8s ago] {}
+2023-06-19 18:15:21,471 INFO:ROLLBACK
+2023-06-19 18:17:38,183 INFO:BEGIN (implicit)
+2023-06-19 18:17:38,184 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:17:38,185 INFO:[cached since 1036s ago] {}
+2023-06-19 18:17:38,222 INFO:ROLLBACK
+2023-06-19 18:19:02,590 INFO:BEGIN (implicit)
+2023-06-19 18:19:02,591 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:19:02,591 INFO:[cached since 1120s ago] {}
+2023-06-19 18:19:02,631 INFO:ROLLBACK
+2023-06-19 18:23:00,377 INFO:BEGIN (implicit)
+2023-06-19 18:23:00,377 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:23:00,377 INFO:[cached since 1358s ago] {}
+2023-06-19 18:23:00,417 INFO:ROLLBACK
+2023-06-19 18:24:15,060 INFO:BEGIN (implicit)
+2023-06-19 18:24:15,061 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:24:15,061 INFO:[cached since 1432s ago] {}
+2023-06-19 18:24:15,098 INFO:ROLLBACK
+2023-06-19 18:47:56,924 INFO:BEGIN (implicit)
+2023-06-19 18:47:56,925 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:47:56,925 INFO:[cached since 2854s ago] {}
+2023-06-19 18:48:16,122 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         accountName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 425, in getAccount_grphql
+    data = getAccount()
+  File "C:\financing\financing\views\views.py", line 384, in getAccount
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-06-19 18:48:16,339 INFO:BEGIN (implicit)
+2023-06-19 18:48:16,340 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:48:16,341 INFO:[cached since 2874s ago] {}
+2023-06-19 18:48:16,379 INFO:ROLLBACK
+2023-06-19 18:49:05,184 INFO:BEGIN (implicit)
+2023-06-19 18:49:05,185 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:49:05,185 INFO:[cached since 2923s ago] {}
+2023-06-19 18:49:05,224 INFO:ROLLBACK
+2023-06-19 18:49:14,487 INFO:BEGIN (implicit)
+2023-06-19 18:49:14,488 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:49:14,488 INFO:[cached since 2932s ago] {}
+2023-06-19 18:49:14,525 INFO:ROLLBACK
+2023-06-19 18:54:09,556 INFO:BEGIN (implicit)
+2023-06-19 18:54:09,557 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:54:09,558 INFO:[cached since 3227s ago] {}
+2023-06-19 18:54:09,599 INFO:ROLLBACK
+2023-06-19 18:55:22,053 INFO:BEGIN (implicit)
+2023-06-19 18:55:22,054 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:55:22,055 INFO:[cached since 3299s ago] {}
+2023-06-19 18:55:22,093 INFO:ROLLBACK
+2023-06-19 18:59:30,246 INFO:BEGIN (implicit)
+2023-06-19 18:59:30,246 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 18:59:30,247 INFO:[cached since 3548s ago] {}
+2023-06-19 18:59:30,284 INFO:ROLLBACK
+2023-06-19 19:03:36,713 INFO:BEGIN (implicit)
+2023-06-19 19:03:36,713 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:03:36,714 INFO:[cached since 3794s ago] {}
+2023-06-19 19:03:36,751 INFO:ROLLBACK
+2023-06-19 19:40:46,028 INFO:BEGIN (implicit)
+2023-06-19 19:40:46,029 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:40:46,030 INFO:[cached since 6023s ago] {}
+2023-06-19 19:40:46,068 INFO:ROLLBACK
+2023-06-19 19:40:48,580 INFO:BEGIN (implicit)
+2023-06-19 19:40:48,581 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:40:48,582 INFO:[cached since 6026s ago] {}
+2023-06-19 19:40:48,615 INFO:ROLLBACK
+2023-06-19 19:41:31,876 INFO:BEGIN (implicit)
+2023-06-19 19:41:31,877 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:41:31,878 INFO:[cached since 6069s ago] {}
+2023-06-19 19:41:31,912 INFO:ROLLBACK
+2023-06-19 19:41:55,716 INFO:BEGIN (implicit)
+2023-06-19 19:41:55,716 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:41:55,717 INFO:[cached since 6093s ago] {}
+2023-06-19 19:41:55,750 INFO:ROLLBACK
+2023-06-19 19:42:20,692 INFO:BEGIN (implicit)
+2023-06-19 19:42:20,692 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:42:20,692 INFO:[cached since 6118s ago] {}
+2023-06-19 19:42:20,727 INFO:ROLLBACK
+2023-06-19 19:44:50,226 INFO:BEGIN (implicit)
+2023-06-19 19:44:50,226 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:44:50,227 INFO:[cached since 6268s ago] {}
+2023-06-19 19:44:50,264 INFO:ROLLBACK
+2023-06-19 19:46:08,826 INFO:BEGIN (implicit)
+2023-06-19 19:46:08,827 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:46:08,827 INFO:[cached since 6346s ago] {}
+2023-06-19 19:46:08,861 INFO:ROLLBACK
+2023-06-19 19:52:22,391 INFO:BEGIN (implicit)
+2023-06-19 19:52:22,392 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:52:22,393 INFO:[cached since 6720s ago] {}
+2023-06-19 19:52:22,428 INFO:ROLLBACK
+2023-06-19 19:52:40,870 INFO:BEGIN (implicit)
+2023-06-19 19:52:40,871 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:52:40,871 INFO:[cached since 6738s ago] {}
+2023-06-19 19:52:40,906 INFO:ROLLBACK
+2023-06-19 19:54:42,854 INFO:BEGIN (implicit)
+2023-06-19 19:54:42,854 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:54:42,854 INFO:[cached since 6860s ago] {}
+2023-06-19 19:54:42,892 INFO:ROLLBACK
+2023-06-19 19:54:57,885 INFO:BEGIN (implicit)
+2023-06-19 19:54:57,885 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:54:57,886 INFO:[cached since 6875s ago] {}
+2023-06-19 19:54:57,920 INFO:ROLLBACK
+2023-06-19 19:55:02,324 INFO:BEGIN (implicit)
+2023-06-19 19:55:02,326 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.date_updated, account.date_created 
+FROM account
+2023-06-19 19:55:02,326 INFO:[cached since 6880s ago] {}
+2023-06-19 19:55:02,361 INFO:ROLLBACK

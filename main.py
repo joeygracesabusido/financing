@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,9 +7,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routes.admin import admin
 from routes.forms import form_htlm
-from routes.graph import graph 
+from routes.graph import graph, graphql_app
+
 
 app = FastAPI()
+
+
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -23,5 +27,7 @@ app.add_middleware(
 
 app.include_router(admin)
 app.include_router(form_htlm)
-app.include_router(graph)
+app.include_router(graphql_app, prefix="/graphql")
+# app.include_router(graph)
+
 # app.include_router(graphql_app, prefix="/graphql")

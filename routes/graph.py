@@ -109,6 +109,25 @@ LoginResult = strawberry.union("LoginResult", (LoginSuccess, LoginError))
 
 
 
+# async def get_context() -> Context:
+#     return Context()
+
+# class Context(BaseContext):
+#     @cached_property
+#     def user(self) -> User | None:
+#         if not self.request:
+#             return None
+
+#         authorization = self.request.headers.get("Authorization", None)
+#         return authorization_service.authorize(authorization)
+
+
+# Info = _Info[Context, RootValueType]
+
+
+
+
+
 @strawberry.type
 class RoleType:
     id: int
@@ -251,6 +270,9 @@ class AuthenticationMiddleware:
         return None
 
 
+
+
+
     
 @strawberry.type
 class Query:
@@ -258,8 +280,7 @@ class Query:
     # async def getcurrentUser(current_user: Annotated[User, Depends(has_permission)]) -> User:
     #     return current_user
 
-    authenticated_user: User
-
+    
     @strawberry.field
     async def authenticated_user(self, info,username: str, password: str) -> User:
         user = getuser(username=username)
@@ -273,27 +294,7 @@ class Query:
 
         
 
-    # @strawberry.field
-    # def authorize(self, username: str, password: str) -> User | None:
-    # #  actual authentication and authorization logic
-    #     user = getuser(username=username)
-    #     if user:
-    #         username = user.username
-    #         hashed_password = user.hashed_password
-    #         password_check = pwd_context.verify(password, hashed_password)
-    #         if password_check:
-    #             return User(username=username)
-    #     return None
-    
-    # @strawberry.field
-    # async def get_authenticated_user(self, info: Info) -> User | None:
-    #     return info.context.user    
-  
-    # @strawberry.field
-    # def authenticated_user2(
-    #     self, info,  authenticated_user: str=Depends(authenticated_user)
-    # ) -> User:
-    #     return authenticated_user
+    #
     
     @strawberry.field
     async def roles(self) -> List[RoleType]:
@@ -415,6 +416,8 @@ class Query:
        
         return branch_types
     
+    
+
 
     @strawberry.field # this is to query Accounts
     async def getAccount_grphql(self) -> List[AccountList]:
@@ -429,6 +432,16 @@ class Query:
        
        
         return account_list
+
+    @strawberry.field
+    async def get_authenticated_user(self, info: Info) -> User | None:
+        return info.context.user
+
+    
+       
+
+
+    
        
 
 #=================================================Mutation space=======================================================
@@ -669,24 +682,20 @@ schema = strawberry.Schema(query=Query,mutation=Mutation)
  
 graphql_app = GraphQL(schema)
 
+graphql_app = GraphQLRouter(
+    schema,
+)
+
 # graphql_app = GraphQLRouter(
 #     schema,
 #     context_getter=get_context,
 # )
 
 
-
 graph = APIRouter()
 
-graph.add_route('/graphql',graphql_app)
-graph.add_websocket_route("/graphql", graphql_app)
-
-# schema_with_middleware = schema.middleware(AuthenticationMiddleware)
-
-# app = GraphQL(schema_with_middleware, debug=True)
+# graph.add_route('/graphql',graphql_app)
+# graph.add_websocket_route("/graphql", graphql_app)
 
 
-# graph = APIRouter()
-# graph.add_route('/graphql', app)
-# graph.add_websocket_route("/graphql", app)
 
