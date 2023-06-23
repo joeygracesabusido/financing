@@ -1,6 +1,13 @@
 {% extends 'login/dashboard.html' %}
 
 {% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
 <style>
     .custom-border {
         border: 1px solid black;
@@ -63,25 +70,69 @@
         <div class="row">
           <div class="col-md-3 custom-border">
             <div class="transButton">
-              <a id="add-accounts" data-frame="add-account-frame" style="color: blue;text-decoration: underline;">
-                Depositor's List
-              </a>
-              <a id="account-list" data-frame="account-list-frame" style="color: blue;text-decoration: underline;margin-top: 10px;">
-                Account List
-              </a>
-              <a id="active-account" data-frame="active-account-frame"  style="color: blue;text-decoration: underline;margin-top: 10px;">
-                Active Accounts
-              </a>
-              <a id="dormant-account" data-frame="dormant-account-frame" style="color: blue;text-decoration: underline;margin-top: 10px;">
-                Dormant Accounts
-              </a>
+              <button type="button"  data-frame="add-account-frame"  class="btn btn-link">Add Accounts</button>
+              <button type="button" id="active-account" data-frame="active-account-frame"  class="btn btn-link">Active Accounts</button>
             </div>
           </div>
           <div class="col-md-9">
             <main id="main-section">
               <div id="add-account-frame" style="display: none;">
                 <!-- Account List Content -->
+                <h1>ADD ACCOUNT</h1>
+                <div class="row g-2">
+                  <div class="col-md">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" id="branch">
+                      <label for="floatingInputGrid">Branch</label>
+                    </div>
+                  </div>
+                  <div class="col-md">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" id="account_type">
+                      <label for="floatingInputGrid">Account Type</label>
+
+                      <!-- <select class="form-select" id="floatingSelectGrid" aria-label="Floating label select example">
+
+                        <option selected>----select menu----</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                      </select> -->
+                      <!-- <label for="floatingSelectGrid">Works with selects</label> -->
+                    </div>
+                  </div>
+                </div>
+
+                <br>
+
+
+                <div class="row g-2">
+                  <div class="col-md">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" id="personal_info">
+                      <label for="floatingInputGrid">Personal Info</label>
+                    </div>
+                  </div>
+                  <div class="col-md">
+                    <div class="form-floating">
+                      <input type="text" class="form-control" id="account_name">
+                      <label for="floatingInputGrid">Account Name</label>
+
+                     
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
+
+              
+
+                
+
+
+               
+
               <div id="active-account-frame" style="display: none;">
                 <!-- Active Accounts Content -->
                 <div class="container">
@@ -128,86 +179,7 @@
         </div>
       </div>
       
-    <!-- Modal for printing Voucher -->
     
-    <!-- Button trigger modal -->
-    
-    <!-- Modal -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">List of Depositor</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" hidden></button>
-                </div>
-                <div class="modal-body">
-                    <table id="myTable" class="table table-bordered" style="text-align: center;">
-                        <thead class="table-dark">
-                            <tr>
-                                <td>Account #</td>
-                                <td>Account Name</td>
-                                <td>Balance</td>
-                                <td>Date Opened</td>
-                                <td>Status</td>
-                            </tr>
-                        </thead>
-                        <tbody id="table_body">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="AccountList2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">List of Accounts</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <button type="button" id="Search" class="btn btn-primary" style="display: none;">Search</button>
-
-                <div class="modal-body">
-                    <table id="myTable" class="table table-bordered" style="text-align: center;">
-                        <thead class="table-dark">
-                            <tr>
-                                <td>ID</td>
-                                <td>Account Number</td>
-                                <td>Account Name</td>
-                                
-                            </tr>
-                        </thead>
-                        <tbody id="table_body_account">
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- <script>
       $(document).ready(function () {
@@ -235,6 +207,12 @@
                 });
                 });
             });
+
+    </script>
+
+    <script>
+      
+
 
     </script>
 

@@ -83,32 +83,6 @@ const testgrapql = async () => {
   
 
 
-//     // Handle the response data
-//     console.log(data);
-//       if (response.status === 200){
-//         let tableData="";
-//         data.data.getAccountGrphql.map((values)=>{
-//             tableData+= ` <tr>
-                        
-//                         <td>${values.id}</td>
-//                         <td>${values.accountNumber}</td>
-//                         <td>${values.accountName}</td>
-                        
-//                     </tr>`;
-//         });
-//         document.getElementById("table_body_test").innerHTML=tableData;
-
-//     }else if (response.status === 401){
-//         window.alert("Unauthorized Credentials Please Log in")
-//     }
-//   } catch (error) {
-//     // Handle any errors
-//     console.error(error);
-//   }
-  
-
-// };
-
 
 
 
@@ -121,3 +95,106 @@ const btnAccountListModal = document.querySelector('#active-account');
 btnAccountListModal.addEventListener('click', testgrapql);
 
 
+
+               
+// this is autocomplete in Branch
+
+// $(document).ready(function() {
+  
+//   console.log(searchBranch)
+//   const searchBranch =  $("#branch").value();
+//   const getBranchNamesQuery = `
+//     query {
+//       searchBranch {searchTerm:"${searchBranch}"}
+//       branchName
+//       }
+//     }
+//   `;
+
+//   $("#branch").autocomplete({
+//     source: function(request, response) {
+//       $.ajax({
+//         url: "/graphql",
+//         method: "POST",
+//         data: JSON.stringify({ query: getBranchNamesQuery }),
+//         contentType: "application/json",
+        
+//         success: function(data) {
+//           const branchNames = data.data.searchBranch.map(item => item.branchName);
+//           response(branchNames);
+//           console.log(data);
+//         },
+//         error: function(xhr, status, error) {
+//           console.error("Request failed:", error);
+//         }
+//       });
+//     }
+//   });
+// });
+
+$(document).ready(function() {
+  $("#branch").autocomplete({
+    source: function(request, response) {
+      const searchBranch = $("#branch").val(); // Get the value of the input field
+      const getBranchNamesQuery = `
+        query {
+          searchBranch(searchTerm: "${searchBranch}") {
+            branchName
+          }
+        }
+      `;
+
+      $.ajax({
+        url: "/graphql",
+        method: "POST",
+        data: JSON.stringify({ query: getBranchNamesQuery }),
+        contentType: "application/json",
+        success: function(data) {
+          const branchNames = data.data.searchBranch.map(item => item.branchName);
+          response(branchNames);
+          console.log(data);
+        },
+        error: function(xhr, status, error) {
+          console.error("Request failed:", error);
+        }
+      });
+    }
+  });
+});
+
+
+
+$(document).ready(function() {
+  $("#account_type").autocomplete({
+    source: function(request, response) {
+      const searchBranch = $("#account_type").val(); // Get the value of the input field
+      const getBranchNamesQuery = `
+        query {
+          searchAccounttype(searchTerm: "${searchBranch}") {
+            typeOfDeposit
+          }
+        }
+      `;
+
+      $.ajax({
+        url: "/graphql",
+        method: "POST",
+        data: JSON.stringify({ query: getBranchNamesQuery }),
+        contentType: "application/json",
+        success: function(data) {
+          const accountType = data.data.searchAccounttype.map(item => item.typeOfDeposit);
+          response(accountType);
+          console.log(data);
+        },
+        error: function(xhr, status, error) {
+          console.error("Request failed:", error);
+        }
+      });
+    }
+  });
+});
+
+
+
+
+          

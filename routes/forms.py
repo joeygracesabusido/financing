@@ -167,8 +167,22 @@ async def display_logs(request: Request,current_user: str = Depends(get_current_
 async def api_login(request: Request):
     return templates.TemplateResponse("login/dashboard.html", {"request": request})
 
+from views.views import getBranch
+from basemodel.basemodels import Branch
 @form_htlm.get("/deposit/", response_class=HTMLResponse)
 async def api_login(request: Request):
+    # data = getBranch()
+    
+    
+    # branch_types = [Branch(id=x.id, 
+    #                         branch_name=x.branch_name,
+    #                         branch_code=x.branch_code,
+    #                         address=x.address
+    #                         ) for x in data]
+    
+    
+    # branch_types
+
     return templates.TemplateResponse("deposit/depositFrame.html", {"request": request})
 
 @form_htlm.get("/user/", response_class=HTMLResponse)

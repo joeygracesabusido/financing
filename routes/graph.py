@@ -175,6 +175,12 @@ class Branch:
     address: str
 
 @strawberry.type
+class BranchAutoComplete:
+   
+    branch_name: str
+  
+
+@strawberry.type
 class AccountType:
     id: int
     accountTypeCode: str
@@ -391,6 +397,20 @@ class Query:
        
         return branch_types
 
+    @strawberry.field # this is to query Branches
+    async def getBranchGraphql_autocomplete(self, info) -> List[BranchAutoComplete]:
+        """this is to query Branches"""
+        data = getBranch()
+        
+       
+        branch_types = [BranchAutoComplete( 
+                               branch_name=x.branch_name,
+                               
+                               ) for x in data]
+       
+       
+        return branch_types
+
     @strawberry.field # this is for querying in Branches with parameters of branch Name
     async def searchBranch(self, search_term: str) -> List[Branch]:
 
@@ -408,14 +428,25 @@ class Query:
         data = getAccountType()
         
        
-        branch_types = [AccountType(id=x.id,
+        accont_type = [AccountType(id=x.id,
                                     accountTypeCode=x.accountTypeCode,
                                     type_of_account=x.type_of_account,
                                     type_of_deposit=x.type_of_deposit
                                ) for x in data]
        
        
-        return branch_types
+        return accont_type
+
+    @strawberry.field # this is for querying in  with parameters of branch Name
+    async def searchAccounttype(self, search_term: str) -> List[AccountType]:
+
+        """this is for querying in Branches with parameters of branch Name"""
+        accountTypes = getAccountType()
+
+        filtered_branches = list(filter(lambda accounttype: search_term.lower() in accounttype.type_of_deposit.lower(), accountTypes))
+
+        return filtered_branches
+    
     
     
 

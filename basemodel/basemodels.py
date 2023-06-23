@@ -45,3 +45,10 @@ class UserAccessTags(BaseModel):
     write_userLog: bool
     date_updated: Optional[datetime]
     date_credited: Optional[datetime]
+
+
+class Branch:
+    id: int
+    branch_name: str
+    branch_code: str
+    address: str
