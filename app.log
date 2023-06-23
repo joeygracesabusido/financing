@@ -24368,3 +24368,45 @@ FROM branch
 FROM accounttype
 2023-06-23 16:58:12,321 INFO:[cached since 2409s ago] {}
 2023-06-23 16:58:12,346 INFO:ROLLBACK
+2023-06-23 22:09:38,137 INFO:SELECT DATABASE()
+2023-06-23 22:09:38,137 INFO:[raw sql] {}
+2023-06-23 22:09:38,217 INFO:SELECT @@sql_mode
+2023-06-23 22:09:38,226 INFO:[raw sql] {}
+2023-06-23 22:09:38,268 INFO:SELECT @@lower_case_table_names
+2023-06-23 22:09:38,275 INFO:[raw sql] {}
+2023-06-23 22:09:38,363 INFO:BEGIN (implicit)
+2023-06-23 22:09:38,425 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-06-23 22:09:38,427 INFO:[generated in 0.00220s] {'username_1': 'joeysabusido'}
+2023-06-23 22:09:38,557 INFO:ROLLBACK
+2023-06-23 22:10:00,531 INFO:BEGIN (implicit)
+2023-06-23 22:10:00,534 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-23 22:10:00,536 INFO:[generated in 0.00151s] {}
+2023-06-23 22:10:00,574 INFO:ROLLBACK
+2023-06-23 22:10:01,733 INFO:BEGIN (implicit)
+2023-06-23 22:10:01,734 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-23 22:10:01,736 INFO:[cached since 1.202s ago] {}
+2023-06-23 22:10:01,771 INFO:ROLLBACK
+2023-06-23 22:10:03,442 INFO:BEGIN (implicit)
+2023-06-23 22:10:03,445 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-23 22:10:03,449 INFO:[cached since 2.915s ago] {}
+2023-06-23 22:10:03,499 INFO:ROLLBACK
+2023-06-23 22:10:05,414 INFO:BEGIN (implicit)
+2023-06-23 22:10:05,415 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-23 22:10:05,416 INFO:[cached since 4.882s ago] {}
+2023-06-23 22:10:05,461 INFO:ROLLBACK
+2023-06-23 22:10:08,423 INFO:BEGIN (implicit)
+2023-06-23 22:10:08,426 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-23 22:10:08,429 INFO:[cached since 7.896s ago] {}
+2023-06-23 22:10:08,473 INFO:ROLLBACK
+2023-06-23 22:10:10,268 INFO:BEGIN (implicit)
+2023-06-23 22:10:10,269 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-06-23 22:10:10,271 INFO:[cached since 9.737s ago] {}
+2023-06-23 22:10:10,330 INFO:ROLLBACK

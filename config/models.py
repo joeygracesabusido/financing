@@ -171,6 +171,7 @@ class Account(SQLModel, table=True):
     branch_id: int = Field(foreign_key=Branch.id)
     account_number: str = Field(default=None, nullable=False)
     account_name: str = Field(default=None, nullable=False)
+    status: str = Field(default="In-Active", nullable=False)
     date_updated: Optional[datetime] = Field(default=None)
     date_created: datetime = Field(default_factory=datetime.utcnow)
 

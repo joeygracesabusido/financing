@@ -8,16 +8,35 @@
     <title>Login</title>
 </head>
 <style>
+
+        body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #FFFFFF;
+        }
+
         #loginform {
             /* position: relative;
             width: 1440px;
             height: 800px;
 
             background: #FFFFFF; */
-            position: relative;
+            /* position: relative;
             width: 100%;
             height: 100vh;
-            background: #FFFFFF;
+            background: #FFFFFF; */
+
+            
+                /* display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background: #FFFFFF; */
+              
+
+            
 
             }
 
@@ -98,7 +117,7 @@
 
 </style>
 <body>
-        <div class="contianer" id="loginform">
+        <div class="container" id="loginform">
             <div class="container "  id="loginForm">
                 <div class="container mt-3">
                    
@@ -108,7 +127,7 @@
                     
                 </div>
 
-                <h3>IDEJ TechSoftware</h3>
+                <h3>DIJI TechSoftware</h3>
                 
                     <input 
                     type="text"
@@ -159,55 +178,9 @@
            
             <script src="/static/loginfunction.js"></script>
 
-            <script>
-                // const login = async() => {
-                //     var username = document.querySelector('#username').value
-                //     var password = document.querySelector('#password').value
-                //     let alert;
+            
 
-                //     const search_url = `/api-login/?username1=${username}&password1=${password}`;
-
-                
-                //     try {
-                //         const responce = await fetch(search_url)
-                //         const data = await responce.json();
-
-                //         console.log(data)
-                        
-                        
-                //         if (responce.status === 200){
-                        
-                //             // document.querySelector('#alert').innerHTML = 'Login Successful';
-                //             // document.querySelector('#alert').classList.remove('alert-danger');
-                //             // document.querySelector('#alert').classList.add('alert-success');
-                //             window.location.assign("/dashboard/")
-                        
-                //         }else if (responce.status === 500) {
-                            
-                //             document.querySelector('#alert').innerHTML = 'Incorrect Password';
-                //             document.querySelector('#alert').classList.remove('alert-success');
-                //             document.querySelector('#alert').classList.add('alert-danger');
-                //         }else{
-                //             document.querySelector('#alert').innerHTML = 'Incorrect Password';
-                //             document.querySelector('#alert').classList.remove('alert-success');
-                //             document.querySelector('#alert').classList.add('alert-danger');
-                //         }
-                //     }catch (error) {
-                //         // console.log('Error:', error);
-                //         document.querySelector('#alert').innerHTML = `No ${username} username in the Database`;
-                //         document.querySelector('#alert').classList.add('alert-danger');
-                //     }
-                //     };
-
-                    
-            </script>
-
-            <script>
-                // var loginCredential = document.querySelector('#BtnLogin');
-                //     loginCredential.addEventListener("click", function() {
-                //         login();
-                //     });
-            </script>
+            
     
     
 </body>
