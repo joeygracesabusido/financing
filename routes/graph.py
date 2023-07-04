@@ -70,7 +70,7 @@ admin = APIRouter()
 from views.views import (getRoles,getuser,insertRole,get_access_tags,
                         updateAccessTags,insertBranch,getBranch,
                         insertAccountType,getAccountType,insertAccount,
-                        getAccount,updateAccount)
+                        getAccount,updateAccount,getPersonalInfo)
 from views.views import insertPersonalInfo
 from basemodel.basemodels import User
 
@@ -199,7 +199,15 @@ class AccountList:
     # branch_id: int
     account_name: str
     account_number: str
+    status: str
     # accountTypeCode: str
+
+@strawberry.type
+class PersonalInfoAutoComplete:
+    first_name: str 
+    middle_name: str
+    last_name: str
+
 
 # class IsAuthenticated():
 #     message = "User is not authenticated"
@@ -416,6 +424,7 @@ class Query:
 
         """this is for querying in Branches with parameters of branch Name"""
         branches = getBranch()
+    
 
         filtered_branches = list(filter(lambda branch: search_term.lower() in branch.branch_name.lower(), branches))
 
@@ -440,7 +449,7 @@ class Query:
     @strawberry.field # this is for querying in  with parameters of branch Name
     async def searchAccounttype(self, search_term: str) -> List[AccountType]:
 
-        """this is for querying in Branches with parameters of branch Name"""
+        """this is for querying in Branches with parameters of branch Name for Autocomplete"""
         accountTypes = getAccountType()
 
         filtered_branches = list(filter(lambda accounttype: search_term.lower() in accounttype.type_of_deposit.lower(), accountTypes))
@@ -459,7 +468,8 @@ class Query:
        
         account_list = [AccountList(id=x.id,
                                     account_number=x.account_number,
-                                    account_name=x.account_name
+                                    account_name=x.account_name,
+                                    status=x.status
                                ) for x in data]
        
        
@@ -470,8 +480,64 @@ class Query:
     #     return info.context.user
 
     
-       
+    @strawberry.field # this is for autocomplete of Personal Info
+    async def getPersonalInfoGraphql(self, search_term: str) -> List[PersonalInfoAutoComplete]:
+        data = getPersonalInfo()
+        # print(data)
+        filtered_names = list(filter(lambda name: search_term.lower() in name.last_name.lower(), data))
 
+        full_names = []
+        for name in filtered_names:
+            full_name = f"{name.last_name}, {name.first_name} {name.middle_name}"
+            full_names.append(PersonalInfoAutoComplete(first_name=full_name, middle_name="", last_name=""))
+
+        return full_names
+
+        # full_names = []
+        # for name in filtered_names:
+        #     full_name = f"{name.last_name}, {name.first_name} {name.middle_name}"
+        #     full_names.append(PersonalInfoAutoComplete(first_name=name.first_name, middle_name=name.middle_name, last_name=name.last_name))
+            
+        # return full_names
+        # print(filtered_names)
+        # result = []
+        # for name in filtered_names:
+        #     full_name = name.last_name + ', ' + name.first_name + ' ' + name.middle_name
+        #     result.append(PersonalInfoAutoComplete(last_name=name.last_name, first_name=name.first_name, middle_name=name.middle_name))
+
+        # return result
+
+        # result = []
+        # for name in filtered_names:
+        #     full_name = name.last_name + ', ' + name.first_name + ' ' + name.middle_name
+        #     result.append(full_name)
+
+        # return result
+
+        # full_names = []
+        # for name in filtered_names:
+        #     # full_name = f"{name.lastName}, {name.firstName} {name.middleName}"
+        #     full_name = f"{name.last_name}, {name.middle_name}"
+        
+        #     full_names.append(full_name)
+
+        # return full_names
+
+
+        # person = PersonalInfoAutoComplete(
+        #         first_name='jerome',
+        #         middle_name='Recalde',
+        #         last_name='y',
+        #     )
+
+        # full_names = []
+        # for name in filtered_names:
+        #     full_name = f"{name.last_name}, {name.first_name} {name.middle_name}"
+        #     full_names.append(PersonalInfoAutoComplete(first_name=name.first_name, middle_name=name.middle_name, last_name=name.last_name))
+
+        # return full_name
+
+       
 
     
        

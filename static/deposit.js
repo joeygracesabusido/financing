@@ -15,7 +15,7 @@ const testgrapql = async () => {
         id
         accountNumber
         accountName
-        
+        status
       }
     }
   `;
@@ -30,13 +30,14 @@ const testgrapql = async () => {
     });
 
     const data = await response.json();
+    console.log(data)
 
         function filterData(searchValue) {
           return data.data.getAccountGrphql.filter(item => {
               const accountName = item.accountName.toLowerCase();
               const accountNumber = item.accountNumber.toLowerCase();
-              
-              return accountName.includes(searchValue) || accountNumber.includes(searchValue);
+              const status = item.status.toLowerCase();
+              return accountName.includes(searchValue) || accountNumber.includes(searchValue) || status.includes(status);
           });
       }
 
@@ -51,13 +52,15 @@ const testgrapql = async () => {
               accountNumber.textContent = item.accountNumber;
               const id = document.createElement("td");
               id.textContent = item.id;
+              const status = document.createElement("td");
+              status.textContent = item.status;
               
               
 
               tr.appendChild(id);
               tr.appendChild(accountNumber);
               tr.appendChild(accountName);
-             
+              tr.appendChild(status);
              
               
               tbody.appendChild(tr);

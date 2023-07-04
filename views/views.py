@@ -343,6 +343,20 @@ def insertPersonalInfo( first_name,
         session.close()
 
 
+def getPersonalInfo():
+    """This is for qurying Personal Info"""
+
+    with Session(engine) as session:
+        statement = select(PersonalInfo)
+                    
+        results = session.exec(statement) 
+
+        data = results.all()
+        
+        return data
+
+
+
 #======================================This is for Accounts========================================
 from config.models import Account
 def insertAccount(personal_info_id,account_type_id,branch_id,account_number,account_name):

@@ -24410,3 +24410,1348 @@ FROM branch
 FROM branch
 2023-06-23 22:10:10,271 INFO:[cached since 9.737s ago] {}
 2023-06-23 22:10:10,330 INFO:ROLLBACK
+2023-07-04 16:46:42,036 INFO:SELECT DATABASE()
+2023-07-04 16:46:42,037 INFO:[raw sql] {}
+2023-07-04 16:46:42,105 INFO:SELECT @@sql_mode
+2023-07-04 16:46:42,106 INFO:[raw sql] {}
+2023-07-04 16:46:42,138 INFO:SELECT @@lower_case_table_names
+2023-07-04 16:46:42,138 INFO:[raw sql] {}
+2023-07-04 16:46:42,215 INFO:BEGIN (implicit)
+2023-07-04 16:46:42,235 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-04 16:46:42,236 INFO:[generated in 0.00093s] {'username_1': 'joeysabusido'}
+2023-07-04 16:46:42,275 INFO:ROLLBACK
+2023-07-04 16:46:53,622 INFO:BEGIN (implicit)
+2023-07-04 16:46:53,625 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-04 16:46:53,626 INFO:[generated in 0.00112s] {}
+2023-07-04 16:46:53,661 INFO:ROLLBACK
+2023-07-04 16:46:55,536 INFO:BEGIN (implicit)
+2023-07-04 16:46:55,537 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-04 16:46:55,538 INFO:[cached since 1.913s ago] {}
+2023-07-04 16:46:55,562 INFO:ROLLBACK
+2023-07-04 16:47:01,506 INFO:BEGIN (implicit)
+2023-07-04 16:47:01,509 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-04 16:47:01,511 INFO:[generated in 0.00138s] {}
+2023-07-04 16:47:01,546 INFO:ROLLBACK
+2023-07-04 16:47:22,378 INFO:BEGIN (implicit)
+2023-07-04 16:47:22,380 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:47:22,381 INFO:[generated in 0.00080s] {}
+2023-07-04 16:47:22,425 INFO:ROLLBACK
+2023-07-04 16:49:06,763 INFO:BEGIN (implicit)
+2023-07-04 16:49:06,764 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:49:06,765 INFO:[cached since 104.4s ago] {}
+2023-07-04 16:49:06,803 INFO:ROLLBACK
+2023-07-04 16:50:16,465 INFO:SELECT DATABASE()
+2023-07-04 16:50:16,465 INFO:[raw sql] {}
+2023-07-04 16:50:16,547 INFO:SELECT @@sql_mode
+2023-07-04 16:50:16,547 INFO:[raw sql] {}
+2023-07-04 16:50:16,573 INFO:SELECT @@lower_case_table_names
+2023-07-04 16:50:16,573 INFO:[raw sql] {}
+2023-07-04 16:50:16,651 INFO:BEGIN (implicit)
+2023-07-04 16:50:16,690 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:50:16,690 INFO:[generated in 0.00091s] {}
+2023-07-04 16:50:16,854 INFO:ROLLBACK
+2023-07-04 16:50:16,962 ERROR:AccountList.__init__() got an unexpected keyword argument 'status'
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 460, in getAccount_grphql
+    account_list = [AccountList(id=x.id,
+  File "C:\financing\financing\routes\graph.py", line 460, in <listcomp>
+    account_list = [AccountList(id=x.id,
+TypeError: AccountList.__init__() got an unexpected keyword argument 'status'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 16:50:23,265 INFO:BEGIN (implicit)
+2023-07-04 16:50:23,265 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:50:23,265 INFO:[cached since 6.575s ago] {}
+2023-07-04 16:50:23,300 INFO:ROLLBACK
+2023-07-04 16:50:23,368 ERROR:AccountList.__init__() got an unexpected keyword argument 'status'
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 460, in getAccount_grphql
+    account_list = [AccountList(id=x.id,
+  File "C:\financing\financing\routes\graph.py", line 460, in <listcomp>
+    account_list = [AccountList(id=x.id,
+TypeError: AccountList.__init__() got an unexpected keyword argument 'status'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 16:51:14,047 INFO:BEGIN (implicit)
+2023-07-04 16:51:14,048 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:51:14,049 INFO:[cached since 57.36s ago] {}
+2023-07-04 16:51:14,105 INFO:ROLLBACK
+2023-07-04 16:51:14,207 ERROR:AccountList.__init__() got an unexpected keyword argument 'status'
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 460, in getAccount_grphql
+    account_list = [AccountList(id=x.id,
+  File "C:\financing\financing\routes\graph.py", line 460, in <listcomp>
+    account_list = [AccountList(id=x.id,
+TypeError: AccountList.__init__() got an unexpected keyword argument 'status'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 16:52:53,262 INFO:BEGIN (implicit)
+2023-07-04 16:52:53,263 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:52:53,263 INFO:[cached since 156.6s ago] {}
+2023-07-04 16:52:53,315 INFO:ROLLBACK
+2023-07-04 16:52:53,391 ERROR:AccountList.__init__() got an unexpected keyword argument 'status'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getAccountGrphql {
+  |   ^
+3 |     accountName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 460, in getAccount_grphql
+    account_list = [AccountList(id=x.id,
+  File "C:\financing\financing\routes\graph.py", line 460, in <listcomp>
+    account_list = [AccountList(id=x.id,
+TypeError: AccountList.__init__() got an unexpected keyword argument 'status'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 16:53:33,248 INFO:SELECT DATABASE()
+2023-07-04 16:53:33,248 INFO:[raw sql] {}
+2023-07-04 16:53:33,327 INFO:SELECT @@sql_mode
+2023-07-04 16:53:33,328 INFO:[raw sql] {}
+2023-07-04 16:53:33,363 INFO:SELECT @@lower_case_table_names
+2023-07-04 16:53:33,364 INFO:[raw sql] {}
+2023-07-04 16:53:33,432 INFO:BEGIN (implicit)
+2023-07-04 16:53:33,434 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,435 INFO:[generated in 0.00098s] {'table_schema': 'financing', 'table_name': 'role'}
+2023-07-04 16:53:33,487 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,488 INFO:[cached since 0.05391s ago] {'table_schema': 'financing', 'table_name': 'user'}
+2023-07-04 16:53:33,523 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,524 INFO:[cached since 0.09044s ago] {'table_schema': 'financing', 'table_name': 'userroleaccesstagging'}
+2023-07-04 16:53:33,560 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,561 INFO:[cached since 0.1274s ago] {'table_schema': 'financing', 'table_name': 'personalinfo'}
+2023-07-04 16:53:33,598 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,599 INFO:[cached since 0.1644s ago] {'table_schema': 'financing', 'table_name': 'branch'}
+2023-07-04 16:53:33,640 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,640 INFO:[cached since 0.2065s ago] {'table_schema': 'financing', 'table_name': 'accounttype'}
+2023-07-04 16:53:33,677 INFO:SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %(table_schema)s AND table_name = %(table_name)s
+2023-07-04 16:53:33,678 INFO:[cached since 0.2437s ago] {'table_schema': 'financing', 'table_name': 'account'}
+2023-07-04 16:53:33,713 INFO:COMMIT
+2023-07-04 16:54:40,031 INFO:SELECT DATABASE()
+2023-07-04 16:54:40,032 INFO:[raw sql] {}
+2023-07-04 16:54:40,100 INFO:SELECT @@sql_mode
+2023-07-04 16:54:40,101 INFO:[raw sql] {}
+2023-07-04 16:54:40,135 INFO:SELECT @@lower_case_table_names
+2023-07-04 16:54:40,136 INFO:[raw sql] {}
+2023-07-04 16:54:40,207 INFO:BEGIN (implicit)
+2023-07-04 16:54:40,242 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:54:40,243 INFO:[generated in 0.00094s] {}
+2023-07-04 16:54:40,298 INFO:ROLLBACK
+2023-07-04 16:54:40,367 ERROR:AccountList.__init__() got an unexpected keyword argument 'status'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getAccountGrphql {
+  |   ^
+3 |     id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 460, in getAccount_grphql
+    account_list = [AccountList(id=x.id,
+  File "C:\financing\financing\routes\graph.py", line 460, in <listcomp>
+    account_list = [AccountList(id=x.id,
+TypeError: AccountList.__init__() got an unexpected keyword argument 'status'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 16:55:33,801 INFO:SELECT DATABASE()
+2023-07-04 16:55:33,802 INFO:[raw sql] {}
+2023-07-04 16:55:33,870 INFO:SELECT @@sql_mode
+2023-07-04 16:55:33,871 INFO:[raw sql] {}
+2023-07-04 16:55:33,906 INFO:SELECT @@lower_case_table_names
+2023-07-04 16:55:33,906 INFO:[raw sql] {}
+2023-07-04 16:55:33,975 INFO:BEGIN (implicit)
+2023-07-04 16:55:33,995 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:55:33,996 INFO:[generated in 0.00077s] {}
+2023-07-04 16:55:34,048 INFO:ROLLBACK
+2023-07-04 16:55:47,773 INFO:BEGIN (implicit)
+2023-07-04 16:55:47,774 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:55:47,775 INFO:[cached since 13.78s ago] {}
+2023-07-04 16:55:47,814 INFO:ROLLBACK
+2023-07-04 16:58:10,908 INFO:BEGIN (implicit)
+2023-07-04 16:58:10,909 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:58:10,909 INFO:[cached since 156.9s ago] {}
+2023-07-04 16:58:10,944 INFO:ROLLBACK
+2023-07-04 16:58:26,732 INFO:BEGIN (implicit)
+2023-07-04 16:58:26,732 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:58:26,732 INFO:[cached since 172.7s ago] {}
+2023-07-04 16:58:26,768 INFO:ROLLBACK
+2023-07-04 16:59:40,356 INFO:BEGIN (implicit)
+2023-07-04 16:59:40,357 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 16:59:40,358 INFO:[cached since 246.4s ago] {}
+2023-07-04 16:59:40,502 INFO:ROLLBACK
+2023-07-04 17:02:08,082 INFO:BEGIN (implicit)
+2023-07-04 17:02:08,083 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:02:08,083 INFO:[cached since 394.1s ago] {}
+2023-07-04 17:02:08,124 INFO:ROLLBACK
+2023-07-04 17:02:34,442 INFO:BEGIN (implicit)
+2023-07-04 17:02:34,443 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:02:34,443 INFO:[cached since 420.4s ago] {}
+2023-07-04 17:02:34,481 INFO:ROLLBACK
+2023-07-04 17:09:52,135 INFO:BEGIN (implicit)
+2023-07-04 17:09:52,136 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:09:52,136 INFO:[cached since 858.1s ago] {}
+2023-07-04 17:10:11,371 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:7
+2 |     query {
+3 |       getAccountGrphql {
+  |       ^
+4 |         id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 458, in getAccount_grphql
+    data = getAccount()
+  File "C:\financing\financing\views\views.py", line 384, in getAccount
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 17:10:14,740 INFO:BEGIN (implicit)
+2023-07-04 17:10:14,741 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:10:14,742 INFO:[cached since 880.7s ago] {}
+2023-07-04 17:10:14,784 INFO:ROLLBACK
+2023-07-04 17:10:22,159 INFO:BEGIN (implicit)
+2023-07-04 17:10:22,159 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:10:22,160 INFO:[cached since 888.2s ago] {}
+2023-07-04 17:10:22,195 INFO:ROLLBACK
+2023-07-04 17:10:26,224 INFO:BEGIN (implicit)
+2023-07-04 17:10:26,225 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:10:26,225 INFO:[cached since 892.2s ago] {}
+2023-07-04 17:10:26,261 INFO:ROLLBACK
+2023-07-04 17:11:28,277 INFO:BEGIN (implicit)
+2023-07-04 17:11:28,278 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:11:28,279 INFO:[cached since 954.3s ago] {}
+2023-07-04 17:11:28,316 INFO:ROLLBACK
+2023-07-04 17:11:39,206 INFO:BEGIN (implicit)
+2023-07-04 17:11:39,207 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:11:39,207 INFO:[cached since 965.2s ago] {}
+2023-07-04 17:11:39,242 INFO:ROLLBACK
+2023-07-04 17:11:58,096 INFO:BEGIN (implicit)
+2023-07-04 17:11:58,109 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-04 17:11:58,109 INFO:[generated in 0.00084s] {'username_1': 'joeysabusido'}
+2023-07-04 17:11:58,147 INFO:ROLLBACK
+2023-07-04 17:12:04,182 INFO:BEGIN (implicit)
+2023-07-04 17:12:04,183 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:12:04,184 INFO:[cached since 990.2s ago] {}
+2023-07-04 17:12:04,219 INFO:ROLLBACK
+2023-07-04 17:12:19,198 INFO:BEGIN (implicit)
+2023-07-04 17:12:19,199 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:12:19,199 INFO:[cached since 1005s ago] {}
+2023-07-04 17:12:19,234 INFO:ROLLBACK
+2023-07-04 17:12:55,118 INFO:BEGIN (implicit)
+2023-07-04 17:12:55,119 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:12:55,120 INFO:[cached since 1041s ago] {}
+2023-07-04 17:12:55,160 INFO:ROLLBACK
+2023-07-04 17:14:49,459 INFO:BEGIN (implicit)
+2023-07-04 17:14:49,460 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-04 17:14:49,461 INFO:[cached since 171.4s ago] {'username_1': 'joeysabusido'}
+2023-07-04 17:14:49,498 INFO:ROLLBACK
+2023-07-04 17:14:54,494 INFO:BEGIN (implicit)
+2023-07-04 17:14:54,495 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:14:54,495 INFO:[cached since 1160s ago] {}
+2023-07-04 17:14:54,534 INFO:ROLLBACK
+2023-07-04 17:15:12,293 INFO:BEGIN (implicit)
+2023-07-04 17:15:12,294 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-04 17:15:12,295 INFO:[cached since 1178s ago] {}
+2023-07-04 17:15:12,332 INFO:ROLLBACK
+2023-07-04 17:17:57,246 INFO:BEGIN (implicit)
+2023-07-04 17:17:57,250 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-04 17:17:57,251 INFO:[generated in 0.00133s] {}
+2023-07-04 17:17:57,283 INFO:ROLLBACK
+2023-07-04 17:18:02,409 INFO:BEGIN (implicit)
+2023-07-04 17:18:02,412 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-04 17:18:02,414 INFO:[generated in 0.00126s] {}
+2023-07-04 17:18:02,450 INFO:ROLLBACK
+2023-07-04 18:24:29,479 INFO:SELECT DATABASE()
+2023-07-04 18:24:29,480 INFO:[raw sql] {}
+2023-07-04 18:24:29,554 INFO:SELECT @@sql_mode
+2023-07-04 18:24:29,555 INFO:[raw sql] {}
+2023-07-04 18:24:29,590 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:24:29,591 INFO:[raw sql] {}
+2023-07-04 18:24:29,660 INFO:BEGIN (implicit)
+2023-07-04 18:24:29,699 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:24:29,703 INFO:[generated in 0.00299s] {}
+2023-07-04 18:24:29,766 INFO:ROLLBACK
+2023-07-04 18:24:29,835 ERROR:'PersonalInfo' object is not subscriptable
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "sabusi") {
+  |   ^
+3 |     fullName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 485, in getPersonalInfoGraphql
+    filtered_names = list(filter(lambda name: search_term.lower() in name['last_name'].lower(), data))
+  File "C:\financing\financing\routes\graph.py", line 485, in <lambda>
+    filtered_names = list(filter(lambda name: search_term.lower() in name['last_name'].lower(), data))
+TypeError: 'PersonalInfo' object is not subscriptable
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:25:00,020 INFO:SELECT DATABASE()
+2023-07-04 18:25:00,021 INFO:[raw sql] {}
+2023-07-04 18:25:00,089 INFO:SELECT @@sql_mode
+2023-07-04 18:25:00,089 INFO:[raw sql] {}
+2023-07-04 18:25:00,124 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:25:00,125 INFO:[raw sql] {}
+2023-07-04 18:25:00,194 INFO:BEGIN (implicit)
+2023-07-04 18:25:00,227 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:25:00,228 INFO:[generated in 0.00170s] {}
+2023-07-04 18:25:00,273 INFO:ROLLBACK
+2023-07-04 18:25:00,349 ERROR:'PersonalInfo' object is not subscriptable
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "sabusi") {
+  |   ^
+3 |     fullName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 485, in getPersonalInfoGraphql
+    filtered_names = list(filter(lambda name: search_term.lower() in name['last_name'].lower(), data))
+  File "C:\financing\financing\routes\graph.py", line 485, in <lambda>
+    filtered_names = list(filter(lambda name: search_term.lower() in name['last_name'].lower(), data))
+TypeError: 'PersonalInfo' object is not subscriptable
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:26:27,970 INFO:SELECT DATABASE()
+2023-07-04 18:26:27,971 INFO:[raw sql] {}
+2023-07-04 18:26:28,038 INFO:SELECT @@sql_mode
+2023-07-04 18:26:28,039 INFO:[raw sql] {}
+2023-07-04 18:26:28,073 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:26:28,074 INFO:[raw sql] {}
+2023-07-04 18:26:28,142 INFO:BEGIN (implicit)
+2023-07-04 18:26:28,181 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:26:28,184 INFO:[generated in 0.00268s] {}
+2023-07-04 18:26:28,226 INFO:ROLLBACK
+2023-07-04 18:26:28,301 ERROR:Cannot return null for non-nullable field Query.getPersonalInfoGraphql.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "sabusi") {
+  |   ^
+3 |     fullName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 620, in complete_value
+    raise TypeError(
+TypeError: Cannot return null for non-nullable field Query.getPersonalInfoGraphql.
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:26:55,583 INFO:BEGIN (implicit)
+2023-07-04 18:26:55,584 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:26:55,585 INFO:[cached since 27.4s ago] {}
+2023-07-04 18:26:55,632 INFO:ROLLBACK
+2023-07-04 18:26:55,703 ERROR:Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     fullName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 612, in complete_value
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 632, in complete_value
+    return self.complete_list_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 686, in complete_list_value
+    raise GraphQLError(
+graphql.error.graphql_error.GraphQLError: Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:31:21,320 INFO:SELECT DATABASE()
+2023-07-04 18:31:21,321 INFO:[raw sql] {}
+2023-07-04 18:31:21,390 INFO:SELECT @@sql_mode
+2023-07-04 18:31:21,391 INFO:[raw sql] {}
+2023-07-04 18:31:21,425 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:31:21,426 INFO:[raw sql] {}
+2023-07-04 18:31:21,495 INFO:BEGIN (implicit)
+2023-07-04 18:31:21,534 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:31:21,537 INFO:[generated in 0.00280s] {}
+2023-07-04 18:31:21,580 INFO:ROLLBACK
+2023-07-04 18:31:21,653 ERROR:PersonalInfoAutoComplete.__init__() got an unexpected keyword argument 'last_name'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     fullName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 490, in getPersonalInfoGraphql
+    result.append(PersonalInfoAutoComplete(last_name=name.last_name, first_name=name.first_name, middle_name=name.middle_name))
+TypeError: PersonalInfoAutoComplete.__init__() got an unexpected keyword argument 'last_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:32:52,201 INFO:SELECT DATABASE()
+2023-07-04 18:32:52,202 INFO:[raw sql] {}
+2023-07-04 18:32:52,269 INFO:SELECT @@sql_mode
+2023-07-04 18:32:52,270 INFO:[raw sql] {}
+2023-07-04 18:32:52,304 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:32:52,305 INFO:[raw sql] {}
+2023-07-04 18:32:52,375 INFO:BEGIN (implicit)
+2023-07-04 18:32:52,404 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:32:52,406 INFO:[generated in 0.00163s] {}
+2023-07-04 18:32:52,448 INFO:ROLLBACK
+2023-07-04 18:32:52,519 ERROR:'PersonalInfo' object has no attribute 'fullName'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     fullName
+  |     ^
+4 |   }
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'PersonalInfo' object has no attribute 'fullName'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:35:01,068 INFO:SELECT DATABASE()
+2023-07-04 18:35:01,069 INFO:[raw sql] {}
+2023-07-04 18:35:01,142 INFO:SELECT @@sql_mode
+2023-07-04 18:35:01,143 INFO:[raw sql] {}
+2023-07-04 18:35:01,177 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:35:01,178 INFO:[raw sql] {}
+2023-07-04 18:35:01,247 INFO:BEGIN (implicit)
+2023-07-04 18:35:01,286 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:35:01,288 INFO:[generated in 0.00232s] {}
+2023-07-04 18:35:01,339 INFO:ROLLBACK
+2023-07-04 18:35:54,524 INFO:SELECT DATABASE()
+2023-07-04 18:35:54,524 INFO:[raw sql] {}
+2023-07-04 18:35:54,600 INFO:SELECT @@sql_mode
+2023-07-04 18:35:54,601 INFO:[raw sql] {}
+2023-07-04 18:35:54,635 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:35:54,636 INFO:[raw sql] {}
+2023-07-04 18:35:54,706 INFO:BEGIN (implicit)
+2023-07-04 18:35:54,740 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:35:54,742 INFO:[generated in 0.00168s] {}
+2023-07-04 18:35:54,784 INFO:ROLLBACK
+2023-07-04 18:35:54,858 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:39:57,981 INFO:SELECT DATABASE()
+2023-07-04 18:39:57,982 INFO:[raw sql] {}
+2023-07-04 18:39:58,049 INFO:SELECT @@sql_mode
+2023-07-04 18:39:58,050 INFO:[raw sql] {}
+2023-07-04 18:39:58,085 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:39:58,086 INFO:[raw sql] {}
+2023-07-04 18:39:58,158 INFO:BEGIN (implicit)
+2023-07-04 18:39:58,183 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:39:58,185 INFO:[generated in 0.00156s] {}
+2023-07-04 18:39:58,228 INFO:ROLLBACK
+2023-07-04 18:39:58,297 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:41:53,633 INFO:SELECT DATABASE()
+2023-07-04 18:41:53,634 INFO:[raw sql] {}
+2023-07-04 18:41:53,703 INFO:SELECT @@sql_mode
+2023-07-04 18:41:53,704 INFO:[raw sql] {}
+2023-07-04 18:41:53,738 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:41:53,739 INFO:[raw sql] {}
+2023-07-04 18:41:53,807 INFO:BEGIN (implicit)
+2023-07-04 18:41:53,844 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:41:53,846 INFO:[generated in 0.00158s] {}
+2023-07-04 18:41:53,891 INFO:ROLLBACK
+2023-07-04 18:41:53,960 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:42:21,049 INFO:SELECT DATABASE()
+2023-07-04 18:42:21,050 INFO:[raw sql] {}
+2023-07-04 18:42:21,119 INFO:SELECT @@sql_mode
+2023-07-04 18:42:21,120 INFO:[raw sql] {}
+2023-07-04 18:42:21,154 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:42:21,155 INFO:[raw sql] {}
+2023-07-04 18:42:21,224 INFO:BEGIN (implicit)
+2023-07-04 18:42:21,254 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:42:21,256 INFO:[generated in 0.00178s] {}
+2023-07-04 18:42:21,297 INFO:ROLLBACK
+2023-07-04 18:42:54,094 INFO:SELECT DATABASE()
+2023-07-04 18:42:54,095 INFO:[raw sql] {}
+2023-07-04 18:42:54,162 INFO:SELECT @@sql_mode
+2023-07-04 18:42:54,162 INFO:[raw sql] {}
+2023-07-04 18:42:54,199 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:42:54,200 INFO:[raw sql] {}
+2023-07-04 18:42:54,271 INFO:BEGIN (implicit)
+2023-07-04 18:42:54,310 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:42:54,312 INFO:[generated in 0.00192s] {}
+2023-07-04 18:42:54,359 INFO:ROLLBACK
+2023-07-04 18:42:54,429 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:43:33,297 INFO:SELECT DATABASE()
+2023-07-04 18:43:33,298 INFO:[raw sql] {}
+2023-07-04 18:43:33,364 INFO:SELECT @@sql_mode
+2023-07-04 18:43:33,365 INFO:[raw sql] {}
+2023-07-04 18:43:33,402 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:43:33,403 INFO:[raw sql] {}
+2023-07-04 18:43:33,472 INFO:BEGIN (implicit)
+2023-07-04 18:43:33,510 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:43:33,512 INFO:[generated in 0.00173s] {}
+2023-07-04 18:43:33,554 INFO:ROLLBACK
+2023-07-04 18:45:23,354 INFO:SELECT DATABASE()
+2023-07-04 18:45:23,355 INFO:[raw sql] {}
+2023-07-04 18:45:23,422 INFO:SELECT @@sql_mode
+2023-07-04 18:45:23,423 INFO:[raw sql] {}
+2023-07-04 18:45:23,458 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:45:23,459 INFO:[raw sql] {}
+2023-07-04 18:45:23,528 INFO:BEGIN (implicit)
+2023-07-04 18:45:23,563 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:45:23,565 INFO:[generated in 0.00184s] {}
+2023-07-04 18:45:23,605 INFO:ROLLBACK
+2023-07-04 18:45:23,674 ERROR:'PersonalInfo' object has no attribute 'lastName'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 505, in getPersonalInfoGraphql
+    full_name = f"{name.lastName}, {name.firstName} {name.middleName}"
+AttributeError: 'PersonalInfo' object has no attribute 'lastName'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:46:45,460 INFO:SELECT DATABASE()
+2023-07-04 18:46:45,461 INFO:[raw sql] {}
+2023-07-04 18:46:45,528 INFO:SELECT @@sql_mode
+2023-07-04 18:46:45,529 INFO:[raw sql] {}
+2023-07-04 18:46:45,563 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:46:45,564 INFO:[raw sql] {}
+2023-07-04 18:46:45,633 INFO:BEGIN (implicit)
+2023-07-04 18:46:45,671 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:46:45,672 INFO:[generated in 0.00171s] {}
+2023-07-04 18:46:45,713 INFO:ROLLBACK
+2023-07-04 18:46:45,782 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:48:05,735 INFO:SELECT DATABASE()
+2023-07-04 18:48:05,736 INFO:[raw sql] {}
+2023-07-04 18:48:05,804 INFO:SELECT @@sql_mode
+2023-07-04 18:48:05,805 INFO:[raw sql] {}
+2023-07-04 18:48:05,839 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:48:05,840 INFO:[raw sql] {}
+2023-07-04 18:48:05,907 INFO:BEGIN (implicit)
+2023-07-04 18:48:05,945 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:48:05,948 INFO:[generated in 0.00269s] {}
+2023-07-04 18:48:05,989 INFO:ROLLBACK
+2023-07-04 18:48:06,060 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:48:50,488 INFO:SELECT DATABASE()
+2023-07-04 18:48:50,489 INFO:[raw sql] {}
+2023-07-04 18:48:50,560 INFO:SELECT @@sql_mode
+2023-07-04 18:48:50,561 INFO:[raw sql] {}
+2023-07-04 18:48:50,594 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:48:50,595 INFO:[raw sql] {}
+2023-07-04 18:48:50,663 INFO:BEGIN (implicit)
+2023-07-04 18:48:50,703 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:48:50,706 INFO:[generated in 0.00283s] {}
+2023-07-04 18:48:50,748 INFO:ROLLBACK
+2023-07-04 18:48:50,819 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:49:22,011 INFO:SELECT DATABASE()
+2023-07-04 18:49:22,012 INFO:[raw sql] {}
+2023-07-04 18:49:22,079 INFO:SELECT @@sql_mode
+2023-07-04 18:49:22,080 INFO:[raw sql] {}
+2023-07-04 18:49:22,114 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:49:22,115 INFO:[raw sql] {}
+2023-07-04 18:49:22,183 INFO:BEGIN (implicit)
+2023-07-04 18:49:22,207 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:49:22,209 INFO:[generated in 0.00151s] {}
+2023-07-04 18:49:22,246 INFO:ROLLBACK
+2023-07-04 18:49:22,317 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:50:35,948 INFO:SELECT DATABASE()
+2023-07-04 18:50:35,949 INFO:[raw sql] {}
+2023-07-04 18:50:36,019 INFO:SELECT @@sql_mode
+2023-07-04 18:50:36,020 INFO:[raw sql] {}
+2023-07-04 18:50:36,053 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:50:36,054 INFO:[raw sql] {}
+2023-07-04 18:50:36,123 INFO:BEGIN (implicit)
+2023-07-04 18:50:36,160 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:50:36,162 INFO:[generated in 0.00161s] {}
+2023-07-04 18:50:36,200 INFO:ROLLBACK
+2023-07-04 18:50:36,271 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:51:08,459 ERROR:Field 'getPersonalInfoGraphql' of type '[PersonalInfoAutoComplete!]!' must have a selection of subfields. Did you mean 'getPersonalInfoGraphql { ... }'?
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y")
+  |   ^
+3 | }
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-04 18:51:25,960 INFO:BEGIN (implicit)
+2023-07-04 18:51:25,961 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:51:25,962 INFO:[cached since 49.8s ago] {}
+2023-07-04 18:51:26,004 INFO:ROLLBACK
+2023-07-04 18:51:26,076 ERROR:'str' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'str' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:56:51,104 INFO:SELECT DATABASE()
+2023-07-04 18:56:51,105 INFO:[raw sql] {}
+2023-07-04 18:56:51,173 INFO:SELECT @@sql_mode
+2023-07-04 18:56:51,174 INFO:[raw sql] {}
+2023-07-04 18:56:51,209 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:56:51,210 INFO:[raw sql] {}
+2023-07-04 18:56:51,279 INFO:BEGIN (implicit)
+2023-07-04 18:56:51,311 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:56:51,313 INFO:[generated in 0.00165s] {}
+2023-07-04 18:56:51,358 INFO:ROLLBACK
+2023-07-04 18:57:10,030 INFO:SELECT DATABASE()
+2023-07-04 18:57:10,031 INFO:[raw sql] {}
+2023-07-04 18:57:10,099 INFO:SELECT @@sql_mode
+2023-07-04 18:57:10,100 INFO:[raw sql] {}
+2023-07-04 18:57:10,134 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:57:10,135 INFO:[raw sql] {}
+2023-07-04 18:57:10,203 INFO:BEGIN (implicit)
+2023-07-04 18:57:10,234 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:57:10,236 INFO:[generated in 0.00169s] {}
+2023-07-04 18:57:10,274 INFO:ROLLBACK
+2023-07-04 18:57:10,345 ERROR:Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 612, in complete_value
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 632, in complete_value
+    return self.complete_list_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 686, in complete_list_value
+    raise GraphQLError(
+graphql.error.graphql_error.GraphQLError: Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:58:07,374 INFO:SELECT DATABASE()
+2023-07-04 18:58:07,375 INFO:[raw sql] {}
+2023-07-04 18:58:07,443 INFO:SELECT @@sql_mode
+2023-07-04 18:58:07,444 INFO:[raw sql] {}
+2023-07-04 18:58:07,478 INFO:SELECT @@lower_case_table_names
+2023-07-04 18:58:07,479 INFO:[raw sql] {}
+2023-07-04 18:58:07,548 INFO:BEGIN (implicit)
+2023-07-04 18:58:07,582 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 18:58:07,584 INFO:[generated in 0.00186s] {}
+2023-07-04 18:58:07,623 INFO:ROLLBACK
+2023-07-04 18:58:07,692 ERROR:Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 612, in complete_value
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 632, in complete_value
+    return self.complete_list_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 686, in complete_list_value
+    raise GraphQLError(
+graphql.error.graphql_error.GraphQLError: Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 18:59:28,141 ERROR:Field 'getPersonalInfoGraphql' must not have a selection since type 'String!' has no subfields.
+
+GraphQL request:2:43
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |                                           ^
+3 |     firstName
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-04 19:01:27,974 INFO:SELECT DATABASE()
+2023-07-04 19:01:27,975 INFO:[raw sql] {}
+2023-07-04 19:01:28,042 INFO:SELECT @@sql_mode
+2023-07-04 19:01:28,043 INFO:[raw sql] {}
+2023-07-04 19:01:28,078 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:01:28,079 INFO:[raw sql] {}
+2023-07-04 19:01:28,148 INFO:BEGIN (implicit)
+2023-07-04 19:01:28,183 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:01:28,184 INFO:[generated in 0.00166s] {}
+2023-07-04 19:01:28,224 INFO:ROLLBACK
+2023-07-04 19:02:35,865 INFO:SELECT DATABASE()
+2023-07-04 19:02:35,866 INFO:[raw sql] {}
+2023-07-04 19:02:35,941 INFO:SELECT @@sql_mode
+2023-07-04 19:02:35,942 INFO:[raw sql] {}
+2023-07-04 19:02:35,979 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:02:35,980 INFO:[raw sql] {}
+2023-07-04 19:02:36,066 INFO:BEGIN (implicit)
+2023-07-04 19:02:36,105 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:02:36,108 INFO:[generated in 0.00279s] {}
+2023-07-04 19:02:36,149 INFO:ROLLBACK
+2023-07-04 19:02:36,223 ERROR:Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 527, in await_result
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 612, in complete_value
+    completed = self.complete_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 632, in complete_value
+    return self.complete_list_value(
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 686, in complete_list_value
+    raise GraphQLError(
+graphql.error.graphql_error.GraphQLError: Expected Iterable, but did not find one for field 'Query.getPersonalInfoGraphql'.
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 19:02:58,624 INFO:SELECT DATABASE()
+2023-07-04 19:02:58,625 INFO:[raw sql] {}
+2023-07-04 19:02:58,693 INFO:SELECT @@sql_mode
+2023-07-04 19:02:58,693 INFO:[raw sql] {}
+2023-07-04 19:02:58,728 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:02:58,729 INFO:[raw sql] {}
+2023-07-04 19:02:58,799 INFO:BEGIN (implicit)
+2023-07-04 19:02:58,836 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:02:58,838 INFO:[generated in 0.00151s] {}
+2023-07-04 19:02:58,878 INFO:ROLLBACK
+2023-07-04 19:02:58,955 ERROR:'tuple' object has no attribute 'first_name'
+
+GraphQL request:3:5
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+3 |     firstName
+  |     ^
+4 |     lastName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 521, in execute_field
+    result = resolve_fn(source, info, **args)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 463, in _get_basic_result
+    return field.get_result(_source, info=None, args=[], kwargs={})
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\field.py", line 180, in get_result
+    return self.default_resolver(source, self.python_name)
+AttributeError: 'tuple' object has no attribute 'first_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 19:03:58,959 INFO:SELECT DATABASE()
+2023-07-04 19:03:58,960 INFO:[raw sql] {}
+2023-07-04 19:03:59,029 INFO:SELECT @@sql_mode
+2023-07-04 19:03:59,031 INFO:[raw sql] {}
+2023-07-04 19:03:59,066 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:03:59,067 INFO:[raw sql] {}
+2023-07-04 19:03:59,150 INFO:BEGIN (implicit)
+2023-07-04 19:03:59,171 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:03:59,172 INFO:[generated in 0.00150s] {}
+2023-07-04 19:03:59,209 INFO:ROLLBACK
+2023-07-04 19:05:55,595 INFO:SELECT DATABASE()
+2023-07-04 19:05:55,596 INFO:[raw sql] {}
+2023-07-04 19:05:55,668 INFO:SELECT @@sql_mode
+2023-07-04 19:05:55,669 INFO:[raw sql] {}
+2023-07-04 19:05:55,704 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:05:55,705 INFO:[raw sql] {}
+2023-07-04 19:05:55,775 INFO:BEGIN (implicit)
+2023-07-04 19:05:55,813 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:05:55,816 INFO:[generated in 0.00286s] {}
+2023-07-04 19:05:55,860 INFO:ROLLBACK
+2023-07-04 19:06:35,047 INFO:SELECT DATABASE()
+2023-07-04 19:06:35,048 INFO:[raw sql] {}
+2023-07-04 19:06:35,116 INFO:SELECT @@sql_mode
+2023-07-04 19:06:35,117 INFO:[raw sql] {}
+2023-07-04 19:06:35,154 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:06:35,154 INFO:[raw sql] {}
+2023-07-04 19:06:35,223 INFO:BEGIN (implicit)
+2023-07-04 19:06:35,262 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:06:35,265 INFO:[generated in 0.00292s] {}
+2023-07-04 19:06:35,307 INFO:ROLLBACK
+2023-07-04 19:06:35,377 ERROR:PersonalInfoAutoComplete.__init__() missing 2 required keyword-only arguments: 'middle_name' and 'last_name'
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\routes\graph.py", line 492, in getPersonalInfoGraphql
+    full_names.append(PersonalInfoAutoComplete(first_name=full_name))
+TypeError: PersonalInfoAutoComplete.__init__() missing 2 required keyword-only arguments: 'middle_name' and 'last_name'
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-04 19:07:30,745 INFO:SELECT DATABASE()
+2023-07-04 19:07:30,746 INFO:[raw sql] {}
+2023-07-04 19:07:30,818 INFO:SELECT @@sql_mode
+2023-07-04 19:07:30,819 INFO:[raw sql] {}
+2023-07-04 19:07:30,854 INFO:SELECT @@lower_case_table_names
+2023-07-04 19:07:30,855 INFO:[raw sql] {}
+2023-07-04 19:07:30,927 INFO:BEGIN (implicit)
+2023-07-04 19:07:30,966 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-04 19:07:30,970 INFO:[generated in 0.00287s] {}
+2023-07-04 19:07:31,008 INFO:ROLLBACK
