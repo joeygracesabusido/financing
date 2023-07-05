@@ -25755,3 +25755,1884 @@ Stack (most recent call last):
 FROM personalinfo
 2023-07-04 19:07:30,970 INFO:[generated in 0.00287s] {}
 2023-07-04 19:07:31,008 INFO:ROLLBACK
+2023-07-05 12:29:11,669 INFO:SELECT DATABASE()
+2023-07-05 12:29:11,670 INFO:[raw sql] {}
+2023-07-05 12:29:11,739 INFO:SELECT @@sql_mode
+2023-07-05 12:29:11,740 INFO:[raw sql] {}
+2023-07-05 12:29:11,775 INFO:SELECT @@lower_case_table_names
+2023-07-05 12:29:11,776 INFO:[raw sql] {}
+2023-07-05 12:29:11,847 INFO:BEGIN (implicit)
+2023-07-05 12:29:11,882 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 12:29:11,883 INFO:[generated in 0.00162s] {}
+2023-07-05 12:29:11,926 INFO:ROLLBACK
+2023-07-05 12:54:51,969 INFO:SELECT DATABASE()
+2023-07-05 12:54:51,969 INFO:[raw sql] {}
+2023-07-05 12:54:52,053 INFO:SELECT @@sql_mode
+2023-07-05 12:54:52,053 INFO:[raw sql] {}
+2023-07-05 12:54:52,079 INFO:SELECT @@lower_case_table_names
+2023-07-05 12:54:52,079 INFO:[raw sql] {}
+2023-07-05 12:54:52,159 INFO:BEGIN (implicit)
+2023-07-05 12:54:52,203 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-05 12:54:52,204 INFO:[generated in 0.00127s] {'username_1': 'joeysabusido'}
+2023-07-05 12:54:52,243 INFO:ROLLBACK
+2023-07-05 12:54:58,616 INFO:BEGIN (implicit)
+2023-07-05 12:54:58,618 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 12:54:58,618 INFO:[generated in 0.00086s] {}
+2023-07-05 12:54:58,668 INFO:ROLLBACK
+2023-07-05 12:55:07,382 INFO:BEGIN (implicit)
+2023-07-05 12:55:07,385 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 12:55:07,386 INFO:[generated in 0.00127s] {}
+2023-07-05 12:55:07,420 INFO:ROLLBACK
+2023-07-05 12:55:07,831 INFO:BEGIN (implicit)
+2023-07-05 12:55:07,832 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 12:55:07,833 INFO:[cached since 0.4482s ago] {}
+2023-07-05 12:55:07,856 INFO:ROLLBACK
+2023-07-05 12:55:11,481 INFO:BEGIN (implicit)
+2023-07-05 12:55:11,484 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 12:55:11,485 INFO:[generated in 0.00132s] {}
+2023-07-05 12:55:11,521 INFO:ROLLBACK
+2023-07-05 12:55:20,895 INFO:BEGIN (implicit)
+2023-07-05 12:55:20,896 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 12:55:20,896 INFO:[cached since 22.28s ago] {}
+2023-07-05 12:55:20,931 INFO:ROLLBACK
+2023-07-05 12:59:17,517 INFO:BEGIN (implicit)
+2023-07-05 12:59:17,518 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 12:59:17,519 INFO:[cached since 258.9s ago] {}
+2023-07-05 12:59:17,556 INFO:ROLLBACK
+2023-07-05 12:59:38,044 INFO:BEGIN (implicit)
+2023-07-05 12:59:38,044 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-05 12:59:38,044 INFO:[cached since 285.9s ago] {'username_1': 'joeysabusido'}
+2023-07-05 12:59:38,094 INFO:ROLLBACK
+2023-07-05 12:59:43,973 INFO:BEGIN (implicit)
+2023-07-05 12:59:43,974 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 12:59:43,975 INFO:[cached since 285.4s ago] {}
+2023-07-05 12:59:44,010 INFO:ROLLBACK
+2023-07-05 13:00:01,319 INFO:BEGIN (implicit)
+2023-07-05 13:00:01,319 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:00:01,320 INFO:[cached since 302.7s ago] {}
+2023-07-05 13:00:01,354 INFO:ROLLBACK
+2023-07-05 13:00:51,844 INFO:BEGIN (implicit)
+2023-07-05 13:00:51,845 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:00:51,846 INFO:[cached since 353.2s ago] {}
+2023-07-05 13:00:51,933 INFO:ROLLBACK
+2023-07-05 13:01:44,699 INFO:BEGIN (implicit)
+2023-07-05 13:01:44,700 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:01:44,701 INFO:[cached since 406.1s ago] {}
+2023-07-05 13:01:44,740 INFO:ROLLBACK
+2023-07-05 13:02:34,003 INFO:BEGIN (implicit)
+2023-07-05 13:02:34,004 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:02:34,005 INFO:[cached since 455.4s ago] {}
+2023-07-05 13:02:34,043 INFO:ROLLBACK
+2023-07-05 13:03:06,474 INFO:BEGIN (implicit)
+2023-07-05 13:03:06,475 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:03:06,476 INFO:[cached since 487.9s ago] {}
+2023-07-05 13:03:06,512 INFO:ROLLBACK
+2023-07-05 13:03:49,283 INFO:BEGIN (implicit)
+2023-07-05 13:03:49,284 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:03:49,284 INFO:[cached since 530.7s ago] {}
+2023-07-05 13:03:49,324 INFO:ROLLBACK
+2023-07-05 13:04:36,594 INFO:BEGIN (implicit)
+2023-07-05 13:04:36,595 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:04:36,596 INFO:[cached since 578s ago] {}
+2023-07-05 13:04:36,633 INFO:ROLLBACK
+2023-07-05 13:04:55,723 INFO:BEGIN (implicit)
+2023-07-05 13:04:55,724 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:04:55,725 INFO:[cached since 597.1s ago] {}
+2023-07-05 13:04:55,759 INFO:ROLLBACK
+2023-07-05 13:05:08,562 INFO:BEGIN (implicit)
+2023-07-05 13:05:08,562 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:05:08,564 INFO:[cached since 609.9s ago] {}
+2023-07-05 13:05:08,600 INFO:ROLLBACK
+2023-07-05 13:05:47,937 INFO:BEGIN (implicit)
+2023-07-05 13:05:47,938 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:05:47,939 INFO:[cached since 649.3s ago] {}
+2023-07-05 13:05:47,977 INFO:ROLLBACK
+2023-07-05 13:05:55,026 INFO:BEGIN (implicit)
+2023-07-05 13:05:55,027 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:05:55,028 INFO:[cached since 656.4s ago] {}
+2023-07-05 13:05:55,062 INFO:ROLLBACK
+2023-07-05 13:06:07,681 INFO:BEGIN (implicit)
+2023-07-05 13:06:07,682 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:06:07,683 INFO:[cached since 669.1s ago] {}
+2023-07-05 13:06:07,718 INFO:ROLLBACK
+2023-07-05 13:06:51,457 INFO:BEGIN (implicit)
+2023-07-05 13:06:51,458 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:06:51,459 INFO:[cached since 712.8s ago] {}
+2023-07-05 13:06:51,496 INFO:ROLLBACK
+2023-07-05 13:06:58,313 INFO:BEGIN (implicit)
+2023-07-05 13:06:58,314 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:06:58,315 INFO:[cached since 719.7s ago] {}
+2023-07-05 13:06:58,349 INFO:ROLLBACK
+2023-07-05 13:07:18,801 INFO:BEGIN (implicit)
+2023-07-05 13:07:18,802 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:07:18,803 INFO:[cached since 740.2s ago] {}
+2023-07-05 13:07:18,840 INFO:ROLLBACK
+2023-07-05 13:12:08,415 INFO:BEGIN (implicit)
+2023-07-05 13:12:08,416 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:12:08,416 INFO:[cached since 1030s ago] {}
+2023-07-05 13:12:08,454 INFO:ROLLBACK
+2023-07-05 13:14:16,317 INFO:BEGIN (implicit)
+2023-07-05 13:14:16,319 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:14:16,320 INFO:[cached since 1158s ago] {}
+2023-07-05 13:14:16,362 INFO:ROLLBACK
+2023-07-05 13:14:28,126 INFO:BEGIN (implicit)
+2023-07-05 13:14:28,127 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:14:28,127 INFO:[cached since 1170s ago] {}
+2023-07-05 13:14:28,162 INFO:ROLLBACK
+2023-07-05 13:15:12,897 INFO:BEGIN (implicit)
+2023-07-05 13:15:12,897 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-05 13:15:12,897 INFO:[cached since 1221s ago] {'username_1': 'joeysabusido'}
+2023-07-05 13:15:12,936 INFO:ROLLBACK
+2023-07-05 13:15:18,173 INFO:BEGIN (implicit)
+2023-07-05 13:15:18,174 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:15:18,175 INFO:[cached since 1220s ago] {}
+2023-07-05 13:15:18,210 INFO:ROLLBACK
+2023-07-05 13:15:39,760 INFO:BEGIN (implicit)
+2023-07-05 13:15:39,761 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 13:15:39,762 INFO:[cached since 1232s ago] {}
+2023-07-05 13:15:39,797 INFO:ROLLBACK
+2023-07-05 13:23:46,065 INFO:BEGIN (implicit)
+2023-07-05 13:23:46,076 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:23:46,078 INFO:[generated in 0.00179s] {}
+2023-07-05 13:24:07,726 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "y") {
+  |   ^
+3 |     firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\views\query.py", line 221, in getPersonalInfoGraphql
+    data = getPersonalInfo()
+  File "C:\financing\financing\views\views.py", line 352, in getPersonalInfo
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-05 13:24:41,096 INFO:BEGIN (implicit)
+2023-07-05 13:24:41,098 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:24:41,100 INFO:[cached since 55.02s ago] {}
+2023-07-05 13:24:41,148 INFO:ROLLBACK
+2023-07-05 13:26:03,761 INFO:BEGIN (implicit)
+2023-07-05 13:26:03,761 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:26:03,762 INFO:[cached since 1865s ago] {}
+2023-07-05 13:26:03,800 INFO:ROLLBACK
+2023-07-05 13:26:08,813 INFO:BEGIN (implicit)
+2023-07-05 13:26:08,814 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 13:26:08,815 INFO:[cached since 1861s ago] {}
+2023-07-05 13:26:08,842 INFO:ROLLBACK
+2023-07-05 13:26:12,281 INFO:BEGIN (implicit)
+2023-07-05 13:26:12,282 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 13:26:12,283 INFO:[cached since 1861s ago] {}
+2023-07-05 13:26:12,314 INFO:ROLLBACK
+2023-07-05 13:26:16,561 INFO:BEGIN (implicit)
+2023-07-05 13:26:16,562 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:26:16,564 INFO:[cached since 150.5s ago] {}
+2023-07-05 13:26:16,612 INFO:ROLLBACK
+2023-07-05 13:36:21,444 INFO:BEGIN (implicit)
+2023-07-05 13:36:21,445 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:21,447 INFO:[cached since 755.4s ago] {}
+2023-07-05 13:36:40,663 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:13
+2 |           query {
+3 |             getPersonalInfoGraphql(searchTerm: "s") {
+  |             ^
+4 |                 firstName
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\views\query.py", line 221, in getPersonalInfoGraphql
+    data = getPersonalInfo()
+  File "C:\financing\financing\views\views.py", line 352, in getPersonalInfo
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-05 13:36:40,979 INFO:BEGIN (implicit)
+2023-07-05 13:36:40,980 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:40,982 INFO:[cached since 774.9s ago] {}
+2023-07-05 13:36:41,023 INFO:ROLLBACK
+2023-07-05 13:36:41,092 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,093 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,095 INFO:[cached since 775s ago] {}
+2023-07-05 13:36:41,131 INFO:ROLLBACK
+2023-07-05 13:36:41,198 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,199 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,201 INFO:[cached since 775.1s ago] {}
+2023-07-05 13:36:41,243 INFO:ROLLBACK
+2023-07-05 13:36:41,309 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,310 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,312 INFO:[cached since 775.2s ago] {}
+2023-07-05 13:36:41,349 INFO:ROLLBACK
+2023-07-05 13:36:41,420 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,421 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,424 INFO:[cached since 775.3s ago] {}
+2023-07-05 13:36:41,461 INFO:ROLLBACK
+2023-07-05 13:36:41,537 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,538 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,539 INFO:[cached since 775.5s ago] {}
+2023-07-05 13:36:41,579 INFO:ROLLBACK
+2023-07-05 13:36:41,668 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,669 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,672 INFO:[cached since 775.6s ago] {}
+2023-07-05 13:36:41,708 INFO:ROLLBACK
+2023-07-05 13:36:41,775 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,776 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,778 INFO:[cached since 775.7s ago] {}
+2023-07-05 13:36:41,814 INFO:ROLLBACK
+2023-07-05 13:36:41,881 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,882 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,883 INFO:[cached since 775.8s ago] {}
+2023-07-05 13:36:41,919 INFO:ROLLBACK
+2023-07-05 13:36:41,984 INFO:BEGIN (implicit)
+2023-07-05 13:36:41,986 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:41,988 INFO:[cached since 775.9s ago] {}
+2023-07-05 13:36:42,024 INFO:ROLLBACK
+2023-07-05 13:36:42,102 INFO:BEGIN (implicit)
+2023-07-05 13:36:42,103 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:36:42,106 INFO:[cached since 776s ago] {}
+2023-07-05 13:36:42,144 INFO:ROLLBACK
+2023-07-05 13:36:43,308 INFO:BEGIN (implicit)
+2023-07-05 13:36:43,308 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:36:43,309 INFO:[cached since 2505s ago] {}
+2023-07-05 13:36:43,346 INFO:ROLLBACK
+2023-07-05 13:36:49,230 INFO:BEGIN (implicit)
+2023-07-05 13:36:49,231 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 13:36:49,232 INFO:[cached since 2502s ago] {}
+2023-07-05 13:36:49,273 INFO:ROLLBACK
+2023-07-05 13:36:49,567 INFO:BEGIN (implicit)
+2023-07-05 13:36:49,568 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 13:36:49,569 INFO:[cached since 2502s ago] {}
+2023-07-05 13:36:49,604 INFO:ROLLBACK
+2023-07-05 13:37:35,827 INFO:BEGIN (implicit)
+2023-07-05 13:37:35,828 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 13:37:35,830 INFO:[cached since 829.8s ago] {}
+2023-07-05 13:37:35,867 INFO:ROLLBACK
+2023-07-05 13:46:55,078 INFO:BEGIN (implicit)
+2023-07-05 13:46:55,079 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 13:46:55,080 INFO:[cached since 3116s ago] {}
+2023-07-05 13:47:14,287 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:9
+2 |       query {
+3 |         getAccountGrphql {
+  |         ^
+4 |           id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\views\query.py", line 202, in getAccount_grphql
+    data = getAccount()
+  File "C:\financing\financing\views\views.py", line 398, in getAccount
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-05 13:47:24,300 ERROR:(pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on '192.46.225.247' (timed out)")
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:9
+2 |       query {
+3 |         getAccountGrphql {
+  |         ^
+4 |           id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 613, in connect
+    sock = socket.create_connection(
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 845, in create_connection
+    raise err
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 833, in create_connection
+    sock.connect(sa)
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 3361, in _wrap_pool_connect
+    return fn()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 320, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 884, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 490, in checkout
+    with util.safe_reraise():
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 488, in checkout
+    dbapi_connection = rec.get_connection()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 617, in get_connection
+    self.__connect()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 677, in __connect
+    with util.safe_reraise():
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 673, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\create.py", line 578, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 353, in __init__
+    self.connect()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 664, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '192.46.225.247' (timed out)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\views\query.py", line 202, in getAccount_grphql
+    data = getAccount()
+  File "C:\financing\financing\views\views.py", line 398, in getAccount
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1711, in execute
+    conn = self._connection_for_bind(bind)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1552, in _connection_for_bind
+    return self._transaction._connection_for_bind(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 747, in _connection_for_bind
+    conn = bind.connect()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\future\engine.py", line 406, in connect
+    return super(Engine, self).connect()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 3315, in connect
+    return self._connection_cls(self, close_with_result=close_with_result)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 96, in __init__
+    else engine.raw_connection()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 3394, in raw_connection
+    return self._wrap_pool_connect(self.pool.connect, _connection)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 3364, in _wrap_pool_connect
+    Connection._handle_dbapi_exception_noconnection(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2198, in _handle_dbapi_exception_noconnection
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 3361, in _wrap_pool_connect
+    return fn()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 320, in connect
+    return _ConnectionFairy._checkout(self)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 884, in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 490, in checkout
+    with util.safe_reraise():
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 488, in checkout
+    dbapi_connection = rec.get_connection()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 617, in get_connection
+    self.__connect()
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 677, in __connect
+    with util.safe_reraise():
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\pool\base.py", line 673, in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\create.py", line 578, in connect
+    return dialect.connect(*cargs, **cparams)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 598, in connect
+    return self.dbapi.connect(*cargs, **cparams)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 353, in __init__
+    self.connect()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 664, in connect
+    raise exc
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2003, "Can't connect to MySQL server on '192.46.225.247' (timed out)")
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-05 14:21:25,991 INFO:BEGIN (implicit)
+2023-07-05 14:21:25,991 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:21:25,991 INFO:[cached since 5187s ago] {}
+2023-07-05 14:21:26,039 INFO:ROLLBACK
+2023-07-05 14:21:26,558 INFO:BEGIN (implicit)
+2023-07-05 14:21:26,558 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:21:26,559 INFO:[cached since 5188s ago] {}
+2023-07-05 14:21:26,592 INFO:ROLLBACK
+2023-07-05 14:21:29,510 INFO:BEGIN (implicit)
+2023-07-05 14:21:29,511 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:21:29,511 INFO:[cached since 5191s ago] {}
+2023-07-05 14:21:29,551 INFO:ROLLBACK
+2023-07-05 14:22:25,749 INFO:BEGIN (implicit)
+2023-07-05 14:22:25,750 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:22:25,751 INFO:[cached since 5247s ago] {}
+2023-07-05 14:22:25,789 INFO:ROLLBACK
+2023-07-05 14:23:21,173 INFO:BEGIN (implicit)
+2023-07-05 14:23:21,174 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:23:21,174 INFO:[cached since 5303s ago] {}
+2023-07-05 14:23:21,228 INFO:ROLLBACK
+2023-07-05 14:24:36,469 INFO:BEGIN (implicit)
+2023-07-05 14:24:36,470 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:24:36,471 INFO:[cached since 5378s ago] {}
+2023-07-05 14:24:36,512 INFO:ROLLBACK
+2023-07-05 14:25:22,100 INFO:BEGIN (implicit)
+2023-07-05 14:25:22,101 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:25:22,101 INFO:[cached since 5423s ago] {}
+2023-07-05 14:25:22,168 INFO:ROLLBACK
+2023-07-05 14:26:25,668 INFO:BEGIN (implicit)
+2023-07-05 14:26:25,669 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:26:25,670 INFO:[cached since 5487s ago] {}
+2023-07-05 14:26:25,714 INFO:ROLLBACK
+2023-07-05 14:29:25,818 INFO:BEGIN (implicit)
+2023-07-05 14:29:25,819 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:29:25,820 INFO:[cached since 5667s ago] {}
+2023-07-05 14:29:25,857 INFO:ROLLBACK
+2023-07-05 14:37:56,048 INFO:BEGIN (implicit)
+2023-07-05 14:37:56,049 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 14:37:56,050 INFO:[cached since 6177s ago] {}
+2023-07-05 14:38:15,280 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:9
+2 |       query {
+3 |         getAccountGrphql {
+  |         ^
+4 |           id
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\views\query.py", line 202, in getAccount_grphql
+    data = getAccount()
+  File "C:\financing\financing\views\views.py", line 398, in getAccount
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-05 15:08:25,419 ERROR:Unknown argument 'type_of_account' on field 'Mutation.insertAccountTypeGraphql'. Did you mean 'typeOfAccount' or 'typeOfDeposit'?
+
+GraphQL request:5:11
+4 |           accountTypeCode: "02",
+5 |           type_of_account: "Current",
+  |           ^
+6 |           type_of_deposit: "Checking Accounts"
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-05 15:08:25,419 ERROR:Unknown argument 'type_of_deposit' on field 'Mutation.insertAccountTypeGraphql'. Did you mean 'typeOfDeposit' or 'typeOfAccount'?
+
+GraphQL request:6:11
+5 |           type_of_account: "Current",
+6 |           type_of_deposit: "Checking Accounts"
+  |           ^
+7 |         )
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-05 15:08:25,419 ERROR:Field 'insertAccountTypeGraphql' argument 'typeOfAccount' of type 'String!' is required, but it was not provided.
+
+GraphQL request:3:9
+2 |       mutation {
+3 |         insertAccountTypeGraphql(
+  |         ^
+4 |           accountTypeCode: "02",
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-05 15:08:25,419 ERROR:Field 'insertAccountTypeGraphql' argument 'typeOfDeposit' of type 'String!' is required, but it was not provided.
+
+GraphQL request:3:9
+2 |       mutation {
+3 |         insertAccountTypeGraphql(
+  |         ^
+4 |           accountTypeCode: "02",
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-05 15:08:49,385 INFO:BEGIN (implicit)
+2023-07-05 15:08:49,385 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:08:49,385 INFO:[cached since 8018s ago] {}
+2023-07-05 15:08:49,439 INFO:ROLLBACK
+2023-07-05 15:08:51,354 INFO:BEGIN (implicit)
+2023-07-05 15:08:51,355 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:08:51,356 INFO:[cached since 8020s ago] {}
+2023-07-05 15:08:51,378 INFO:ROLLBACK
+2023-07-05 15:08:52,874 INFO:BEGIN (implicit)
+2023-07-05 15:08:52,875 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:08:52,876 INFO:[cached since 8021s ago] {}
+2023-07-05 15:08:52,913 INFO:ROLLBACK
+2023-07-05 15:08:56,370 INFO:BEGIN (implicit)
+2023-07-05 15:08:56,371 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:08:56,372 INFO:[cached since 8025s ago] {}
+2023-07-05 15:08:56,396 INFO:ROLLBACK
+2023-07-05 15:10:03,457 INFO:BEGIN (implicit)
+2023-07-05 15:10:03,459 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:10:03,460 INFO:[generated in 0.00069s] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 10, 3, 456719)}
+2023-07-05 15:10:03,527 INFO:COMMIT
+2023-07-05 15:10:15,765 INFO:BEGIN (implicit)
+2023-07-05 15:10:15,766 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:10:15,767 INFO:[cached since 8104s ago] {}
+2023-07-05 15:10:15,804 INFO:ROLLBACK
+2023-07-05 15:10:20,028 INFO:BEGIN (implicit)
+2023-07-05 15:10:20,029 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:10:20,030 INFO:[cached since 8109s ago] {}
+2023-07-05 15:10:20,054 INFO:ROLLBACK
+2023-07-05 15:10:20,547 INFO:BEGIN (implicit)
+2023-07-05 15:10:20,549 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:10:20,550 INFO:[cached since 8109s ago] {}
+2023-07-05 15:10:20,574 INFO:ROLLBACK
+2023-07-05 15:11:04,260 INFO:BEGIN (implicit)
+2023-07-05 15:11:04,261 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:11:04,262 INFO:[cached since 8153s ago] {}
+2023-07-05 15:11:04,285 INFO:ROLLBACK
+2023-07-05 15:11:04,775 INFO:BEGIN (implicit)
+2023-07-05 15:11:04,776 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:11:04,777 INFO:[cached since 8153s ago] {}
+2023-07-05 15:11:04,801 INFO:ROLLBACK
+2023-07-05 15:11:07,843 INFO:BEGIN (implicit)
+2023-07-05 15:11:07,844 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:11:07,845 INFO:[cached since 8156s ago] {}
+2023-07-05 15:11:07,869 INFO:ROLLBACK
+2023-07-05 15:11:08,861 INFO:BEGIN (implicit)
+2023-07-05 15:11:08,862 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:11:08,863 INFO:[cached since 8157s ago] {}
+2023-07-05 15:11:08,886 INFO:ROLLBACK
+2023-07-05 15:11:15,279 INFO:BEGIN (implicit)
+2023-07-05 15:11:15,280 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:11:15,281 INFO:[cached since 8164s ago] {}
+2023-07-05 15:11:15,351 INFO:ROLLBACK
+2023-07-05 15:11:15,846 INFO:BEGIN (implicit)
+2023-07-05 15:11:15,847 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:11:15,848 INFO:[cached since 8164s ago] {}
+2023-07-05 15:11:15,872 INFO:ROLLBACK
+2023-07-05 15:12:33,670 INFO:BEGIN (implicit)
+2023-07-05 15:12:33,671 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 15:12:33,672 INFO:[cached since 8246s ago] {}
+2023-07-05 15:12:33,711 INFO:ROLLBACK
+2023-07-05 15:12:53,223 INFO:BEGIN (implicit)
+2023-07-05 15:12:53,224 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:12:53,225 INFO:[cached since 169.8s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 12, 53, 223397)}
+2023-07-05 15:12:53,265 INFO:ROLLBACK
+2023-07-05 15:13:05,415 INFO:BEGIN (implicit)
+2023-07-05 15:13:05,417 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:13:05,418 INFO:[cached since 8274s ago] {}
+2023-07-05 15:13:05,454 INFO:ROLLBACK
+2023-07-05 15:13:07,048 INFO:BEGIN (implicit)
+2023-07-05 15:13:07,049 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:13:07,050 INFO:[cached since 8276s ago] {}
+2023-07-05 15:13:07,073 INFO:ROLLBACK
+2023-07-05 15:13:08,114 INFO:BEGIN (implicit)
+2023-07-05 15:13:08,115 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:13:08,116 INFO:[cached since 8277s ago] {}
+2023-07-05 15:13:08,139 INFO:ROLLBACK
+2023-07-05 15:13:08,746 INFO:BEGIN (implicit)
+2023-07-05 15:13:08,746 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:13:08,747 INFO:[cached since 8277s ago] {}
+2023-07-05 15:13:08,775 INFO:ROLLBACK
+2023-07-05 15:13:10,930 INFO:BEGIN (implicit)
+2023-07-05 15:13:10,932 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:13:10,933 INFO:[cached since 8279s ago] {}
+2023-07-05 15:13:10,973 INFO:ROLLBACK
+2023-07-05 15:13:22,023 INFO:BEGIN (implicit)
+2023-07-05 15:13:22,023 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:13:22,023 INFO:[cached since 198.6s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 13, 22, 22174)}
+2023-07-05 15:13:22,058 INFO:ROLLBACK
+2023-07-05 15:15:47,294 INFO:BEGIN (implicit)
+2023-07-05 15:15:47,295 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:15:47,296 INFO:[cached since 343.8s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 15, 47, 293303)}
+2023-07-05 15:15:47,335 INFO:ROLLBACK
+2023-07-05 15:18:42,285 INFO:BEGIN (implicit)
+2023-07-05 15:18:42,286 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:18:42,286 INFO:[cached since 518.8s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 18, 42, 284159)}
+2023-07-05 15:18:42,325 INFO:ROLLBACK
+2023-07-05 15:20:32,841 INFO:BEGIN (implicit)
+2023-07-05 15:20:32,841 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:20:32,841 INFO:[cached since 629.4s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 20, 32, 825767)}
+2023-07-05 15:20:32,879 INFO:ROLLBACK
+2023-07-05 15:21:21,737 INFO:BEGIN (implicit)
+2023-07-05 15:21:21,737 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:21:21,737 INFO:[cached since 678.3s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 21, 21, 722038)}
+2023-07-05 15:21:21,761 INFO:ROLLBACK
+2023-07-05 15:21:24,747 INFO:BEGIN (implicit)
+2023-07-05 15:21:24,748 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:21:24,749 INFO:[cached since 681.3s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 21, 24, 747171)}
+2023-07-05 15:21:24,782 INFO:ROLLBACK
+2023-07-05 15:23:41,803 INFO:BEGIN (implicit)
+2023-07-05 15:23:41,803 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:23:41,803 INFO:[cached since 818.4s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 23, 41, 803126)}
+2023-07-05 15:23:41,854 INFO:ROLLBACK
+2023-07-05 15:27:53,549 INFO:BEGIN (implicit)
+2023-07-05 15:27:53,549 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:27:53,549 INFO:[cached since 1070s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 27, 53, 549145)}
+2023-07-05 15:27:53,596 INFO:ROLLBACK
+2023-07-05 15:29:20,615 INFO:BEGIN (implicit)
+2023-07-05 15:29:20,615 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:29:20,615 INFO:[cached since 1157s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 29, 20, 615998)}
+2023-07-05 15:29:20,724 INFO:ROLLBACK
+2023-07-05 15:29:59,676 INFO:BEGIN (implicit)
+2023-07-05 15:29:59,676 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:29:59,676 INFO:[cached since 1196s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Foreign Currency Deposits', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 29, 59, 676052)}
+2023-07-05 15:29:59,724 INFO:ROLLBACK
+2023-07-05 15:30:33,335 INFO:BEGIN (implicit)
+2023-07-05 15:30:33,335 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:30:33,335 INFO:[cached since 1230s ago] {'accountTypeCode': '03', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 30, 33, 335970)}
+2023-07-05 15:30:33,387 INFO:COMMIT
+2023-07-05 15:30:45,108 INFO:BEGIN (implicit)
+2023-07-05 15:30:45,109 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:30:45,110 INFO:[cached since 9334s ago] {}
+2023-07-05 15:30:45,146 INFO:ROLLBACK
+2023-07-05 15:30:53,288 INFO:BEGIN (implicit)
+2023-07-05 15:30:53,290 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:30:53,291 INFO:[cached since 9342s ago] {}
+2023-07-05 15:30:53,325 INFO:ROLLBACK
+2023-07-05 15:30:55,256 INFO:BEGIN (implicit)
+2023-07-05 15:30:55,257 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:30:55,258 INFO:[cached since 9344s ago] {}
+2023-07-05 15:30:55,282 INFO:ROLLBACK
+2023-07-05 15:30:59,108 INFO:BEGIN (implicit)
+2023-07-05 15:30:59,109 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:30:59,110 INFO:[cached since 9348s ago] {}
+2023-07-05 15:30:59,134 INFO:ROLLBACK
+2023-07-05 15:31:01,858 INFO:BEGIN (implicit)
+2023-07-05 15:31:01,859 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:31:01,860 INFO:[cached since 9350s ago] {}
+2023-07-05 15:31:01,884 INFO:ROLLBACK
+2023-07-05 15:32:00,147 INFO:BEGIN (implicit)
+2023-07-05 15:32:00,147 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:32:00,147 INFO:[cached since 1317s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Foreign Currency Deposits', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 32, 0, 147103)}
+2023-07-05 15:32:00,194 INFO:ROLLBACK
+2023-07-05 15:32:13,475 INFO:BEGIN (implicit)
+2023-07-05 15:32:13,475 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:32:13,475 INFO:[cached since 1330s ago] {'accountTypeCode': '04', 'type_of_account': 'Saving', 'type_of_deposit': 'Foreign Currency Deposits', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 32, 13, 475471)}
+2023-07-05 15:32:13,500 INFO:COMMIT
+2023-07-05 15:37:39,140 INFO:BEGIN (implicit)
+2023-07-05 15:37:39,141 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:37:39,141 INFO:[cached since 1656s ago] {'accountTypeCode': '04', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 37, 39, 139795)}
+2023-07-05 15:37:58,712 INFO:BEGIN (implicit)
+2023-07-05 15:37:58,713 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:37:58,714 INFO:[cached since 1675s ago] {'accountTypeCode': '05', 'type_of_account': 'Passbook', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 37, 58, 368381)}
+2023-07-05 15:37:58,753 INFO:COMMIT
+2023-07-05 15:39:14,421 INFO:BEGIN (implicit)
+2023-07-05 15:39:14,421 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:39:14,422 INFO:[cached since 1751s ago] {'accountTypeCode': '05', 'type_of_account': 'Passbook', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 39, 14, 419048)}
+2023-07-05 15:39:14,462 INFO:ROLLBACK
+2023-07-05 15:40:11,666 INFO:BEGIN (implicit)
+2023-07-05 15:40:11,667 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:40:11,668 INFO:[cached since 1808s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Foreign Currency Deposits', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 40, 11, 665604)}
+2023-07-05 15:40:11,706 INFO:ROLLBACK
+2023-07-05 15:40:40,618 INFO:BEGIN (implicit)
+2023-07-05 15:40:40,619 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:40:40,620 INFO:[cached since 1837s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 40, 40, 618031)}
+2023-07-05 15:40:40,655 INFO:ROLLBACK
+2023-07-05 15:43:30,558 INFO:BEGIN (implicit)
+2023-07-05 15:43:30,558 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:43:30,558 INFO:[cached since 2007s ago] {'accountTypeCode': '01', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 43, 30, 558345)}
+2023-07-05 15:43:30,598 INFO:ROLLBACK
+2023-07-05 15:46:21,708 INFO:BEGIN (implicit)
+2023-07-05 15:46:21,708 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:46:21,708 INFO:[cached since 2178s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 46, 21, 708792)}
+2023-07-05 15:46:21,755 INFO:ROLLBACK
+2023-07-05 15:47:18,550 INFO:BEGIN (implicit)
+2023-07-05 15:47:18,550 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:47:18,550 INFO:[cached since 2235s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 47, 18, 550476)}
+2023-07-05 15:47:18,595 INFO:ROLLBACK
+2023-07-05 15:47:49,502 INFO:BEGIN (implicit)
+2023-07-05 15:47:49,517 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:47:49,517 INFO:[cached since 2266s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 47, 49, 502085)}
+2023-07-05 15:47:49,554 INFO:ROLLBACK
+2023-07-05 15:48:44,218 INFO:BEGIN (implicit)
+2023-07-05 15:48:44,218 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:48:44,218 INFO:[cached since 2321s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 48, 44, 218289)}
+2023-07-05 15:48:44,267 INFO:ROLLBACK
+2023-07-05 15:48:54,261 INFO:BEGIN (implicit)
+2023-07-05 15:48:54,277 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:48:54,277 INFO:[cached since 2331s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 48, 54, 261733)}
+2023-07-05 15:48:54,298 INFO:ROLLBACK
+2023-07-05 15:49:44,060 INFO:BEGIN (implicit)
+2023-07-05 15:49:44,062 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 15:49:44,062 INFO:[cached since 1.047e+04s ago] {}
+2023-07-05 15:49:44,099 INFO:ROLLBACK
+2023-07-05 15:52:17,304 INFO:BEGIN (implicit)
+2023-07-05 15:52:17,305 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:52:17,306 INFO:[cached since 2534s ago] {'accountTypeCode': '05', 'type_of_account': 'Current', 'type_of_deposit': 'Saving', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 52, 17, 304863)}
+2023-07-05 15:52:17,345 INFO:ROLLBACK
+2023-07-05 15:54:11,816 INFO:BEGIN (implicit)
+2023-07-05 15:54:11,817 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-05 15:54:11,818 INFO:[cached since 1.076e+04s ago] {'username_1': 'joeysabusido'}
+2023-07-05 15:54:11,864 INFO:ROLLBACK
+2023-07-05 15:54:18,463 INFO:BEGIN (implicit)
+2023-07-05 15:54:18,463 INFO:SELECT user.id, user.username, user.hashed_password, user.email_add, user.is_active, user.role_id, user.date_updated, user.date_credited 
+FROM user 
+WHERE user.username = %(username_1)s
+2023-07-05 15:54:18,463 INFO:[cached since 1.077e+04s ago] {'username_1': 'joeysabusido'}
+2023-07-05 15:54:18,502 INFO:ROLLBACK
+2023-07-05 15:54:30,973 INFO:BEGIN (implicit)
+2023-07-05 15:54:30,974 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:54:30,974 INFO:[cached since 2668s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 54, 30, 972065)}
+2023-07-05 15:54:31,011 INFO:ROLLBACK
+2023-07-05 15:56:31,108 INFO:BEGIN (implicit)
+2023-07-05 15:56:31,108 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:56:31,108 INFO:[cached since 2788s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Foreign Currency Deposits', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 56, 31, 108584)}
+2023-07-05 15:56:31,150 INFO:ROLLBACK
+2023-07-05 15:57:03,578 INFO:BEGIN (implicit)
+2023-07-05 15:57:03,579 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:57:03,580 INFO:[cached since 2820s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 57, 3, 577704)}
+2023-07-05 15:57:03,618 INFO:ROLLBACK
+2023-07-05 15:58:10,225 INFO:BEGIN (implicit)
+2023-07-05 15:58:10,226 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:58:10,227 INFO:[cached since 2887s ago] {'accountTypeCode': '02', 'type_of_account': 'Saving', 'type_of_deposit': 'Savings Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 58, 10, 225627)}
+2023-07-05 15:58:10,269 INFO:ROLLBACK
+2023-07-05 15:59:55,083 INFO:BEGIN (implicit)
+2023-07-05 15:59:55,083 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 15:59:55,083 INFO:[cached since 2992s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 7, 59, 55, 83345)}
+2023-07-05 15:59:55,132 INFO:ROLLBACK
+2023-07-05 16:02:47,116 INFO:BEGIN (implicit)
+2023-07-05 16:02:47,117 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:02:47,118 INFO:[cached since 3164s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 2, 47, 116740)}
+2023-07-05 16:02:47,150 INFO:ROLLBACK
+2023-07-05 16:13:06,927 INFO:BEGIN (implicit)
+2023-07-05 16:13:06,927 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:13:06,927 INFO:[cached since 3783s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 13, 6, 927690)}
+2023-07-05 16:30:47,014 INFO:BEGIN (implicit)
+2023-07-05 16:30:47,014 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:30:47,014 INFO:[cached since 4844s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 30, 46, 655309)}
+2023-07-05 16:30:47,056 INFO:ROLLBACK
+2023-07-05 16:31:06,323 INFO:BEGIN (implicit)
+2023-07-05 16:31:06,323 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:31:06,323 INFO:[cached since 4863s ago] {'accountTypeCode': '06', 'type_of_account': 'Saving', 'type_of_deposit': 'Time Deposits/Fixed Deposit Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 31, 6, 323987)}
+2023-07-05 16:31:06,364 INFO:COMMIT
+2023-07-05 16:32:00,164 INFO:BEGIN (implicit)
+2023-07-05 16:32:00,165 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:32:00,165 INFO:[cached since 1.301e+04s ago] {}
+2023-07-05 16:32:00,203 INFO:ROLLBACK
+2023-07-05 16:33:28,109 INFO:BEGIN (implicit)
+2023-07-05 16:33:28,109 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:33:28,109 INFO:[cached since 5005s ago] {'accountTypeCode': '02', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 33, 28, 109034)}
+2023-07-05 16:33:28,149 INFO:ROLLBACK
+2023-07-05 16:34:04,649 INFO:BEGIN (implicit)
+2023-07-05 16:34:04,650 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:34:04,650 INFO:[cached since 5041s ago] {'accountTypeCode': '07', 'type_of_account': 'Current', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 34, 4, 649364)}
+2023-07-05 16:34:04,696 INFO:COMMIT
+2023-07-05 16:34:46,751 INFO:BEGIN (implicit)
+2023-07-05 16:34:46,751 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:34:46,752 INFO:[cached since 5083s ago] {'accountTypeCode': '08', 'type_of_account': 'Passbook', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 34, 46, 750033)}
+2023-07-05 16:34:46,789 INFO:COMMIT
+2023-07-05 16:34:52,346 INFO:BEGIN (implicit)
+2023-07-05 16:34:52,346 INFO:INSERT INTO accounttype (`accountTypeCode`, type_of_account, type_of_deposit, date_updated, date_created) VALUES (%(accountTypeCode)s, %(type_of_account)s, %(type_of_deposit)s, %(date_updated)s, %(date_created)s)
+2023-07-05 16:34:52,347 INFO:[cached since 5089s ago] {'accountTypeCode': '08', 'type_of_account': 'Passbook', 'type_of_deposit': 'Checking Accounts', 'date_updated': None, 'date_created': datetime.datetime(2023, 7, 5, 8, 34, 52, 345079)}
+2023-07-05 16:34:52,386 INFO:ROLLBACK
+2023-07-05 16:45:30,797 INFO:BEGIN (implicit)
+2023-07-05 16:45:30,798 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:45:30,799 INFO:[cached since 1.382e+04s ago] {}
+2023-07-05 16:45:50,029 ERROR:(pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+
+GraphQL request:3:13
+2 |           query {
+3 |             searchAccounttype(searchTerm: "c") {
+  |             ^
+4 |               typeOfDeposit
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 732, in _read_bytes
+    data = self._rfile.read(num_bytes)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: [WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+pymysql.err.OperationalError: (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\graphql\execution\execute.py", line 528, in await_result
+    return_type, field_nodes, info, path, await result
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema_converter.py", line 625, in _async_resolver
+    return await await_maybe(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\utils\await_maybe.py", line 12, in await_maybe
+    return await value
+  File "C:\financing\financing\views\query.py", line 189, in searchAccounttype
+    accountTypes = getAccountType()
+  File "C:\financing\financing\views\views.py", line 251, in getAccountType
+    results = session.exec(statement)
+  File "C:\financing\financing\venv\lib\site-packages\sqlmodel\orm\session.py", line 60, in exec
+    results = super().execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\orm\session.py", line 1712, in execute
+    result = conn._execute_20(statement, params or {}, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1705, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\sql\elements.py", line 333, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1572, in _execute_clauseelement
+    ret = self._execute_context(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1943, in _execute_context
+    self._handle_dbapi_exception(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 2124, in _handle_dbapi_exception
+    util.raise_(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\util\compat.py", line 208, in raise_
+    raise exception
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\base.py", line 1900, in _execute_context
+    self.dialect.do_execute(
+  File "C:\financing\financing\venv\lib\site-packages\sqlalchemy\engine\default.py", line 736, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 148, in execute
+    result = self._query(query)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\cursors.py", line 310, in _query
+    conn.query(q)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 548, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 775, in _read_query_result
+    result.read()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 1156, in read
+    first_packet = self.connection._read_packet()
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 692, in _read_packet
+    packet_header = self._read_bytes(4)
+  File "C:\financing\financing\venv\lib\site-packages\pymysql\connections.py", line 738, in _read_bytes
+    raise err.OperationalError(
+sqlalchemy.exc.OperationalError: (pymysql.err.OperationalError) (2013, 'Lost connection to MySQL server during query ([WinError 10060] A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond)')
+[SQL: SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype]
+(Background on this error at: https://sqlalche.me/e/14/e3q8)
+Stack (most recent call last):
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 156, in execute
+    process_errors(result.errors, execution_context)
+2023-07-05 16:45:50,264 INFO:BEGIN (implicit)
+2023-07-05 16:45:50,265 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:45:50,266 INFO:[cached since 1.384e+04s ago] {}
+2023-07-05 16:45:50,305 INFO:ROLLBACK
+2023-07-05 16:45:50,372 INFO:BEGIN (implicit)
+2023-07-05 16:45:50,374 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:45:50,375 INFO:[cached since 1.384e+04s ago] {}
+2023-07-05 16:45:50,415 INFO:ROLLBACK
+2023-07-05 16:45:50,485 INFO:BEGIN (implicit)
+2023-07-05 16:45:50,490 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:45:50,508 INFO:[cached since 1.384e+04s ago] {}
+2023-07-05 16:45:50,545 INFO:ROLLBACK
+2023-07-05 16:45:50,611 INFO:BEGIN (implicit)
+2023-07-05 16:45:50,612 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:45:50,613 INFO:[cached since 1.384e+04s ago] {}
+2023-07-05 16:45:50,649 INFO:ROLLBACK
+2023-07-05 16:45:55,377 INFO:BEGIN (implicit)
+2023-07-05 16:45:55,378 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 16:45:55,379 INFO:[cached since 1.385e+04s ago] {}
+2023-07-05 16:45:55,408 INFO:ROLLBACK
+2023-07-05 16:45:59,982 INFO:BEGIN (implicit)
+2023-07-05 16:45:59,983 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:45:59,984 INFO:[cached since 1.385e+04s ago] {}
+2023-07-05 16:46:00,024 INFO:ROLLBACK
+2023-07-05 16:46:20,157 INFO:BEGIN (implicit)
+2023-07-05 16:46:20,158 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:20,160 INFO:[cached since 1.215e+04s ago] {}
+2023-07-05 16:46:20,203 INFO:ROLLBACK
+2023-07-05 16:46:22,490 INFO:BEGIN (implicit)
+2023-07-05 16:46:22,491 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:22,494 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:22,517 INFO:ROLLBACK
+2023-07-05 16:46:23,564 INFO:BEGIN (implicit)
+2023-07-05 16:46:23,565 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:23,567 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:23,599 INFO:ROLLBACK
+2023-07-05 16:46:24,036 INFO:BEGIN (implicit)
+2023-07-05 16:46:24,037 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:24,039 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:24,066 INFO:ROLLBACK
+2023-07-05 16:46:26,956 INFO:BEGIN (implicit)
+2023-07-05 16:46:26,958 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:26,960 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:26,982 INFO:ROLLBACK
+2023-07-05 16:46:28,444 INFO:BEGIN (implicit)
+2023-07-05 16:46:28,445 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:28,447 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:28,485 INFO:ROLLBACK
+2023-07-05 16:46:29,005 INFO:BEGIN (implicit)
+2023-07-05 16:46:29,006 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:29,008 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:29,051 INFO:ROLLBACK
+2023-07-05 16:46:29,539 INFO:BEGIN (implicit)
+2023-07-05 16:46:29,541 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:29,543 INFO:[cached since 1.216e+04s ago] {}
+2023-07-05 16:46:29,567 INFO:ROLLBACK
+2023-07-05 16:46:32,591 INFO:BEGIN (implicit)
+2023-07-05 16:46:32,592 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:32,594 INFO:[cached since 1.217e+04s ago] {}
+2023-07-05 16:46:32,618 INFO:ROLLBACK
+2023-07-05 16:46:33,857 INFO:BEGIN (implicit)
+2023-07-05 16:46:33,859 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:33,861 INFO:[cached since 1.217e+04s ago] {}
+2023-07-05 16:46:33,885 INFO:ROLLBACK
+2023-07-05 16:46:35,324 INFO:BEGIN (implicit)
+2023-07-05 16:46:35,325 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:35,327 INFO:[cached since 1.217e+04s ago] {}
+2023-07-05 16:46:35,353 INFO:ROLLBACK
+2023-07-05 16:46:35,875 INFO:BEGIN (implicit)
+2023-07-05 16:46:35,876 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:35,878 INFO:[cached since 1.217e+04s ago] {}
+2023-07-05 16:46:35,902 INFO:ROLLBACK
+2023-07-05 16:46:36,259 INFO:BEGIN (implicit)
+2023-07-05 16:46:36,260 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:36,262 INFO:[cached since 1.217e+04s ago] {}
+2023-07-05 16:46:36,300 INFO:ROLLBACK
+2023-07-05 16:46:36,667 INFO:BEGIN (implicit)
+2023-07-05 16:46:36,668 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:36,670 INFO:[cached since 1.217e+04s ago] {}
+2023-07-05 16:46:36,701 INFO:ROLLBACK
+2023-07-05 16:46:42,529 INFO:BEGIN (implicit)
+2023-07-05 16:46:42,530 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:42,532 INFO:[cached since 1.218e+04s ago] {}
+2023-07-05 16:46:42,570 INFO:ROLLBACK
+2023-07-05 16:46:46,498 INFO:BEGIN (implicit)
+2023-07-05 16:46:46,499 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:46,501 INFO:[cached since 1.218e+04s ago] {}
+2023-07-05 16:46:46,524 INFO:ROLLBACK
+2023-07-05 16:46:48,145 INFO:BEGIN (implicit)
+2023-07-05 16:46:48,146 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:48,148 INFO:[cached since 1.218e+04s ago] {}
+2023-07-05 16:46:48,186 INFO:ROLLBACK
+2023-07-05 16:46:49,280 INFO:BEGIN (implicit)
+2023-07-05 16:46:49,281 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:49,283 INFO:[cached since 1.218e+04s ago] {}
+2023-07-05 16:46:49,306 INFO:ROLLBACK
+2023-07-05 16:46:49,995 INFO:BEGIN (implicit)
+2023-07-05 16:46:49,997 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:49,999 INFO:[cached since 1.218e+04s ago] {}
+2023-07-05 16:46:50,038 INFO:ROLLBACK
+2023-07-05 16:46:51,171 INFO:BEGIN (implicit)
+2023-07-05 16:46:51,172 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:51,175 INFO:[cached since 1.219e+04s ago] {}
+2023-07-05 16:46:51,206 INFO:ROLLBACK
+2023-07-05 16:46:51,611 INFO:BEGIN (implicit)
+2023-07-05 16:46:51,612 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:46:51,614 INFO:[cached since 1.219e+04s ago] {}
+2023-07-05 16:46:51,641 INFO:ROLLBACK
+2023-07-05 16:47:30,218 INFO:BEGIN (implicit)
+2023-07-05 16:47:30,219 INFO:SELECT account.id, account.personal_info_id, account.account_type_id, account.branch_id, account.account_number, account.account_name, account.status, account.date_updated, account.date_created 
+FROM account
+2023-07-05 16:47:30,219 INFO:[cached since 1.395e+04s ago] {}
+2023-07-05 16:47:30,255 INFO:ROLLBACK
+2023-07-05 16:47:36,830 INFO:BEGIN (implicit)
+2023-07-05 16:47:36,831 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:47:36,832 INFO:[cached since 1.395e+04s ago] {}
+2023-07-05 16:47:36,869 INFO:ROLLBACK
+2023-07-05 16:47:41,329 INFO:BEGIN (implicit)
+2023-07-05 16:47:41,330 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 16:47:41,331 INFO:[cached since 1.395e+04s ago] {}
+2023-07-05 16:47:41,355 INFO:ROLLBACK
+2023-07-05 16:47:44,063 INFO:BEGIN (implicit)
+2023-07-05 16:47:44,064 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:47:44,066 INFO:[cached since 1.224e+04s ago] {}
+2023-07-05 16:47:44,091 INFO:ROLLBACK
+2023-07-05 16:47:45,680 INFO:BEGIN (implicit)
+2023-07-05 16:47:45,681 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:47:45,683 INFO:[cached since 1.224e+04s ago] {}
+2023-07-05 16:47:45,722 INFO:ROLLBACK
+2023-07-05 16:47:46,814 INFO:BEGIN (implicit)
+2023-07-05 16:47:46,815 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:47:46,817 INFO:[cached since 1.224e+04s ago] {}
+2023-07-05 16:47:46,856 INFO:ROLLBACK
+2023-07-05 16:47:58,835 ERROR:Field 'getPersonalInfoGraphql' of type '[PersonalInfoAutoComplete!]!' must have a selection of subfields. Did you mean 'getPersonalInfoGraphql { ... }'?
+
+GraphQL request:2:3
+1 | query MyQuery {
+2 |   getPersonalInfoGraphql(searchTerm: "JER")
+  |   ^
+3 | }
+Stack (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 116, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\spawn.py", line 129, in _main
+    return self._bootstrap(parent_sentinel)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 315, in _bootstrap
+    self.run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 633, in run_until_complete
+    self.run_forever()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 600, in run_forever
+    self._run_once()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\base_events.py", line 1896, in _run_once
+    handle._run()
+  File "C:\Users\Jerome\AppData\Local\Programs\Python\Python310\lib\asyncio\events.py", line 80, in _run
+    self._context.run(self._callback, *self._args)
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 435, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "C:\financing\financing\venv\lib\site-packages\uvicorn\middleware\proxy_headers.py", line 78, in __call__
+    return await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\applications.py", line 276, in __call__
+    await super().__call__(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\cors.py", line 146, in simple_response
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\middleware\exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "C:\financing\financing\venv\lib\site-packages\starlette\routing.py", line 66, in app
+    response = await func(request)
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 237, in app
+    raw_response = await run_endpoint_function(
+  File "C:\financing\financing\venv\lib\site-packages\fastapi\routing.py", line 163, in run_endpoint_function
+    return await dependant.call(**values)
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\fastapi\router.py", line 225, in handle_http_post
+    return await self.run(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 176, in run
+    result = await self.execute_operation(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\http\async_base_view.py", line 115, in execute_operation
+    return await self.schema.execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\schema.py", line 250, in execute
+    result = await execute(
+  File "C:\financing\financing\venv\lib\site-packages\strawberry\schema\execute.py", line 126, in execute
+    process_errors(execution_context.errors, execution_context)
+2023-07-05 16:48:10,249 INFO:BEGIN (implicit)
+2023-07-05 16:48:10,250 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:48:10,251 INFO:[cached since 1.226e+04s ago] {}
+2023-07-05 16:48:10,288 INFO:ROLLBACK
+2023-07-05 16:48:21,951 INFO:BEGIN (implicit)
+2023-07-05 16:48:21,952 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:48:21,953 INFO:[cached since 1.228e+04s ago] {}
+2023-07-05 16:48:21,992 INFO:ROLLBACK
+2023-07-05 16:51:16,096 INFO:BEGIN (implicit)
+2023-07-05 16:51:16,097 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:51:16,098 INFO:[cached since 1.245e+04s ago] {}
+2023-07-05 16:51:16,145 INFO:ROLLBACK
+2023-07-05 16:51:26,623 INFO:BEGIN (implicit)
+2023-07-05 16:51:26,624 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:51:26,625 INFO:[cached since 1.246e+04s ago] {}
+2023-07-05 16:51:26,660 INFO:ROLLBACK
+2023-07-05 16:52:25,959 INFO:BEGIN (implicit)
+2023-07-05 16:52:25,962 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:52:25,963 INFO:[cached since 1.252e+04s ago] {}
+2023-07-05 16:52:26,004 INFO:ROLLBACK
+2023-07-05 16:53:31,067 INFO:SELECT DATABASE()
+2023-07-05 16:53:31,068 INFO:[raw sql] {}
+2023-07-05 16:53:31,135 INFO:SELECT @@sql_mode
+2023-07-05 16:53:31,136 INFO:[raw sql] {}
+2023-07-05 16:53:31,170 INFO:SELECT @@lower_case_table_names
+2023-07-05 16:53:31,171 INFO:[raw sql] {}
+2023-07-05 16:53:31,242 INFO:BEGIN (implicit)
+2023-07-05 16:53:31,281 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:53:31,283 INFO:[generated in 0.00180s] {}
+2023-07-05 16:53:31,322 INFO:ROLLBACK
+2023-07-05 16:54:34,787 INFO:BEGIN (implicit)
+2023-07-05 16:54:34,788 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:54:34,790 INFO:[cached since 63.51s ago] {}
+2023-07-05 16:54:34,816 INFO:ROLLBACK
+2023-07-05 16:54:35,472 INFO:BEGIN (implicit)
+2023-07-05 16:54:35,473 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:54:35,475 INFO:[cached since 64.19s ago] {}
+2023-07-05 16:54:35,499 INFO:ROLLBACK
+2023-07-05 16:56:27,738 INFO:SELECT DATABASE()
+2023-07-05 16:56:27,739 INFO:[raw sql] {}
+2023-07-05 16:56:27,799 INFO:SELECT @@sql_mode
+2023-07-05 16:56:27,814 INFO:[raw sql] {}
+2023-07-05 16:56:27,851 INFO:SELECT @@lower_case_table_names
+2023-07-05 16:56:27,851 INFO:[raw sql] {}
+2023-07-05 16:56:27,924 INFO:BEGIN (implicit)
+2023-07-05 16:56:27,961 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:56:27,961 INFO:[generated in 0.00164s] {}
+2023-07-05 16:56:27,995 INFO:ROLLBACK
+2023-07-05 16:56:30,208 INFO:BEGIN (implicit)
+2023-07-05 16:56:30,210 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:56:30,212 INFO:[cached since 2.248s ago] {}
+2023-07-05 16:56:30,249 INFO:ROLLBACK
+2023-07-05 16:56:31,741 INFO:BEGIN (implicit)
+2023-07-05 16:56:31,742 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:56:31,744 INFO:[cached since 3.781s ago] {}
+2023-07-05 16:56:31,783 INFO:ROLLBACK
+2023-07-05 16:56:32,488 INFO:BEGIN (implicit)
+2023-07-05 16:56:32,488 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:56:32,489 INFO:[cached since 4.525s ago] {}
+2023-07-05 16:56:32,525 INFO:ROLLBACK
+2023-07-05 16:57:40,634 INFO:BEGIN (implicit)
+2023-07-05 16:57:40,635 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:57:40,637 INFO:[cached since 72.67s ago] {}
+2023-07-05 16:57:40,673 INFO:ROLLBACK
+2023-07-05 16:57:43,325 INFO:BEGIN (implicit)
+2023-07-05 16:57:43,326 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:57:43,328 INFO:[cached since 75.36s ago] {}
+2023-07-05 16:57:43,357 INFO:ROLLBACK
+2023-07-05 16:57:46,514 INFO:BEGIN (implicit)
+2023-07-05 16:57:46,515 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:57:46,517 INFO:[cached since 78.55s ago] {}
+2023-07-05 16:57:46,556 INFO:ROLLBACK
+2023-07-05 16:57:53,016 INFO:BEGIN (implicit)
+2023-07-05 16:57:53,017 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:57:53,019 INFO:[cached since 85.06s ago] {}
+2023-07-05 16:57:53,043 INFO:ROLLBACK
+2023-07-05 16:57:56,281 INFO:BEGIN (implicit)
+2023-07-05 16:57:56,283 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:57:56,285 INFO:[cached since 88.32s ago] {}
+2023-07-05 16:57:56,312 INFO:ROLLBACK
+2023-07-05 16:57:56,750 INFO:BEGIN (implicit)
+2023-07-05 16:57:56,751 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:57:56,753 INFO:[cached since 88.79s ago] {}
+2023-07-05 16:57:56,777 INFO:ROLLBACK
+2023-07-05 16:58:15,705 INFO:BEGIN (implicit)
+2023-07-05 16:58:15,706 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 16:58:15,708 INFO:[cached since 107.7s ago] {}
+2023-07-05 16:58:15,745 INFO:ROLLBACK
+2023-07-05 17:00:08,203 INFO:SELECT DATABASE()
+2023-07-05 17:00:08,204 INFO:[raw sql] {}
+2023-07-05 17:00:08,264 INFO:SELECT @@sql_mode
+2023-07-05 17:00:08,264 INFO:[raw sql] {}
+2023-07-05 17:00:08,293 INFO:SELECT @@lower_case_table_names
+2023-07-05 17:00:08,293 INFO:[raw sql] {}
+2023-07-05 17:00:08,388 INFO:BEGIN (implicit)
+2023-07-05 17:00:08,423 INFO:SELECT personalinfo.id, personalinfo.first_name, personalinfo.middle_name, personalinfo.last_name, personalinfo.suffix, personalinfo.date_of_birth, personalinfo.age, personalinfo.permanent_address, personalinfo.length_stay, personalinfo.civil_status, personalinfo.contact_num, personalinfo.email_add, personalinfo.place_of_birth, personalinfo.nationality, personalinfo.religion, personalinfo.tin, personalinfo.sss_gsis_no, personalinfo.philsys_no, personalinfo.sex, personalinfo.name_of_spouse_co_borrower, personalinfo.date_of_birth_spouse, personalinfo.age_spouse, personalinfo.source_of_income, personalinfo.date_of_business_registration, personalinfo.dti_sec_registration_no, personalinfo.brgy_mayor_permit_no, personalinfo.principal_business_address, personalinfo.nature_of_business, personalinfo.number_of_branch, personalinfo.business_address_ownership, personalinfo.date_updated, personalinfo.date_created 
+FROM personalinfo
+2023-07-05 17:00:08,423 INFO:[generated in 0.00165s] {}
+2023-07-05 17:00:08,464 INFO:ROLLBACK
+2023-07-05 17:00:41,435 INFO:BEGIN (implicit)
+2023-07-05 17:00:41,438 INFO:SELECT branch.id, branch.branch_name, branch.branch_code, branch.address, branch.date_updated, branch.date_created 
+FROM branch
+2023-07-05 17:00:41,440 INFO:[generated in 0.00139s] {}
+2023-07-05 17:00:41,477 INFO:ROLLBACK
+2023-07-05 17:00:45,503 INFO:BEGIN (implicit)
+2023-07-05 17:00:45,506 INFO:SELECT accounttype.id, accounttype.`accountTypeCode`, accounttype.type_of_account, accounttype.type_of_deposit, accounttype.date_updated, accounttype.date_created 
+FROM accounttype
+2023-07-05 17:00:45,508 INFO:[generated in 0.00150s] {}
+2023-07-05 17:00:45,544 INFO:ROLLBACK
