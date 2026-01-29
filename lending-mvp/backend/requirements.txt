@@ -1,0 +1,19 @@
+# FastAPI & Server
+fastapi
+uvicorn[standard]
+
+# GraphQL
+strawberry-graphql[fastapi]
+
+# Database
+motor
+pymongo
+
+# Authentication
+python-jose[cryptography]
+passlib[bcrypt]
+
+# Configuration
+pydantic-settings
+
+# For handling decimals

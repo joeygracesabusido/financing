@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financing Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Navigation Bar -->
+        <nav class="bg-white shadow-md p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="#" class="text-2xl font-bold text-gray-800">IJE Financing</a>
+                <div class="space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-gray-800">Dashboard</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">Loans</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-800">Settings</a>
+                    <button id="logout-btn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto mt-8 p-4">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Welcome to Your Dashboard!</h1>
+
+            <!-- Dashboard Widgets/Sections -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Total Loans Widget -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Total Loans</h2>
+                    <p class="text-3xl font-bold text-indigo-600">54</p>
+                    <p class="text-gray-500">Active loans</p>
+                </div>
+
+                <!-- Outstanding Balance Widget -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Outstanding Balance</h2>
+                    <p class="text-3xl font-bold text-red-600">$125,000</p>
+                    <p class="text-gray-500">Across all active loans</p>
+                </div>
+
+                <!-- Recent Activity Widget -->
+                <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-1">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Recent Activity</h2>
+                    <ul>
+                        <li class="mb-2 text-gray-700">Loan #1001 disbursed <span class="float-right text-gray-500 text-sm">2 hours ago</span></li>
+                        <li class="mb-2 text-gray-700">Payment received for Loan #987 <span class="float-right text-gray-500 text-sm">1 day ago</span></li>
+                        <li class="mb-2 text-gray-700">New loan application #1002 <span class="float-right text-gray-500 text-sm">2 days ago</span></li>
+                    </ul>
+                </div>
+
+                <!-- Ledger Entries from app.js -->
+                <div class="bg-white rounded-lg shadow-md p-6 md:col-span-2 lg:col-span-3" id="ledger-entries-dashboard">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Ledger Entries (from app.js)</h2>
+                    <div id="ledger-entries">
+                        <!-- Content will be loaded from app.js -->
+                        <p>Loading ledger entries...</p>
+                    </div>
+                </div>
+
+                 <!-- Disburse Test Loan Section -->
+                <div class="bg-white rounded-lg shadow-md p-6 md:col-span-2 lg:col-span-3">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Disburse Test Loan</h2>
+                    <button id="disburse-btn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                        Disburse New Test Loan
+                    </button>
+                    <p class="text-sm text-gray-500 mt-2">Click to disburse a new test loan and update ledger entries.</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Basic logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            alert('Logged out!'); // Replace with actual logout logic
+            window.location.href = '/login.html'; // Redirect to login page
+        });
+
+        // Initialize ledger fetch on dashboard load
+        document.addEventListener('DOMContentLoaded', () => {
+            // This assumes fetchBorrowerLedger is globally accessible or re-defined/imported
+            // For now, let's keep it simple and assume app.js will handle it, or we'll move this logic later
+            if (typeof fetchBorrowerLedger === 'function') {
+                fetchBorrowerLedger('some_borrower_id'); // Use a real ID in a real app
+            } else {
+                console.warn("fetchBorrowerLedger not found. Ensure app.js is loaded correctly and function is accessible.");
+            }
+        });
+    </script>
+</body>
+</html>

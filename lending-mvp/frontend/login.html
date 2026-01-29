@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in · IJE Financing</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <div class="flex flex-col items-center justify-center min-h-screen px-4">
+    <!-- App logo/title -->
+    <div class="mb-6 text-center">
+      <div class="text-2xl font-semibold text-gray-900">IJE Financing App</div>
+    </div>
+
+    <!-- Auth card -->
+    <div class="w-full max-w-sm bg-white border border-gray-200 rounded-md shadow-sm">
+      <div class="px-6 py-6">
+        <h1 class="text-xl font-medium text-gray-900 mb-4">Sign in to your account</h1>
+
+        <div id="alert" class="text-sm text-red-600 mb-3 hidden"></div>
+
+        <form id="login-form" class="space-y-4">
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700">Username or email address</label>
+            <input id="username" type="text" autocomplete="username" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between">
+              <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+              <a href="#" class="text-sm text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+            </div>
+            <input id="password" type="password" autocomplete="current-password" required
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+          </div>
+
+          <button type="submit"
+            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            Sign in
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Sign up prompt -->
+    <div class="mt-4 w-full max-w-sm text-center">
+      <div class="border border-gray-200 rounded-md py-4 text-sm text-gray-700">
+        New to Financing App?
+        <a href="/-temp-sign-up" class="text-indigo-600 hover:text-indigo-500 font-medium">Create an account</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $('#login-form').submit(function(e) {
+        e.preventDefault();
+        var username = $('#username').val();
+        var password = $('#password').val();
+        $('#alert').addClass('hidden').text('');
+
+        $.ajax({
+          url: '/api-login/',
+          type: 'GET',
+          data: {
+            username1: username,
+            password1: password
+          },
+          success: function() {
+            window.location.href = '/dashboard/';
+          },
+          error: function(xhr) {
+            var msg = 'Login failed';
+            if (xhr.status === 401) msg = 'Incorrect username or password';
+            if (xhr.status === 400) msg = 'Unauthorized';
+            $('#alert').removeClass('hidden').text(msg);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
