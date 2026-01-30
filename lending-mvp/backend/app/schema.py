@@ -1,21 +1,77 @@
 import strawberry
 from typing import List, Optional
 from decimal import Decimal
+from datetime import datetime
 from .services import accounting_service, loan_service
 
 # --- Strawberry Types (mirroring Pydantic models) ---
 
+# User Types
+@strawberry.type
+class UserType:
+    id: str
+    email: str
+    username: str
+    full_name: str
+    is_active: bool
+    role: str
+    created_at: datetime
+    updated_at: datetime
+
+@strawberry.input
+class UserCreateInput:
+    email: str
+    username: str
+    full_name: str
+    password: str
+    role: Optional[str] = "user"
+
+@strawberry.input
+class UserUpdateInput:
+    email: Optional[str] = None
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    is_active: Optional[bool] = None
+    role: Optional[str] = None
+    password: Optional[str] = None
+
+@strawberry.input
+class LoginInput:
+    username: str # Can be email or username
+    password: str
+
+@strawberry.type
+class LoginResponse:
+    access_token: str
+    token_type: str
+    user: UserType
+
+@strawberry.type
+class UserResponse:
+    success: bool
+    message: str
+    user: Optional[UserType] = None
+
+@strawberry.type
+class UsersResponse:
+    success: bool
+    message: str
+    users: List[UserType]
+    total: int
+
+# Loan Types
 @strawberry.type
 class LoanType:
     borrower_id: str
     amount_requested: Decimal
     status: str
 
+# Ledger Entry Types
 @strawberry.type
 class LedgerEntryType:
     transaction_id: str
     account: str
-    amount: Decimal
+    amount: float
     entry_type: str
     timestamp: str
 
@@ -35,10 +91,10 @@ class Query:
         entries = await accounting_service.get_ledger_for_borrower(borrower_id)
         return [
             LedgerEntryType(
-                transactionId=e["transaction_id"],
+                transaction_id=e["transaction_id"],
                 account=e["account"],
                 amount=e["amount"],
-                entryType=e["entry_type"],
+                entry_type=e["entry_type"],
                 timestamp=str(e["timestamp"])
             ) for e in entries
         ]

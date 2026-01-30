@@ -1,8 +1,8 @@
 from datetime import datetime
-from ..database import client, ledger_collection
 from decimal import Decimal
 import uuid
 from typing import List
+from ..database import client, ledger_collection
 
 async def post_transaction(debit_account: str, credit_account: str, amount: Decimal, tx_id: str = None):
     """
@@ -16,14 +16,14 @@ async def post_transaction(debit_account: str, credit_account: str, amount: Deci
     debit_entry = {
         "transaction_id": transaction_id,
         "account": debit_account,
-        "amount": amount,
+        "amount": float(amount),
         "entry_type": "debit",
         "timestamp": datetime.utcnow()
     }
     credit_entry = {
         "transaction_id": transaction_id,
         "account": credit_account,
-        "amount": amount,
+        "amount": float(amount),
         "entry_type": "credit",
         "timestamp": datetime.utcnow()
     }

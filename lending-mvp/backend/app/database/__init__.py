@@ -1,0 +1,19 @@
+import motor.motor_asyncio
+from ..config import settings
+
+client = motor.motor_asyncio.AsyncIOMotorClient(settings.DATABASE_URL)
+db = client[settings.DATABASE_NAME]
+
+# Collections
+users_collection = db["users"]
+loans_collection = db["loans"]
+ledger_collection = db["ledger_entries"]
+
+def get_users_collection():
+    return users_collection
+
+def get_loans_collection():
+    return loans_collection
+
+def get_ledger_collection():
+    return ledger_collection

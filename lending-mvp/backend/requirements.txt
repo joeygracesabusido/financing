@@ -12,8 +12,10 @@ pymongo
 # Authentication
 python-jose[cryptography]
 passlib[bcrypt]
+python-dotenv
 
 # Configuration
 pydantic-settings
+pydantic
 
 # For handling decimals
