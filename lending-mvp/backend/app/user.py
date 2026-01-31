@@ -91,6 +91,7 @@ class Mutation:
     @strawberry.field
     async def login(self, input: LoginInput) -> LoginResponse:
         """User login"""
+        print(f"--- Login attempt for username: {input.username} ---")
         users_collection = get_users_collection()
         user_crud = UserCRUD(users_collection)
 
@@ -99,18 +100,31 @@ class Mutation:
         if not user_db:
             user_db = await user_crud.get_user_by_email(input.username)
 
-        if not user_db or not verify_password(input.password, user_db.hashed_password):
+        print(f"User found in DB: {'Yes' if user_db else 'No'}")
+
+        if user_db:
+            password_ok = verify_password(input.password, user_db.hashed_password)
+            print(f"Password verification result: {password_ok}")
+            if not password_ok:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect username or password"
+                )
+        else:
+            # Still raise the same error to avoid user enumeration
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password"
             )
 
         if not user_db.is_active:
+            print(f"User is inactive.")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Inactive user"
             )
 
+        print("--- Login successful ---")
         access_token = create_access_token(data={"sub": str(user_db.id)})
         user = convert_user_db_to_user_type(user_db)
 
@@ -155,6 +169,7 @@ class Mutation:
             )
 
             user_db = await user_crud.create_user(user_create)
+            print(f"--- User created successfully: Email={user_db.email}, Username={user_db.username} ---")
             user = convert_user_db_to_user_type(user_db)
 
             return UserResponse(

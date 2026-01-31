@@ -70,12 +70,6 @@ class UserCreate(UserBase):
     @field_validator("password")
     @classmethod
     def check_password_length(cls, v: str) -> str:
-        pw_bytes = v.encode("utf-8")
-        if len(pw_bytes) > 72:
-            raise ValueError(
-                "Password must not exceed 72 UTF-8 bytes (bcrypt limit). "
-                "Aim for ≤60 characters to be safe with emojis/special chars."
-            )
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters.")
         return v
@@ -91,6 +85,7 @@ class UserUpdate(BaseModel):
 class UserInDB(UserBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     hashed_password: str
+    is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

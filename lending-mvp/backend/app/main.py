@@ -33,7 +33,7 @@ async def root():
 # app.include_router(loan_router, prefix="/api/v1")
 
 @app.get("/api-login/")
-async def api_login(username1: str, password: str):
+async def api_login(username1: str, password1: str):
     # This is a bridge to the GraphQL login mutation
     # In a real-world application, you would either use GraphQL everywhere
     # or have a proper REST authentication system
@@ -62,9 +62,10 @@ async def api_login(username1: str, password: str):
     # Execute the query
     result = await schema.execute(
         query,
-        variable_values={"username": username1, "password": password}
+        variable_values={"username": username1, "password": password1}
     )
     
     # Return the result
     return result.data["login"]
+
 
