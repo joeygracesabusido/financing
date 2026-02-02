@@ -102,12 +102,63 @@ class User(UserBase):
 
     model_config = ConfigDict(from_attributes=True)
 
+# --- Customer Models ---
+class CustomerBase(BaseModel):
+    last_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: EmailStr
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+
+class CustomerCreate(CustomerBase):
+    pass
+
+class CustomerUpdate(BaseModel):
+    last_name: Optional[str] = None
+    first_name: Optional[str] = None
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: Optional[EmailStr] = None
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+
+class CustomerInDB(CustomerBase):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str}
+    )
+
+class Customer(CustomerBase):
+    id: str # For API responses, _id will be converted to str
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 # --- Loan Models ---
 class Loan(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     borrower_id: PyObjectId
     amount_requested: Decimal
-    amount_disbursed: Optional[Decimal]
     term_months: int
     interest_rate: Decimal # Annual rate
     status: str = "pending" # pending, approved, active, paid, rejected

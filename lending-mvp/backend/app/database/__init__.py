@@ -8,6 +8,7 @@ db = client[settings.DATABASE_NAME]
 users_collection = db["users"]
 loans_collection = db["loans"]
 ledger_collection = db["ledger_entries"]
+customers_collection = db["customers"]
 
 def get_users_collection():
     return users_collection
@@ -17,3 +18,6 @@ def get_loans_collection():
 
 def get_ledger_collection():
     return ledger_collection
+
+def get_customers_collection():
+    return customers_collection

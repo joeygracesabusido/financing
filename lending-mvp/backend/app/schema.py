@@ -3,6 +3,8 @@ from typing import List, Optional
 from decimal import Decimal
 from datetime import datetime
 from .services import accounting_service, loan_service
+from .models import Customer, CustomerCreate, CustomerUpdate
+
 
 # --- Strawberry Types (mirroring Pydantic models) ---
 
@@ -57,6 +59,71 @@ class UsersResponse:
     success: bool
     message: str
     users: List[UserType]
+    total: int
+
+# Customer Types
+@strawberry.type
+class CustomerType:
+    id: str
+    last_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: str
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+@strawberry.input
+class CustomerCreateInput:
+    last_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: str
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+
+@strawberry.input
+class CustomerUpdateInput:
+    last_name: Optional[str] = None
+    first_name: Optional[str] = None
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: Optional[str] = None
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+
+@strawberry.type
+class CustomerResponse:
+    success: bool
+    message: str
+    customer: Optional[CustomerType] = None
+
+@strawberry.type
+class CustomersResponse:
+    success: bool
+    message: str
+    customers: List[CustomerType]
     total: int
 
 # Loan Types

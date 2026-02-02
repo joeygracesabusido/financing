@@ -55,34 +55,9 @@
     </div>
   </div>
 
-  <script>
-    $(document).ready(function() {
-      $('#login-form').submit(function(e) {
-        e.preventDefault();
-        var username = $('#username').val();
-        var password = $('#password').val();
-        $('#alert').addClass('hidden').text('');
+  
 
-        $.ajax({
-          url: '/api-login/',
-          type: 'GET',
-          data: {
-            username1: username,
-            password1: password
-          },
-          success: function() {
-            window.location.href = 'dashboard.html';
-          },
-          error: function(xhr) {
-            var msg = 'Login failed';
-            if (xhr.status === 401) msg = 'Incorrect username or password';
-            if (xhr.status === 400) msg = 'Unauthorized';
-            $('#alert').removeClass('hidden').text(msg);
-          }
-        });
-      });
-    });
-  </script>
+  <script src="js/login.js"></script>
 </body>
 </html>
 

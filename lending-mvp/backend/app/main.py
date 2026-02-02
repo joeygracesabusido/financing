@@ -1,47 +1,46 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 import strawberry
 from strawberry.fastapi import GraphQLRouter
+from pydantic import BaseModel
 from .schema import Query, Mutation
-from  .user import Query as getUser
-from  .user import Mutation as createUser
+from .user import Query as getUser, Mutation as createUser
+from .customer import Query as getCustomer, Mutation as createCustomer
 
+
+# --- Pydantic Models for REST requests ---
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+# --- Strawberry GraphQL Setup ---
 @strawberry.type
-class Query(getUser):
+class Query(getUser, getCustomer):
     pass
 
 @strawberry.type
-class Mutation(createUser):
+class Mutation(createUser, createCustomer):
     pass
 
-# Create Strawberry's GraphQL schema
 graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)
 graphql_app = GraphQLRouter(graphql_schema)
 
-# Create FastAPI app
+# --- FastAPI App ---
 app = FastAPI(title="Lending MVP API")
 
-# Mount the GraphQL app
 app.include_router(graphql_app, prefix="/graphql")
 
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Lending MVP API"}
 
-# --- REST Endpoints Example ---
-# You can add REST endpoints here for simpler operations
-# e.g. from .routes import loan_router
-# app.include_router(loan_router, prefix="/api/v1")
-
-@app.get("/api-login/")
-async def api_login(username1: str, password1: str):
-    # This is a bridge to the GraphQL login mutation
-    # In a real-world application, you would either use GraphQL everywhere
-    # or have a proper REST authentication system
-    
-    # Get the schema
+@app.post("/api-login/")
+async def api_login(login_request: LoginRequest):
+    """
+    Bridge endpoint to the GraphQL login mutation.
+    Accepts username and password in a POST request body.
+    """
     schema = strawberry.Schema(query=Query, mutation=Mutation)
     
-    # Create a GraphQL query
     query = """
         mutation Login($username: String!, $password: String!) {
             login(input: {username: $username, password: $password}) {
@@ -59,13 +58,36 @@ async def api_login(username1: str, password1: str):
         }
     """
     
-    # Execute the query
     result = await schema.execute(
         query,
-        variable_values={"username": username1, "password": password1}
+        variable_values={
+            "username": login_request.username,
+            "password": login_request.password
+        }
     )
     
-    # Return the result
-    return result.data["login"]
+    if result.errors:
+        error = result.errors[0]
+        original_error = getattr(error, 'original_error', None)
 
+        if isinstance(original_error, HTTPException):
+            raise original_error
+        
+        if "Incorrect username or password" in error.message:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An unexpected error occurred during login.",
+            )
 
+    if result.data and result.data.get("login"):
+        return result.data["login"]
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Could not process login response.",
+        )

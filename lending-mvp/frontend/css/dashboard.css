@@ -1,0 +1,68 @@
+/* Custom styles for the dashboard */
+
+/* Sidebar */
+aside nav a.bg-green-100 {
+    color: #22c55e; /* green-500 */
+}
+
+aside nav a {
+    transition: all 0.2s ease-in-out;
+}
+
+aside nav a:hover {
+    color: #16a34a; /* green-600 */
+    background-color: #f0fdf4; /* green-50 */
+}
+
+/* Main Content */
+main {
+    background-color: #f9fafb; /* gray-50 */
+}
+
+/* Summary Cards */
+.text-green-500 {
+    color: #22c55e;
+}
+.text-red-500 {
+    color: #ef4444;
+}
+
+/* Yearly Overview Chart Placeholder */
+.h-64.bg-gray-200 {
+    position: relative;
+    background-image: url('https://user-images.githubusercontent.com/13159013/224421883-9d93616b-fb3b-487c-8805-4f0535e5b53d.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Recent Transactions Table */
+table th {
+    font-weight: 600;
+    color: #6b7280; /* gray-500 */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb; /* gray-200 */
+}
+
+table td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb; /* gray-200 */
+}
+
+/* Saving Goals */
+.bg-green-500 {
+    background-color: #22c55e;
+}
+
+.h-2\.5 {
+    height: 10px;
+}
+
+.rounded-full {
+    border-radius: 9999px;
+}
+
+.w-full {
+    width: 100%;
+}
