@@ -2,27 +2,40 @@ from typing import List, Optional, Dict, Any
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from ..models import CustomerInDB, CustomerCreate, CustomerUpdate
-from datetime import datetime
+from datetime import datetime, date, timezone
 
 class CustomerCRUD:
     def __init__(self, collection: AsyncIOMotorCollection):
         self.collection = collection
 
+    
+
     async def create_customer(self, customer: CustomerCreate) -> CustomerInDB:
+        data = customer.model_dump(exclude_unset=True)
+
+        # Convert date → datetime if present
+        if data.get("birth_date") and isinstance(data["birth_date"], date):
+            data["birth_date"] = datetime.combine(
+                data["birth_date"],
+                datetime.min.time(),
+                tzinfo=timezone.utc
+            )
+
         customer_in_db = CustomerInDB(
-            **customer.model_dump(exclude_unset=True),
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            **data,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
+
         doc = customer_in_db.model_dump(
             by_alias=True,
             exclude={"id"},
             exclude_unset=True,
         )
+
         result = await self.collection.insert_one(doc)
         customer_in_db.id = result.inserted_id
         return customer_in_db
-
     async def get_customer_by_id(self, customer_id: str) -> Optional[CustomerInDB]:
         if not ObjectId.is_valid(customer_id):
             return None

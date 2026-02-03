@@ -1,7 +1,7 @@
 import strawberry
 from typing import List, Optional
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime,date
 from .services import accounting_service, loan_service
 from .models import Customer, CustomerCreate, CustomerUpdate
 
@@ -65,13 +65,15 @@ class UsersResponse:
 @strawberry.type
 class CustomerType:
     id: str
-    last_name: str
-    first_name: str
+    customer_type: str # Added customer_type
+    last_name: Optional[str] = None # Made optional
+    first_name: Optional[str] = None # Made optional
+    display_name: str
     middle_name: Optional[str] = None
     tin_no: Optional[str] = None
     sss_no: Optional[str] = None
     permanent_address: Optional[str] = None
-    birth_date: Optional[datetime] = None
+    birth_date: Optional[date] = None
     birth_place: Optional[str] = None
     mobile_number: Optional[str] = None
     email_address: str
@@ -80,12 +82,17 @@ class CustomerType:
     salary_range: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
 
 @strawberry.input
 class CustomerCreateInput:
-    last_name: str
-    first_name: str
+    customer_type: str # Added customer_type
+    last_name: Optional[str] = None # Made optional
+    first_name: Optional[str] = None # Made optional
     middle_name: Optional[str] = None
+    display_name: str
     tin_no: Optional[str] = None
     sss_no: Optional[str] = None
     permanent_address: Optional[str] = None
@@ -96,9 +103,13 @@ class CustomerCreateInput:
     employer_name_address: Optional[str] = None
     job_title: Optional[str] = None
     salary_range: Optional[str] = None
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
 
 @strawberry.input
 class CustomerUpdateInput:
+    customer_type: str # Added customer_type
     last_name: Optional[str] = None
     first_name: Optional[str] = None
     middle_name: Optional[str] = None
@@ -112,6 +123,10 @@ class CustomerUpdateInput:
     employer_name_address: Optional[str] = None
     job_title: Optional[str] = None
     salary_range: Optional[str] = None
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
+    display_name: str
 
 @strawberry.type
 class CustomerResponse:

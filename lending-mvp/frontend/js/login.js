@@ -14,10 +14,9 @@ $(document).ready(function() {
                 password: password
             }),
             success: function(data) {
-                // Assuming the backend returns user data, including a token
-                // Store token if needed, e.g., in localStorage
-                if (data.access_token) {
-                    localStorage.setItem('accessToken', data.access_token);
+                // The backend GraphQL response uses camelCase for field names
+                if (data.accessToken) {
+                    localStorage.setItem('accessToken', data.accessToken);
                 }
                 window.location.href = 'dashboard.html';
             },

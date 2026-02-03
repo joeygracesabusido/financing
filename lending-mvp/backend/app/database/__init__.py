@@ -10,6 +10,10 @@ loans_collection = db["loans"]
 ledger_collection = db["ledger_entries"]
 customers_collection = db["customers"]
 
+async def create_indexes():
+    """Create indexes on MongoDB collections"""
+    await customers_collection.create_index([("display_name", 1)], unique=True)
+
 def get_users_collection():
     return users_collection
 

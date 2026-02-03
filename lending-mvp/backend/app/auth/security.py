@@ -5,6 +5,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from ..config import settings
 
+from fastapi import APIRouter, Body, HTTPException, Depends, Request, Response, status
+
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -42,10 +44,25 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
-def verify_token(token: str) -> Optional[dict]:
+# def verify_token(token: str) -> Optional[dict]:
+#     """Verify JWT token and return payload"""
+#     try:
+#         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
+#         return payload
+#     except JWTError as e:
+#         print(f"JWTError decoding token: {e}")
+#         return None
+    
+
+def verify_token(request:Request) -> Optional[dict]:
     """Verify JWT token and return payload"""
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
+
+        token = request.cookies.get('accessToken')
+        scheme, _, param = token.partition(" ")
+        
+        payload = jwt.decode(param, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload
-    except JWTError:
+    except JWTError as e:
+        print(f"JWTError decoding token: {e}")
         return None

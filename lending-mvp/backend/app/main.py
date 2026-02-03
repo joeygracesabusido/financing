@@ -1,10 +1,16 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
+from fastapi.middleware.cors import CORSMiddleware
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 from pydantic import BaseModel
+from typing import Dict
+
 from .schema import Query, Mutation
 from .user import Query as getUser, Mutation as createUser
 from .customer import Query as getCustomer, Mutation as createCustomer
+from .database import create_indexes, get_users_collection
+from .database.crud import UserCRUD
+from .auth.security import verify_token
 
 
 # --- Pydantic Models for REST requests ---
@@ -21,11 +27,60 @@ class Query(getUser, getCustomer):
 class Mutation(createUser, createCustomer):
     pass
 
+async def get_context(request: Request) -> Dict:
+    """Context getter for Strawberry"""
+    print("--- In get_context ---")
+    auth_header = request.headers.get("Authorization")
+    print(f"Authorization Header: {auth_header}")
+    
+    current_user = None
+
+    if auth_header:
+        try:
+            token = auth_header.replace("Bearer ", "")
+            payload = verify_token(token)
+            print(f"Decoded Token Payload: {payload}")
+
+            if payload:
+                user_id = payload.get("sub")
+                print(f"User ID from token: {user_id}")
+                if user_id:
+                    users_collection = get_users_collection()
+                    user_crud = UserCRUD(users_collection)
+                    current_user = await user_crud.get_user_by_id(user_id)
+                    print(f"User found in DB: {current_user is not None}")
+        except Exception as e:
+            print(f"Error in get_context: {e}")
+
+    print("--- Exiting get_context ---")
+    return {
+        "current_user": current_user
+    }
+
+
 graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)
-graphql_app = GraphQLRouter(graphql_schema)
+graphql_app = GraphQLRouter(graphql_schema, context_getter=get_context)
 
 # --- FastAPI App ---
 app = FastAPI(title="Lending MVP API")
+
+@app.on_event("startup")
+async def startup_event():
+    await create_indexes()
+
+# Configure CORS middleware
+origins = [
+    "http://localhost",
+    "http://localhost:8080",  # Allow requests from your frontend
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify allowed origins
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(graphql_app, prefix="/graphql")
 
@@ -39,6 +94,7 @@ async def api_login(login_request: LoginRequest):
     Bridge endpoint to the GraphQL login mutation.
     Accepts username and password in a POST request body.
     """
+    # We need a fresh schema instance to avoid context conflicts with the main GraphQL app
     schema = strawberry.Schema(query=Query, mutation=Mutation)
     
     query = """

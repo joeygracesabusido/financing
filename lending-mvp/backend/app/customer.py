@@ -4,8 +4,10 @@ from strawberry.types import Info
 from fastapi import HTTPException, status
 from datetime import datetime
 
+from starlette.requests import Request
+
 # Import models and schemas
-from .models import CustomerInDB, CustomerCreate, CustomerUpdate, PyObjectId
+from .models import CustomerInDB, CustomerCreate, CustomerUpdate, PyObjectId,UserInDB
 from .schema import CustomerType, CustomerCreateInput, CustomerUpdateInput, CustomerResponse, CustomersResponse
 from .database import get_customers_collection
 from .database.customer_crud import CustomerCRUD
@@ -16,6 +18,7 @@ def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> CustomerT
         id=str(customer_db.id),
         last_name=customer_db.last_name,
         first_name=customer_db.first_name,
+        display_name=customer_db.display_name,
         middle_name=customer_db.middle_name,
         tin_no=customer_db.tin_no,
         sss_no=customer_db.sss_no,
@@ -28,7 +31,11 @@ def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> CustomerT
         job_title=customer_db.job_title,
         salary_range=customer_db.salary_range,
         created_at=customer_db.created_at,
-        updated_at=customer_db.updated_at
+        updated_at=customer_db.updated_at,
+        company_name=customer_db.company_name,
+        company_address=customer_db.company_address,
+        customer_type=customer_db.customer_type,
+        branch=customer_db.branch
     )
 
 @strawberry.type
@@ -36,7 +43,20 @@ class Query:
     @strawberry.field
     async def customers(self, info: Info, skip: int = 0, limit: int = 100) -> CustomersResponse:
         """Get all customers"""
-        # Authorization can be added here, e.g., check if current_user is admin
+        # current_user: UserInDB = info.context.get("current_user")
+
+        # print("Current User:", current_user)  
+        # # Debugging line to check current_user
+        # FIXME: Temporarily disabled role check for development. 
+        # The original code required an 'admin' role to access this query.
+        # Original code: if not current_user or current_user.role != "admin":
+        # if not current_user:
+        #     raise Exception("Not authorized")
+
+        request: Request = info.context["request"]
+        username = get_current_user(request)
+
+
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
@@ -66,6 +86,9 @@ class Query:
     @strawberry.field
     async def customer(self, info: Info, customer_id: str) -> CustomerResponse:
         """Get customer by ID"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise Exception("Not authorized")
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
@@ -93,21 +116,22 @@ class Query:
 class Mutation:
     @strawberry.field
     async def create_customer(self, info: Info, input: CustomerCreateInput) -> CustomerResponse:
-        """Create a new customer"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise Exception("Not authorized")
+        
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
 
-            existing_customer = await customer_crud.get_customer_by_email(input.email_address)
-            if existing_customer:
+            if await customer_crud.get_customer_by_email(input.email_address):
                 return CustomerResponse(
                     success=False,
                     message="Customer with this email already exists"
                 )
 
-            customer_create = CustomerCreate(
-                **input.model_dump()
-            )
+            # Convert and create
+            customer_create = CustomerCreate(**strawberry.asdict(input))
 
             customer_db = await customer_crud.create_customer(customer_create)
             customer = convert_customer_db_to_customer_type(customer_db)
@@ -117,15 +141,18 @@ class Mutation:
                 message="Customer created successfully",
                 customer=customer
             )
+
         except Exception as e:
             return CustomerResponse(
                 success=False,
                 message=f"Error creating customer: {str(e)}"
             )
-
     @strawberry.field
     async def update_customer(self, info: Info, customer_id: str, input: CustomerUpdateInput) -> CustomerResponse:
         """Update an existing customer"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise Exception("Not authorized")
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
@@ -155,6 +182,9 @@ class Mutation:
     @strawberry.field
     async def delete_customer(self, info: Info, customer_id: str) -> CustomerResponse:
         """Delete a customer"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise Exception("Not authorized")
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)

@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field, ConfigDict, EmailStr,field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Any
-from datetime import datetime
+from datetime import datetime, date
 from bson import ObjectId
 from decimal import Decimal
 
@@ -104,8 +104,10 @@ class User(UserBase):
 
 # --- Customer Models ---
 class CustomerBase(BaseModel):
-    last_name: str
-    first_name: str
+    customer_type: str # Added customer_type
+    last_name: Optional[str] = None # Made optional
+    first_name: Optional[str] = None # Made optional
+    display_name: str
     middle_name: Optional[str] = None
     tin_no: Optional[str] = None
     sss_no: Optional[str] = None
@@ -113,17 +115,22 @@ class CustomerBase(BaseModel):
     birth_date: Optional[datetime] = None
     birth_place: Optional[str] = None
     mobile_number: Optional[str] = None
-    email_address: EmailStr
+    email_address: Optional[str] = None
     employer_name_address: Optional[str] = None
     job_title: Optional[str] = None
     salary_range: Optional[str] = None
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
 
 class CustomerCreate(CustomerBase):
     pass
 
 class CustomerUpdate(BaseModel):
+    customer_type: Optional[str] = None # Added customer_type and made optional for updates
     last_name: Optional[str] = None
     first_name: Optional[str] = None
+    display_name: Optional[str] = None # Made optional
     middle_name: Optional[str] = None
     tin_no: Optional[str] = None
     sss_no: Optional[str] = None
@@ -131,10 +138,13 @@ class CustomerUpdate(BaseModel):
     birth_date: Optional[datetime] = None
     birth_place: Optional[str] = None
     mobile_number: Optional[str] = None
-    email_address: Optional[EmailStr] = None
+    email_address: Optional[str] = None
     employer_name_address: Optional[str] = None
     job_title: Optional[str] = None
     salary_range: Optional[str] = None
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
 
 class CustomerInDB(CustomerBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")

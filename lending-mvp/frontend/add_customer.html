@@ -45,26 +45,57 @@
 
         <!-- Main Content -->
         <main class="flex-grow p-8">
-            <h1 class="text-3xl font-bold mb-8">Add New Customer</h1>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <form id="add-customer-form">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div>
-                            <label for="last-name" class="block text-gray-700 text-sm font-bold mb-2">Last Name:</label>
-                            <input type="text" id="last-name" name="lastName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-                        <div>
-                            <label for="first-name" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
-                            <input type="text" id="first-name" name="firstName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-                        <div>
-                            <label for="middle-name" class="block text-gray-700 text-sm font-bold mb-2">Middle Name:</label>
-                            <input type="text" id="middle-name" name="middleName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <h1 class="text-3xl font-bold mb-8">Add New Customer</h1>
+                        <div class="bg-white p-6 rounded-lg shadow">
+                            <form id="add-customer-form">
+                                <!-- Customer Type Radio Buttons -->
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 text-sm font-bold mb-2">Customer Type:</label>
+                                    <div class="flex items-center">
+                                        <input type="radio" id="customer-type-business" name="customerType" value="business" class="mr-2" checked>
+                                        <label for="customer-type-business" class="mr-4">Business</label>
+                                        <input type="radio" id="customer-type-individual" name="customerType" value="individual" class="mr-2">
+                                        <label for="customer-type-individual">Individual</label>
+                                    </div>
+                                </div>
+            
+                                <h2 class="text-xl font-semibold mb-4 text-gray-800">Personal Information</h2>
+                                <!-- Individual Fields (initially hidden or shown based on default selection) -->
+                                <div id="individual-fields" class="hidden">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                        <div>
+                                            <label for="last-name" class="block text-gray-700 text-sm font-bold mb-2">Last Name:</label>
+                                            <input type="text" id="last-name" name="lastName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        </div>
+                                        <div>
+                                            <label for="first-name" class="block text-gray-700 text-sm font-bold mb-2">First Name:</label>
+                                            <input type="text" id="first-name" name="firstName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        </div>
+                                        <div>
+                                            <label for="middle-name" class="block text-gray-700 text-sm font-bold mb-2">Middle Name:</label>
+                                            <input type="text" id="middle-name" name="middleName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <!-- Business Fields (initially shown, as 'business' is default checked) -->
+                                <div id="business-fields">
+                                    <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
+                                        <div>
+                                            <label for="company-name" class="block text-gray-700 text-sm font-bold mb-2">Company Name:</label>
+                                            <input type="text" id="company-name" name="company-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                        </div>
+                                    </div>
+                                </div>
+            
+                                <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-4">
+                                    <div>
+                                        <label for="display-name" class="block text-gray-700 text-sm font-bold mb-2">Display Name:</label>
+                                        <select id="display-name" name="display-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                            <!-- Options will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                </div>                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label for="tin-no" class="block text-gray-700 text-sm font-bold mb-2">Taxpayer Identification No. (TIN):</label>
                             <input type="text" id="tin-no" name="tinNo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
