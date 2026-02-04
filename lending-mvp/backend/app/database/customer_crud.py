@@ -50,9 +50,30 @@ class CustomerCRUD:
             return CustomerInDB.model_validate(customer_data)
         return None
 
-    async def get_customers(self, skip: int = 0, limit: int = 100) -> List[CustomerInDB]:
-        customers_data = await self.collection.find().skip(skip).limit(limit).to_list(length=limit)
+    async def get_customers(self, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> List[CustomerInDB]:
+        query: Dict[str, Any] = {}
+        if search_term:
+            # Case-insensitive regex search on display_name or email_address
+            query = {
+                "$or": [
+                    {"display_name": {"$regex": search_term, "$options": "i"}},
+                    {"email_address": {"$regex": search_term, "$options": "i"}}
+                ]
+            }
+        
+        customers_data = await self.collection.find(query).skip(skip).limit(limit).to_list(length=limit)
         return [CustomerInDB.model_validate(customer_data) for customer_data in customers_data]
+
+    async def count_customers(self, search_term: Optional[str] = None) -> int:
+        query: Dict[str, Any] = {}
+        if search_term:
+            query = {
+                "$or": [
+                    {"display_name": {"$regex": search_term, "$options": "i"}},
+                    {"email_address": {"$regex": search_term, "$options": "i"}}
+                ]
+            }
+        return await self.collection.count_documents(query)
 
     async def update_customer(self, customer_id: str, customer_update: CustomerUpdate) -> Optional[CustomerInDB]:
         if not ObjectId.is_valid(customer_id):

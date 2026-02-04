@@ -27,35 +27,79 @@ class Query(getUser, getCustomer):
 class Mutation(createUser, createCustomer):
     pass
 
-async def get_context(request: Request) -> Dict:
-    """Context getter for Strawberry"""
+# async def get_context(request: Request) -> Dict:
+#     """Context getter for Strawberry"""
+#     print("--- In get_context ---")
+#     auth_header = request.headers.get("Authorization")
+#     print(f"Authorization Header: {auth_header}")
+    
+#     current_user = None
+
+#     if auth_header:
+#         try:
+#             token = auth_header.replace("Bearer ", "")
+#             payload = verify_token(token)
+#             print(f"Decoded Token Payload: {payload}")
+
+#             if payload:
+#                 user_id = payload.get("sub")
+#                 print(f"User ID from token: {user_id}")
+#                 if user_id:
+#                     users_collection = get_users_collection()
+#                     user_crud = UserCRUD(users_collection)
+#                     current_user = await user_crud.get_user_by_id(user_id)
+#                     print(f"User found in DB: {current_user is not None}")
+#         except Exception as e:
+#             print(f"Error in get_context: {e}")
+
+#     print("--- Exiting get_context ---")
+#     return {
+#         "current_user": current_user
+#     }
+
+async def get_context(request: Request) -> dict:
+    """Context getter for Strawberry – always requires valid token"""
     print("--- In get_context ---")
     auth_header = request.headers.get("Authorization")
     print(f"Authorization Header: {auth_header}")
-    
-    current_user = None
 
-    if auth_header:
-        try:
-            token = auth_header.replace("Bearer ", "")
-            payload = verify_token(token)
-            print(f"Decoded Token Payload: {payload}")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        print("--- No valid Bearer token → rejecting ---")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid Authorization header. Expected: Bearer <token>",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-            if payload:
-                user_id = payload.get("sub")
-                print(f"User ID from token: {user_id}")
-                if user_id:
-                    users_collection = get_users_collection()
-                    user_crud = UserCRUD(users_collection)
-                    current_user = await user_crud.get_user_by_id(user_id)
-                    print(f"User found in DB: {current_user is not None}")
-        except Exception as e:
-            print(f"Error in get_context: {e}")
+    try:
+        token = auth_header.replace("Bearer ", "", 1)
+        payload = verify_token(token)
+        print(f"Decoded Token Payload: {payload}")
 
-    print("--- Exiting get_context ---")
-    return {
-        "current_user": current_user
-    }
+        if not payload:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Token missing subject (sub) claim")
+
+        users_collection = get_users_collection()
+        user_crud = UserCRUD(users_collection)
+        current_user = await user_crud.get_user_by_id(user_id)
+        print(f"User found in DB: {current_user is not None}")
+
+        if not current_user:
+            raise HTTPException(status_code=401, detail="User not found")
+
+        print("--- Exiting get_context (authenticated) ---")
+        return {"current_user": current_user}
+
+    except Exception as e:
+        print(f"Error during authentication: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Authentication failed: {str(e)}"
+        )
 
 
 graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)

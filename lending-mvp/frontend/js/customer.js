@@ -1,10 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_URL = '/graphql'; // Use relative path for API
     const customerTableBody = document.getElementById('customer-table-body');
+    const customerSearchInput = document.getElementById('customer-search-input');
 
-    const getCustomersQuery = `
-        query GetCustomers {
-            customers {
+    // GraphQL query to fetch customers
+    // The search_term variable will be dynamically added when performing a search
+    let getCustomersQuery = `
+        query GetCustomers($searchTerm: String) {
+            customers(searchTerm: $searchTerm) {
                 customers {
                     id
                     displayName
@@ -18,12 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
 
-    const fetchCustomers = async () => {
-        // Fetch the token from localStorage
+    const fetchCustomers = async (searchTerm = '') => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             console.error('Authentication token not found.');
-            // Redirect to login or show an error message
             window.location.href = 'login.html';
             return;
         }
@@ -36,18 +37,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    query: getCustomersQuery
+                    query: getCustomersQuery,
+                    variables: { searchTerm: searchTerm || null } // Pass searchTerm if it exists, else null
                 })
             });
 
             const result = await response.json();
 
             if (result.errors) {
-                // Check for authorization error
                 if (result.errors.some(error => error.message.includes("Not authorized"))) {
                     console.error('Authorization error: You do not have permission to view this data.');
                     alert('You are not authorized to view this page.');
-                    window.location.href = 'dashboard.html'; // Or some other appropriate page
+                    window.location.href = 'dashboard.html';
                 } else {
                     console.error('GraphQL Errors:', result.errors);
                     alert('An error occurred while fetching customer data.');
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        customerTableBody.innerHTML = ''; // Clear existing rows
+        customerTableBody.innerHTML = '';
 
         customers.forEach(customer => {
             const row = document.createElement('tr');
@@ -83,13 +84,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="p-3">${customer.customerType || 'N/A'}</td>
                 <td class="p-3">${customer.branch || 'N/A'}</td>
                 <td class="p-3">
-                    <button class="text-blue-500 hover:text-blue-700 mr-2"><i class="fas fa-edit"></i></button>
-                    <button class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                    <button class="text-blue-500 hover:text-blue-700 mr-2 edit-customer-btn" data-id="${customer.id}"><i class="fas fa-edit"></i></button>
+                    <button class="text-red-500 hover:text-red-700 delete-customer-btn" data-id="${customer.id}"><i class="fas fa-trash"></i></button>
                 </td>
             `;
+            
+            // Add event listener for the edit button
+            // We need to query from the 'row' itself because it's not yet appended to the DOM
+            const editButton = row.querySelector('.edit-customer-btn');
+            if (editButton) {
+                editButton.addEventListener('click', (event) => {
+                    const customerId = event.currentTarget.dataset.id;
+                    window.location.href = `update_customer.html?id=${customerId}`;
+                });
+            }
+
+            // Add event listener for the delete button (if needed in the future)
+            const deleteButton = row.querySelector('.delete-customer-btn');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', async (event) => {
+                    const customerId = event.currentTarget.dataset.id;
+                    if (confirm('Are you sure you want to delete this customer?')) {
+                        // Implement delete customer functionality here
+                        console.log(`Delete customer with ID: ${customerId}`);
+                        // Example: await deleteCustomer(customerId);
+                    }
+                });
+            }
+            
             customerTableBody.appendChild(row);
         });
     };
 
-    fetchCustomers();
+    // Event listener for the search input
+    if (customerSearchInput) {
+        customerSearchInput.addEventListener('input', (event) => {
+            const searchTerm = event.target.value.trim();
+            fetchCustomers(searchTerm);
+        });
+    }
+
+    fetchCustomers(); // Initial fetch of all customers
 });

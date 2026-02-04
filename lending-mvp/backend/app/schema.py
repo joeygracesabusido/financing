@@ -11,7 +11,7 @@ from .models import Customer, CustomerCreate, CustomerUpdate
 # User Types
 @strawberry.type
 class UserType:
-    id: str
+    id: strawberry.ID
     email: str
     username: str
     full_name: str
@@ -64,7 +64,7 @@ class UsersResponse:
 # Customer Types
 @strawberry.type
 class CustomerType:
-    id: str
+    id: strawberry.ID
     customer_type: str # Added customer_type
     last_name: Optional[str] = None # Made optional
     first_name: Optional[str] = None # Made optional

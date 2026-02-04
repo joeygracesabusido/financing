@@ -49,7 +49,10 @@
             <div class="bg-white p-6 rounded-lg shadow-lg">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold">All Customers</h2>
-                    <a href="add_customer.html" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Add New Customer</a>
+                    <div class="flex items-center">
+                        <input type="text" id="customer-search-input" placeholder="Search customers..." class="p-2 border border-gray-300 rounded-lg mr-4">
+                        <a href="add_customer.html" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Add New Customer</a>
+                    </div>
                 </div>
                 <table class="w-full">
                     <thead>

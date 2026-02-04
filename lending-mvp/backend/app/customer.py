@@ -15,7 +15,7 @@ from .database.customer_crud import CustomerCRUD
 def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> CustomerType:
     """Convert CustomerInDB to CustomerType schema"""
     return CustomerType(
-        id=str(customer_db.id),
+        id=strawberry.ID(str(customer_db.id)),
         last_name=customer_db.last_name,
         first_name=customer_db.first_name,
         display_name=customer_db.display_name,
@@ -41,34 +41,22 @@ def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> CustomerT
 @strawberry.type
 class Query:
     @strawberry.field
-    async def customers(self, info: Info, skip: int = 0, limit: int = 100) -> CustomersResponse:
-        """Get all customers"""
-        # current_user: UserInDB = info.context.get("current_user")
-
-        # print("Current User:", current_user)  
-        # # Debugging line to check current_user
-        # FIXME: Temporarily disabled role check for development. 
-        # The original code required an 'admin' role to access this query.
-        # Original code: if not current_user or current_user.role != "admin":
-        # if not current_user:
-        #     raise Exception("Not authorized")
-
-        request: Request = info.context["request"]
-        username = get_current_user(request)
-
+    async def customers(self, info: Info, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> CustomersResponse:
+        """Get all customers with optional search"""
+        current_user: UserInDB = info.context.get("current_user")
+        print(current_user.role)
+        if not current_user or current_user.role != "admin":
+            raise Exception("Not authorized")
 
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
             
-            customers_db = await customer_crud.get_customers(skip=skip, limit=limit)
+            customers_db = await customer_crud.get_customers(skip=skip, limit=limit, search_term=search_term)
+            total = await customer_crud.count_customers(search_term=search_term)
             
             customers = [convert_customer_db_to_customer_type(customer_db) for customer_db in customers_db]
             
-            # Note: CustomerCRUD currently doesn't have a count_customers method
-            # For simplicity, returning len(customers) as total for now.
-            total = len(customers) 
-
             return CustomersResponse(
                 success=True,
                 message="Customers retrieved successfully",
@@ -84,7 +72,7 @@ class Query:
             )
 
     @strawberry.field
-    async def customer(self, info: Info, customer_id: str) -> CustomerResponse:
+    async def customer(self, info: Info, customer_id: strawberry.ID) -> CustomerResponse:
         """Get customer by ID"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role != "admin":
@@ -93,7 +81,7 @@ class Query:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
             
-            customer_db = await customer_crud.get_customer_by_id(customer_id)
+            customer_db = await customer_crud.get_customer_by_id(str(customer_id))
             if not customer_db:
                 return CustomerResponse(
                     success=False,
@@ -116,9 +104,18 @@ class Query:
 class Mutation:
     @strawberry.field
     async def create_customer(self, info: Info, input: CustomerCreateInput) -> CustomerResponse:
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user or current_user.role != "admin":
-            raise Exception("Not authorized")
+        # current_user: UserInDB = info.context.get("current_user")
+        # print(current_user.role)
+        # if not current_user or current_user.role != "admin":
+        #     raise Exception("Not authorized")
+
+        current_user = info.context.get("current_user")
+    
+        if current_user is None:
+            raise Exception("Not authenticated – please login")
+        
+        if current_user.role != "admin":
+            raise Exception("Not authorized – admin role required")
         
         try:
             customers_collection = get_customers_collection()
@@ -148,7 +145,7 @@ class Mutation:
                 message=f"Error creating customer: {str(e)}"
             )
     @strawberry.field
-    async def update_customer(self, info: Info, customer_id: str, input: CustomerUpdateInput) -> CustomerResponse:
+    async def update_customer(self, info: Info, customer_id: strawberry.ID, input: CustomerUpdateInput) -> CustomerResponse:
         """Update an existing customer"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role != "admin":
@@ -157,10 +154,10 @@ class Mutation:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
 
-            customer_update_data = input.model_dump(exclude_unset=True)
+            customer_update_data = strawberry.asdict(input)
             customer_update = CustomerUpdate(**customer_update_data)
 
-            customer_db = await customer_crud.update_customer(customer_id, customer_update)
+            customer_db = await customer_crud.update_customer(str(customer_id), customer_update)
             if not customer_db:
                 return CustomerResponse(
                     success=False,
@@ -180,7 +177,7 @@ class Mutation:
             )
 
     @strawberry.field
-    async def delete_customer(self, info: Info, customer_id: str) -> CustomerResponse:
+    async def delete_customer(self, info: Info, customer_id: strawberry.ID) -> CustomerResponse:
         """Delete a customer"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role != "admin":
@@ -189,7 +186,7 @@ class Mutation:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
 
-            success = await customer_crud.delete_customer(customer_id)
+            success = await customer_crud.delete_customer(str(customer_id))
             if not success:
                 return CustomerResponse(
                     success=False,

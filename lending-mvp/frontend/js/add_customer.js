@@ -200,6 +200,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         `;
+            const token = localStorage.getItem('accessToken');
+
+            if (!token) {
+            formMessage.textContent = 'Please log in first.';
+            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+            return;  // stop submission
+            }
+
 
         const variables = {
             input: customerData
@@ -209,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                // 'Authorization': 'Bearer YOUR_TOKEN_HERE'   // if you use authentication
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 query: graphqlQuery,
