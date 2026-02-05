@@ -29,6 +29,19 @@
                                 <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
                             </div>
                         </li>
+
+                        
+                        </li><li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-exchange-alt mr-3"></i>Saving<i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                                <a href="savings_details.html?id=dummy_id_123" class="block text-gray-600 hover:text-gray-800">Savings Details</a>
+                            </div>
+                            
+                        </li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-cog mr-3"></i> Settings</a></li>
@@ -190,6 +203,15 @@
         if (customerDropdownBtn && customerDropdownMenu) {
             customerDropdownBtn.addEventListener('click', () => {
                 customerDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
+        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
+
+        if (savingsDropdownBtn && savingsDropdownMenu) {
+            savingsDropdownBtn.addEventListener('click', () => {
+                savingsDropdownMenu.classList.toggle('hidden');
             });
         }
     </script>

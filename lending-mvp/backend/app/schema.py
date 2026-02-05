@@ -2,6 +2,9 @@ import strawberry
 from typing import List, Optional
 from decimal import Decimal
 from datetime import datetime,date
+from strawberry.types import Info
+
+
 from .services import accounting_service, loan_service
 from .models import Customer, CustomerCreate, CustomerUpdate
 
@@ -141,6 +144,41 @@ class CustomersResponse:
     customers: List[CustomerType]
     total: int
 
+# Savings Types
+@strawberry.type
+class SavingsAccountType:
+    id: strawberry.ID
+    account_number: str
+    user_id: strawberry.ID
+    type: str
+    balance: Decimal
+    currency: str
+    opened_at: datetime
+    created_at: datetime
+    updated_at: datetime
+    status: str
+
+@strawberry.input
+class SavingsAccountCreateInput:
+    account_number: str
+    type: str # This might need to be an enum later
+    balance: Decimal = Decimal("0.00")
+    currency: str = "PHP"
+    status: str = "active"
+
+@strawberry.type
+class SavingsAccountResponse:
+    success: bool
+    message: str
+    account: Optional[SavingsAccountType] = None
+
+@strawberry.type
+class SavingsAccountsResponse:
+    success: bool
+    message: str
+    accounts: List[SavingsAccountType]
+    total: int
+
 # Loan Types
 @strawberry.type
 class LoanType:
@@ -181,6 +219,16 @@ class Query:
             ) for e in entries
         ]
 
+    @strawberry.field
+    async def savingsAccount(self, info: Info, account_id: strawberry.ID) -> SavingsAccountResponse:
+        from .savings import SavingsQuery
+        return await SavingsQuery().savingsAccount(info, account_id)
+
+    @strawberry.field
+    async def savingsAccounts(self, info: Info) -> SavingsAccountsResponse:
+        from .savings import SavingsQuery
+        return await SavingsQuery().savingsAccounts(info)
+
 # --- GraphQL Mutations ---
 
 @strawberry.type
@@ -190,3 +238,10 @@ class Mutation:
         # Business logic should be a service layer
         success = await loan_service.disburse_loan(loan_id)
         return "Disbursement successful" if success else "Disbursement failed"
+    
+    @strawberry.mutation
+    async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
+        from .savings import SavingsMutation
+        return await SavingsMutation().createSavingsAccount(info, input)
+    
+    

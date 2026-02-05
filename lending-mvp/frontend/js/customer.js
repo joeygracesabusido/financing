@@ -65,6 +65,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // GraphQL mutation to delete a customer
+    const deleteCustomerMutation = `
+        mutation DeleteCustomer($customerId: ID!) {
+            deleteCustomer(customerId: $customerId) {
+                success
+                message
+            }
+        }
+    `;
+
+    const deleteCustomer = async (customerId) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            console.error('Authentication token not found.');
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: deleteCustomerMutation,
+                    variables: { customerId: customerId }
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.errors) {
+                if (result.errors.some(error => error.message.includes("Not authorized"))) {
+                    console.error('Authorization error: You do not have permission to delete this data.');
+                    alert('You are not authorized to delete customers.');
+                } else {
+                    console.error('GraphQL Errors:', result.errors);
+                    alert('An error occurred while deleting the customer.');
+                }
+                return false;
+            }
+
+            if (result.data.deleteCustomer.success) {
+                alert(result.data.deleteCustomer.message);
+                return true;
+            } else {
+                alert('Error: ' + result.data.deleteCustomer.message);
+                return false;
+            }
+
+        } catch (error) {
+            console.error('Error deleting customer:', error);
+            alert('An error occurred while deleting the customer. Is the server running?');
+            return false;
+        }
+    };
+
     const populateTable = (customers) => {
         if (!customers || customers.length === 0) {
             customerTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-center">No customers found.</td></tr>';
@@ -99,15 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Add event listener for the delete button (if needed in the future)
             const deleteButton = row.querySelector('.delete-customer-btn');
             if (deleteButton) {
                 deleteButton.addEventListener('click', async (event) => {
                     const customerId = event.currentTarget.dataset.id;
                     if (confirm('Are you sure you want to delete this customer?')) {
-                        // Implement delete customer functionality here
-                        console.log(`Delete customer with ID: ${customerId}`);
-                        // Example: await deleteCustomer(customerId);
+                        const success = await deleteCustomer(customerId);
+                        if (success) {
+                            fetchCustomers(); // Re-fetch customers to update the table
+                        }
                     }
                 });
             }

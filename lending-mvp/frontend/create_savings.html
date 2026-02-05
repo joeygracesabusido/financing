@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Savings Account</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center mb-10">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg mr-3"></div>
+                    <span class="text-2xl font-bold">IJE Software</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4">
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-users mr-3"></i> Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
+                                <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left">
+                                <i class="fas fa-piggy-bank mr-3"></i> Savings <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings Accounts</a>
+                                <a href="create_savings.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Create New Savings</a>
+                                <a href="savings_details.html" class="block text-gray-600 hover:text-gray-800">Savings Details</a>
+                            </div>
+                        </li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-cog mr-3"></i> Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <ul>
+                    <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-question-circle mr-3"></i> Help</a></li>
+                    <li><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-8">
+            <h1 class="text-3xl font-bold mb-8">Create New Savings Account</h1>
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <form id="create-savings-form">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Account Details</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="customer-id" class="block text-gray-700 text-sm font-bold mb-2">Customer:</label>
+                            <select id="customer-id" name="customerId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <!-- Options will be populated by JavaScript dynamically from API -->
+                                <option value="">Select Customer</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="account-type" class="block text-gray-700 text-sm font-bold mb-2">Account Type:</label>
+                            <select id="account-type" name="accountType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                <option value="">Select Account Type</option>
+                                <option value="basic">Basic Savings</option>
+                                <option value="interest-bearing">Interest-Bearing Savings</option>
+                                <option value="fixed-deposit">Fixed Deposit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="initial-deposit" class="block text-gray-700 text-sm font-bold mb-2">Initial Deposit:</label>
+                            <input type="number" id="initial-deposit" name="initialDeposit" step="0.01" min="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        </div>
+                        <div>
+                            <label for="opening-date" class="block text-gray-700 text-sm font-bold mb-2">Opening Date:</label>
+                            <input type="date" id="opening-date" name="openingDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="branch" class="block text-gray-700 text-sm font-bold mb-2">Branch:</label>
+                        <input type="text" id="branch" name="branch" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description / Notes:</label>
+                        <textarea id="description" name="description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-6">
+                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Create Savings Account
+                        </button>
+                    </div>
+                </form>
+                <div id="form-message" class="mt-4 text-sm font-bold"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="js/create_savings.js"></script>
+    <script>
+        // Basic logout functionality (consider moving to app.js or a shared utility)
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            alert('Logged out!');
+            window.location.href = 'login.html';
+        });
+
+        // Dropdown functionality for Customer
+        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
+        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
+
+        if (customerDropdownBtn && customerDropdownMenu) {
+            customerDropdownBtn.addEventListener('click', () => {
+                customerDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Dropdown functionality for Savings (initially open)
+        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
+        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
+
+        if (savingsDropdownBtn && savingsDropdownMenu) {
+            savingsDropdownBtn.addEventListener('click', () => {
+                savingsDropdownMenu.classList.toggle('hidden');
+            });
+            // Ensure savings dropdown is open on this page
+            savingsDropdownMenu.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
