@@ -160,11 +160,13 @@ class SavingsAccountType:
 
 @strawberry.input
 class SavingsAccountCreateInput:
+    customer_id: strawberry.ID # Customer ID to link the account
     account_number: str
-    type: str # This might need to be an enum later
-    balance: Decimal = Decimal("0.00")
+    type: str # e.g., "basic", "interest-bearing", "fixed-deposit"
+    balance: Decimal = Decimal("0.00") # Initial deposit
     currency: str = "PHP"
     status: str = "active"
+    opened_at: datetime # Date the account was opened
 
 @strawberry.type
 class SavingsAccountResponse:
@@ -177,6 +179,35 @@ class SavingsAccountsResponse:
     success: bool
     message: str
     accounts: List[SavingsAccountType]
+    total: int
+
+# Transaction Types
+@strawberry.type
+class TransactionType:
+    id: strawberry.ID
+    account_id: strawberry.ID
+    transaction_type: str # e.g., "deposit", "withdrawal"
+    amount: Decimal
+    timestamp: datetime
+    notes: Optional[str] = None
+
+@strawberry.input
+class TransactionCreateInput:
+    account_id: strawberry.ID
+    amount: Decimal
+    notes: Optional[str] = None
+
+@strawberry.type
+class TransactionResponse:
+    success: bool
+    message: str
+    transaction: Optional[TransactionType] = None
+
+@strawberry.type
+class TransactionsResponse:
+    success: bool
+    message: str
+    transactions: List[TransactionType]
     total: int
 
 # Loan Types

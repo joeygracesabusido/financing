@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             row.innerHTML = `
                 <td class="p-3">${account.accountNumber}</td>
+                <td class="p-3">${account.accountNumber}</td>
                 <td class="p-3">${account.type}</td>
                 <td class="p-3">₱${parseFloat(account.balance).toFixed(2)}</td>
                 <td class="p-3">${account.status}</td>

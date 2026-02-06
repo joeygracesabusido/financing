@@ -25,3 +25,6 @@ def get_ledger_collection():
 
 def get_customers_collection():
     return customers_collection
+
+def get_db():
+    return db

@@ -11,19 +11,19 @@ from datetime import datetime
 
 
 
-def map_db_account_to_strawberry_type(account_data: dict) -> SavingsAccountType:
-    """Maps a dictionary from the DB to a SavingsAccountType."""
+def map_db_account_to_strawberry_type(account_data: SavingsAccountBase) -> SavingsAccountType:
+    """Maps a SavingsAccountBase object to a SavingsAccountType."""
     return SavingsAccountType(
-        id=strawberry.ID(str(account_data['_id'])),
-        account_number=account_data['account_number'],
-        user_id=strawberry.ID(str(account_data['user_id'])),
-        type=account_data['type'],
-        balance=account_data['balance'],
-        currency=account_data['currency'],
-        opened_at=account_data['opened_at'],
-        status=account_data['status'],
-        created_at=account_data['created_at'],
-        updated_at=account_data['updated_at']
+        id=strawberry.ID(str(account_data.id)),
+        account_number=account_data.account_number,
+        user_id=strawberry.ID(str(account_data.user_id)),
+        type=account_data.type,
+        balance=account_data.balance,
+        currency=account_data.currency,
+        opened_at=account_data.opened_at,
+        status=account_data.status,
+        created_at=account_data.created_at,
+        updated_at=account_data.updated_at
     )
 
 @strawberry.type
@@ -42,7 +42,7 @@ class SavingsQuery:
             return SavingsAccountResponse(success=False, message="Account not found")
 
         # Basic authorization: check if the account belongs to the current user
-        if str(account_data['user_id']) != str(current_user.id):
+        if str(account_data.user_id) != str(current_user.id):
             return SavingsAccountResponse(success=False, message="Not authorized to view this account")
             
         account = map_db_account_to_strawberry_type(account_data)
@@ -52,14 +52,14 @@ class SavingsQuery:
     async def savingsAccounts(self, info: Info) -> SavingsAccountsResponse:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
-            return SavingsAccountsResponse(success=False, message="Not authenticated", accounts=[])
+            return SavingsAccountsResponse(success=False, message="Not authenticated", accounts=[], total=0)
 
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
         accounts_data = await savings_crud.get_savings_accounts_by_user_id(str(current_user.id))
         
         accounts = [map_db_account_to_strawberry_type(acc) for acc in accounts_data]
-        return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts)
+        return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts, total=len(accounts))
 
 @strawberry.type
 class SavingsMutation:

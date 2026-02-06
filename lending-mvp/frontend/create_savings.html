@@ -36,7 +36,7 @@
                             <div id="savings-dropdown-menu" class="pl-8 mt-2 space-y-2">
                                 <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings Accounts</a>
                                 <a href="create_savings.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Create New Savings</a>
-                                <a href="savings_details.html" class="block text-gray-600 hover:text-gray-800">Savings Details</a>
+                                <!-- <a href="savings_details.html" class="block text-gray-600 hover:text-gray-800">Savings Details</a> -->
                             </div>
                         </li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
@@ -61,19 +61,18 @@
                     <h2 class="text-xl font-semibold mb-4 text-gray-800">Account Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="customer-id" class="block text-gray-700 text-sm font-bold mb-2">Customer:</label>
-                            <select id="customer-id" name="customerId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                <!-- Options will be populated by JavaScript dynamically from API -->
-                                <option value="">Select Customer</option>
-                            </select>
+                            <label for="customer-search" class="block text-gray-700 text-sm font-bold mb-2">Customer:</label>
+                            <input type="text" id="customer-search" list="customer-list" placeholder="Start typing customer name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            <datalist id="customer-list"></datalist>
+                            <input type="hidden" id="customer-id-hidden" name="customerId">
                         </div>
                         <div>
                             <label for="account-type" class="block text-gray-700 text-sm font-bold mb-2">Account Type:</label>
                             <select id="account-type" name="accountType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                 <option value="">Select Account Type</option>
-                                <option value="basic">Basic Savings</option>
-                                <option value="interest-bearing">Interest-Bearing Savings</option>
-                                <option value="fixed-deposit">Fixed Deposit</option>
+                                <option value="basic">Regular Savings</option>
+                                <option value="interest-bearing">High Yield Savingsv</option>
+                                <option value="fixed-deposit">Time Deposit</option>
                             </select>
                         </div>
                     </div>

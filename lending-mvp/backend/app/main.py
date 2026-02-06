@@ -5,9 +5,11 @@ from strawberry.fastapi import GraphQLRouter
 from pydantic import BaseModel
 from typing import Dict
 
-from .schema import Query, Mutation
+from .schema import Query, Mutation as SchemaMutation
 from .user import Query as getUser, Mutation as createUser
 from .customer import Query as getCustomer, Mutation as createCustomer
+from .savings import SavingsQuery # Added import for SavingsQuery
+from .transaction import TransactionQuery # Added import for TransactionQuery
 from .database import create_indexes, get_users_collection
 from .database.crud import UserCRUD
 from .auth.security import verify_token
@@ -20,11 +22,11 @@ class LoginRequest(BaseModel):
 
 # --- Strawberry GraphQL Setup ---
 @strawberry.type
-class Query(getUser, getCustomer):
+class Query(getUser, getCustomer, SavingsQuery, TransactionQuery): # Added TransactionQuery
     pass
 
 @strawberry.type
-class Mutation(createUser, createCustomer):
+class Mutation(createUser, createCustomer, SchemaMutation):
     pass
 
 # async def get_context(request: Request) -> Dict:

@@ -2,11 +2,13 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Optional, List, Dict, Any
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from ..models import PyObjectId
+from bson import ObjectId # Added import for ObjectId
 
 
 class SavingsAccountBase(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     account_number: str = Field(..., min_length=8)
     user_id: PyObjectId
     type: str
@@ -16,6 +18,12 @@ class SavingsAccountBase(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     status: Literal["active", "frozen", "closed"] = "active"
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str}
+    )
 
 
 class RegularSavings(SavingsAccountBase):
