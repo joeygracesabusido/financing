@@ -70,9 +70,9 @@
                             <label for="account-type" class="block text-gray-700 text-sm font-bold mb-2">Account Type:</label>
                             <select id="account-type" name="accountType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                                 <option value="">Select Account Type</option>
-                                <option value="basic">Regular Savings</option>
-                                <option value="interest-bearing">High Yield Savingsv</option>
-                                <option value="fixed-deposit">Time Deposit</option>
+                                <option value="regular">Regular Savings</option>
+                                <option value="high_yield">High Yield Savings</option>
+                                <option value="time_deposit">Time Deposit</option>
                             </select>
                         </div>
                     </div>
@@ -85,6 +85,37 @@
                         <div>
                             <label for="opening-date" class="block text-gray-700 text-sm font-bold mb-2">Opening Date:</label>
                             <input type="date" id="opening-date" name="openingDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        </div>
+                    </div>
+
+                    <div id="high-yield-options" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="interest-rate" class="block text-gray-700 text-sm font-bold mb-2">Interest Rate (%):</label>
+                            <input type="number" id="interest-rate" name="interestRate" step="0.01" min="0" max="100" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label for="interest-paid-frequency" class="block text-gray-700 text-sm font-bold mb-2">Interest Paid Frequency:</label>
+                            <select id="interest-paid-frequency" name="interestPaidFrequency" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="">Select Frequency</option>
+                                <option value="daily">Daily</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="quarterly">Quarterly</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="time-deposit-options" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="td-principal" class="block text-gray-700 text-sm font-bold mb-2">Principal:</label>
+                            <input type="number" id="td-principal" name="tdPrincipal" step="0.01" min="0" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label for="td-interest-rate" class="block text-gray-700 text-sm font-bold mb-2">Interest Rate (%):</label>
+                            <input type="number" id="td-interest-rate" name="tdInterestRate" step="0.01" min="0" max="100" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label for="term-days" class="block text-gray-700 text-sm font-bold mb-2">Term (Days):</label>
+                            <input type="number" id="term-days" name="termDays" min="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                     </div>
 

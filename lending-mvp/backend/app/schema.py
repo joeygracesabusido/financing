@@ -4,6 +4,9 @@ from decimal import Decimal
 from datetime import datetime,date
 from strawberry.types import Info
 
+from .database import get_db
+from .database.customer_crud import CustomerCRUD
+from .customer import convert_customer_db_to_customer_type
 
 from .services import accounting_service, loan_service
 from .models import Customer, CustomerCreate, CustomerUpdate
@@ -64,7 +67,6 @@ class UsersResponse:
     users: List[UserType]
     total: int
 
-# Customer Types
 @strawberry.type
 class CustomerType:
     id: strawberry.ID
@@ -89,60 +91,6 @@ class CustomerType:
     company_address: Optional[str] = None
     branch: str
 
-@strawberry.input
-class CustomerCreateInput:
-    customer_type: str # Added customer_type
-    last_name: Optional[str] = None # Made optional
-    first_name: Optional[str] = None # Made optional
-    middle_name: Optional[str] = None
-    display_name: str
-    tin_no: Optional[str] = None
-    sss_no: Optional[str] = None
-    permanent_address: Optional[str] = None
-    birth_date: Optional[datetime] = None
-    birth_place: Optional[str] = None
-    mobile_number: Optional[str] = None
-    email_address: str
-    employer_name_address: Optional[str] = None
-    job_title: Optional[str] = None
-    salary_range: Optional[str] = None
-    company_name: Optional[str] = None
-    company_address: Optional[str] = None
-    branch: str
-
-@strawberry.input
-class CustomerUpdateInput:
-    customer_type: str # Added customer_type
-    last_name: Optional[str] = None
-    first_name: Optional[str] = None
-    middle_name: Optional[str] = None
-    tin_no: Optional[str] = None
-    sss_no: Optional[str] = None
-    permanent_address: Optional[str] = None
-    birth_date: Optional[datetime] = None
-    birth_place: Optional[str] = None
-    mobile_number: Optional[str] = None
-    email_address: Optional[str] = None
-    employer_name_address: Optional[str] = None
-    job_title: Optional[str] = None
-    salary_range: Optional[str] = None
-    company_name: Optional[str] = None
-    company_address: Optional[str] = None
-    branch: str
-    display_name: str
-
-@strawberry.type
-class CustomerResponse:
-    success: bool
-    message: str
-    customer: Optional[CustomerType] = None
-
-@strawberry.type
-class CustomersResponse:
-    success: bool
-    message: str
-    customers: List[CustomerType]
-    total: int
 
 # Savings Types
 @strawberry.type
@@ -151,22 +99,40 @@ class SavingsAccountType:
     account_number: str
     user_id: strawberry.ID
     type: str
-    balance: Decimal
+    balance: float
     currency: str
     opened_at: datetime
     created_at: datetime
     updated_at: datetime
     status: str
+    customer: Optional[str] = None
+
+    @strawberry.field
+    async def customer(self, info: Info) -> Optional[CustomerType]:
+        db = get_db()
+        customer_crud = CustomerCRUD(db.customers)
+        
+        customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
+        
+        if customer_data:
+            return convert_customer_db_to_customer_type(customer_data)
+        return None
+
+ 
 
 @strawberry.input
 class SavingsAccountCreateInput:
     customer_id: strawberry.ID # Customer ID to link the account
     account_number: str
     type: str # e.g., "basic", "interest-bearing", "fixed-deposit"
-    balance: Decimal = Decimal("0.00") # Initial deposit
+    balance: float = 0.00 # Initial deposit
     currency: str = "PHP"
     status: str = "active"
     opened_at: datetime # Date the account was opened
+    interest_rate: Optional[float] = None # For HighYieldSavings and TimeDeposit
+    interest_paid_frequency: Optional[str] = None # For HighYieldSavings
+    principal: Optional[float] = None # For TimeDeposit
+    term_days: Optional[int] = None # For TimeDeposit
 
 @strawberry.type
 class SavingsAccountResponse:
@@ -187,14 +153,14 @@ class TransactionType:
     id: strawberry.ID
     account_id: strawberry.ID
     transaction_type: str # e.g., "deposit", "withdrawal"
-    amount: Decimal
+    amount: float
     timestamp: datetime
     notes: Optional[str] = None
 
 @strawberry.input
 class TransactionCreateInput:
     account_id: strawberry.ID
-    amount: Decimal
+    amount: float
     notes: Optional[str] = None
 
 @strawberry.type

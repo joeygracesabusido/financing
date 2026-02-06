@@ -58,14 +58,20 @@ class SavingsCRUD:
         return None
 
     async def get_savings_accounts_by_user_id(self, user_id: str) -> List[SavingsAccountBase]:
-        if not ObjectId.is_valid(user_id):
-            return []
-        accounts_data_list = await self.collection.find({"user_id": ObjectId(user_id)}).to_list(length=100)
+        # user_id is stored as a string, so query directly with the string
+        accounts_data_list = await self.collection.find({"user_id": user_id}).to_list(length=100)
         
         # Convert string representations back to Decimal for each account
         processed_accounts_list = [_convert_str_to_decimal(acc_data) for acc_data in accounts_data_list]
         
         # Deserialize each dict back into a Pydantic model
+        return [SavingsAccountBase(**acc_data) for acc_data in processed_accounts_list]
+    
+    async def get_all_savings_accounts(self) -> List[SavingsAccountBase]:
+        accounts_data_list = await self.collection.find().to_list(length=100) # Fetch all accounts, limit to 100 for now
+        
+        processed_accounts_list = [_convert_str_to_decimal(acc_data) for acc_data in accounts_data_list]
+        
         return [SavingsAccountBase(**acc_data) for acc_data in processed_accounts_list]
     
     async def update_balance(self, account_id: str, amount: Decimal) -> bool:

@@ -7,7 +7,7 @@ from .basemodel.savings_model import RegularSavings, HighYieldSavings, TimeDepos
 from .models import UserInDB
 from .schema import SavingsAccountType, SavingsAccountCreateInput, SavingsAccountResponse, SavingsAccountsResponse
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 
@@ -56,7 +56,7 @@ class SavingsQuery:
 
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
-        accounts_data = await savings_crud.get_savings_accounts_by_user_id(str(current_user.id))
+        accounts_data = await savings_crud.get_all_savings_accounts() # Fetch all accounts
         
         accounts = [map_db_account_to_strawberry_type(acc) for acc in accounts_data]
         return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts, total=len(accounts))
@@ -72,14 +72,37 @@ class SavingsMutation:
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
 
-        # Here, you would have logic to create the correct type of account
-        # For simplicity, we'll just create a RegularSavings account
-        account_to_create = RegularSavings(
-            account_number=input.account_number,
-            user_id=current_user.id,
-            balance=input.balance,
-            # other fields will use defaults from the model
-        )
+        # Logic to create the correct type of account based on input
+        account_data = {
+            "account_number": input.account_number,
+            "user_id": str(input.customer_id),
+            "balance": input.balance,
+            "opened_at": input.opened_at,
+            "currency": input.currency,
+            "status": input.status,
+            "type": input.type
+        }
+
+        if input.type == "regular":
+            account_to_create = RegularSavings(**account_data)
+        elif input.type == "high_yield":
+            if input.interest_rate is not None:
+                account_data["interest_rate"] = input.interest_rate
+            if input.interest_paid_frequency is not None:
+                account_data["interest_paid_frequency"] = input.interest_paid_frequency
+            account_to_create = HighYieldSavings(**account_data)
+        elif input.type == "time_deposit":
+            if input.principal is not None:
+                account_data["principal"] = input.principal
+            if input.term_days is not None:
+                account_data["term_days"] = input.term_days
+                # Calculate maturity_date
+                account_data["maturity_date"] = input.opened_at + timedelta(days=input.term_days)
+            if input.interest_rate is not None:
+                account_data["interest_rate"] = input.interest_rate
+            account_to_create = TimeDeposit(**account_data)
+        else:
+            return SavingsAccountResponse(success=False, message=f"Invalid account type: {input.type}")
         
         created_account = await savings_crud.create_savings_account(account_to_create)
         

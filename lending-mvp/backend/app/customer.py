@@ -2,15 +2,109 @@ import strawberry
 from typing import List, Optional
 from strawberry.types import Info
 from fastapi import HTTPException, status
-from datetime import datetime
+from datetime import datetime, date
 
 from starlette.requests import Request
 
 # Import models and schemas
 from .models import CustomerInDB, CustomerCreate, CustomerUpdate, PyObjectId,UserInDB
-from .schema import CustomerType, CustomerCreateInput, CustomerUpdateInput, CustomerResponse, CustomersResponse
-from .database import get_customers_collection
+#from .schema import CustomerType, CustomerCreateInput, CustomerUpdateInput, CustomerResponse, CustomersResponse
+from .database import get_customers_collection, get_db
 from .database.customer_crud import CustomerCRUD
+
+
+# Customer Types
+@strawberry.type
+class CustomerType:
+    id: strawberry.ID
+    customer_type: str # Added customer_type
+    last_name: Optional[str] = None # Made optional
+    first_name: Optional[str] = None # Made optional
+    display_name: str
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[date] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: str
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
+
+@strawberry.input
+class CustomerCreateInput:
+    customer_type: str # Added customer_type
+    last_name: Optional[str] = None # Made optional
+    first_name: Optional[str] = None # Made optional
+    middle_name: Optional[str] = None
+    display_name: str
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: str
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
+
+@strawberry.input
+class CustomerUpdateInput:
+    customer_type: str # Added customer_type
+    last_name: Optional[str] = None
+    first_name: Optional[str] = None
+    middle_name: Optional[str] = None
+    tin_no: Optional[str] = None
+    sss_no: Optional[str] = None
+    permanent_address: Optional[str] = None
+    birth_date: Optional[datetime] = None
+    birth_place: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email_address: Optional[str] = None
+    employer_name_address: Optional[str] = None
+    job_title: Optional[str] = None
+    salary_range: Optional[str] = None
+    company_name: Optional[str] = None
+    company_address: Optional[str] = None
+    branch: str
+    display_name: str
+
+@strawberry.type
+class CustomerResponse:
+    success: bool
+    message: str
+    customer: Optional[CustomerType] = None
+
+@strawberry.type
+class CustomersResponse:
+    success: bool
+    message: str
+    customers: List[CustomerType]
+    total: int
+
+@strawberry.field
+async def customer(self, info: Info) -> Optional["CustomerType"]:
+    db = get_db()
+    customer_crud = CustomerCRUD(db.customers)
+        
+    customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
+        
+    if customer_data:
+        return convert_customer_db_to_customer_type(customer_data)
+    return None
+
+
 
 def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> CustomerType:
     """Convert CustomerInDB to CustomerType schema"""

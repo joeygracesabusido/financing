@@ -5,6 +5,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const customerSearchInput = document.getElementById('customer-search');
     const customerDatalist = document.getElementById('customer-list');
     const customerIdHiddenInput = document.getElementById('customer-id-hidden');
+    const accountTypeSelect = document.getElementById('account-type');
+    
+    // High Yield specific elements
+    const highYieldOptionsDiv = document.getElementById('high-yield-options');
+    const interestRateInput = document.getElementById('interest-rate');
+    const interestPaidFrequencySelect = document.getElementById('interest-paid-frequency');
+
+    // Time Deposit specific elements
+    const timeDepositOptionsDiv = document.getElementById('time-deposit-options');
+    const tdPrincipalInput = document.getElementById('td-principal');
+    const tdInterestRateInput = document.getElementById('td-interest-rate');
+    const termDaysInput = document.getElementById('term-days');
 
     // GraphQL query to fetch all customers
     const ALL_CUSTOMERS_QUERY = `
@@ -94,89 +106,165 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-            createSavingsForm.addEventListener('submit', async (event) => {
-                event.preventDefault();
-    
-                const customerId = customerIdHiddenInput.value;
-                const accountType = document.getElementById('account-type').value;
-                const initialDeposit = parseFloat(document.getElementById('initial-deposit').value);
-                const openingDate = document.getElementById('opening-date').value;
-                const branch = document.getElementById('branch').value.trim();
-                const description = document.getElementById('description').value.trim();
-    
-                // Generate account number
-                const randomFourDigits = Math.floor(1000 + Math.random() * 9000); // Generates a random number between 1000 and 9999
-                const accountNumber = `1000-${branch}-${randomFourDigits}`;
-                console.log('Generated Account Number:', accountNumber); // Debug log
-    
-                if (!customerId) {
-                    formMessage.textContent = 'Please select a valid customer.';
-                    formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                    return;
-                }
-    
-                if (isNaN(initialDeposit) || initialDeposit < 0) {
-                    formMessage.textContent = 'Please enter a non-negative initial deposit.';
-                    formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                    return;
-                }
-    
-                if (!accountType) {
-                    formMessage.textContent = 'Please select an account type.';
-                    formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                    return;
-                }
-    
-                if (!openingDate) {
-                    formMessage.textContent = 'Please select an opening date.';
-                    formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                    return;
-                }
-    
-                formMessage.textContent = 'Creating account...';
-                formMessage.className = 'mt-4 text-sm font-bold text-blue-500';
-    
-                const token = localStorage.getItem('accessToken');
-                if (!token) {
-                    formMessage.textContent = 'Authentication token not found. Please log in.';
-                    formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                    window.location.href = 'login.html';
-                    return;
-                }
-    
-                const createSavingsMutation = `
-                    mutation CreateSavingsAccount($input: SavingsAccountCreateInput!) {
-                        createSavingsAccount(input: $input) {
-                            success
-                            message
-                            account {
-                                id
-                                accountNumber
-                            }
-                        }
+    // Handle account type selection to show/hide relevant fields
+    accountTypeSelect.addEventListener('change', () => {
+        // Hide all optional fields first
+        highYieldOptionsDiv.classList.add('hidden');
+        timeDepositOptionsDiv.classList.add('hidden');
+
+        // Clear values of hidden fields to prevent sending irrelevant data
+        interestRateInput.value = '';
+        interestPaidFrequencySelect.value = '';
+        tdPrincipalInput.value = '';
+        tdInterestRateInput.value = '';
+        termDaysInput.value = '';
+
+        const selectedType = accountTypeSelect.value;
+        if (selectedType === 'high_yield') {
+            highYieldOptionsDiv.classList.remove('hidden');
+        } else if (selectedType === 'time_deposit') {
+            timeDepositOptionsDiv.classList.remove('hidden');
+        }
+    });
+
+    createSavingsForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const customerId = customerIdHiddenInput.value;
+        const accountType = accountTypeSelect.value;
+        const initialDeposit = parseFloat(document.getElementById('initial-deposit').value);
+        const openingDate = document.getElementById('opening-date').value;
+        const branch = document.getElementById('branch').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        // Generate account number
+        const randomFourDigits = Math.floor(1000 + Math.random() * 9000); // Generates a random number between 1000 and 9999
+        const accountNumber = `1000-${branch}-${randomFourDigits}`;
+        console.log('Generated Account Number:', accountNumber); // Debug log
+
+        if (!customerId) {
+            formMessage.textContent = 'Please select a valid customer.';
+            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+            return;
+        }
+
+        if (isNaN(initialDeposit) || initialDeposit < 0) {
+            formMessage.textContent = 'Please enter a non-negative initial deposit.';
+            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+            return;
+        }
+
+        if (!accountType) {
+            formMessage.textContent = 'Please select an account type.';
+            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+            return;
+        }
+
+        if (!openingDate) {
+            formMessage.textContent = 'Please select an opening date.';
+            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+            return;
+        }
+
+        const variables = {
+            input: {
+                customerId: customerId,
+                accountNumber: accountNumber,
+                type: accountType,
+                balance: initialDeposit,
+                openedAt: openingDate,
+                // description: description, // Uncomment if backend model accepts description
+                // branch: branch,           // Uncomment if backend model accepts branch
+            }
+        };
+
+        // Collect High Yield specific data if applicable
+        if (accountType === 'high_yield') {
+            const interestRate = parseFloat(interestRateInput.value);
+            const interestPaidFrequency = interestPaidFrequencySelect.value;
+
+            if (isNaN(interestRate) || interestRate < 0) {
+                formMessage.textContent = 'Please enter a valid interest rate for High Yield Savings.';
+                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+                return;
+            }
+            if (!interestPaidFrequency) {
+                formMessage.textContent = 'Please select an interest paid frequency for High Yield Savings.';
+                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+                return;
+            }
+            variables.input.interestRate = interestRate;
+            variables.input.interestPaidFrequency = interestPaidFrequency;
+        } 
+        // Collect Time Deposit specific data if applicable
+        else if (accountType === 'time_deposit') {
+            const principal = parseFloat(tdPrincipalInput.value);
+            const tdInterestRate = parseFloat(tdInterestRateInput.value);
+            const termDays = parseInt(termDaysInput.value);
+
+            if (isNaN(principal) || principal <= 0) {
+                formMessage.textContent = 'Please enter a valid principal amount for Time Deposit.';
+                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+                return;
+            }
+            if (isNaN(tdInterestRate) || tdInterestRate < 0) {
+                formMessage.textContent = 'Please enter a valid interest rate for Time Deposit.';
+                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+                return;
+            }
+            if (isNaN(termDays) || termDays <= 0) {
+                formMessage.textContent = 'Please enter valid term days for Time Deposit.';
+                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+                return;
+            }
+            variables.input.principal = principal;
+            variables.input.interestRate = tdInterestRate; // Re-using interestRate field for TD
+            variables.input.termDays = termDays;
+            // The initial deposit for Time Deposit is usually the principal
+            variables.input.balance = principal;
+        }
+
+        formMessage.textContent = 'Creating account...';
+        formMessage.className = 'mt-4 text-sm font-bold text-blue-500';
+
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            formMessage.textContent = 'Authentication token not found. Please log in.';
+            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const createSavingsMutation = `
+            mutation CreateSavingsAccount($input: SavingsAccountCreateInput!) {
+                createSavingsAccount(input: $input) {
+                    success
+                    message
+                    account {
+                        id
+                        accountNumber
+                        type
+                        balance
+                        status
+                        openedAt
+                        # Include other fields relevant for immediate feedback if needed
                     }
-                `;
-    
-                try {
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({
-                            query: createSavingsMutation,
-                            variables: {
-                                input: {
-                                    customerId: customerId,
-                                    accountNumber: accountNumber,
-                                    type: accountType,       // 'accountType' in frontend maps to 'type' in backend
-                                    balance: initialDeposit, // 'initialDeposit' in frontend maps to 'balance' in backend
-                                    openedAt: openingDate    // 'openingDate' in frontend maps to 'openedAt' in backend
-                                }
-                            }
-                        })
-                    });
+                }
+            }
+        `;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: createSavingsMutation,
+                    variables: variables
+                })
+            });
             const result = await response.json();
 
             if (result.errors) {
@@ -193,6 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 formMessage.className = 'mt-4 text-sm font-bold text-green-500';
                 createSavingsForm.reset();
                 customerIdHiddenInput.value = ''; // Clear hidden ID after successful submission
+                highYieldOptionsDiv.classList.add('hidden'); // Hide high yield options after success
+                timeDepositOptionsDiv.classList.add('hidden'); // Hide time deposit options after success
                 // Optionally redirect to savings list or details page
                 setTimeout(() => {
                     window.location.href = 'savings.html';
@@ -211,4 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial population of the customer datalist
     populateCustomerDatalist();
+
+    // Trigger change event once on load to set initial visibility of high-yield-options and time-deposit-options
+    accountTypeSelect.dispatchEvent(new Event('change'));
 });

@@ -12,7 +12,7 @@ class SavingsAccountBase(BaseModel):
     account_number: str = Field(..., min_length=8)
     user_id: PyObjectId
     type: str
-    balance: Decimal = Field(default=Decimal("0.00"))
+    balance: float = 0.00
     currency: str = "PHP"
     opened_at: datetime = Field(default_factory=datetime.utcnow)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -28,23 +28,23 @@ class SavingsAccountBase(BaseModel):
 
 class RegularSavings(SavingsAccountBase):
     type: Literal["regular"] = "regular"
-    min_balance: Decimal = Decimal("500.00")
-    interest_rate: Decimal = Decimal("0.25")
+    min_balance: float = float(500.00)
+    interest_rate: float = float(0.25)
 
 
 class HighYieldSavings(SavingsAccountBase):
     type: Literal["high_yield"] = "high_yield"
-    interest_rate: Decimal = Decimal("4.00")
+    interest_rate: float = float(4.00)
     interest_paid_frequency: Literal["daily", "monthly", "quarterly"] = "monthly"
     tiers: Optional[List[Dict[str, Decimal]]] = None
 
 
 class TimeDeposit(SavingsAccountBase):
     type: Literal["time_deposit"] = "time_deposit"
-    principal: Decimal
+    principal: float
     term_days: int
     maturity_date: datetime
-    interest_rate: Decimal
+    interest_rate: float
     early_withdrawal_penalty_pct: Decimal = Decimal("1.00")
     auto_renew: bool = False
 
