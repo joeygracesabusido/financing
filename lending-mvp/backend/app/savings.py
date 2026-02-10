@@ -5,10 +5,97 @@ from .database import get_db
 from .database.savings_crud import SavingsCRUD
 from .basemodel.savings_model import RegularSavings, HighYieldSavings, TimeDeposit, SavingsAccountBase
 from .models import UserInDB
-from .schema import SavingsAccountType, SavingsAccountCreateInput, SavingsAccountResponse, SavingsAccountsResponse
+#from .schema import SavingsAccountType, SavingsAccountCreateInput, SavingsAccountResponse, SavingsAccountsResponse
+from .customer import CustomerType, convert_customer_db_to_customer_type
+from .database.customer_crud import CustomerCRUD
 from decimal import Decimal
 from datetime import datetime, timedelta
 
+
+
+# Savings Types
+@strawberry.type
+class SavingsAccountType:
+    id: strawberry.ID
+    account_number: str
+    user_id: strawberry.ID
+    type: str
+    balance: float
+    currency: str
+    opened_at: datetime
+    created_at: datetime
+    updated_at: datetime
+    status: str
+    customer: Optional[CustomerType] = None
+
+    @strawberry.field
+    async def customer(self, info: Info) -> Optional[CustomerType]:
+        db = get_db()
+        customer_crud = CustomerCRUD(db.customers)
+        
+        customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
+        
+        if customer_data:
+            return convert_customer_db_to_customer_type(customer_data)
+        return None
+
+ 
+
+@strawberry.input
+class SavingsAccountCreateInput:
+    customer_id: strawberry.ID # Customer ID to link the account
+    account_number: str
+    type: str # e.g., "basic", "interest-bearing", "fixed-deposit"
+    balance: float = 0.00 # Initial deposit
+    currency: str = "PHP"
+    status: str = "active"
+    opened_at: datetime # Date the account was opened
+    interest_rate: Optional[float] = None # For HighYieldSavings and TimeDeposit
+    interest_paid_frequency: Optional[str] = None # For HighYieldSavings
+    principal: Optional[float] = None # For TimeDeposit
+    term_days: Optional[int] = None # For TimeDeposit
+
+@strawberry.type
+class SavingsAccountResponse:
+    success: bool
+    message: str
+    account: Optional[SavingsAccountType] = None
+
+@strawberry.type
+class SavingsAccountsResponse:
+    success: bool
+    message: str
+    accounts: List[SavingsAccountType]
+    total: int
+
+# Transaction Types
+@strawberry.type
+class TransactionType:
+    id: strawberry.ID
+    account_id: strawberry.ID
+    transaction_type: str # e.g., "deposit", "withdrawal"
+    amount: float
+    timestamp: datetime
+    notes: Optional[str] = None
+
+@strawberry.input
+class TransactionCreateInput:
+    account_id: strawberry.ID
+    amount: float
+    notes: Optional[str] = None
+
+@strawberry.type
+class TransactionResponse:
+    success: bool
+    message: str
+    transaction: Optional[TransactionType] = None
+
+@strawberry.type
+class TransactionsResponse:
+    success: bool
+    message: str
+    transactions: List[TransactionType]
+    total: int
 
 
 def map_db_account_to_strawberry_type(account_data: SavingsAccountBase) -> SavingsAccountType:
@@ -28,6 +115,18 @@ def map_db_account_to_strawberry_type(account_data: SavingsAccountBase) -> Savin
 
 @strawberry.type
 class SavingsQuery:
+    # @strawberry.field
+    # async def savingsAccount(self, info: Info, account_id: strawberry.ID) -> SavingsAccountResponse:
+    #     from .savings import SavingsQuery
+    #     return await SavingsQuery().savingsAccount(info, account_id)
+
+    # @strawberry.field
+    # async def savingsAccounts(self, info: Info) -> SavingsAccountsResponse:
+    #     from .savings import SavingsQuery
+    #     return await SavingsQuery().savingsAccounts(info)
+
+
+
     @strawberry.field
     async def savingsAccount(self, info: Info, account_id: strawberry.ID) -> SavingsAccountResponse:
         current_user: UserInDB = info.context.get("current_user")
@@ -42,8 +141,8 @@ class SavingsQuery:
             return SavingsAccountResponse(success=False, message="Account not found")
 
         # Basic authorization: check if the account belongs to the current user
-        if str(account_data.user_id) != str(current_user.id):
-            return SavingsAccountResponse(success=False, message="Not authorized to view this account")
+        # if str(account_data.user_id) != str(current_user.id):
+        #     return SavingsAccountResponse(success=False, message="Not authorized to view this account")
             
         account = map_db_account_to_strawberry_type(account_data)
         return SavingsAccountResponse(success=True, message="Account retrieved", account=account)
@@ -112,3 +211,8 @@ class SavingsMutation:
         account = map_db_account_to_strawberry_type(created_account_data)
 
         return SavingsAccountResponse(success=True, message="Savings account created", account=account)
+    
+     # @strawberry.mutation
+    # async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
+    #     from .savings import SavingsMutation
+    #     return await SavingsMutation().createSavingsAccount(info, input)

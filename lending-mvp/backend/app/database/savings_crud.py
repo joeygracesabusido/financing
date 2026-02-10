@@ -97,14 +97,26 @@ class SavingsCRUD:
         # If it's string, then the conversion logic needs to be applied carefully to $inc or a $set.
         # Let's modify this to fetch, update, then save.
 
+        # Ensure amount is always a Decimal
+        amount_decimal = Decimal(str(amount)) # Convert to string first to handle float inputs safely
+        
         # Fetch the current account
         account_data = await self.collection.find_one({"_id": ObjectId(account_id)})
         if not account_data:
             return False
         
-        # Convert balance from string to Decimal, perform operation, convert back to string
-        current_balance = Decimal(account_data.get('balance', '0.00')) if isinstance(account_data.get('balance'), str) else account_data.get('balance', Decimal('0.00'))
-        new_balance = current_balance + amount
+        # Ensure current_balance is always a Decimal, handling various potential storage types
+        balance_from_db = account_data.get('balance', '0.00')
+        if isinstance(balance_from_db, str):
+            current_balance = Decimal(balance_from_db)
+        elif isinstance(balance_from_db, (int, float)):
+            current_balance = Decimal(str(balance_from_db)) # Convert float/int to string then to Decimal
+        elif isinstance(balance_from_db, Decimal):
+            current_balance = balance_from_db
+        else:
+            current_balance = Decimal('0.00') # Default if type is unexpected
+            
+        new_balance = current_balance + amount_decimal
         
         result = await self.collection.update_one(
             {"_id": ObjectId(account_id)},

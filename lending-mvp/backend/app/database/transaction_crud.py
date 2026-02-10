@@ -2,7 +2,7 @@ from typing import List, Optional
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from ..basemodel.transaction_model import TransactionBase, TransactionInDB
-from .savings_crud import SavingsCRUD
+from .savings_crud import SavingsCRUD, _convert_decimal_to_str
 from decimal import Decimal
 
 class TransactionCRUD:
@@ -32,7 +32,8 @@ class TransactionCRUD:
         transaction_in_db = TransactionInDB(**transaction.model_dump())
         
         doc = transaction_in_db.model_dump(by_alias=True, exclude={"id"})
-        result = await self.collection.insert_one(doc)
+        processed_doc = _convert_decimal_to_str(doc)
+        result = await self.collection.insert_one(processed_doc)
         
         transaction_in_db.id = result.inserted_id
         return transaction_in_db

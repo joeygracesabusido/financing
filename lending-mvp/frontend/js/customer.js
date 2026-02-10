@@ -20,50 +20,75 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     `;
-
+//fetching customers with optional search term
     const fetchCustomers = async (searchTerm = '') => {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            console.error('Authentication token not found.');
-            window.location.href = 'login.html';
+    const token = localStorage.getItem('accessToken');
+    
+    if (!token) {
+        console.error('Authentication token not found.');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                query: getCustomersQuery,
+                variables: searchTerm ? { searchTerm } : {}
+            })
+        });
+        console.log(response)
+        console.log('Response status:', response.status);           // ← add this
+        console.log('Response ok:', response.ok);                   // ← add this
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                console.warn('401 Unauthorized - clearing token');
+                localStorage.removeItem('accessToken');
+                alert('Session expired or unauthorized. Please log in again.');
+                window.location.href = 'login.html';
+                return;
+            }
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log('Full GraphQL result:', result);                // ← very useful
+
+        if (result.errors) {
+            console.error('GraphQL Errors:', result.errors);
+            const firstError = result.errors[0]?.message || 'Unknown GraphQL error';
+            
+            if (result.errors.some(e => e.message.includes('Not authorized') || e.extensions?.code === 'UNAUTHENTICATED')) {
+                alert('You do not have permission to view customers.');
+                window.location.href = 'dashboard.html';
+            } else {
+                alert(`Error: ${firstError}`);
+            }
             return;
         }
 
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    query: getCustomersQuery,
-                    variables: { searchTerm: searchTerm || null } // Pass searchTerm if it exists, else null
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.errors) {
-                if (result.errors.some(error => error.message.includes("Not authorized"))) {
-                    console.error('Authorization error: You do not have permission to view this data.');
-                    alert('You are not authorized to view this page.');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    console.error('GraphQL Errors:', result.errors);
-                    alert('An error occurred while fetching customer data.');
-                }
-                return;
-            }
-
-            const customers = result.data.customers.customers;
-            populateTable(customers);
-
-        } catch (error) {
-            console.error('Error fetching customers:', error);
-            customerTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-center text-red-500">Error loading data. Is the server running?</td></tr>';
+        // Safe access
+        const customerData = result.data?.customers;
+        if (!customerData || !Array.isArray(customerData.customers)) {
+            console.warn('No customers data returned');
+            customerTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-center">No customers found or invalid response.</td></tr>';
+            return;
         }
-    };
+
+        populateTable(customerData.customers);
+
+    } catch (error) {
+        console.error('Error fetching customers:', error);
+        customerTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-center text-red-500">Error loading customers. Check console.</td></tr>';
+    }
+};
 
     // GraphQL mutation to delete a customer
     const deleteCustomerMutation = `

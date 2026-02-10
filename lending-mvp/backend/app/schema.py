@@ -1,12 +1,13 @@
 import strawberry
 from typing import List, Optional
 from decimal import Decimal
-from datetime import datetime,date
+from datetime import datetime, date
 from strawberry.types import Info
 
 from .database import get_db
-from .database.customer_crud import CustomerCRUD
-from .customer import convert_customer_db_to_customer_type
+# from .database.customer_crud import CustomerCRUD
+# from .customer import CustomerType, convert_customer_db_to_customer_type
+from .models import CustomerInDB # Needed for convert_customer_db_to_customer_type, if it's moved here or passed around
 
 from .services import accounting_service, loan_service
 from .models import Customer, CustomerCreate, CustomerUpdate
@@ -67,114 +68,89 @@ class UsersResponse:
     users: List[UserType]
     total: int
 
-@strawberry.type
-class CustomerType:
-    id: strawberry.ID
-    customer_type: str # Added customer_type
-    last_name: Optional[str] = None # Made optional
-    first_name: Optional[str] = None # Made optional
-    display_name: str
-    middle_name: Optional[str] = None
-    tin_no: Optional[str] = None
-    sss_no: Optional[str] = None
-    permanent_address: Optional[str] = None
-    birth_date: Optional[date] = None
-    birth_place: Optional[str] = None
-    mobile_number: Optional[str] = None
-    email_address: str
-    employer_name_address: Optional[str] = None
-    job_title: Optional[str] = None
-    salary_range: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
-    company_name: Optional[str] = None
-    company_address: Optional[str] = None
-    branch: str
+# # Savings Types
+# @strawberry.type
+# class SavingsAccountType:
+#     id: strawberry.ID
+#     account_number: str
+#     user_id: strawberry.ID
+#     type: str
+#     balance: float
+#     currency: str
+#     opened_at: datetime
+#     created_at: datetime
+#     updated_at: datetime
+#     status: str
+#     customer: Optional["CustomerType"] = None
 
-
-# Savings Types
-@strawberry.type
-class SavingsAccountType:
-    id: strawberry.ID
-    account_number: str
-    user_id: strawberry.ID
-    type: str
-    balance: float
-    currency: str
-    opened_at: datetime
-    created_at: datetime
-    updated_at: datetime
-    status: str
-    customer: Optional[str] = None
-
-    @strawberry.field
-    async def customer(self, info: Info) -> Optional[CustomerType]:
-        db = get_db()
-        customer_crud = CustomerCRUD(db.customers)
+#     @strawberry.field
+#     async def customer(self, info: Info) -> Optional[CustomerType]:
+#         db = get_db()
+#         customer_crud = CustomerCRUD(db.customers)
         
-        customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
+#         customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
         
-        if customer_data:
-            return convert_customer_db_to_customer_type(customer_data)
-        return None
+#         if customer_data:
+#             return convert_customer_db_to_customer_type(customer_data)
+#         return None
 
  
 
-@strawberry.input
-class SavingsAccountCreateInput:
-    customer_id: strawberry.ID # Customer ID to link the account
-    account_number: str
-    type: str # e.g., "basic", "interest-bearing", "fixed-deposit"
-    balance: float = 0.00 # Initial deposit
-    currency: str = "PHP"
-    status: str = "active"
-    opened_at: datetime # Date the account was opened
-    interest_rate: Optional[float] = None # For HighYieldSavings and TimeDeposit
-    interest_paid_frequency: Optional[str] = None # For HighYieldSavings
-    principal: Optional[float] = None # For TimeDeposit
-    term_days: Optional[int] = None # For TimeDeposit
+# @strawberry.input
+# class SavingsAccountCreateInput:
+#     customer_id: strawberry.ID # Customer ID to link the account
+#     account_number: str
+#     type: str # e.g., "basic", "interest-bearing", "fixed-deposit"
+#     balance: float = 0.00 # Initial deposit
+#     currency: str = "PHP"
+#     status: str = "active"
+#     opened_at: datetime # Date the account was opened
+#     interest_rate: Optional[float] = None # For HighYieldSavings and TimeDeposit
+#     interest_paid_frequency: Optional[str] = None # For HighYieldSavings
+#     principal: Optional[float] = None # For TimeDeposit
+#     term_days: Optional[int] = None # For TimeDeposit
 
-@strawberry.type
-class SavingsAccountResponse:
-    success: bool
-    message: str
-    account: Optional[SavingsAccountType] = None
+# @strawberry.type
+# class SavingsAccountResponse:
+#     success: bool
+#     message: str
+#     account: Optional[SavingsAccountType] = None
 
-@strawberry.type
-class SavingsAccountsResponse:
-    success: bool
-    message: str
-    accounts: List[SavingsAccountType]
-    total: int
+# @strawberry.type
+# class SavingsAccountsResponse:
+#     success: bool
+#     message: str
+#     accounts: List[SavingsAccountType]
+#     total: int
 
-# Transaction Types
-@strawberry.type
-class TransactionType:
-    id: strawberry.ID
-    account_id: strawberry.ID
-    transaction_type: str # e.g., "deposit", "withdrawal"
-    amount: float
-    timestamp: datetime
-    notes: Optional[str] = None
+# # Transaction Types
+# @strawberry.type
+# class TransactionType:
+#     id: strawberry.ID
+#     account_id: strawberry.ID
+#     transaction_type: str # e.g., "deposit", "withdrawal"
+#     amount: float
+#     timestamp: datetime
+#     notes: Optional[str] = None
 
-@strawberry.input
-class TransactionCreateInput:
-    account_id: strawberry.ID
-    amount: float
-    notes: Optional[str] = None
+# @strawberry.input
+# class TransactionCreateInput:
+#     account_id: strawberry.ID
+#     amount: float
+#     notes: Optional[str] = None
 
-@strawberry.type
-class TransactionResponse:
-    success: bool
-    message: str
-    transaction: Optional[TransactionType] = None
+# @strawberry.type
+# class TransactionResponse:
+#     success: bool
+#     message: str
+#     transaction: Optional[TransactionType] = None
 
-@strawberry.type
-class TransactionsResponse:
-    success: bool
-    message: str
-    transactions: List[TransactionType]
-    total: int
+# @strawberry.type
+# class TransactionsResponse:
+#     success: bool
+#     message: str
+#     transactions: List[TransactionType]
+#     total: int
 
 # Loan Types
 @strawberry.type
@@ -216,15 +192,16 @@ class Query:
             ) for e in entries
         ]
 
-    @strawberry.field
-    async def savingsAccount(self, info: Info, account_id: strawberry.ID) -> SavingsAccountResponse:
-        from .savings import SavingsQuery
-        return await SavingsQuery().savingsAccount(info, account_id)
+    # These fields are typically defined in their respective modules and then composed in main.py
+    # @strawberry.field
+    # async def savingsAccount(self, info: Info, account_id: strawberry.ID) -> SavingsAccountResponse:
+    #     from .savings import SavingsQuery
+    #     return await SavingsQuery().savingsAccount(info, account_id)
 
-    @strawberry.field
-    async def savingsAccounts(self, info: Info) -> SavingsAccountsResponse:
-        from .savings import SavingsQuery
-        return await SavingsQuery().savingsAccounts(info)
+    # @strawberry.field
+    # async def savingsAccounts(self, info: Info) -> SavingsAccountsResponse:
+    #     from .savings import SavingsQuery
+    #     return await SavingsQuery().savingsAccounts(info)
 
 # --- GraphQL Mutations ---
 
@@ -236,9 +213,8 @@ class Mutation:
         success = await loan_service.disburse_loan(loan_id)
         return "Disbursement successful" if success else "Disbursement failed"
     
-    @strawberry.mutation
-    async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
-        from .savings import SavingsMutation
-        return await SavingsMutation().createSavingsAccount(info, input)
-    
-    
+    # These fields are typically defined in their respective modules and then composed in main.py
+    # @strawberry.mutation
+    # async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
+    #     from .savings import SavingsMutation
+    #     return await SavingsMutation().createSavingsAccount(info, input)

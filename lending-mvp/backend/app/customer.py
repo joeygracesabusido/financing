@@ -106,7 +106,9 @@ async def customer(self, info: Info) -> Optional["CustomerType"]:
 
 
 
-def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> CustomerType:
+
+
+def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> "CustomerType":
     """Convert CustomerInDB to CustomerType schema"""
     return CustomerType(
         id=strawberry.ID(str(customer_db.id)),

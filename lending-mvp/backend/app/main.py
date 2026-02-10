@@ -8,8 +8,8 @@ from typing import Dict
 from .schema import Query, Mutation as SchemaMutation
 from .user import Query as getUser, Mutation as createUser
 from .customer import Query as getCustomer, Mutation as createCustomer
-from .savings import SavingsQuery # Added import for SavingsQuery
-from .transaction import TransactionQuery # Added import for TransactionQuery
+from .savings import SavingsQuery, SavingsMutation # Added import for SavingsMutation
+from .transaction import TransactionQuery, TransactionMutation # Added import for TransactionMutation
 from .database import create_indexes, get_users_collection
 from .database.crud import UserCRUD
 from .auth.security import verify_token
@@ -26,7 +26,7 @@ class Query(getUser, getCustomer, SavingsQuery, TransactionQuery): # Added Trans
     pass
 
 @strawberry.type
-class Mutation(createUser, createCustomer, SchemaMutation):
+class Mutation(createUser, createCustomer, SchemaMutation, SavingsMutation, TransactionMutation):
     pass
 
 # async def get_context(request: Request) -> Dict:
@@ -59,12 +59,64 @@ class Mutation(createUser, createCustomer, SchemaMutation):
 #         "current_user": current_user
 #     }
 
+# async def get_context(request: Request) -> dict:
+#     """Context getter for Strawberry – always requires valid token"""
+#     print("--- In get_context ---")
+#     auth_header = request.headers.get("Authorization")
+#     print(f"Authorization Header: {auth_header}")
+
+#     if not auth_header or not auth_header.startswith("Bearer "):
+#         print("--- No valid Bearer token → rejecting ---")
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Missing or invalid Authorization header. Expected: Bearer <token>",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+
+#     try:
+#         token = auth_header.replace("Bearer ", "", 1)
+#         payload = verify_token(token)
+#         print(f"Decoded Token Payload: {payload}")
+
+#         if not payload:
+#             raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+#         user_id = payload.get("sub")
+#         if not user_id:
+#             raise HTTPException(status_code=401, detail="Token missing subject (sub) claim")
+
+#         users_collection = get_users_collection()
+#         user_crud = UserCRUD(users_collection)
+#         current_user = await user_crud.get_user_by_id(user_id)
+#         print(f"User found in DB: {current_user is not None}")
+
+#         if not current_user:
+#             raise HTTPException(status_code=401, detail="User not found")
+
+#         print("--- Exiting get_context (authenticated) ---")
+#         return {"current_user": current_user}
+
+#     except Exception as e:
+#         print(f"Error during authentication: {e}")
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail=f"Authentication failed: {str(e)}"
+#         )
+
+
 async def get_context(request: Request) -> dict:
-    """Context getter for Strawberry – always requires valid token"""
     print("--- In get_context ---")
     auth_header = request.headers.get("Authorization")
     print(f"Authorization Header: {auth_header}")
 
+    # Allow introspection & Playground without auth (common dev pattern)
+    if request.method == "GET":
+        # GET requests are usually introspection or IDE load
+        # You can make this stricter by checking path/query params if needed
+        print("--- Allowing unauthenticated GET (Playground/introspection) ---")
+        return {"current_user": None}  # or some guest context
+
+    # For POST (real queries/mutations) → enforce auth
     if not auth_header or not auth_header.startswith("Bearer "):
         print("--- No valid Bearer token → rejecting ---")
         raise HTTPException(
@@ -77,7 +129,6 @@ async def get_context(request: Request) -> dict:
         token = auth_header.replace("Bearer ", "", 1)
         payload = verify_token(token)
         print(f"Decoded Token Payload: {payload}")
-
         if not payload:
             raise HTTPException(status_code=401, detail="Invalid or expired token")
 
@@ -89,7 +140,6 @@ async def get_context(request: Request) -> dict:
         user_crud = UserCRUD(users_collection)
         current_user = await user_crud.get_user_by_id(user_id)
         print(f"User found in DB: {current_user is not None}")
-
         if not current_user:
             raise HTTPException(status_code=401, detail="User not found")
 

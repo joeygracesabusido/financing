@@ -40,6 +40,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
+            if (!response.ok) {
+            if (response.status === 401) {
+                console.warn('401 Unauthorized - clearing token');
+                localStorage.removeItem('accessToken');
+                alert('Session expired or unauthorized. Please log in again.');
+                window.location.href = 'login.html';
+                return;
+            }
+            const errorText = await response.text();
+            throw new Error(`HTTP error ${response.status}: ${errorText}`);
+        }
+
+
             const result = await response.json();
 
             if (result.errors) {
