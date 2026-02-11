@@ -8,8 +8,10 @@ from typing import Dict
 from .schema import Query, Mutation as SchemaMutation
 from .user import Query as getUser, Mutation as createUser
 from .customer import Query as getCustomer, Mutation as createCustomer
-from .savings import SavingsQuery, SavingsMutation # Added import for SavingsMutation
-from .transaction import TransactionQuery, TransactionMutation # Added import for TransactionMutation
+from .savings import SavingsQuery, SavingsMutation
+from .transaction import TransactionQuery, TransactionMutation
+from .loan import LoanQuery, LoanMutation
+from .loan_transaction import LoanTransactionQuery, LoanTransactionMutation # Import LoanTransactionQuery and LoanTransactionMutation
 from .database import create_indexes, get_users_collection
 from .database.crud import UserCRUD
 from .auth.security import verify_token
@@ -22,11 +24,11 @@ class LoginRequest(BaseModel):
 
 # --- Strawberry GraphQL Setup ---
 @strawberry.type
-class Query(getUser, getCustomer, SavingsQuery, TransactionQuery): # Added TransactionQuery
+class Query(getUser, getCustomer, SavingsQuery, TransactionQuery, LoanQuery, LoanTransactionQuery): # Add LoanTransactionQuery
     pass
 
 @strawberry.type
-class Mutation(createUser, createCustomer, SchemaMutation, SavingsMutation, TransactionMutation):
+class Mutation(createUser, createCustomer, SchemaMutation, SavingsMutation, TransactionMutation, LoanMutation, LoanTransactionMutation): # Add LoanTransactionMutation
     pass
 
 # async def get_context(request: Request) -> Dict:

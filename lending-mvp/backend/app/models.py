@@ -164,21 +164,7 @@ class Customer(CustomerBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-# --- Loan Models ---
-class Loan(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    borrower_id: PyObjectId
-    amount_requested: Decimal
-    term_months: int
-    interest_rate: Decimal # Annual rate
-    status: str = "pending" # pending, approved, active, paid, rejected
-    created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        json_encoders={ObjectId: str}
-    )
 
 # --- Ledger Entry Models ---
 class LedgerEntry(BaseModel):

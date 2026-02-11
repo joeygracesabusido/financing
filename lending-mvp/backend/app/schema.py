@@ -4,7 +4,7 @@ from decimal import Decimal
 from datetime import datetime, date
 from strawberry.types import Info
 
-from .database import get_db
+#from .database import get_db
 # from .database.customer_crud import CustomerCRUD
 # from .customer import CustomerType, convert_customer_db_to_customer_type
 from .models import CustomerInDB # Needed for convert_customer_db_to_customer_type, if it's moved here or passed around

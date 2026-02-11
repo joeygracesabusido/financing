@@ -67,8 +67,64 @@ class SavingsCRUD:
         # Deserialize each dict back into a Pydantic model
         return [SavingsAccountBase(**acc_data) for acc_data in processed_accounts_list]
     
-    async def get_all_savings_accounts(self) -> List[SavingsAccountBase]:
-        accounts_data_list = await self.collection.find().to_list(length=100) # Fetch all accounts, limit to 100 for now
+    async def get_all_savings_accounts(self, search_term: Optional[str] = None) -> List[SavingsAccountBase]:
+        pipeline = []
+
+        if search_term:
+            # Add import for ObjectId from bson at the top if not already there
+            # Assuming 'db' instance is available globally or passed around, 
+            # and 'customers' collection is part of it.
+            # This aggregation is run on the 'savings' collection (self.collection).
+
+            # First, lookup customer details
+            pipeline.append({
+                "$lookup": {
+                    "from": "customers",  # The collection to join with (assuming 'customers' is the collection name)
+                    "localField": "user_id",  # Field from the input documents (savings)
+                    "foreignField": "_id",  # Field from the "from" documents (customers)
+                    "as": "customer_info"  # Output array field
+                }
+            })
+            # Unwind the customer_info array. Since user_id is a single value, this will be at most one element.
+            pipeline.append({
+                "$unwind": {
+                    "path": "$customer_info",
+                    "preserveNullAndEmptyArrays": True  # Keep accounts even if no matching customer
+                }
+            })
+
+            # Then, apply the search filter
+            pipeline.append({
+                "$match": {
+                    "$or": [
+                        {"account_number": {"$regex": search_term, "$options": "i"}},
+                        {"customer_info.display_name": {"$regex": search_term, "$options": "i"}}
+                    ]
+                }
+            })
+        
+        # Add a projection stage to reshape the documents back to SavingsAccountBase structure
+        # (or as close as possible for Pydantic parsing)
+        # We need to make sure the _id is an ObjectId again if it was converted to string during lookup,
+        # and remove the temporary 'customer_info' if it's not part of SavingsAccountBase
+        pipeline.append({
+            "$project": {
+                "_id": "$_id",
+                "account_number": "$account_number",
+                "user_id": "$user_id",
+                "type": "$type",
+                "balance": "$balance",
+                "currency": "$currency",
+                "opened_at": "$opened_at",
+                "created_at": "$created_at",
+                "updated_at": "$updated_at",
+                "status": "$status",
+                # Do not project customer_info into the SavingsAccountBase directly
+                # It's only used for matching. The customer will be resolved by the GraphQL resolver.
+            }
+        })
+
+        accounts_data_list = await self.collection.aggregate(pipeline).to_list(length=100)
         
         processed_accounts_list = [_convert_str_to_decimal(acc_data) for acc_data in accounts_data_list]
         

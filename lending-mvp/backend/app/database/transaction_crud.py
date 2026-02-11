@@ -2,6 +2,7 @@ from typing import List, Optional
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from ..basemodel.transaction_model import TransactionBase, TransactionInDB
+from ..basemodel.savings_model import RegularSavings # Import RegularSavings
 from .savings_crud import SavingsCRUD, _convert_decimal_to_str
 from decimal import Decimal
 
@@ -19,8 +20,23 @@ class TransactionCRUD:
         if transaction.transaction_type == "withdrawal":
             # Ensure the account has sufficient funds before updating
             account = await self.savings_crud.get_savings_account_by_id(str(transaction.account_id))
-            if not account or account['balance'] < transaction.amount:
+            if not account:
+                return None # Account not found
+
+            # Convert Decimal transaction amount to float for comparison with account.balance (which is float)
+            transaction_amount_float = float(transaction.amount)
+
+            # Check for general insufficient funds first
+            if account.balance < transaction_amount_float:
                 return None # Insufficient funds
+
+            # Specific check for regular savings minimum balance
+            if account.type == "regular":
+                regular_account_model = RegularSavings(**account.model_dump()) # Re-instantiate as RegularSavings
+                prospective_balance = account.balance - transaction_amount_float
+                if prospective_balance < regular_account_model.min_balance:
+                    return None # Withdrawal would violate minimum balance for regular account
+            
             amount_to_update = -transaction.amount
 
         balance_updated = await self.savings_crud.update_balance(str(transaction.account_id), amount_to_update)

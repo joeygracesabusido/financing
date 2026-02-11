@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const API_URL = '/graphql'; // Use relative path for API
     const savingsTableBody = document.getElementById('savings-table-body');
+    const savingsSearchInput = document.getElementById('savings-search-input');
 
     const getSavingsAccountsQuery = `
-        query GetSavingsAccounts {
-            savingsAccounts {
+        query GetSavingsAccounts($searchTerm: String) {
+            savingsAccounts(searchTerm: $searchTerm) {
                 accounts {
                     id
                     accountNumber
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
 
-    const fetchSavingsAccounts = async () => {
+    const fetchSavingsAccounts = async (searchTerm = '') => {
         const token = localStorage.getItem('accessToken');
         if (!token) {
             console.error('Authentication token not found.');
@@ -36,7 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    query: getSavingsAccountsQuery
+                    query: getSavingsAccountsQuery,
+                    variables: searchTerm ? { searchTerm } : {}
                 })
             });
 
@@ -97,6 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
             savingsTableBody.appendChild(row);
         });
     };
+
+    // Event listener for the search input
+    if (savingsSearchInput) {
+        savingsSearchInput.addEventListener('input', (event) => {
+            const searchTerm = event.target.value.trim();
+            fetchSavingsAccounts(searchTerm);
+        });
+    }
 
     fetchSavingsAccounts(); // Initial fetch
 });

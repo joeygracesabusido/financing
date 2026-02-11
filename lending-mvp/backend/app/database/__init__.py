@@ -8,11 +8,8 @@ db = client[settings.DATABASE_NAME]
 users_collection = db["users"]
 loans_collection = db["loans"]
 ledger_collection = db["ledger_entries"]
-customers_collection = db["customers"]
-
-async def create_indexes():
-    """Create indexes on MongoDB collections"""
-    await customers_collection.create_index([("display_name", 1)], unique=True)
+customers_collection = db["customers"] # Added customers collection
+loan_transactions_collection = db["loan_transactions"] # Added loan_transactions collection
 
 def get_users_collection():
     return users_collection
@@ -23,8 +20,23 @@ def get_loans_collection():
 def get_ledger_collection():
     return ledger_collection
 
-def get_customers_collection():
+def get_customers_collection(): # Added getter for customers collection
     return customers_collection
 
-def get_db():
+def get_loan_transactions_collection(): # Added getter for loan_transactions collection
+    return loan_transactions_collection
+
+def get_db(): # Added getter for the database client
     return db
+
+async def create_indexes():
+    """
+    Creates necessary indexes for the collections.
+    """
+    print("Creating database indexes...")
+    try:
+        await users_collection.create_index("emailAddress", unique=True)
+        await customers_collection.create_index("emailAddress", unique=True)
+        print("Indexes created successfully.")
+    except Exception as e:
+        print(f"Error creating indexes: {e}")
