@@ -1,0 +1,81 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const createLoanProductForm = document.getElementById('createLoanProductForm');
+    const responseMessage = document.getElementById('responseMessage');
+
+    if (createLoanProductForm) {
+        createLoanProductForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            responseMessage.textContent = '';
+            responseMessage.className = 'mt-4 p-3 rounded-md text-sm hidden';
+
+            const productCode = document.getElementById('productCode').value;
+            const productName = document.getElementById('productName').value;
+            const type = document.getElementById('type').value;
+            const defaultInterestRate = parseFloat(document.getElementById('defaultInterestRate').value);
+            const template = document.getElementById('template').value;
+            const security = document.getElementById('security').value;
+            const brLc = document.getElementById('brLc').value;
+
+            const query = `
+                mutation CreateLoanProduct($input: LoanProductCreateInput!) {
+                    createLoanProduct(input: $input) {
+                        id
+                        productCode
+                        productName
+                        type
+                        defaultInterestRate
+                        template
+                        security
+                        brLc
+                        createdAt
+                    }
+                }
+            `;
+
+            const variables = {
+                input: {
+                    productCode,
+                    productName,
+                    type,
+                    defaultInterestRate,
+                    template,
+                    security,
+                    brLc,
+                },
+            };
+
+            try {
+                const response = await fetch('http://localhost:8000/graphql', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Assuming token is stored in localStorage
+                    },
+                    body: JSON.stringify({ query, variables }),
+                });
+
+                const result = await response.json();
+
+                if (result.errors) {
+                    responseMessage.classList.remove('hidden');
+                    responseMessage.classList.add('bg-red-100', 'text-red-700');
+                    responseMessage.textContent = `Error: ${result.errors.map(err => err.message).join(', ')}`;
+                } else if (result.data.createLoanProduct) {
+                    responseMessage.classList.remove('hidden');
+                    responseMessage.classList.add('bg-green-100', 'text-green-700');
+                    responseMessage.textContent = `Loan Product "${result.data.createLoanProduct.productName}" created successfully! ID: ${result.data.createLoanProduct.id}`;
+                    createLoanProductForm.reset(); // Clear the form
+                } else {
+                    responseMessage.classList.remove('hidden');
+                    responseMessage.classList.add('bg-red-100', 'text-red-700');
+                    responseMessage.textContent = 'Unknown error occurred.';
+                }
+            } catch (error) {
+                responseMessage.classList.remove('hidden');
+                responseMessage.classList.add('bg-red-100', 'text-red-700');
+                responseMessage.textContent = `Network error: ${error.message}`;
+            }
+        });
+    }
+});

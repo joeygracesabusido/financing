@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Loan Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center mb-10">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg mr-3"></div>
+                    <span class="text-2xl font-bold">IJE Software</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4">
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-exchange-alt mr-3"></i>Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
+                                <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-exchange-alt mr-3"></i>Saving<i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-hand-holding-usd mr-3"></i>Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="loan-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
+                                <a href="create_loan_product.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
+                            </div>
+                        </li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-cog mr-3"></i> Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <ul>
+                    <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-question-circle mr-3"></i> Help</a></li>
+                    <li><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-8">
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md mt-10">
+                <h1 class="text-2xl font-bold mb-6 text-gray-800">Create New Loan Product</h1>
+
+                <form id="createLoanProductForm" class="space-y-4">
+                    <div>
+                        <label for="productCode" class="block text-sm font-medium text-gray-700">Product Code</label>
+                        <input type="text" id="productCode" name="productCode" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="productName" class="block text-sm font-medium text-gray-700">Product Name</label>
+                        <input type="text" id="productName" name="productName" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                        <select id="type" name="type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            <option value="">Select Type</option>
+                            <option value="Secured">Secured</option>
+                            <option value="Unsecured">Unsecured</option>
+                            <option value="SME">SME</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Mortgage">Mortgage</option>
+                            <option value="Auto">Auto</option>
+                            <option value="CPL">CPL - Crop Production Loan</option>
+                            <option value="AGRI">AGRI - Agricultural Loan</option>
+                            <option value="LARGE">LARGE - Large Enterprise</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="defaultInterestRate" class="block text-sm font-medium text-gray-700">Default Interest Rate (%)</label>
+                        <input type="number" id="defaultInterestRate" name="defaultInterestRate" step="0.01" min="0" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="template" class="block text-sm font-medium text-gray-700">Template</label>
+                        <input type="text" id="template" name="template" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                    </div>
+                    <div>
+                        <label for="security" class="block text-sm font-medium text-gray-700">Security</label>
+                        <select id="security" name="security" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            <option value="">Select Security</option>
+                            <option value="Secured">Secured</option>
+                            <option value="Unsecured">Unsecured</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="brLc" class="block text-sm font-medium text-gray-700">Branch/Lending Center (BR/LC)</label>
+                        <select id="brLc" name="brLc" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            <option value="">Select BR/LC</option>
+                            <option value="Branch">Branch</option>
+                            <option value="Lending">Lending</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-green-600 text-white p-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                        Create Loan Product
+                    </button>
+                </form>
+
+                <div id="responseMessage" class="mt-4 p-3 rounded-md text-sm hidden"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/create_loan_product.js"></script>
+    <script>
+        // Basic logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            alert('Logged out!'); // Replace with actual logout logic
+            window.location.href = 'login.html'; // Redirect to login page
+        });
+
+        // Sidebar dropdown functionality
+        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
+        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
+        if (customerDropdownBtn && customerDropdownMenu) {
+            customerDropdownBtn.addEventListener('click', () => {
+                customerDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
+        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
+        if (savingsDropdownBtn && savingsDropdownMenu) {
+            savingsDropdownBtn.addEventListener('click', () => {
+                savingsDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
+        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
+        if (loanDropdownBtn && loanDropdownMenu) {
+            loanDropdownBtn.addEventListener('click', () => {
+                loanDropdownMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -12,6 +12,7 @@ from .savings import SavingsQuery, SavingsMutation
 from .transaction import TransactionQuery, TransactionMutation
 from .loan import LoanQuery, LoanMutation
 from .loan_transaction import LoanTransactionQuery, LoanTransactionMutation # Import LoanTransactionQuery and LoanTransactionMutation
+from .loan_product import LoanProductQuery, LoanProductMutation # Import LoanProductQuery and LoanProductMutation
 from .database import create_indexes, get_users_collection
 from .database.crud import UserCRUD
 from .auth.security import verify_token
@@ -24,11 +25,11 @@ class LoginRequest(BaseModel):
 
 # --- Strawberry GraphQL Setup ---
 @strawberry.type
-class Query(getUser, getCustomer, SavingsQuery, TransactionQuery, LoanQuery, LoanTransactionQuery): # Add LoanTransactionQuery
+class Query(getUser, getCustomer, SavingsQuery, TransactionQuery, LoanQuery, LoanTransactionQuery, LoanProductQuery): # Add LoanProductQuery
     pass
 
 @strawberry.type
-class Mutation(createUser, createCustomer, SchemaMutation, SavingsMutation, TransactionMutation, LoanMutation, LoanTransactionMutation): # Add LoanTransactionMutation
+class Mutation(createUser, createCustomer, SchemaMutation, SavingsMutation, TransactionMutation, LoanMutation, LoanTransactionMutation, LoanProductMutation): # Add LoanProductMutation
     pass
 
 # async def get_context(request: Request) -> Dict:

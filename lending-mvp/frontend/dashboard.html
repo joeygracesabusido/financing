@@ -43,13 +43,13 @@
                             
                         </li>
 
-                       <li class="mb-4">
-                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left">
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
                                 <i class="fas fa-hand-holding-usd mr-3"></i>Loans <i class="fas fa-chevron-down ml-auto"></i>
                             </button>
-                            <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
+                            <div id="loan-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
                                 <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
-                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="create_loan_product.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Products</a>
                                 <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
                             </div>
                         </li>
@@ -225,6 +225,15 @@
         if (savingsDropdownBtn && savingsDropdownMenu) {
             savingsDropdownBtn.addEventListener('click', () => {
                 savingsDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
+        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
+
+        if (loanDropdownBtn && loanDropdownMenu) {
+            loanDropdownBtn.addEventListener('click', () => {
+                loanDropdownMenu.classList.toggle('hidden');
             });
         }
     </script>
