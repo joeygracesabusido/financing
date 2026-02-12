@@ -46,7 +46,7 @@ class LoanProductBase(BaseModel):
     term_type: str = Field(..., min_length=1, max_length=50) # e.g., Short Term, Long Term
     gl_code: str = Field(..., min_length=1, max_length=50)
     type: str = Field(..., min_length=1, max_length=50) # e.g., SME, Housing, CPL, AGRI
-    default_interest_rate: Decimal = Field(..., ge=0)
+    default_interest_rate: float
     template: str = Field(..., min_length=1, max_length=50)
     security: str = Field(..., min_length=1, max_length=50) # e.g., Secured, Unsecured
     br_lc: str = Field(..., min_length=1, max_length=50) # e.g., Branch, Lending
@@ -60,7 +60,7 @@ class LoanProductUpdate(BaseModel):
     term_type: Optional[str] = Field(None, min_length=1, max_length=50)
     gl_code: Optional[str] = Field(None, min_length=1, max_length=50)
     type: Optional[str] = Field(None, min_length=1, max_length=50)
-    default_interest_rate: Optional[Decimal] = Field(None, ge=0)
+    default_interest_rate: float
     template: Optional[str] = Field(None, min_length=1, max_length=50)
     security: Optional[str] = Field(None, min_length=1, max_length=50)
     br_lc: Optional[str] = Field(None, min_length=1, max_length=50)

@@ -5,25 +5,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // GraphQL query to fetch loan products
     let getLoanProductsQuery = `
-        query GetLoans($borrowerId: ID, $skip: Int, $limit: Int) {
-            loans(borrowerId: $borrowerId, skip: $skip, limit: $limit) {
-                loans {
-                    id
-                    borrowerId
-                    amountRequested
-                    termMonths
-                    interestRate
-                    status
-                    createdAt
-                }
-                total
+        query GetLoanProducts {
+            loanProducts {
+                id
+                productCode
+                productName
+                termType
+                glCode
+                type
+                defaultInterestRate
+                template
+                security
+                brLc
+                createdAt
             }
         }
     `;
 
     // Fetching loan products with optional filters
-    const fetchLoanProducts = async (borrowerId = null, skip = 0, limit = 100) => {
-        const token = localStorage.getItem('accessToken');
+    const fetchLoanProducts = async (searchTerm = null) => { // Removed borrowerId, skip, limit
+        const token = localStorage.getItem('accessToken'); // Corrected to access_token
         
         if (!token) {
             console.error('Authentication token not found.');
@@ -40,14 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     query: getLoanProductsQuery,
-                    variables: { borrowerId, skip, limit }
+                    variables: {} // Removed borrowerId, skip, limit from variables
                 })
             });
 
             if (!response.ok) {
                 if (response.status === 401) {
                     console.warn('401 Unauthorized - clearing token');
-                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('access_token'); // Corrected to access_token
                     alert('Session expired or unauthorized. Please log in again.');
                     window.location.href = 'login.html';
                     return;
@@ -71,33 +72,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const loanData = result.data?.loans;
-            if (!loanData || !Array.isArray(loanData.loans)) {
+            const loanProductsData = result.data?.loanProducts; // Changed to loanProducts
+            if (!loanProductsData || !Array.isArray(loanProductsData)) { // Changed to loanProductsData
                 console.warn('No loan products data returned');
-                loanProductTableBody.innerHTML = '<tr><td colspan="8" class="p-3 text-center">No loan products found or invalid response.</td></tr>';
+                loanProductTableBody.innerHTML = '<tr><td colspan="12" class="p-3 text-center">No loan products found or invalid response.</td></tr>'; // Updated colspan
                 return;
             }
 
-            populateTable(loanData.loans);
+            // Filter on frontend for searchTerm if provided
+            const filteredProducts = searchTerm
+                ? loanProductsData.filter(product =>
+                    product.productCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    product.type.toLowerCase().includes(searchTerm.toLowerCase())
+                  )
+                : loanProductsData;
+
+            populateTable(filteredProducts);
 
         } catch (error) {
             console.error('Error fetching loan products:', error);
-            loanProductTableBody.innerHTML = '<tr><td colspan="8" class="p-3 text-center text-red-500">Error loading loan products. Check console.</td></tr>';
+            loanProductTableBody.innerHTML = '<tr><td colspan="12" class="p-3 text-center text-red-500">Error loading loan products. Check console.</td></tr>'; // Updated colspan
         }
     };
 
     // GraphQL mutation to delete a loan product
-    const deleteLoanMutation = `
-        mutation DeleteLoan($loanId: ID!) {
-            deleteLoan(loanId: $loanId) {
-                success
-                message
-            }
+    const deleteLoanProductMutation = ` // Renamed from deleteLoanMutation
+        mutation DeleteLoanProduct($id: String!) { // Changed variable name to id
+            deleteLoanProduct(id: $id) // Changed mutation name to deleteLoanProduct
         }
     `;
 
-    const deleteLoanProduct = async (loanId) => {
-        const token = localStorage.getItem('accessToken');
+    const deleteLoanProduct = async (id) => { // Changed loanId to id
+        const token = localStorage.getItem('access_token'); // Corrected to access_token
         if (!token) {
             console.error('Authentication token not found.');
             window.location.href = 'login.html';
@@ -112,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    query: deleteLoanMutation,
-                    variables: { loanId: loanId }
+                    query: deleteLoanProductMutation, // Changed mutation name
+                    variables: { id: id } // Changed variable name to id
                 })
             });
 
@@ -130,11 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
 
-            if (result.data.deleteLoan.success) {
-                alert(result.data.deleteLoan.message);
+            if (result.data.deleteLoanProduct) { // Changed to deleteLoanProduct
+                alert('Loan Product deleted successfully!'); // Simplified message
                 return true;
             } else {
-                alert('Error: ' + result.data.deleteLoan.message);
+                alert('Error: Could not delete loan product.'); // Simplified message
                 return false;
             }
 
@@ -145,49 +152,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const populateTable = (loans) => {
-        if (!loans || loans.length === 0) {
-            loanProductTableBody.innerHTML = '<tr><td colspan="8" class="p-3 text-center">No loan products found.</td></tr>';
+    const populateTable = (loanProducts) => { // Changed loans to loanProducts
+        if (!loanProducts || loanProducts.length === 0) {
+            loanProductTableBody.innerHTML = '<tr><td colspan="12" class="p-3 text-center">No loan products found.</td></tr>'; // Updated colspan
             return;
         }
 
         loanProductTableBody.innerHTML = '';
 
-        loans.forEach(loan => {
+        loanProducts.forEach(product => { // Changed loan to product
             const row = document.createElement('tr');
             row.className = 'border-b hover:bg-gray-50';
 
-            const createdAt = new Date(loan.createdAt).toLocaleString();
+            const createdAt = new Date(product.createdAt).toLocaleString(); // Changed loan.createdAt to product.createdAt
 
             row.innerHTML = `
-                <td class="p-3">${loan.id || 'N/A'}</td>
-                <td class="p-3">${loan.borrowerId || 'N/A'}</td>
-                <td class="p-3">₱${loan.amountRequested ? parseFloat(loan.amountRequested).toFixed(2) : '0.00'}</td>
-                <td class="p-3">${loan.termMonths || 'N/A'}</td>
-                <td class="p-3">${loan.interestRate ? parseFloat(loan.interestRate).toFixed(2) : '0.00'}%</td>
-                <td class="p-3">${loan.status || 'N/A'}</td>
+                <td class="p-3">${product.id || 'N/A'}</td>
+                <td class="p-3">${product.productCode || 'N/A'}</td>
+                <td class="p-3">${product.productName || 'N/A'}</td>
+                <td class="p-3">${product.termType || 'N/A'}</td>
+                <td class="p-3">${product.glCode || 'N/A'}</td>
+                <td class="p-3">${product.type || 'N/A'}</td>
+                <td class="p-3">${product.defaultInterestRate ? parseFloat(product.defaultInterestRate).toFixed(2) : '0.00'}%</td>
+                <td class="p-3">${product.template || 'N/A'}</td>
+                <td class="p-3">${product.security || 'N/A'}</td>
+                <td class="p-3">${product.brLc || 'N/A'}</td>
                 <td class="p-3">${createdAt}</td>
                 <td class="p-3">
-                    <button class="text-blue-500 hover:text-blue-700 mr-2 edit-loan-btn" data-id="${loan.id}"><i class="fas fa-edit"></i></button>
-                    <button class="text-red-500 hover:text-red-700 delete-loan-btn" data-id="${loan.id}"><i class="fas fa-trash"></i></button>
-                    <button class="text-green-500 hover:text-green-700 view-transactions-btn" data-id="${loan.id}"><i class="fas fa-eye"></i></button>
+                    <button class="text-blue-500 hover:text-blue-700 mr-2 edit-loan-btn" data-id="${product.id}"><i class="fas fa-edit"></i></button>
+                    <button class="text-red-500 hover:text-red-700 delete-loan-btn" data-id="${product.id}"><i class="fas fa-trash"></i></button>
+                    <button class="text-green-500 hover:text-green-700 view-transactions-btn" data-id="${product.id}"><i class="fas fa-eye"></i></button>
                 </td>
             `;
             
             const editButton = row.querySelector('.edit-loan-btn');
             if (editButton) {
                 editButton.addEventListener('click', (event) => {
-                    const loanId = event.currentTarget.dataset.id;
-                    window.location.href = `update_loan.html?id=${loanId}`;
+                    const productId = event.currentTarget.dataset.id; // Changed loanId to productId
+                    window.location.href = `update_loan_product.html?id=${productId}`; // Changed to update_loan_product.html
                 });
             }
 
             const deleteButton = row.querySelector('.delete-loan-btn');
             if (deleteButton) {
                 deleteButton.addEventListener('click', async (event) => {
-                    const loanId = event.currentTarget.dataset.id;
+                    const productId = event.currentTarget.dataset.id; // Changed loanId to productId
                     if (confirm('Are you sure you want to delete this loan product?')) {
-                        const success = await deleteLoanProduct(loanId);
+                        const success = await deleteLoanProduct(productId); // Changed loanId to productId
                         if (success) {
                             fetchLoanProducts(); // Re-fetch loan products to update the table
                         }
@@ -198,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const viewTransactionsButton = row.querySelector('.view-transactions-btn');
             if (viewTransactionsButton) {
                 viewTransactionsButton.addEventListener('click', (event) => {
-                    const loanId = event.currentTarget.dataset.id;
-                    window.location.href = `loan_transaction.html?loan_id=${loanId}`;
+                    const productId = event.currentTarget.dataset.id; // Changed loanId to productId
+                    window.location.href = `loan_transaction.html?loan_product_id=${productId}`; // Changed to loan_product_id
                 });
             }
             
@@ -211,8 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loanSearchInput) {
         loanSearchInput.addEventListener('input', (event) => {
             const searchTerm = event.target.value.trim();
-            // Assuming search term will be matched against borrowerId for simplicity, or add a general search field
-            // For now, let's just re-fetch all for simplicity unless backend supports general search
             fetchLoanProducts(searchTerm || null); // Pass null if search term is empty
         });
     }

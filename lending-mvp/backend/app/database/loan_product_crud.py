@@ -1,13 +1,14 @@
 from typing import List, Optional
 from bson import ObjectId
 from pymongo.results import InsertOneResult, UpdateResult, DeleteResult
+from datetime import datetime
 
 from ..basemodel.loan_product_model import LoanProduct, LoanProductCreate, LoanProductUpdate
 from . import get_db
 
 async def get_loan_products_collection():
-    db = await get_db()
-    return db.loan_products
+    db_client = get_db()
+    return db_client.loan_products
 
 async def create_loan_product(loan_product_data: LoanProductCreate) -> LoanProduct:
     collection = await get_loan_products_collection()

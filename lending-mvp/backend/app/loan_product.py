@@ -16,6 +16,8 @@ class LoanProduct:
     id: str
     product_code: str
     product_name: str
+    term_type: str
+    gl_code: str
     type: str
     default_interest_rate: Decimal
     template: str
@@ -28,6 +30,8 @@ class LoanProduct:
 class LoanProductCreateInput:
     product_code: str
     product_name: str
+    term_type: str
+    gl_code: str
     type: str
     default_interest_rate: Decimal
     template: str
@@ -38,6 +42,8 @@ class LoanProductCreateInput:
 class LoanProductUpdateInput:
     product_code: Optional[str] = None
     product_name: Optional[str] = None
+    term_type: Optional[str] = None
+    gl_code: Optional[str] = None
     type: Optional[str] = None
     default_interest_rate: Optional[Decimal] = None
     template: Optional[str] = None
@@ -60,13 +66,13 @@ class LoanProductQuery:
 class LoanProductMutation:
     @strawberry.mutation
     async def create_loan_product(self, input: LoanProductCreateInput) -> LoanProduct:
-        loan_product_data = PydanticLoanProductCreate(**input.model_dump())
+        loan_product_data = PydanticLoanProductCreate(**input.__dict__)
         new_loan_product = await loan_product_crud.create_loan_product(loan_product_data)
         return LoanProduct(**new_loan_product.model_dump())
 
     @strawberry.mutation
     async def update_loan_product(self, id: str, input: LoanProductUpdateInput) -> Optional[LoanProduct]:
-        loan_product_data = PydanticLoanProductUpdate(**input.model_dump())
+        loan_product_data = PydanticLoanProductUpdate(**input.__dict__)
         updated_loan_product = await loan_product_crud.update_loan_product(id, loan_product_data)
         return LoanProduct(**updated_loan_product.model_dump()) if updated_loan_product else None
 

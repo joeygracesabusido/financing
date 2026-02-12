@@ -44,7 +44,7 @@
                             </button>
                             <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
                                 <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
-                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="create_loan_product.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
                                 <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
                             </div>
                         </li>
@@ -70,18 +70,22 @@
                     <h2 class="text-xl font-bold">All Loan Products</h2>
                     <div class="flex items-center">
                         <input type="text" id="loan-search-input" placeholder="Search loans..." class="p-2 border border-gray-300 rounded-lg mr-4">
-                        <a href="create_loan.html" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Create New Loan Product</a>
+                        <a href="create_loan_product.html" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Create New Loan Product</a>
                     </div>
                 </div>
                 <table class="w-full">
                     <thead>
                         <tr class="bg-gray-200 text-left text-sm font-bold">
                             <th class="p-3">ID</th>
-                            <th class="p-3">Borrower ID</th>
-                            <th class="p-3">Amount Requested</th>
-                            <th class="p-3">Term (Months)</th>
+                            <th class="p-3">Product Code</th>
+                            <th class="p-3">Product Name</th>
+                            <th class="p-3">Term Type</th>
+                            <th class="p-3">GL Code</th>
+                            <th class="p-3">Type</th>
                             <th class="p-3">Interest Rate</th>
-                            <th class="p-3">Status</th>
+                            <th class="p-3">Template</th>
+                            <th class="p-3">Security</th>
+                            <th class="p-3">Branch/LC</th>
                             <th class="p-3">Created At</th>
                             <th class="p-3">Actions</th>
                         </tr>

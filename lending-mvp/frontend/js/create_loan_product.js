@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const productCode = document.getElementById('productCode').value;
             const productName = document.getElementById('productName').value;
+            const termType = document.getElementById('term_type').value; // Changed to termType
+            const glCode = document.getElementById('gl_code').value;     // Changed to glCode
             const type = document.getElementById('type').value;
             const defaultInterestRate = parseFloat(document.getElementById('defaultInterestRate').value);
             const template = document.getElementById('template').value;
@@ -23,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         id
                         productCode
                         productName
+                        termType
+                        glCode
                         type
                         defaultInterestRate
                         template
@@ -37,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 input: {
                     productCode,
                     productName,
+                    termType, // Changed to termType
+                    glCode,     // Changed to glCode
                     type,
                     defaultInterestRate,
                     template,
@@ -46,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('http://localhost:8000/graphql', {
+                const response = await fetch('/graphql', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('access_token')}` // Assuming token is stored in localStorage
+                        'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Corrected to access_token
                     },
                     body: JSON.stringify({ query, variables }),
                 });
