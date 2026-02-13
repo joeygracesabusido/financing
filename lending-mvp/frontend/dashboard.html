@@ -201,41 +201,6 @@
         </main>
     </div>
 
-    <script>
-        // Basic logout functionality
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            alert('Logged out!'); // Replace with actual logout logic
-            window.location.href = 'login.html'; // Redirect to login page
-        });
-    </script>
-
-    <script>
-        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
-        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
-
-        if (customerDropdownBtn && customerDropdownMenu) {
-            customerDropdownBtn.addEventListener('click', () => {
-                customerDropdownMenu.classList.toggle('hidden');
-            });
-        }
-
-        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
-        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
-
-        if (savingsDropdownBtn && savingsDropdownMenu) {
-            savingsDropdownBtn.addEventListener('click', () => {
-                savingsDropdownMenu.classList.toggle('hidden');
-            });
-        }
-
-        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
-        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
-
-        if (loanDropdownBtn && loanDropdownMenu) {
-            loanDropdownBtn.addEventListener('click', () => {
-                loanDropdownMenu.classList.toggle('hidden');
-            });
-        }
-    </script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

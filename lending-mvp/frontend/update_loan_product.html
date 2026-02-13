@@ -67,40 +67,54 @@
             <h1 class="text-3xl font-bold mb-8">Update Loan Product</h1>
             <div class="bg-white p-6 rounded-lg shadow">
                 <form id="update-loan-form">
-                    <input type="hidden" id="loan-id" name="loanId">
+                    <input type="hidden" id="loan-product-id" name="loanProductId">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="borrower-id" class="block text-gray-700 text-sm font-bold mb-2">Borrower ID:</label>
-                            <input type="text" id="borrower-id" name="borrowerId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" disabled>
+                            <label for="product-code" class="block text-gray-700 text-sm font-bold mb-2">Product Code:</label>
+                            <input type="text" id="product-code" name="productCode" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                         <div>
-                            <label for="amount-requested" class="block text-gray-700 text-sm font-bold mb-2">Amount Requested:</label>
-                            <input type="number" step="0.01" id="amount-requested" name="amountRequested" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <label for="product-name" class="block text-gray-700 text-sm font-bold mb-2">Product Name:</label>
+                            <input type="text" id="product-name" name="productName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label for="term-months" class="block text-gray-700 text-sm font-bold mb-2">Term (Months):</label>
-                            <input type="number" id="term-months" name="termMonths" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <label for="term-type" class="block text-gray-700 text-sm font-bold mb-2">Term Type:</label>
+                            <input type="text" id="term-type" name="termType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                         <div>
-                            <label for="interest-rate" class="block text-gray-700 text-sm font-bold mb-2">Interest Rate (% Annual):</label>
-                            <input type="number" step="0.01" id="interest-rate" name="interestRate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <label for="gl-code" class="block text-gray-700 text-sm font-bold mb-2">GL Code:</label>
+                            <input type="text" id="gl-code" name="glCode" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="type" class="block text-gray-700 text-sm font-bold mb-2">Type:</label>
+                            <input type="text" id="type" name="type" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label for="default-interest-rate" class="block text-gray-700 text-sm font-bold mb-2">Default Interest Rate (%):</label>
+                            <input type="number" step="0.01" id="default-interest-rate" name="defaultInterestRate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="template" class="block text-gray-700 text-sm font-bold mb-2">Template:</label>
+                            <input type="text" id="template" name="template" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label for="security" class="block text-gray-700 text-sm font-bold mb-2">Security:</label>
+                            <input type="text" id="security" name="security" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                     </div>
                     <div class="mb-4">
-                        <label for="status" class="block text-gray-700 text-sm font-bold mb-2">Status:</label>
-                        <select id="status" name="status" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="active">Active</option>
-                            <option value="paid">Paid</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
+                        <label for="br-lc" class="block text-gray-700 text-sm font-bold mb-2">Branch/LC:</label>
+                        <input type="text" id="br-lc" name="brLc" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div class="flex items-center justify-between mt-6">
                         <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                            Update Loan
+                            Update Loan Product
                         </button>
                     </div>
                 </form>
@@ -109,41 +123,6 @@
         </main>
     </div>
 
-    <script src="js/update_loan.js"></script>
-    <script>
-        // Basic logout functionality
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            alert('Logged out!'); // Replace with actual logout logic
-            window.location.href = 'login.html'; // Redirect to login page
-        });
-    </script>
-    <script>
-        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
-        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
-
-        if (customerDropdownBtn && customerDropdownMenu) {
-            customerDropdownBtn.addEventListener('click', () => {
-                customerDropdownMenu.classList.toggle('hidden');
-            });
-        }
-
-        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
-        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
-
-        if (savingsDropdownBtn && savingsDropdownMenu) {
-            savingsDropdownBtn.addEventListener('click', () => {
-                savingsDropdownMenu.classList.toggle('hidden');
-            });
-        }
-        
-        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
-        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
-
-        if (loanDropdownBtn && loanDropdownMenu) {
-            loanDropdownBtn.addEventListener('click', () => {
-                loanDropdownMenu.classList.toggle('hidden');
-            });
-        }
-    </script>
+    <script src="js/update_loan_product.js"></script>
 </body>
 </html>

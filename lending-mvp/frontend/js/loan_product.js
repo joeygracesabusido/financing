@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let getLoanProductsQuery = `
         query GetLoanProducts {
             loanProducts {
+            
                 id
                 productCode
                 productName
@@ -104,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     const deleteLoanProduct = async (id) => { // Changed loanId to id
-        const token = localStorage.getItem('access_token'); // Corrected to access_token
+        const token = localStorage.getItem('accessToken'); // Corrected to access_token
         if (!token) {
             console.error('Authentication token not found.');
             window.location.href = 'login.html';
@@ -167,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const createdAt = new Date(product.createdAt).toLocaleString(); // Changed loan.createdAt to product.createdAt
 
             row.innerHTML = `
-                <td class="p-3">${product.id || 'N/A'}</td>
+                
                 <td class="p-3">${product.productCode || 'N/A'}</td>
                 <td class="p-3">${product.productName || 'N/A'}</td>
                 <td class="p-3">${product.termType || 'N/A'}</td>
