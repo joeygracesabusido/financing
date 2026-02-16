@@ -6,7 +6,7 @@ from strawberry.types import Info
 from fastapi import HTTPException, status
 
 from .basemodel.loan_transaction_model import LoanTransaction, LoanTransactionBase
-from .models import PyObjectId, UserInDB
+from .models import UserInDB
 from .database import get_loan_transactions_collection
 from .database.loan_transaction_crud import LoanTransactionCRUD
 
@@ -192,7 +192,7 @@ class LoanTransactionMutation:
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
 
             loan_transaction_base = LoanTransactionBase(
-                loan_id=PyObjectId(str(input.loan_id)),
+                loan_id=str(input.loan_id),
                 transaction_type=input.transaction_type,
                 amount=input.amount,
                 transaction_date=input.transaction_date if input.transaction_date else datetime.utcnow(),

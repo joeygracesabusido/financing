@@ -13,6 +13,161 @@ document.addEventListener('DOMContentLoaded', () => {
     const transactionTypeSelect = document.getElementById('transaction-type');
     const disbursementSection = document.getElementById('disbursement-section');
 
+    // Borrower autocomplete functionality
+    const borrowerSearchInput = document.getElementById('borrower-name');
+    const borrowerDatalist = document.getElementById('borrower-list');
+
+    const ALL_CUSTOMERS_QUERY = `
+        query {
+            customers {
+                customers {
+                    id
+                    firstName
+                    lastName
+                    displayName
+                }
+            }
+        }
+    `;
+
+    async function fetchCustomers() {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            console.error('Authentication token not found. Please log in.');
+            return [];
+        }
+
+        try {
+            const response = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: ALL_CUSTOMERS_QUERY
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.errors) {
+                console.error('GraphQL Errors:', result.errors);
+                return [];
+            }
+
+            const customers = result.data?.customers?.customers || [];
+            return customers;
+        } catch (error) {
+            console.error('Error fetching customers:', error);
+            return [];
+        }
+    }
+
+    async function populateBorrowerDatalist() {
+        const customers = await fetchCustomers();
+        borrowerDatalist.innerHTML = '';
+        customers.forEach(customer => {
+            const option = document.createElement('option');
+            option.value = customer.displayName;
+            option.dataset.id = customer.id;
+            borrowerDatalist.appendChild(option);
+        });
+    }
+
+    borrowerSearchInput.addEventListener('input', () => {
+        const selectedBorrowerName = borrowerSearchInput.value;
+        const options = borrowerDatalist.options;
+
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === selectedBorrowerName) {
+                borrowerSearchInput.value = selectedBorrowerName;
+                break;
+            }
+        }
+    });
+
+    populateBorrowerDatalist();
+
+    // Loan product autocomplete functionality
+    const loanProductSearchInput = document.getElementById('loan-product');
+    const loanProductDatalist = document.getElementById('loan-product-list');
+
+    const ALL_LOAN_PRODUCTS_QUERY = `
+        query {
+            loanProducts {
+                id
+                productCode
+                productName
+            }
+        }
+    `;
+
+    async function fetchLoanProducts() {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            console.error('Authentication token not found. Please log in.');
+            return [];
+        }
+
+        try {
+            const response = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: ALL_LOAN_PRODUCTS_QUERY
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.errors) {
+                console.error('GraphQL Errors:', result.errors);
+                return [];
+            }
+
+            const loanProducts = result.data?.loanProducts || [];
+            return loanProducts;
+        } catch (error) {
+            console.error('Error fetching loan products:', error);
+            return [];
+        }
+    }
+
+    async function populateLoanProductDatalist() {
+        const loanProducts = await fetchLoanProducts();
+        loanProductDatalist.innerHTML = '';
+        loanProducts.forEach(product => {
+            const option = document.createElement('option');
+            option.value = `${product.productCode} - ${product.productName}`;
+            option.dataset.id = product.id;
+            loanProductDatalist.appendChild(option);
+        });
+    }
+
+    loanProductSearchInput.addEventListener('input', () => {
+        const selectedLoanProduct = loanProductSearchInput.value;
+        const options = loanProductDatalist.options;
+        let productFound = false;
+
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === selectedLoanProduct) {
+                loanProductIdHiddenInput.value = options[i].dataset.id;
+                productFound = true;
+                break;
+            }
+        }
+
+        if (!productFound) {
+            loanProductIdHiddenInput.value = '';
+        }
+    });
+
+    populateLoanProductDatalist();
+
     // Input fields
     const loanIdInput = document.getElementById('loan-id');
     const transactionTypeSelect_var = document.getElementById('transaction-type');
@@ -101,21 +256,21 @@ document.addEventListener('DOMContentLoaded', () => {
             amount: amount,
             transactionDate: transactionDate,
             notes: notes,
-            commercialBank: additionalData.commercial_bank,
-            servicingBranch: additionalData.servicing_branch,
+            commercialBank: additionalData.commercialBank,
+            servicingBranch: additionalData.servicingBranch,
             region: additionalData.region,
-            borrowerName: additionalData.borrower_name,
-            loanProduct: additionalData.loan_product,
-            referenceNumber: additionalData.reference_number,
-            debitAccount: additionalData.debit_account,
-            creditAccount: additionalData.credit_account,
-            disbursementMethod: additionalData.disbursement_method,
-            disbursementStatus: additionalData.disbursement_status,
-            chequeNumber: additionalData.cheque_number,
-            beneficiaryBank: additionalData.beneficiary_bank,
-            beneficiaryAccount: additionalData.beneficiary_account,
-            approvedBy: additionalData.approved_by,
-            processedBy: additionalData.processed_by
+            borrowerName: additionalData.borrowerName,
+            loanProduct: additionalData.loanProduct,
+            referenceNumber: additionalData.referenceNumber,
+            debitAccount: additionalData.debitAccount,
+            creditAccount: additionalData.creditAccount,
+            disbursementMethod: additionalData.disbursementMethod,
+            disbursementStatus: additionalData.disbursementStatus,
+            chequeNumber: additionalData.chequeNumber,
+            beneficiaryBank: additionalData.beneficiaryBank,
+            beneficiaryAccount: additionalData.beneficiaryAccount,
+            approvedBy: additionalData.approvedBy,
+            processedBy: additionalData.processedBy
         };
 
         formMessage.textContent = 'Creating loan transaction...';

@@ -1,11 +1,11 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Literal, Optional
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from ..models import PyObjectId
 
 class LoanTransactionBase(BaseModel):
-    loan_id: PyObjectId
+    loan_id: str
     transaction_type: Literal["disbursement", "repayment", "interest", "fee", "penalty", "insurance"]
     amount: Decimal = Field(..., gt=Decimal("0.00"))
     transaction_date: datetime = Field(default_factory=datetime.utcnow)
@@ -27,6 +27,10 @@ class LoanTransactionBase(BaseModel):
     beneficiary_account: Optional[str] = None
     approved_by: Optional[str] = None
     processed_by: Optional[str] = None
+
+    @field_serializer('amount')
+    def serialize_amount(self, value: Decimal):
+        return float(value)
 
 class LoanTransaction(LoanTransactionBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")

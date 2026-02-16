@@ -97,11 +97,13 @@
                             </div>
                             <div>
                                 <label for="borrower-name" class="block text-gray-700 text-sm font-bold mb-2">Borrower Name:</label>
-                                <input type="text" id="borrower-name" name="borrowerName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <input type="text" id="borrower-name" list="borrower-list" placeholder="Start typing borrower name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <datalist id="borrower-list"></datalist>
                             </div>
                             <div>
                                 <label for="loan-product" class="block text-gray-700 text-sm font-bold mb-2">Loan Product:</label>
-                                <input type="text" id="loan-product" name="loanProduct" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <input type="text" id="loan-product" list="loan-product-list" placeholder="Start typing loan product" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <datalist id="loan-product-list"></datalist>
                             </div>
                         </div>
                     </div>

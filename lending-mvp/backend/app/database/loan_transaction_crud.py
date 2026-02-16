@@ -35,17 +35,13 @@ class LoanTransactionCRUD:
         return None
     
     async def get_loan_transactions_by_loan_id(self, loan_id: str, skip: int = 0, limit: int = 100) -> List[LoanTransaction]:
-        if not ObjectId.is_valid(loan_id):
-            return []
-        transactions_data = await self.collection.find({"loan_id": ObjectId(loan_id)}).skip(skip).limit(limit).to_list(length=limit)
+        transactions_data = await self.collection.find({"loan_id": loan_id}).skip(skip).limit(limit).to_list(length=limit)
         return [LoanTransaction.model_validate(transaction_data) for transaction_data in transactions_data]
 
     async def get_loan_transactions(self, skip: int = 0, limit: int = 100, loan_id: Optional[str] = None) -> List[LoanTransaction]:
         query: Dict[str, Any] = {}
         if loan_id:
-            if not ObjectId.is_valid(loan_id):
-                return []
-            query["loan_id"] = ObjectId(loan_id)
+            query["loan_id"] = loan_id
         
         transactions_data = await self.collection.find(query).skip(skip).limit(limit).to_list(length=limit)
         return [LoanTransaction.model_validate(transaction_data) for transaction_data in transactions_data]
@@ -53,9 +49,7 @@ class LoanTransactionCRUD:
     async def count_loan_transactions(self, loan_id: Optional[str] = None) -> int:
         query: Dict[str, Any] = {}
         if loan_id:
-            if not ObjectId.is_valid(loan_id):
-                return 0
-            query["loan_id"] = ObjectId(loan_id)
+            query["loan_id"] = loan_id
         return await self.collection.count_documents(query)
 
     async def update_loan_transaction(self, transaction_id: str, update_data: Dict[str, Any]) -> Optional[LoanTransaction]:
@@ -64,9 +58,6 @@ class LoanTransactionCRUD:
 
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc)
-            # Ensure loan_id is converted to ObjectId if present in update_data
-            if "loan_id" in update_data and isinstance(update_data["loan_id"], str):
-                update_data["loan_id"] = ObjectId(update_data["loan_id"])
 
             result = await self.collection.update_one(
                 {"_id": ObjectId(transaction_id)},
