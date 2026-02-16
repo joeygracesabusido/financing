@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const row = document.createElement('tr');
             row.className = 'border-b hover:bg-gray-50';
 
-            const transactionDate = new Date(transaction.transactionDate).toLocaleString();
+            const transactionDate = new Date(transaction.transactionDate).toLocaleDateString() + ' ' + new Date(transaction.transactionDate).toLocaleTimeString();
 
             row.innerHTML = `
                 <td class="p-3">${transaction.id || 'N/A'}</td>

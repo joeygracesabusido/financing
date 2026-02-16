@@ -64,43 +64,178 @@
 
         <!-- Main Content -->
         <main class="flex-grow p-8">
-            <h1 class="text-3xl font-bold mb-8">Create New Loan Transaction</h1>
+            <h1 class="text-3xl font-bold mb-8">Create New Loan Transaction / Disbursement</h1>
             <div class="bg-white p-6 rounded-lg shadow">
                 <form id="create-loan-transaction-form">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label for="loan-id" class="block text-gray-700 text-sm font-bold mb-2">Loan ID:</label>
-                            <input type="text" id="loan-id" name="loanId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-                        <div>
-                            <label for="transaction-type" class="block text-gray-700 text-sm font-bold mb-2">Transaction Type:</label>
-                            <select id="transaction-type" name="transactionType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                <option value="">Select Type</option>
-                                <option value="disbursement">Disbursement</option>
-                                <option value="repayment">Repayment</option>
-                                <option value="interest">Interest</option>
-                                <option value="fee">Fee</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Amount:</label>
-                            <input type="number" step="0.01" id="amount" name="amount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                        </div>
-                        <div>
-                            <label for="transaction-date" class="block text-gray-700 text-sm font-bold mb-2">Transaction Date:</label>
-                            <input type="datetime-local" id="transaction-date" name="transactionDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                      <!-- Loan Information Section -->
+                    <div class="mb-6 pb-6 border-b-2">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Service Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="loan-id" class="block text-gray-700 text-sm font-bold mb-2">Commercial bank: <span class="text-red-500">*</span></label>
+                                <input type="text" id="commercial_bank" name="commercial_bank" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="borrower-name" class="block text-gray-700 text-sm font-bold mb-2">Servicing Branch:</label>
+                                <input type="text" id="servicing-branch" name="servicing-branch" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div>
+                                <label for="loan-product" class="block text-gray-700 text-sm font-bold mb-2">Region:</label>
+                                <input type="text" id="region" name="region" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <label for="notes" class="block text-gray-700 text-sm font-bold mb-2">Notes:</label>
-                        <textarea id="notes" name="notes" rows="2" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+
+
+                    <!-- Loan Information Section -->
+                    <div class="mb-6 pb-6 border-b-2">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Loan Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="loan-id" class="block text-gray-700 text-sm font-bold mb-2">Loan ID: <span class="text-red-500">*</span></label>
+                                <input type="text" id="loan-id" name="loanId" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="borrower-name" class="block text-gray-700 text-sm font-bold mb-2">Borrower Name:</label>
+                                <input type="text" id="borrower-name" name="borrowerName" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div>
+                                <label for="loan-product" class="block text-gray-700 text-sm font-bold mb-2">Loan Product:</label>
+                                <input type="text" id="loan-product" name="loanProduct" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Transaction Type & Date Section -->
+                    <div class="mb-6 pb-6 border-b-2">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Transaction Details</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="transaction-type" class="block text-gray-700 text-sm font-bold mb-2">Transaction Type: <span class="text-red-500">*</span></label>
+                                <select id="transaction-type" name="transactionType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <option value="">Select Type</option>
+                                    <option value="disbursement">Disbursement</option>
+                                    <option value="repayment">Repayment</option>
+                                    <option value="interest">Interest Payment</option>
+                                    <option value="fee">Fee</option>
+                                    <option value="penalty">Penalty</option>
+                                    <option value="insurance">Insurance</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="transaction-date" class="block text-gray-700 text-sm font-bold mb-2">Transaction Date: <span class="text-red-500">*</span></label>
+                                <input type="datetime-local" id="transaction-date" name="transactionDate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="reference-number" class="block text-gray-700 text-sm font-bold mb-2">Reference Number:</label>
+                                <input type="text" id="reference-number" name="referenceNumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amount & Account Information Section -->
+                    <div class="mb-6 pb-6 border-b-2">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Amount & Accounts</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="amount" class="block text-gray-700 text-sm font-bold mb-2">Amount: <span class="text-red-500">*</span></label>
+                                <input type="number" step="0.01" id="amount" name="amount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            </div>
+                            <div>
+                                <label for="currency" class="block text-gray-700 text-sm font-bold mb-2">Currency:</label>
+                                <select id="currency" name="currency" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <option value="NGN">NGN (Nigerian Naira)</option>
+                                    <option value="USD">USD (US Dollar)</option>
+                                    <option value="EUR">EUR (Euro)</option>
+                                    <option value="GBP">GBP (British Pound)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="exchange-rate" class="block text-gray-700 text-sm font-bold mb-2">Exchange Rate:</label>
+                                <input type="number" step="0.01" id="exchange-rate" name="exchangeRate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="debit-account" class="block text-gray-700 text-sm font-bold mb-2">Debit Account:</label>
+                                <input type="text" id="debit-account" name="debitAccount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Bank account or GL account">
+                            </div>
+                            <div>
+                                <label for="credit-account" class="block text-gray-700 text-sm font-bold mb-2">Credit Account:</label>
+                                <input type="text" id="credit-account" name="creditAccount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Borrower account">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disbursement Specific Fields -->
+                    <div class="mb-6 pb-6 border-b-2" id="disbursement-section" style="display: none;">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Disbursement Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label for="disbursement-method" class="block text-gray-700 text-sm font-bold mb-2">Disbursement Method:</label>
+                                <select id="disbursement-method" name="disbursementMethod" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <option value="">Select Method</option>
+                                    <option value="bank_transfer">Bank Transfer</option>
+                                    <option value="cheque">Cheque</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="mobile_money">Mobile Money</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="disbursement-status" class="block text-gray-700 text-sm font-bold mb-2">Status:</label>
+                                <select id="disbursement-status" name="disbursementStatus" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <option value="pending">Pending</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="failed">Failed</option>
+                                    <option value="reversed">Reversed</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="cheque-number" class="block text-gray-700 text-sm font-bold mb-2">Cheque Number:</label>
+                                <input type="text" id="cheque-number" name="chequeNumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="beneficiary-bank" class="block text-gray-700 text-sm font-bold mb-2">Beneficiary Bank:</label>
+                                <input type="text" id="beneficiary-bank" name="beneficiaryBank" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div>
+                                <label for="beneficiary-account" class="block text-gray-700 text-sm font-bold mb-2">Beneficiary Account:</label>
+                                <input type="text" id="beneficiary-account" name="beneficiaryAccount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information Section -->
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Additional Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label for="approved-by" class="block text-gray-700 text-sm font-bold mb-2">Approved By:</label>
+                                <input type="text" id="approved-by" name="approvedBy" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div>
+                                <label for="processed-by" class="block text-gray-700 text-sm font-bold mb-2">Processed By:</label>
+                                <input type="text" id="processed-by" name="processedBy" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="notes" class="block text-gray-700 text-sm font-bold mb-2">Notes / Description:</label>
+                            <textarea id="notes" name="notes" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter any additional notes or description about this transaction"></textarea>
+                        </div>
+                        <div>
+                            <label for="attachments" class="block text-gray-700 text-sm font-bold mb-2">Attachments:</label>
+                            <input type="file" id="attachments" name="attachments" multiple class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <p class="text-xs text-gray-500 mt-2">You can attach supporting documents like receipts or cheques</p>
+                        </div>
+                    </div>
+
                     <div class="flex items-center justify-between mt-6">
-                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
                             Create Transaction
                         </button>
+                        <a href="loan_transaction.html" class="text-gray-600 hover:text-gray-800 font-bold">Cancel</a>
                     </div>
                 </form>
                 <div id="form-message" class="mt-4 text-sm font-bold"></div>
@@ -109,40 +244,5 @@
     </div>
 
     <script src="js/create_loan_transaction.js"></script>
-    <script>
-        // Basic logout functionality
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            alert('Logged out!'); // Replace with actual logout logic
-            window.location.href = 'login.html'; // Redirect to login page
-        });
-    </script>
-    <script>
-        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
-        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
-
-        if (customerDropdownBtn && customerDropdownMenu) {
-            customerDropdownBtn.addEventListener('click', () => {
-                customerDropdownMenu.classList.toggle('hidden');
-            });
-        }
-
-        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
-        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
-
-        if (savingsDropdownBtn && savingsDropdownMenu) {
-            savingsDropdownBtn.addEventListener('click', () => {
-                savingsDropdownMenu.classList.toggle('hidden');
-            });
-        }
-        
-        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
-        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
-
-        if (loanDropdownBtn && loanDropdownMenu) {
-            loanDropdownBtn.addEventListener('click', () => {
-                loanDropdownMenu.classList.toggle('hidden');
-            });
-        }
-    </script>
 </body>
 </html>

@@ -1,11 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Authentication check
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        console.error('Authentication token not found. Redirecting to login...');
+        window.location.href = 'login.html';
+        return;
+    }
+
     const API_URL = '/graphql'; // Use relative path for API
     const createLoanTransactionForm = document.getElementById('create-loan-transaction-form');
     const formMessage = document.getElementById('form-message');
+    const transactionTypeSelect = document.getElementById('transaction-type');
+    const disbursementSection = document.getElementById('disbursement-section');
 
     // Input fields
     const loanIdInput = document.getElementById('loan-id');
-    const transactionTypeSelect = document.getElementById('transaction-type');
+    const transactionTypeSelect_var = document.getElementById('transaction-type');
     const amountInput = document.getElementById('amount');
     const transactionDateInput = document.getElementById('transaction-date');
     const notesTextarea = document.getElementById('notes');
@@ -15,10 +25,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialLoanId = urlParams.get('loan_id');
     if (initialLoanId) {
         loanIdInput.value = initialLoanId;
-        // Optionally disable the loanId input if it's pre-filled
-        // loanIdInput.disabled = true; 
     }
 
+    // Show/hide disbursement section based on transaction type
+    transactionTypeSelect.addEventListener('change', () => {
+        if (transactionTypeSelect.value === 'disbursement') {
+            disbursementSection.style.display = 'block';
+        } else {
+            disbursementSection.style.display = 'none';
+        }
+    });
+
+    // Set default date to today
+    const today = new Date().toISOString().slice(0, 16);
+    if (!transactionDateInput.value) {
+        transactionDateInput.value = today;
+    }
 
     // GraphQL mutation to create a loan transaction
     const createLoanTransactionMutation = `
@@ -48,25 +70,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const transactionDate = transactionDateInput.value ? new Date(transactionDateInput.value).toISOString() : new Date().toISOString();
         const notes = notesTextarea.value.trim() || null;
 
-
         if (!loanId || !transactionType || isNaN(amount) || amount <= 0) {
             formMessage.textContent = 'Please fill in all required fields with valid data.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
             return;
         }
 
+        // Collect additional fields if present
+        const additionalData = {
+            referenceNumber: document.getElementById('reference-number')?.value.trim() || null,
+            borrowerName: document.getElementById('borrower-name')?.value.trim() || null,
+            loanProduct: document.getElementById('loan-product')?.value.trim() || null,
+            currency: document.getElementById('currency')?.value || 'NGN',
+            exchangeRate: parseFloat(document.getElementById('exchange-rate')?.value) || null,
+            debitAccount: document.getElementById('debit-account')?.value.trim() || null,
+            creditAccount: document.getElementById('credit-account')?.value.trim() || null,
+            disbursementMethod: document.getElementById('disbursement-method')?.value.trim() || null,
+            disbursementStatus: document.getElementById('disbursement-status')?.value || 'pending',
+            chequeNumber: document.getElementById('cheque-number')?.value.trim() || null,
+            beneficiaryBank: document.getElementById('beneficiary-bank')?.value.trim() || null,
+            beneficiaryAccount: document.getElementById('beneficiary-account')?.value.trim() || null,
+            approvedBy: document.getElementById('approved-by')?.value.trim() || null,
+            processedBy: document.getElementById('processed-by')?.value.trim() || null
+        };
+
         const transactionData = {
             loanId: loanId,
             transactionType: transactionType,
             amount: amount,
             transactionDate: transactionDate,
-            notes: notes
+            notes: notes,
+            ...additionalData
         };
 
         formMessage.textContent = 'Creating loan transaction...';
         formMessage.className = 'mt-4 text-sm font-bold text-blue-500';
 
-        const token = localStorage.getItem('accessToken');
         if (!token) {
             formMessage.textContent = 'Authentication token not found. Please log in.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
@@ -105,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const errorMessage = result.errors[0]?.message || 'Unknown GraphQL error';
                  if (result.errors.some(e => e.message.includes('Not authorized') || e.extensions?.code === 'UNAUTHENTICATED')) {
                     alert('You do not have permission to create loan transactions.');
-                    // window.location.href = 'dashboard.html'; // Redirect if unauthorized
                 } else {
                     formMessage.textContent = `Error: ${errorMessage}`;
                     formMessage.className = 'mt-4 text-sm font-bold text-red-500';
@@ -141,8 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Basic logout functionality
     document.getElementById('logout-btn').addEventListener('click', () => {
-        alert('Logged out!'); // Replace with actual logout logic
-        window.location.href = 'login.html'; // Redirect to login page
+        localStorage.removeItem('accessToken');
+        alert('Logged out!');
+        window.location.href = 'login.html';
     });
 
     // Sidebar dropdowns
