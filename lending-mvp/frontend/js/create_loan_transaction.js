@@ -78,11 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Collect additional fields if present
         const additionalData = {
+            commercialBank: document.getElementById('commercial_bank')?.value.trim() || null,
+            servicingBranch: document.getElementById('servicing-branch')?.value.trim() || null,
+            region: document.getElementById('region')?.value.trim() || null,
             referenceNumber: document.getElementById('reference-number')?.value.trim() || null,
             borrowerName: document.getElementById('borrower-name')?.value.trim() || null,
             loanProduct: document.getElementById('loan-product')?.value.trim() || null,
-            currency: document.getElementById('currency')?.value || 'NGN',
-            exchangeRate: parseFloat(document.getElementById('exchange-rate')?.value) || null,
             debitAccount: document.getElementById('debit-account')?.value.trim() || null,
             creditAccount: document.getElementById('credit-account')?.value.trim() || null,
             disbursementMethod: document.getElementById('disbursement-method')?.value.trim() || null,
@@ -100,7 +101,21 @@ document.addEventListener('DOMContentLoaded', () => {
             amount: amount,
             transactionDate: transactionDate,
             notes: notes,
-            ...additionalData
+            commercialBank: additionalData.commercial_bank,
+            servicingBranch: additionalData.servicing_branch,
+            region: additionalData.region,
+            borrowerName: additionalData.borrower_name,
+            loanProduct: additionalData.loan_product,
+            referenceNumber: additionalData.reference_number,
+            debitAccount: additionalData.debit_account,
+            creditAccount: additionalData.credit_account,
+            disbursementMethod: additionalData.disbursement_method,
+            disbursementStatus: additionalData.disbursement_status,
+            chequeNumber: additionalData.cheque_number,
+            beneficiaryBank: additionalData.beneficiary_bank,
+            beneficiaryAccount: additionalData.beneficiary_account,
+            approvedBy: additionalData.approved_by,
+            processedBy: additionalData.processed_by
         };
 
         formMessage.textContent = 'Creating loan transaction...';

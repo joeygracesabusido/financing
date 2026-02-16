@@ -23,6 +23,23 @@ class LoanTransactionType:
     created_at: datetime
     updated_at: datetime
 
+    # Additional fields
+    commercial_bank: Optional[str] = None
+    servicing_branch: Optional[str] = None
+    region: Optional[str] = None
+    borrower_name: Optional[str] = None
+    loan_product: Optional[str] = None
+    reference_number: Optional[str] = None
+    debit_account: Optional[str] = None
+    credit_account: Optional[str] = None
+    disbursement_method: Optional[str] = None
+    disbursement_status: Optional[str] = None
+    cheque_number: Optional[str] = None
+    beneficiary_bank: Optional[str] = None
+    beneficiary_account: Optional[str] = None
+    approved_by: Optional[str] = None
+    processed_by: Optional[str] = None
+
 @strawberry.input
 class LoanTransactionCreateInput:
     loan_id: strawberry.ID
@@ -30,6 +47,21 @@ class LoanTransactionCreateInput:
     amount: Decimal
     transaction_date: Optional[datetime] = None
     notes: Optional[str] = None
+    commercial_bank: Optional[str] = None
+    servicing_branch: Optional[str] = None
+    region: Optional[str] = None
+    borrower_name: Optional[str] = None
+    loan_product: Optional[str] = None
+    reference_number: Optional[str] = None
+    debit_account: Optional[str] = None
+    credit_account: Optional[str] = None
+    disbursement_method: Optional[str] = None
+    disbursement_status: Optional[str] = "pending"
+    cheque_number: Optional[str] = None
+    beneficiary_bank: Optional[str] = None
+    beneficiary_account: Optional[str] = None
+    approved_by: Optional[str] = None
+    processed_by: Optional[str] = None
 
 @strawberry.input
 class LoanTransactionUpdateInput:
@@ -61,7 +93,22 @@ def convert_loan_transaction_db_to_loan_transaction_type(transaction_db: LoanTra
         transaction_date=transaction_db.transaction_date,
         notes=transaction_db.notes,
         created_at=transaction_db.created_at,
-        updated_at=transaction_db.updated_at
+        updated_at=transaction_db.updated_at,
+        commercial_bank=transaction_db.commercial_bank,
+        servicing_branch=transaction_db.servicing_branch,
+        region=transaction_db.region,
+        borrower_name=transaction_db.borrower_name,
+        loan_product=transaction_db.loan_product,
+        reference_number=transaction_db.reference_number,
+        debit_account=transaction_db.debit_account,
+        credit_account=transaction_db.credit_account,
+        disbursement_method=transaction_db.disbursement_method,
+        disbursement_status=transaction_db.disbursement_status,
+        cheque_number=transaction_db.cheque_number,
+        beneficiary_bank=transaction_db.beneficiary_bank,
+        beneficiary_account=transaction_db.beneficiary_account,
+        approved_by=transaction_db.approved_by,
+        processed_by=transaction_db.processed_by
     )
 
 @strawberry.type
@@ -149,7 +196,22 @@ class LoanTransactionMutation:
                 transaction_type=input.transaction_type,
                 amount=input.amount,
                 transaction_date=input.transaction_date if input.transaction_date else datetime.utcnow(),
-                notes=input.notes
+                notes=input.notes,
+                commercial_bank=input.commercial_bank,
+                servicing_branch=input.servicing_branch,
+                region=input.region,
+                borrower_name=input.borrower_name,
+                loan_product=input.loan_product,
+                reference_number=input.reference_number,
+                debit_account=input.debit_account,
+                credit_account=input.credit_account,
+                disbursement_method=input.disbursement_method,
+                disbursement_status=input.disbursement_status,
+                cheque_number=input.cheque_number,
+                beneficiary_bank=input.beneficiary_bank,
+                beneficiary_account=input.beneficiary_account,
+                approved_by=input.approved_by,
+                processed_by=input.processed_by
             )
             
             transaction_db = await transaction_crud.create_loan_transaction(loan_transaction_base)
