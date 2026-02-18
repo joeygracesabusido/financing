@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = '/graphql'; // Use relative path for API
+    console.log('update_loan_transaction.js loaded');
+    const API_URL = '/graphql';
     const updateLoanTransactionForm = document.getElementById('update-loan-transaction-form');
     const formMessage = document.getElementById('form-message');
+    const transactionTypeSelect = document.getElementById('transaction-type');
+    const disbursementSection = document.getElementById('disbursement-section');
 
     // Get transaction ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const transactionId = urlParams.get('id');
+    console.log('Transaction ID from URL:', transactionId);
 
     if (!transactionId) {
         formMessage.textContent = 'Error: Transaction ID not found in URL.';
@@ -13,12 +17,128 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Input fields
-    const loanIdInput = document.getElementById('loan-id');
-    const transactionTypeSelect = document.getElementById('transaction-type');
-    const amountInput = document.getElementById('amount');
-    const transactionDateInput = document.getElementById('transaction-date');
-    const notesTextarea = document.getElementById('notes');
+    // Input fields mapping
+    const fields = {
+        transactionIdHidden: 'transaction-id',
+        commercialBank: 'commercial_bank',
+        servicingBranch: 'servicing-branch',
+        region: 'region',
+        loanId: 'loan-id',
+        borrowerName: 'borrower-name',
+        loanProduct: 'loan-product',
+        transactionType: 'transaction-type',
+        transactionDate: 'transaction-date',
+        referenceNumber: 'reference-number',
+        amount: 'amount',
+        debitAccount: 'debit-account',
+        creditAccount: 'credit-account',
+        disbursementMethod: 'disbursement-method',
+        disbursementStatus: 'disbursement-status',
+        chequeNumber: 'cheque-number',
+        beneficiaryBank: 'beneficiary-bank',
+        beneficiaryAccount: 'beneficiary-account',
+        approvedBy: 'approved-by',
+        processedBy: 'processed-by',
+        notes: 'notes'
+    };
+
+    const elements = {};
+    for (const [key, id] of Object.entries(fields)) {
+        elements[key] = document.getElementById(id);
+        if (!elements[key]) {
+            console.warn(`Element with ID "${id}" not found in HTML.`);
+        }
+    }
+
+    // Borrower autocomplete functionality
+    const borrowerDatalist = document.getElementById('borrower-list');
+    const ALL_CUSTOMERS_QUERY = `
+        query {
+            customers {
+                customers {
+                    id
+                    displayName
+                }
+            }
+        }
+    `;
+
+    async function fetchCustomers() {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ query: ALL_CUSTOMERS_QUERY })
+            });
+            const result = await response.json();
+            return result.data?.customers?.customers || [];
+        } catch (error) {
+            console.error('Error fetching customers:', error);
+            return [];
+        }
+    }
+
+    async function populateBorrowerDatalist() {
+        const customers = await fetchCustomers();
+        if (borrowerDatalist) {
+            borrowerDatalist.innerHTML = '';
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.displayName;
+                borrowerDatalist.appendChild(option);
+            });
+        }
+    }
+
+    // Loan product autocomplete functionality
+    const loanProductDatalist = document.getElementById('loan-product-list');
+    const ALL_LOAN_PRODUCTS_QUERY = `
+        query {
+            loanProducts {
+                id
+                productCode
+                productName
+            }
+        }
+    `;
+
+    async function fetchLoanProducts() {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ query: ALL_LOAN_PRODUCTS_QUERY })
+            });
+            const result = await response.json();
+            return result.data?.loanProducts || [];
+        } catch (error) {
+            console.error('Error fetching loan products:', error);
+            return [];
+        }
+    }
+
+    async function populateLoanProductDatalist() {
+        const loanProducts = await fetchLoanProducts();
+        if (loanProductDatalist) {
+            loanProductDatalist.innerHTML = '';
+            loanProducts.forEach(product => {
+                const option = document.createElement('option');
+                option.value = `${product.productCode} - ${product.productName}`;
+                loanProductDatalist.appendChild(option);
+            });
+        }
+    }
+
+    populateBorrowerDatalist();
+    populateLoanProductDatalist();
 
     let originalLoanId = null; // To store loan_id for redirection
 
@@ -35,6 +155,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     amount
                     transactionDate
                     notes
+                    commercialBank
+                    servicingBranch
+                    region
+                    borrowerName
+                    loanProduct
+                    referenceNumber
+                    debitAccount
+                    creditAccount
+                    disbursementMethod
+                    disbursementStatus
+                    chequeNumber
+                    beneficiaryBank
+                    beneficiaryAccount
+                    approvedBy
+                    processedBy
                 }
             }
         }
@@ -62,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        console.log('Fetching transaction data for ID:', transactionId);
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
@@ -87,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = await response.json();
+            console.log('Full GraphQL result:', result);
 
             if (result.errors) {
                 console.error('GraphQL Errors:', result.errors);
@@ -96,36 +233,73 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const transaction = result.data?.loanTransaction?.transaction;
+            console.log('Extracted transaction data:', transaction);
+
             if (transaction) {
                 populateForm(transaction);
-                originalLoanId = transaction.loanId; // Store loan_id for redirection
+                originalLoanId = transaction.loanId;
             } else {
+                console.warn('No transaction data found in response.');
                 formMessage.textContent = 'Loan transaction not found.';
                 formMessage.className = 'mt-4 text-sm font-bold text-red-500';
             }
 
         } catch (error) {
-            console.error('Error fetching loan transaction:', error);
+            console.error('Error in fetchLoanTransactionData:', error);
             formMessage.textContent = 'Error connecting to the server.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
         }
     };
 
     const populateForm = (transaction) => {
-        loanIdInput.value = transaction.loanId || '';
-        transactionTypeSelect.value = transaction.transactionType || '';
-        amountInput.value = transaction.amount || '';
-        
-        // Format datetime-local input
-        if (transaction.transactionDate) {
-            const date = new Date(transaction.transactionDate);
-            // Example: 2023-11-20T10:30
-            transactionDateInput.value = date.toISOString().slice(0, 16);
-        } else {
-            transactionDateInput.value = '';
+        console.log('Populating form with transaction:', transaction);
+
+        const setVal = (key, value) => {
+            if (elements[key]) {
+                elements[key].value = value || '';
+                console.log(`Set ${key} (${fields[key]}) to: "${elements[key].value}"`);
+            }
+        };
+
+        setVal('transactionIdHidden', transaction.id);
+        setVal('commercialBank', transaction.commercialBank);
+        setVal('servicingBranch', transaction.servicingBranch);
+        setVal('region', transaction.region);
+        setVal('loanId', transaction.loanId);
+        setVal('borrowerName', transaction.borrowerName);
+        setVal('loanProduct', transaction.loanProduct);
+        setVal('transactionType', transaction.transactionType);
+        setVal('referenceNumber', transaction.referenceNumber);
+        setVal('amount', transaction.amount);
+        setVal('debitAccount', transaction.debitAccount);
+        setVal('creditAccount', transaction.creditAccount);
+        setVal('disbursementMethod', transaction.disbursementMethod);
+        setVal('disbursementStatus', transaction.disbursementStatus || 'pending');
+        setVal('chequeNumber', transaction.chequeNumber);
+        setVal('beneficiaryBank', transaction.beneficiaryBank);
+        setVal('beneficiaryAccount', transaction.beneficiaryAccount);
+        setVal('approvedBy', transaction.approvedBy);
+        setVal('processedBy', transaction.processedBy);
+        setVal('notes', transaction.notes);
+
+        // Date handling
+        if (elements.transactionDate) {
+            if (transaction.transactionDate) {
+                const date = new Date(transaction.transactionDate);
+                const formattedDate = date.toISOString().slice(0, 16);
+                elements.transactionDate.value = formattedDate;
+                console.log(`Set transactionDate to: ${formattedDate}`);
+            } else {
+                elements.transactionDate.value = '';
+            }
         }
-        
-        notesTextarea.value = transaction.notes || '';
+
+        // Section visibility
+        if (transaction.transactionType === 'disbursement') {
+            disbursementSection.style.display = 'block';
+        } else {
+            disbursementSection.style.display = 'none';
+        }
     };
 
     updateLoanTransactionForm.addEventListener('submit', async (event) => {
@@ -143,18 +317,28 @@ document.addEventListener('DOMContentLoaded', () => {
         formMessage.className = 'mt-4 text-sm font-bold text-blue-500';
 
         const loanTransactionUpdateData = {
-            transactionType: transactionTypeSelect.value,
-            amount: parseFloat(amountInput.value),
-            transactionDate: transactionDateInput.value ? new Date(transactionDateInput.value).toISOString() : null,
-            notes: notesTextarea.value.trim() || null
+            transactionType: elements.transactionType.value,
+            amount: parseFloat(elements.amount.value),
+            transactionDate: elements.transactionDate.value ? new Date(elements.transactionDate.value).toISOString() : null,
+            notes: elements.notes.value.trim() || null,
+            commercialBank: elements.commercialBank.value.trim() || null,
+            servicingBranch: elements.servicingBranch.value.trim() || null,
+            region: elements.region.value.trim() || null,
+            borrowerName: elements.borrowerName.value.trim() || null,
+            loanProduct: elements.loanProduct.value.trim() || null,
+            referenceNumber: elements.referenceNumber.value.trim() || null,
+            debitAccount: elements.debitAccount.value.trim() || null,
+            creditAccount: elements.creditAccount.value.trim() || null,
+            disbursementMethod: elements.disbursementMethod.value.trim() || null,
+            disbursementStatus: elements.disbursementStatus.value || 'pending',
+            chequeNumber: elements.chequeNumber.value.trim() || null,
+            beneficiaryBank: elements.beneficiaryBank.value.trim() || null,
+            beneficiaryAccount: elements.beneficiaryAccount.value.trim() || null,
+            approvedBy: elements.approvedBy.value.trim() || null,
+            processedBy: elements.processedBy.value.trim() || null
         };
 
-        // Validate inputs
-        if (!loanTransactionUpdateData.transactionType || isNaN(loanTransactionUpdateData.amount) || loanTransactionUpdateData.amount <= 0) {
-            formMessage.textContent = 'Please enter valid data for transaction type and amount.';
-            formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-            return;
-        }
+        console.log('Sending update data:', loanTransactionUpdateData);
 
         try {
             const response = await fetch(API_URL, {
@@ -172,87 +356,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    localStorage.removeItem('accessToken');
-                    alert('Session expired or unauthorized. Please log in again.');
-                    window.location.href = 'login.html';
-                    return;
-                }
-                const errorText = await response.text();
-                throw new Error(`HTTP error ${response.status}: ${errorText}`);
-            }
-
             const result = await response.json();
+            console.log('Update result:', result);
 
             if (result.errors) {
-                console.error('GraphQL Errors:', result.errors);
-                const errorMessage = result.errors[0]?.message || 'Unknown GraphQL error';
-                if (result.errors.some(e => e.message.includes('Not authorized') || e.extensions?.code === 'UNAUTHENTICATED')) {
-                    alert('You do not have permission to update loan transactions.');
-                    // window.location.href = 'dashboard.html'; // Redirect if unauthorized
-                } else {
-                    formMessage.textContent = `Error: ${errorMessage}`;
-                    formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                }
+                console.error('Update Errors:', result.errors);
+                formMessage.textContent = `Error: ${result.errors[0].message}`;
+                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
                 return;
             }
 
             const updateResult = result.data?.updateLoanTransaction;
-
             if (updateResult?.success) {
                 formMessage.textContent = updateResult.message || 'Loan transaction updated successfully!';
                 formMessage.className = 'mt-4 text-sm font-bold text-green-500';
                 setTimeout(() => {
                     let redirectUrl = 'loan_transaction.html';
-                    if (originalLoanId) {
-                        redirectUrl += `?loan_id=${originalLoanId}`;
-                    }
+                    if (originalLoanId) redirectUrl += `?loan_id=${originalLoanId}`;
                     window.location.href = redirectUrl;
                 }, 1500);
             } else {
                 formMessage.textContent = updateResult?.message || 'Failed to update loan transaction.';
                 formMessage.className = 'mt-4 text-sm font-bold text-red-500';
             }
-
         } catch (error) {
-            console.error('Error updating loan transaction:', error);
-            formMessage.textContent = error.message || 'An unexpected error occurred.';
+            console.error('Error in update:', error);
+            formMessage.textContent = 'An unexpected error occurred.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
         }
     });
 
-    // Initial fetch to populate the form
+    transactionTypeSelect.addEventListener('change', () => {
+        if (transactionTypeSelect.value === 'disbursement') {
+            disbursementSection.style.display = 'block';
+        } else {
+            disbursementSection.style.display = 'none';
+        }
+    });
+
     fetchLoanTransactionData();
 
-    // Basic logout functionality (copied from other pages)
     document.getElementById('logout-btn').addEventListener('click', () => {
-        alert('Logged out!'); // Replace with actual logout logic
-        window.location.href = 'login.html'; // Redirect to login page
+        localStorage.removeItem('accessToken');
+        window.location.href = 'login.html';
     });
 
     // Sidebar dropdowns
-    const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
-    const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
-    if (customerDropdownBtn && customerDropdownMenu) {
-        customerDropdownBtn.addEventListener('click', () => {
-            customerDropdownMenu.classList.toggle('hidden');
-        });
-    }
-
-    const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
-    const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
-    if (savingsDropdownBtn && savingsDropdownMenu) {
-        savingsDropdownBtn.addEventListener('click', () => {
-            savingsDropdownMenu.classList.toggle('hidden');
-        });
-    }
-    
-    const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
-    const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
-    if (loanDropdownBtn && loanDropdownMenu) {
-        loanDropdownBtn.addEventListener('click', () => {
-            loanDropdownMenu.classList.toggle('hidden');
-        });
-    }
+    ['customer', 'savings', 'loan'].forEach(type => {
+        const btn = document.getElementById(`${type}-dropdown-btn`);
+        const menu = document.getElementById(`${type}-dropdown-menu`);
+        if (btn && menu) {
+            btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        }
+    });
 });

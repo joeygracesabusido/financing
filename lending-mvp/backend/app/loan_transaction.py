@@ -15,30 +15,30 @@ from .database.loan_transaction_crud import LoanTransactionCRUD
 @strawberry.type
 class LoanTransactionType:
     id: strawberry.ID
-    loan_id: strawberry.ID
-    transaction_type: str
+    loan_id: strawberry.ID = strawberry.field(name="loanId")
+    transaction_type: str = strawberry.field(name="transactionType")
     amount: Decimal
-    transaction_date: datetime
+    transaction_date: datetime = strawberry.field(name="transactionDate")
     notes: Optional[str]
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
 
     # Additional fields
-    commercial_bank: Optional[str] = None
-    servicing_branch: Optional[str] = None
-    region: Optional[str] = None
-    borrower_name: Optional[str] = None
-    loan_product: Optional[str] = None
-    reference_number: Optional[str] = None
-    debit_account: Optional[str] = None
-    credit_account: Optional[str] = None
-    disbursement_method: Optional[str] = None
-    disbursement_status: Optional[str] = None
-    cheque_number: Optional[str] = None
-    beneficiary_bank: Optional[str] = None
-    beneficiary_account: Optional[str] = None
-    approved_by: Optional[str] = None
-    processed_by: Optional[str] = None
+    commercial_bank: Optional[str] = strawberry.field(name="commercialBank")
+    servicing_branch: Optional[str] = strawberry.field(name="servicingBranch")
+    region: Optional[str] = strawberry.field(name="region")
+    borrower_name: Optional[str] = strawberry.field(name="borrowerName")
+    loan_product: Optional[str] = strawberry.field(name="loanProduct")
+    reference_number: Optional[str] = strawberry.field(name="referenceNumber")
+    debit_account: Optional[str] = strawberry.field(name="debitAccount")
+    credit_account: Optional[str] = strawberry.field(name="creditAccount")
+    disbursement_method: Optional[str] = strawberry.field(name="disbursementMethod")
+    disbursement_status: Optional[str] = strawberry.field(name="disbursementStatus")
+    cheque_number: Optional[str] = strawberry.field(name="chequeNumber")
+    beneficiary_bank: Optional[str] = strawberry.field(name="beneficiaryBank")
+    beneficiary_account: Optional[str] = strawberry.field(name="beneficiaryAccount")
+    approved_by: Optional[str] = strawberry.field(name="approvedBy")
+    processed_by: Optional[str] = strawberry.field(name="processedBy")
 
 @strawberry.input
 class LoanTransactionCreateInput:
@@ -69,6 +69,21 @@ class LoanTransactionUpdateInput:
     amount: Optional[Decimal] = None
     transaction_date: Optional[datetime] = None
     notes: Optional[str] = None
+    commercial_bank: Optional[str] = None
+    servicing_branch: Optional[str] = None
+    region: Optional[str] = None
+    borrower_name: Optional[str] = None
+    loan_product: Optional[str] = None
+    reference_number: Optional[str] = None
+    debit_account: Optional[str] = None
+    credit_account: Optional[str] = None
+    disbursement_method: Optional[str] = None
+    disbursement_status: Optional[str] = None
+    cheque_number: Optional[str] = None
+    beneficiary_bank: Optional[str] = None
+    beneficiary_account: Optional[str] = None
+    approved_by: Optional[str] = None
+    processed_by: Optional[str] = None
 
 @strawberry.type
 class LoanTransactionResponse:
@@ -235,7 +250,10 @@ class LoanTransactionMutation:
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
 
-            update_data = input.model_dump(exclude_unset=True)
+            # Convert Strawberry input object to dictionary and remove None values
+            # Also convert Decimal to float for MongoDB compatibility
+            update_data = {k: (float(v) if isinstance(v, Decimal) else v) 
+                           for k, v in strawberry.asdict(input).items() if v is not None}
             
             transaction_db = await transaction_crud.update_loan_transaction(str(transaction_id), update_data)
             if not transaction_db:

@@ -7,8 +7,10 @@ from fastapi import HTTPException, status
 
 from .basemodel.loan_model import Loan, LoanCreate, LoanUpdate, LoanOut, PyObjectId
 from .models import UserInDB
-from .database import get_loans_collection, get_db
+from .database import get_loans_collection, get_db, get_customers_collection
 from .database.loan_crud import LoanCRUD
+from .database.customer_crud import CustomerCRUD
+from .customer import CustomerType, convert_customer_db_to_customer_type
 
 
 # Loan Types (Strawberry)
@@ -22,6 +24,19 @@ class LoanType:
     status: str
     created_at: datetime
     updated_at: datetime
+
+    @strawberry.field
+    async def customer(self, info: Info) -> Optional[CustomerType]:
+        try:
+            customers_collection = get_customers_collection()
+            customer_crud = CustomerCRUD(customers_collection)
+            customer_data = await customer_crud.get_customer_by_id(str(self.borrower_id))
+            if customer_data:
+                return convert_customer_db_to_customer_type(customer_data)
+            return None
+        except Exception as e:
+            print(f"Error resolving customer for loan: {e}")
+            return None
 
 @strawberry.input
 class LoanCreateInput:

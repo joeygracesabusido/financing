@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between shadow-lg">
+            <div>
+                <div class="flex items-center mb-10">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg mr-3"></div>
+                    <span class="text-2xl font-bold">IJE Software</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4">
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-users mr-3"></i> Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
+                                <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-piggy-bank mr-3"></i> Savings <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings Accounts</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left">
+                                <i class="fas fa-hand-holding-usd mr-3"></i> Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
+                                <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
+                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="loan_transaction.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Loan Transactions</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <ul>
+                    <li class="mb-4"><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Loan Details: <span id="loan-id-display" class="text-green-600">Loading...</span></h1>
+                <a href="loan_transaction.html" class="text-gray-600 hover:text-gray-800 font-bold"><i class="fas fa-arrow-left mr-2"></i> Back to Transactions</a>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Loan Information -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2">Loan Information</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-gray-500 text-sm">Borrower Name</p>
+                                <p id="detail-borrower-name" class="font-bold">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Status</p>
+                                <p id="detail-status" class="font-bold">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Amount Requested</p>
+                                <p id="detail-amount-requested" class="font-bold text-green-600">₱0.00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Remaining Balance</p>
+                                <p id="detail-balance" class="font-bold text-red-600">₱0.00</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Interest Rate</p>
+                                <p id="detail-interest-rate" class="font-bold">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Term (Months)</p>
+                                <p id="detail-term" class="font-bold">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-sm">Created At</p>
+                                <p id="detail-created-at" class="font-bold">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-xl font-bold mb-4 border-b pb-2">Transaction History</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="bg-gray-100 text-sm font-bold text-gray-600">
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Amount</th>
+                                        <th class="p-3">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-table-body">
+                                    <tr><td colspan="4" class="p-3 text-center">Loading transactions...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Form -->
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-green-500">
+                        <h2 class="text-xl font-bold mb-4">Make a Payment</h2>
+                        <form id="payment-form">
+                            <div class="mb-4">
+                                <label for="payment-amount" class="block text-gray-700 text-sm font-bold mb-2">Payment Amount <span class="text-red-500">*</span></label>
+                                <input type="number" step="0.01" id="payment-amount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="0.00" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="payment-date" class="block text-gray-700 text-sm font-bold mb-2">Payment Date</label>
+                                <input type="datetime-local" id="payment-date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label for="payment-notes" class="block text-gray-700 text-sm font-bold mb-2">Notes</label>
+                                <textarea id="payment-notes" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Optional notes..."></textarea>
+                            </div>
+                            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full transition duration-200">
+                                Submit Payment
+                            </button>
+                        </form>
+                        <div id="payment-message" class="mt-4 text-sm font-bold"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/loan_details.js"></script>
+    <script>
+        // Sidebar dropdowns
+        ['customer', 'savings', 'loan'].forEach(type => {
+            const btn = document.getElementById(`${type}-dropdown-btn`);
+            const menu = document.getElementById(`${type}-dropdown-menu`);
+            if (btn && menu) {
+                btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+            }
+        });
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
