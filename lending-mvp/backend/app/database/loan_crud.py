@@ -26,9 +26,19 @@ class LoanCRUD:
         return loan_in_db
 
     async def get_loan_by_id(self, loan_id: str) -> Optional[Loan]:
-        if not ObjectId.is_valid(loan_id):
-            return None
-        loan_data = await self.collection.find_one({"_id": ObjectId(loan_id)})
+        # Try finding by _id (ObjectId or string) OR by a custom loan_id field
+        query_conditions = [
+            {"_id": ObjectId(loan_id) if ObjectId.is_valid(loan_id) else loan_id},
+            {"loan_id": loan_id}
+        ]
+        
+        # If loan_id is numeric, also search for it as an integer
+        if loan_id.isdigit():
+            query_conditions.append({"loan_id": int(loan_id)})
+            query_conditions.append({"_id": int(loan_id)})
+        
+        query = {"$or": query_conditions}
+        loan_data = await self.collection.find_one(query)
         if loan_data:
             return Loan.model_validate(loan_data)
         return None
@@ -36,9 +46,7 @@ class LoanCRUD:
     async def get_loans(self, skip: int = 0, limit: int = 100, borrower_id: Optional[str] = None) -> List[Loan]:
         query: Dict[str, Any] = {}
         if borrower_id:
-            if not ObjectId.is_valid(borrower_id):
-                return []
-            query["borrower_id"] = ObjectId(borrower_id)
+            query["borrower_id"] = ObjectId(borrower_id) if ObjectId.is_valid(borrower_id) else borrower_id
         
         loans_data = await self.collection.find(query).skip(skip).limit(limit).to_list(length=limit)
         return [Loan.model_validate(loan_data) for loan_data in loans_data]
@@ -46,9 +54,7 @@ class LoanCRUD:
     async def count_loans(self, borrower_id: Optional[str] = None) -> int:
         query: Dict[str, Any] = {}
         if borrower_id:
-            if not ObjectId.is_valid(borrower_id):
-                return 0
-            query["borrower_id"] = ObjectId(borrower_id)
+            query["borrower_id"] = ObjectId(borrower_id) if ObjectId.is_valid(borrower_id) else borrower_id
         return await self.collection.count_documents(query)
 
     async def update_loan(self, loan_id: str, loan_update: LoanUpdate) -> Optional[Loan]:

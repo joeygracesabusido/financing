@@ -7,6 +7,7 @@ from fastapi import HTTPException, status
 
 from .basemodel.loan_model import Loan, LoanCreate, LoanUpdate, LoanOut, PyObjectId
 from .models import UserInDB
+from .database import get_loan_transactions_collection
 from .database import get_loans_collection, get_db, get_customers_collection
 from .database.loan_crud import LoanCRUD
 from .database.customer_crud import CustomerCRUD
@@ -18,12 +19,27 @@ from .customer import CustomerType, convert_customer_db_to_customer_type
 class LoanType:
     id: strawberry.ID
     borrower_id: strawberry.ID
-    amount_requested: Decimal
-    term_months: int
-    interest_rate: Decimal
+    loan_id: Optional[str] = strawberry.field(name="loanId")
+    loan_product: Optional[str] = strawberry.field(name="loanProduct")
+    amount_requested: Decimal = strawberry.field(name="amountRequested")
+    term_months: int = strawberry.field(name="termMonths")
+    interest_rate: Decimal = strawberry.field(name="interestRate")
     status: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
+
+    @strawberry.field(name="borrowerName")
+    async def borrower_name(self, info: Info) -> Optional[str]:
+        try:
+            customers_collection = get_customers_collection()
+            customer_crud = CustomerCRUD(customers_collection)
+            customer_data = await customer_crud.get_customer_by_id(str(self.borrower_id))
+            if customer_data:
+                return customer_data.display_name
+            return "N/A"
+        except Exception as e:
+            print(f"Error resolving borrower name for loan {self.id}: {e}")
+            return "N/A"
 
     @strawberry.field
     async def customer(self, info: Info) -> Optional[CustomerType]:
@@ -41,6 +57,8 @@ class LoanType:
 @strawberry.input
 class LoanCreateInput:
     borrower_id: strawberry.ID
+    loan_id: Optional[str] = strawberry.field(name="loanId", default=None)
+    loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
     amount_requested: Decimal
     term_months: int
     interest_rate: Decimal
@@ -48,6 +66,7 @@ class LoanCreateInput:
 @strawberry.input
 class LoanUpdateInput:
     borrower_id: Optional[strawberry.ID] = None
+    loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
     amount_requested: Optional[Decimal] = None
     term_months: Optional[int] = None
     interest_rate: Optional[Decimal] = None
@@ -71,6 +90,8 @@ def convert_loan_db_to_loan_type(loan_db: Loan) -> LoanType:
     return LoanType(
         id=strawberry.ID(str(loan_db.id)),
         borrower_id=strawberry.ID(str(loan_db.borrower_id)),
+        loan_id=loan_db.loan_id,
+        loan_product=loan_db.loan_product,
         amount_requested=loan_db.amount_requested,
         term_months=loan_db.term_months,
         interest_rate=loan_db.interest_rate,
@@ -170,6 +191,8 @@ class LoanMutation:
             
             loan_create = LoanCreate(
                 borrower_id=PyObjectId(str(input.borrower_id)),
+                loan_id=input.loan_id,
+                loan_product=input.loan_product,
                 amount_requested=input.amount_requested,
                 term_months=input.term_months,
                 interest_rate=input.interest_rate

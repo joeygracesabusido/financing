@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formMessage.className = 'mt-4 text-sm font-bold';
 
         const borrowerId = document.getElementById('borrower-id').value.trim();
+        const loanId = document.getElementById('loan-id').value.trim();
         const amountRequested = parseFloat(document.getElementById('amount-requested').value);
         const termMonths = parseInt(document.getElementById('term-months').value, 10);
         const interestRate = parseFloat(document.getElementById('interest-rate').value);
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const loanData = {
             borrowerId: borrowerId,
+            loanId: loanId || null,
             amountRequested: amountRequested,
             termMonths: termMonths,
             interestRate: interestRate

@@ -17,25 +17,25 @@ from .database.customer_crud import CustomerCRUD
 @strawberry.type
 class CustomerType:
     id: strawberry.ID
-    customer_type: str # Added customer_type
-    last_name: Optional[str] = None # Made optional
-    first_name: Optional[str] = None # Made optional
-    display_name: str
-    middle_name: Optional[str] = None
-    tin_no: Optional[str] = None
-    sss_no: Optional[str] = None
-    permanent_address: Optional[str] = None
-    birth_date: Optional[date] = None
-    birth_place: Optional[str] = None
-    mobile_number: Optional[str] = None
-    email_address: str
-    employer_name_address: Optional[str] = None
-    job_title: Optional[str] = None
-    salary_range: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
-    company_name: Optional[str] = None
-    company_address: Optional[str] = None
+    customer_type: str = strawberry.field(name="customerType")  # Added customer_type
+    last_name: Optional[str] = strawberry.field(name="lastName", default=None)  # Made optional
+    first_name: Optional[str] = strawberry.field(name="firstName", default=None)  # Made optional
+    display_name: str = strawberry.field(name="displayName")
+    middle_name: Optional[str] = strawberry.field(name="middleName", default=None)
+    tin_no: Optional[str] = strawberry.field(name="tinNo", default=None)
+    sss_no: Optional[str] = strawberry.field(name="sssNo", default=None)
+    permanent_address: Optional[str] = strawberry.field(name="permanentAddress", default=None)
+    birth_date: Optional[date] = strawberry.field(name="birthDate", default=None)
+    birth_place: Optional[str] = strawberry.field(name="birthPlace", default=None)
+    mobile_number: Optional[str] = strawberry.field(name="mobileNumber", default=None)
+    email_address: str = strawberry.field(name="emailAddress")
+    employer_name_address: Optional[str] = strawberry.field(name="employerNameAddress", default=None)
+    job_title: Optional[str] = strawberry.field(name="jobTitle", default=None)
+    salary_range: Optional[str] = strawberry.field(name="salaryRange", default=None)
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
+    company_name: Optional[str] = strawberry.field(name="companyName", default=None)
+    company_address: Optional[str] = strawberry.field(name="companyAddress", default=None)
     branch: str
 
 @strawberry.input

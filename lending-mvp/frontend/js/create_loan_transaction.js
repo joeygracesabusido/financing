@@ -180,6 +180,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialLoanId = urlParams.get('loan_id');
     if (initialLoanId) {
         loanIdInput.value = initialLoanId;
+        
+        // Fetch loan details to pre-fill borrower name
+        const GET_LOAN_QUERY = `
+            query GetLoan($id: ID!) {
+                loan(loanId: $id) {
+                    success
+                    loan {
+                        customer {
+                            displayName
+                        }
+                    }
+                }
+            }
+        `;
+
+        async function fetchLoanDetails(loanId) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        query: GET_LOAN_QUERY,
+                        variables: { id: loanId }
+                    })
+                });
+                const result = await response.json();
+                if (result.data?.loan?.success) {
+                    const borrowerName = result.data.loan.loan?.customer?.displayName;
+                    if (borrowerName) {
+                        borrowerSearchInput.value = borrowerName;
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching loan details:', error);
+            }
+        }
+        fetchLoanDetails(initialLoanId);
     }
 
     // Show/hide disbursement section based on transaction type
@@ -206,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 transaction {
                     id
                     loanId
+                    borrowerName
                     transactionType
                     amount
                 }

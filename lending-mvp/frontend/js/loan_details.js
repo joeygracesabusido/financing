@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loanIdDisplay = document.getElementById('loan-id-display');
     const borrowerNameDisplay = document.getElementById('detail-borrower-name');
+    const loanProductDisplay = document.getElementById('detail-loan-product');
     const statusDisplay = document.getElementById('detail-status');
     const amountRequestedDisplay = document.getElementById('detail-amount-requested');
     const balanceDisplay = document.getElementById('detail-balance');
@@ -39,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 message
                 loan {
                     id
+                    borrowerName
+                    loanProduct
                     amountRequested
                     termMonths
                     interestRate
@@ -80,7 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchLoanDetails = async () => {
         const token = localStorage.getItem('accessToken');
+        if (!token) {
+            console.warn('No authentication token found. User may not be logged in.');
+            loanIdDisplay.textContent = 'Authentication Required';
+            return;
+        }
+        
         try {
+            console.log('Fetching loan details for ID:', loanId);
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
@@ -93,12 +103,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             });
             const result = await response.json();
+            console.log('GraphQL Response:', JSON.stringify(result, null, 2));
+
+            if (result.errors) {
+                console.error('GraphQL Errors:', result.errors);
+                loanIdDisplay.textContent = 'Error loading loan';
+                return;
+            }
+
             const loanResponse = result.data?.loan;
+            console.log('Loan Response:', loanResponse);
 
             if (loanResponse?.success && loanResponse.loan) {
                 const loan = loanResponse.loan;
-                borrowerNameDisplay.textContent = loan.customer?.displayName || 'N/A';
-                statusDisplay.textContent = loan.status.toUpperCase();
+                console.log('Loan Data:', JSON.stringify(loan, null, 2));
+                
+                borrowerNameDisplay.textContent = loan.borrowerName || loan.customer?.displayName || 'N/A';
+                loanProductDisplay.textContent = loan.loanProduct || 'N/A';
+                statusDisplay.textContent = loan.status ? loan.status.toUpperCase() : 'UNKNOWN';
                 amountRequestedDisplay.textContent = `₱${parseFloat(loan.amountRequested).toFixed(2)}`;
                 interestRateDisplay.textContent = `${loan.interestRate}%`;
                 termDisplay.textContent = loan.termMonths;
@@ -108,9 +130,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusDisplay.className = 'font-bold ' + 
                     (loan.status === 'active' ? 'text-green-600' : 
                      loan.status === 'pending' ? 'text-yellow-600' : 'text-gray-600');
+                     
+                console.log('Loan details updated successfully');
+            } else {
+                const msg = loanResponse?.message || 'Loan details not found.';
+                console.warn('Loan not found or query failed:', msg);
+                loanIdDisplay.textContent = 'Not Found';
+                borrowerNameDisplay.textContent = 'N/A';
+                statusDisplay.textContent = 'N/A';
             }
         } catch (error) {
             console.error('Error fetching loan details:', error);
+            loanIdDisplay.textContent = 'Connection Error';
         }
     };
 

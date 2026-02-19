@@ -37,9 +37,8 @@ class CustomerCRUD:
         customer_in_db.id = result.inserted_id
         return customer_in_db
     async def get_customer_by_id(self, customer_id: str) -> Optional[CustomerInDB]:
-        if not ObjectId.is_valid(customer_id):
-            return None
-        customer_data = await self.collection.find_one({"_id": ObjectId(customer_id)})
+        query = {"_id": ObjectId(customer_id)} if ObjectId.is_valid(customer_id) else {"_id": customer_id}
+        customer_data = await self.collection.find_one(query)
         if customer_data:
             return CustomerInDB.model_validate(customer_data)
         return None

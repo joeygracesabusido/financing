@@ -43,7 +43,9 @@ class PyObjectId(ObjectId):
 
 # --- Loan Models ---
 class LoanBase(BaseModel):
-    borrower_id: PyObjectId
+    borrower_id: Any # Allow string or ObjectId
+    loan_id: Optional[str] = Field(None, alias="loanId")
+    loan_product: Optional[str] = Field(None, alias="loanProduct")
     amount_requested: Decimal
     term_months: int
     interest_rate: Decimal # Annual rate
@@ -52,14 +54,16 @@ class LoanCreate(LoanBase):
     pass
 
 class LoanUpdate(BaseModel):
-    borrower_id: Optional[PyObjectId] = None
+    borrower_id: Optional[Any] = None
+    loan_id: Optional[str] = Field(None, alias="loanId")
+    loan_product: Optional[str] = Field(None, alias="loanProduct")
     amount_requested: Optional[Decimal] = None
     term_months: Optional[int] = None
     interest_rate: Optional[Decimal] = None
     status: Optional[str] = None # pending, approved, active, paid, rejected
 
 class Loan(LoanBase): # This is effectively LoanInDB
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: Any = Field(default_factory=PyObjectId, alias="_id")
     status: str = "pending" # pending, approved, active, paid, rejected
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow) # Added updated_at

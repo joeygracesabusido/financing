@@ -27,7 +27,36 @@ class LoanTransactionType:
     commercial_bank: Optional[str] = strawberry.field(name="commercialBank")
     servicing_branch: Optional[str] = strawberry.field(name="servicingBranch")
     region: Optional[str] = strawberry.field(name="region")
-    borrower_name: Optional[str] = strawberry.field(name="borrowerName")
+    
+    # Internal field to store the name from DB
+    _borrower_name: strawberry.Private[Optional[str]]
+
+    @strawberry.field(name="borrowerName")
+    async def borrower_name(self, info: Info) -> Optional[str]:
+        if self._borrower_name:
+            return self._borrower_name
+        
+        # If borrower_name is missing, try to resolve it from the loan -> customer
+        try:
+            from .database import get_loans_collection, get_customers_collection
+            from .database.loan_crud import LoanCRUD
+            from .database.customer_crud import CustomerCRUD
+            
+            loans_collection = get_loans_collection()
+            loan_crud = LoanCRUD(loans_collection)
+            loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
+            
+            if loan_db:
+                customers_collection = get_customers_collection()
+                customer_crud = CustomerCRUD(customers_collection)
+                customer_db = await customer_crud.get_customer_by_id(str(loan_db.borrower_id))
+                if customer_db:
+                    return customer_db.display_name
+        except Exception as e:
+            print(f"Error resolving borrower name for transaction {self.id}: {e}")
+        
+        return "N/A"
+
     loan_product: Optional[str] = strawberry.field(name="loanProduct")
     reference_number: Optional[str] = strawberry.field(name="referenceNumber")
     debit_account: Optional[str] = strawberry.field(name="debitAccount")
@@ -112,7 +141,7 @@ def convert_loan_transaction_db_to_loan_transaction_type(transaction_db: LoanTra
         commercial_bank=transaction_db.commercial_bank,
         servicing_branch=transaction_db.servicing_branch,
         region=transaction_db.region,
-        borrower_name=transaction_db.borrower_name,
+        _borrower_name=transaction_db.borrower_name,
         loan_product=transaction_db.loan_product,
         reference_number=transaction_db.reference_number,
         debit_account=transaction_db.debit_account,

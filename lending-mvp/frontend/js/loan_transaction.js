@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 transactions {
                     id
                     loanId
+                    borrowerName
+                    loanProduct
                     transactionType
                     amount
                     transactionDate
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const transactionData = result.data?.loanTransactions;
             if (!transactionData || !Array.isArray(transactionData.transactions)) {
                 console.warn('No loan transactions data returned');
-                loanTransactionTableBody.innerHTML = '<tr><td colspan="7" class="p-3 text-center">No loan transactions found or invalid response.</td></tr>';
+                loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found or invalid response.</td></tr>';
                 return;
             }
 
@@ -86,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error fetching loan transactions:', error);
-            loanTransactionTableBody.innerHTML = '<tr><td colspan="7" class="p-3 text-center text-red-500">Error loading loan transactions. Check console.</td></tr>';
+            loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center text-red-500">Error loading loan transactions. Check console.</td></tr>';
         }
     };
 
@@ -151,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const populateTable = (transactions) => {
         if (!transactions || transactions.length === 0) {
-            loanTransactionTableBody.innerHTML = '<tr><td colspan="7" class="p-3 text-center">No loan transactions found.</td></tr>';
+            loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found.</td></tr>';
             return;
         }
 
@@ -166,6 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
             row.innerHTML = `
                 <td class="p-3">${transaction.id || 'N/A'}</td>
                 <td class="p-3">${transaction.loanId || 'N/A'}</td>
+                <td class="p-3">${transaction.borrowerName || 'N/A'}</td>
+                <td class="p-3">${transaction.loanProduct || 'N/A'}</td>
                 <td class="p-3">${transaction.transactionType || 'N/A'}</td>
                 <td class="p-3">₱${transaction.amount ? parseFloat(transaction.amount).toFixed(2) : '0.00'}</td>
                 <td class="p-3">${transactionDate}</td>
