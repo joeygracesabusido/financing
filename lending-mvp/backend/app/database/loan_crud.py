@@ -26,14 +26,16 @@ class LoanCRUD:
         return loan_in_db
 
     async def get_loan_by_id(self, loan_id: str) -> Optional[Loan]:
-        # Try finding by _id (ObjectId or string) OR by a custom loan_id field
+        # Try finding by _id (ObjectId or string) OR by a custom loanId/loan_id field
         query_conditions = [
             {"_id": ObjectId(loan_id) if ObjectId.is_valid(loan_id) else loan_id},
+            {"loanId": loan_id},
             {"loan_id": loan_id}
         ]
         
         # If loan_id is numeric, also search for it as an integer
         if loan_id.isdigit():
+            query_conditions.append({"loanId": int(loan_id)})
             query_conditions.append({"loan_id": int(loan_id)})
             query_conditions.append({"_id": int(loan_id)})
         

@@ -5,28 +5,28 @@ from pydantic import BaseModel, Field, ConfigDict, field_serializer
 from ..models import PyObjectId
 
 class LoanTransactionBase(BaseModel):
-    loan_id: str = Field(alias="loanId")
-    transaction_type: Literal["disbursement", "repayment", "interest", "fee", "penalty", "insurance"] = Field(alias="transactionType")
+    loan_id: str = Field(alias="loan_id")
+    transaction_type: Literal["disbursement", "repayment", "interest", "fee", "penalty", "insurance"] = Field(alias="transaction_type")
     amount: Decimal = Field(..., gt=Decimal("0.00"))
-    transaction_date: datetime = Field(default_factory=datetime.utcnow, alias="transactionDate")
+    transaction_date: datetime = Field(default_factory=datetime.utcnow, alias="transaction_date")
     notes: Optional[str] = None
 
     # Additional fields from form
-    commercial_bank: Optional[str] = Field(None, alias="commercialBank")
-    servicing_branch: Optional[str] = Field(None, alias="servicingBranch")
+    commercial_bank: Optional[str] = Field(None, alias="commercial_bank")
+    servicing_branch: Optional[str] = Field(None, alias="servicing_branch")
     region: Optional[str] = Field(None, alias="region")
-    borrower_name: Optional[str] = Field(None, alias="borrowerName")
-    loan_product: Optional[str] = Field(None, alias="loanProduct")
-    reference_number: Optional[str] = Field(None, alias="referenceNumber")
-    debit_account: Optional[str] = Field(None, alias="debitAccount")
-    credit_account: Optional[str] = Field(None, alias="creditAccount")
-    disbursement_method: Optional[str] = Field(None, alias="disbursementMethod")
-    disbursement_status: Optional[str] = Field("pending", alias="disbursementStatus")
-    cheque_number: Optional[str] = Field(None, alias="chequeNumber")
-    beneficiary_bank: Optional[str] = Field(None, alias="beneficiaryBank")
-    beneficiary_account: Optional[str] = Field(None, alias="beneficiaryAccount")
-    approved_by: Optional[str] = Field(None, alias="approvedBy")
-    processed_by: Optional[str] = Field(None, alias="processedBy")
+    borrower_name: Optional[str] = Field(None, alias="borrower_name")
+    loan_product: Optional[str] = Field(None, alias="loan_product")
+    reference_number: Optional[str] = Field(None, alias="reference_number")
+    debit_account: Optional[str] = Field(None, alias="debit_account")
+    credit_account: Optional[str] = Field(None, alias="credit_account")
+    disbursement_method: Optional[str] = Field(None, alias="disbursement_method")
+    disbursement_status: Optional[str] = Field("pending", alias="disbursement_status") # Literal might be too strict if DB has 'completed'
+    cheque_number: Optional[str] = Field(None, alias="cheque_number")
+    beneficiary_bank: Optional[str] = Field(None, alias="beneficiary_bank")
+    beneficiary_account: Optional[str] = Field(None, alias="beneficiary_account")
+    approved_by: Optional[str] = Field(None, alias="approved_by")
+    processed_by: Optional[str] = Field(None, alias="processed_by")
 
     @field_serializer('amount')
     def serialize_amount(self, value: Decimal):
@@ -34,8 +34,8 @@ class LoanTransactionBase(BaseModel):
 
 class LoanTransaction(LoanTransactionBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    created_at: datetime = Field(default_factory=datetime.utcnow, alias="createdAt")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, alias="updatedAt")
+    created_at: datetime = Field(default_factory=datetime.utcnow, alias="created_at")
+    updated_at: datetime = Field(default_factory=datetime.utcnow, alias="updated_at")
 
     model_config = ConfigDict(
         populate_by_name=True,

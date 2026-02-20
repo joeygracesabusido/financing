@@ -10,8 +10,15 @@ from .customer import CustomerType, convert_customer_db_to_customer_type
 from .database.customer_crud import CustomerCRUD
 from decimal import Decimal
 from datetime import datetime, timedelta
+import json
 
-
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime)):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return str(obj)
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 # Savings Types
 @strawberry.type
@@ -26,7 +33,6 @@ class SavingsAccountType:
     created_at: datetime
     updated_at: datetime
     status: str
-    customer: Optional[CustomerType] = None
 
     @strawberry.field
     async def customer(self, info: Info) -> Optional[CustomerType]:
@@ -133,6 +139,19 @@ class SavingsQuery:
         if not current_user:
             return SavingsAccountResponse(success=False, message="Not authenticated")
 
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"savings_account:{account_id}"
+        
+        if redis:
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached)
+                data['opened_at'] = datetime.fromisoformat(data['opened_at'])
+                data['created_at'] = datetime.fromisoformat(data['created_at'])
+                data['updated_at'] = datetime.fromisoformat(data['updated_at'])
+                return SavingsAccountResponse(success=True, message="Account retrieved from cache", account=SavingsAccountType(**data))
+
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
         account_data = await savings_crud.get_savings_account_by_id(str(account_id))
@@ -145,6 +164,12 @@ class SavingsQuery:
         #     return SavingsAccountResponse(success=False, message="Not authorized to view this account")
             
         account = map_db_account_to_strawberry_type(account_data)
+        
+        if redis:
+            account_dict = strawberry.asdict(account)
+            account_dict.pop('customer', None)
+            redis.setex(cache_key, 3600, json.dumps(account_dict, default=json_serial))
+
         return SavingsAccountResponse(success=True, message="Account retrieved", account=account)
 
     @strawberry.field
@@ -153,15 +178,52 @@ class SavingsQuery:
         if not current_user:
             return SavingsAccountsResponse(success=False, message="Not authenticated", accounts=[], total=0)
 
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"savings_accounts:list:{searchTerm}"
+        
+        if redis:
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached)
+                accounts = []
+                for a in data['accounts']:
+                    a['opened_at'] = datetime.fromisoformat(a['opened_at'])
+                    a['created_at'] = datetime.fromisoformat(a['created_at'])
+                    a['updated_at'] = datetime.fromisoformat(a['updated_at'])
+                    accounts.append(SavingsAccountType(**a))
+                return SavingsAccountsResponse(success=True, message="Accounts retrieved from cache", accounts=accounts, total=data['total'])
+
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
         accounts_data = await savings_crud.get_all_savings_accounts(search_term=searchTerm) # Pass search_term to CRUD
         
         accounts = [map_db_account_to_strawberry_type(acc) for acc in accounts_data]
+        
+        if redis:
+            def filter_customer(d):
+                d.pop('customer', None)
+                return d
+                
+            cache_data = {
+                'total': len(accounts),
+                'accounts': [filter_customer(strawberry.asdict(a)) for a in accounts]
+            }
+            redis.setex(cache_key, 3600, json.dumps(cache_data, default=json_serial))
+
         return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts, total=len(accounts))
 
 @strawberry.type
 class SavingsMutation:
+    async def _clear_savings_cache(self, redis, account_id=None):
+        if not redis: return
+        keys = redis.keys("savings_accounts:list:*")
+        if account_id:
+            keys.append(f"savings_account:{account_id}")
+        if keys:
+            redis.delete(*keys)
+            print(f"--- Cache cleared for savings accounts ---")
+
     @strawberry.field
     async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
         current_user: UserInDB = info.context.get("current_user")
@@ -209,6 +271,9 @@ class SavingsMutation:
         created_account_data = await savings_crud.get_savings_account_by_id(str(created_account.id))
 
         account = map_db_account_to_strawberry_type(created_account_data)
+
+        redis = info.context.get("request").app.state.redis
+        await self._clear_savings_cache(redis)
 
         return SavingsAccountResponse(success=True, message="Savings account created", account=account)
     

@@ -21,3 +21,6 @@ pydantic-settings
 pydantic
 
 # For handling decimals
+
+redis
+httpx

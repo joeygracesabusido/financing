@@ -10,12 +10,15 @@ from .savings import TransactionType, TransactionsResponse, TransactionCreateInp
 
 from decimal import Decimal
 from datetime import datetime
+import json
 
-
-
-
-
-
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime)):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return str(obj)
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 def map_db_transaction_to_strawberry_type(trans_data: TransactionInDB) -> TransactionType:
     """Maps a TransactionInDB object from the DB to a TransactionType."""
@@ -36,6 +39,20 @@ class TransactionQuery:
         if not current_user:
             return TransactionsResponse(success=False, message="Not authenticated", transactions=[], total=0)
 
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"transactions:list:{account_id}"
+        
+        if redis:
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached)
+                transactions = []
+                for t in data['transactions']:
+                    t['timestamp'] = datetime.fromisoformat(t['timestamp'])
+                    transactions.append(TransactionType(**t))
+                return TransactionsResponse(success=True, message="Transactions retrieved from cache", transactions=transactions, total=data['total'])
+
         db = get_db()
         # Authorization: Ensure the user owns the account they are querying transactions for
         savings_crud = SavingsCRUD(db.savings)
@@ -47,12 +64,30 @@ class TransactionQuery:
         transactions_data = await transaction_crud.get_transactions_by_account_id(str(account_id))
 
         transactions = [map_db_transaction_to_strawberry_type(t) for t in transactions_data]
+        
+        if redis:
+            cache_data = {
+                'total': len(transactions),
+                'transactions': [strawberry.asdict(t) for t in transactions]
+            }
+            redis.setex(cache_key, 3600, json.dumps(cache_data, default=json_serial))
+
         return TransactionsResponse(success=True, message="Transactions retrieved", transactions=transactions, total=len(transactions))
 
 @strawberry.type
 class TransactionMutation:
-    @staticmethod
-    async def _create_transaction(info: Info, input: TransactionCreateInput, trans_type: str) -> TransactionResponse:
+    async def _clear_transaction_cache(self, redis, account_id):
+        if not redis: return
+        # Clear transaction list for this account
+        redis.delete(f"transactions:list:{account_id}")
+        # Clear savings account detail and lists as balance changed
+        redis.delete(f"savings_account:{account_id}")
+        keys = redis.keys("savings_accounts:list:*")
+        if keys:
+            redis.delete(*keys)
+        print(f"--- Cache cleared for transactions and savings account {account_id} ---")
+
+    async def _create_transaction(self, info: Info, input: TransactionCreateInput, trans_type: str) -> TransactionResponse:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
             return TransactionResponse(success=False, message="Not authenticated")
@@ -81,12 +116,15 @@ class TransactionMutation:
 
         transaction = map_db_transaction_to_strawberry_type(created_transaction)
         
+        redis = info.context.get("request").app.state.redis
+        await self._clear_transaction_cache(redis, input.account_id)
+
         return TransactionResponse(success=True, message=f"{trans_type.capitalize()} successful", transaction=transaction)
 
     @strawberry.field
     async def createDeposit(self, info: Info, input: TransactionCreateInput) -> TransactionResponse:
-        return await TransactionMutation._create_transaction(info, input, "deposit")
+        return await self._create_transaction(info, input, "deposit")
 
     @strawberry.field
     async def createWithdrawal(self, info: Info, input: TransactionCreateInput) -> TransactionResponse:
-        return await TransactionMutation._create_transaction(info, input, "withdrawal")
+        return await self._create_transaction(info, input, "withdrawal")

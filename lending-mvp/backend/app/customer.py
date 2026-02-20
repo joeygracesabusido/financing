@@ -3,6 +3,8 @@ from typing import List, Optional
 from strawberry.types import Info
 from fastapi import HTTPException, status
 from datetime import datetime, date
+import json
+from decimal import Decimal
 
 from starlette.requests import Request
 
@@ -12,6 +14,13 @@ from .models import CustomerInDB, CustomerCreate, CustomerUpdate, PyObjectId,Use
 from .database import get_customers_collection, get_db
 from .database.customer_crud import CustomerCRUD
 
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return str(obj)
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 # Customer Types
 @strawberry.type
@@ -140,9 +149,30 @@ class Query:
     async def customers(self, info: Info, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> CustomersResponse:
         """Get all customers with optional search"""
         current_user: UserInDB = info.context.get("current_user")
-        print(current_user.role)
         if not current_user or current_user.role != "admin":
             raise Exception("Not authorized")
+
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"customers:list:{skip}:{limit}:{search_term}"
+        
+        if redis and not search_term: # Only cache full lists or non-searched results for simplicity
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached)
+                customers = []
+                for c in data['customers']:
+                    if c.get('birth_date'):
+                        # Handle potential datetime string for a date field
+                        birth_date_str = c['birth_date']
+                        if 'T' in birth_date_str:
+                            c['birth_date'] = datetime.fromisoformat(birth_date_str).date()
+                        else:
+                            c['birth_date'] = date.fromisoformat(birth_date_str)
+                    c['created_at'] = datetime.fromisoformat(c['created_at'])
+                    c['updated_at'] = datetime.fromisoformat(c['updated_at'])
+                    customers.append(CustomerType(**c))
+                return CustomersResponse(success=True, message="Customers retrieved from cache", customers=customers, total=data['total'])
 
         try:
             customers_collection = get_customers_collection()
@@ -153,6 +183,13 @@ class Query:
             
             customers = [convert_customer_db_to_customer_type(customer_db) for customer_db in customers_db]
             
+            if redis and not search_term:
+                cache_data = {
+                    'total': total,
+                    'customers': [strawberry.asdict(c) for c in customers]
+                }
+                redis.setex(cache_key, 3600, json.dumps(cache_data, default=json_serial))
+
             return CustomersResponse(
                 success=True,
                 message="Customers retrieved successfully",
@@ -173,6 +210,26 @@ class Query:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role != "admin":
             raise Exception("Not authorized")
+            
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"customer:{customer_id}"
+        
+        if redis:
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                c = json.loads(cached)
+                if c.get('birth_date'):
+                    # Handle potential datetime string for a date field
+                    birth_date_str = c['birth_date']
+                    if 'T' in birth_date_str:
+                        c['birth_date'] = datetime.fromisoformat(birth_date_str).date()
+                    else:
+                        c['birth_date'] = date.fromisoformat(birth_date_str)
+                c['created_at'] = datetime.fromisoformat(c['created_at'])
+                c['updated_at'] = datetime.fromisoformat(c['updated_at'])
+                return CustomerResponse(success=True, message="Customer retrieved from cache", customer=CustomerType(**c))
+
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
@@ -185,6 +242,10 @@ class Query:
                 )
             
             customer = convert_customer_db_to_customer_type(customer_db)
+            
+            if redis:
+                redis.setex(cache_key, 3600, json.dumps(strawberry.asdict(customer), default=json_serial))
+
             return CustomerResponse(
                 success=True,
                 message="Customer retrieved successfully",
@@ -198,18 +259,20 @@ class Query:
 
 @strawberry.type
 class Mutation:
+    async def _clear_customer_cache(self, redis, customer_id=None):
+        if not redis: return
+        keys = redis.keys("customers:list:*")
+        if customer_id:
+            keys.append(f"customer:{customer_id}")
+        if keys:
+            redis.delete(*keys)
+            print(f"--- Cache cleared for customers ---")
+
     @strawberry.field
     async def create_customer(self, info: Info, input: CustomerCreateInput) -> CustomerResponse:
-        # current_user: UserInDB = info.context.get("current_user")
-        # print(current_user.role)
-        # if not current_user or current_user.role != "admin":
-        #     raise Exception("Not authorized")
-
         current_user = info.context.get("current_user")
-    
         if current_user is None:
             raise Exception("Not authenticated – please login")
-        
         if current_user.role != "admin":
             raise Exception("Not authorized – admin role required")
         
@@ -229,6 +292,9 @@ class Mutation:
             customer_db = await customer_crud.create_customer(customer_create)
             customer = convert_customer_db_to_customer_type(customer_db)
 
+            redis = info.context.get("request").app.state.redis
+            await self._clear_customer_cache(redis)
+
             return CustomerResponse(
                 success=True,
                 message="Customer created successfully",
@@ -240,6 +306,7 @@ class Mutation:
                 success=False,
                 message=f"Error creating customer: {str(e)}"
             )
+            
     @strawberry.field
     async def update_customer(self, info: Info, customer_id: strawberry.ID, input: CustomerUpdateInput) -> CustomerResponse:
         """Update an existing customer"""
@@ -261,6 +328,10 @@ class Mutation:
                 )
 
             customer = convert_customer_db_to_customer_type(customer_db)
+            
+            redis = info.context.get("request").app.state.redis
+            await self._clear_customer_cache(redis, customer_id)
+
             return CustomerResponse(
                 success=True,
                 message="Customer updated successfully",
@@ -288,6 +359,9 @@ class Mutation:
                     success=False,
                     message="Customer not found"
                 )
+
+            redis = info.context.get("request").app.state.redis
+            await self._clear_customer_cache(redis, customer_id)
 
             return CustomerResponse(
                 success=True,

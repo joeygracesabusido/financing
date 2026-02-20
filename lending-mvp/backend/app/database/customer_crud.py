@@ -37,7 +37,13 @@ class CustomerCRUD:
         customer_in_db.id = result.inserted_id
         return customer_in_db
     async def get_customer_by_id(self, customer_id: str) -> Optional[CustomerInDB]:
-        query = {"_id": ObjectId(customer_id)} if ObjectId.is_valid(customer_id) else {"_id": customer_id}
+        query_conditions = [
+            {"_id": ObjectId(customer_id) if ObjectId.is_valid(customer_id) else customer_id}
+        ]
+        if str(customer_id).isdigit():
+            query_conditions.append({"_id": int(customer_id)})
+            
+        query = {"$or": query_conditions}
         customer_data = await self.collection.find_one(query)
         if customer_data:
             return CustomerInDB.model_validate(customer_data)

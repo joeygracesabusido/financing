@@ -10,8 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // GraphQL query to fetch loan transactions
     let getLoanTransactionsQuery = `
-        query GetLoanTransactions($loanId: ID, $skip: Int, $limit: Int) {
-            loanTransactions(loanId: $loanId, skip: $skip, limit: $limit) {
+        query GetLoanTransactions($loanId: ID, $searchTerm: String, $skip: Int, $limit: Int) {
+            loanTransactions(loanId: $loanId, searchTerm: $searchTerm, skip: $skip, limit: $limit) {
+                success
+                message
                 transactions {
                     id
                     loanId
@@ -28,11 +30,16 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     // Fetching loan transactions with optional filters
-    const fetchLoanTransactions = async (loanId = null, skip = 0, limit = 100) => {
+    const fetchLoanTransactions = async (loanId = null, searchTerm = null, skip = 0, limit = 100) => {
         const token = localStorage.getItem('accessToken');
         
+        console.log('=== Fetching Loan Transactions ===');
+        console.log('Token exists:', !!token);
+        console.log('Loan ID filter:', loanId);
+        console.log('Search term:', searchTerm);
+        
         if (!token) {
-            console.error('Authentication token not found.');
+            console.error('❌ Authentication token not found.');
             window.location.href = 'login.html';
             return;
         }
@@ -46,13 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     query: getLoanTransactionsQuery,
-                    variables: { loanId, skip, limit }
+                    variables: { loanId, searchTerm, skip, limit }
                 })
             });
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    console.warn('401 Unauthorized - clearing token');
+                    console.warn('❌ 401 Unauthorized - clearing token');
                     localStorage.removeItem('accessToken');
                     alert('Session expired or unauthorized. Please log in again.');
                     window.location.href = 'login.html';
@@ -63,9 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const result = await response.json();
+            console.log('📦 GraphQL Response:', JSON.stringify(result, null, 2));
 
             if (result.errors) {
-                console.error('GraphQL Errors:', result.errors);
+                console.error('❌ GraphQL Errors:', result.errors);
                 const firstError = result.errors[0]?.message || 'Unknown GraphQL error';
                 
                 if (result.errors.some(e => e.message.includes('Not authorized') || e.extensions?.code === 'UNAUTHENTICATED')) {
@@ -74,20 +82,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     alert(`Error: ${firstError}`);
                 }
+                loanTransactionTableBody.innerHTML = `<tr><td colspan="9" class="p-3 text-center text-red-500">Error: ${firstError}</td></tr>`;
                 return;
             }
 
-            const transactionData = result.data?.loanTransactions;
-            if (!transactionData || !Array.isArray(transactionData.transactions)) {
-                console.warn('No loan transactions data returned');
+            const transactionResponse = result.data?.loanTransactions;
+            console.log('📋 Transaction Response:', transactionResponse);
+            
+            if (!transactionResponse?.success) {
+                console.warn('⚠️ Query unsuccessful:', transactionResponse?.message || 'Unknown reason');
+                loanTransactionTableBody.innerHTML = `<tr><td colspan="9" class="p-3 text-center">No loan transactions found or query failed.</td></tr>`;
+                return;
+            }
+
+            const transactionData = transactionResponse.transactions;
+            console.log('📊 Transactions Data:', transactionData);
+            console.log('✅ Transaction count:', transactionData?.length || 0);
+            
+            if (!transactionData || !Array.isArray(transactionData)) {
+                console.warn('⚠️ No loan transactions data returned or invalid format');
                 loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found or invalid response.</td></tr>';
                 return;
             }
 
-            populateTable(transactionData.transactions);
+            if (transactionData.length === 0) {
+                console.log('ℹ️ No transactions to display');
+                loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found.</td></tr>';
+                return;
+            }
+
+            populateTable(transactionData);
+            console.log('✅ Table populated successfully with', transactionData.length, 'transactions');
 
         } catch (error) {
-            console.error('Error fetching loan transactions:', error);
+            console.error('❌ Error fetching loan transactions:', error);
             loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center text-red-500">Error loading loan transactions. Check console.</td></tr>';
         }
     };
@@ -152,14 +180,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const populateTable = (transactions) => {
+        console.log('🔄 Populating table with', transactions?.length || 0, 'transactions');
+        
         if (!transactions || transactions.length === 0) {
+            console.log('ℹ️ No transactions to populate');
             loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found.</td></tr>';
             return;
         }
 
         loanTransactionTableBody.innerHTML = '';
 
-        transactions.forEach(transaction => {
+        transactions.forEach((transaction, index) => {
+            console.log(`Processing transaction ${index + 1}:`, transaction);
+            
             const row = document.createElement('tr');
             row.className = 'border-b hover:bg-gray-50';
 
@@ -175,7 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="p-3">${transactionDate}</td>
                 <td class="p-3">${transaction.notes || 'N/A'}</td>
                 <td class="p-3 text-sm">
-                    <button class="text-blue-500 hover:text-blue-700 mr-2 view-loan-btn" data-loan-id="${transaction.loanId}" title="View Loan Details"><i class="fas fa-eye"></i> View</button>
+                    <button class="text-blue-500 hover:text-blue-700 mr-2 view-loan-btn" data-loan-id="${transaction.loanId}" title="View Loan Details"><i class="fas fa-eye"></i>Views</button>
+                    <button class="text-indigo-500 hover:text-indigo-700 mr-2 amortization-btn" data-loan-id="${transaction.loanId}" title="Amortization Schedule"><i class="fas fa-calendar-alt"></i> Amortization</button>
                     <button class="text-yellow-500 hover:text-yellow-700 mr-2 edit-transaction-btn" data-id="${transaction.id}" title="Edit Transaction"><i class="fas fa-edit"></i></button>
                     <button class="text-red-500 hover:text-red-700 delete-transaction-btn" data-id="${transaction.id}" title="Delete Transaction"><i class="fas fa-trash"></i></button>
                 </td>
@@ -185,7 +219,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (viewButton) {
                 viewButton.addEventListener('click', (event) => {
                     const loanId = event.currentTarget.dataset.loanId;
+                    console.log('👁️ Viewing loan:', loanId);
                     window.location.href = `loan_details.html?id=${loanId}`;
+                });
+            }
+
+            const amortizationButton = row.querySelector('.amortization-btn');
+            if (amortizationButton) {
+                amortizationButton.addEventListener('click', (event) => {
+                    const loanId = event.currentTarget.dataset.loanId;
+                    console.log('📅 Viewing amortization for loan:', loanId);
+                    window.location.href = `amortization.html?id=${loanId}`;
                 });
             }
 
@@ -193,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (editButton) {
                 editButton.addEventListener('click', (event) => {
                     const transactionId = event.currentTarget.dataset.id;
+                    console.log('✏️ Editing transaction:', transactionId);
                     window.location.href = `update_loan_transaction.html?id=${transactionId}`;
                 });
             }
@@ -201,9 +246,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (deleteButton) {
                 deleteButton.addEventListener('click', async (event) => {
                     const transactionId = event.currentTarget.dataset.id;
+                    console.log('🗑️ Deleting transaction:', transactionId);
                     if (confirm('Are you sure you want to delete this loan transaction?')) {
                         const success = await deleteLoanTransaction(transactionId);
                         if (success) {
+                            console.log('✅ Transaction deleted, refreshing list');
                             fetchLoanTransactions(initialLoanId); // Re-fetch transactions to update the table
                         }
                     }
@@ -212,13 +259,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             loanTransactionTableBody.appendChild(row);
         });
+        
+        console.log('✅ Table population complete');
     };
 
     // Event listener for the search input
     if (loanTransactionSearchInput) {
         loanTransactionSearchInput.addEventListener('input', (event) => {
             const searchTerm = event.target.value.trim();
-            fetchLoanTransactions(searchTerm || null); // Pass null if search term is empty
+            // Pass null for loanId and the actual searchTerm
+            fetchLoanTransactions(null, searchTerm || null); 
         });
     }
 
@@ -234,13 +284,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Initial fetch of loan transactions
+    console.log('🚀 Initializing loan transactions page...');
+    console.log('Initial Loan ID from URL:', initialLoanId || 'None (all transactions)');
     fetchLoanTransactions(initialLoanId);
 
     // Basic logout functionality (common to all pages)
-    document.getElementById('logout-btn').addEventListener('click', () => {
-        alert('Logged out!'); // Replace with actual logout logic
-        window.location.href = 'login.html'; // Redirect to login page
-    });
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            console.log('👋 Logging out...');
+            localStorage.removeItem('accessToken');
+            window.location.href = 'login.html'; // Redirect to login page
+        });
+    }
 
     // Sidebar dropdowns (common to all pages)
     const customerDropdownBtn = document.getElementById('customer-dropdown-btn');

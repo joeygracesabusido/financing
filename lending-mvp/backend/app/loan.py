@@ -4,6 +4,7 @@ from decimal import Decimal
 from datetime import datetime
 from strawberry.types import Info
 from fastapi import HTTPException, status
+import json
 
 from .basemodel.loan_model import Loan, LoanCreate, LoanUpdate, LoanOut, PyObjectId
 from .models import UserInDB
@@ -13,6 +14,13 @@ from .database.loan_crud import LoanCRUD
 from .database.customer_crud import CustomerCRUD
 from .customer import CustomerType, convert_customer_db_to_customer_type
 
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime)):
+        return obj.isoformat()
+    if isinstance(obj, Decimal):
+        return str(obj)
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 # Loan Types (Strawberry)
 @strawberry.type
@@ -111,6 +119,20 @@ class LoanQuery:
         if current_user.role not in ["admin", "staff"]: # Example role check
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"loan:{loan_id}"
+        
+        if redis:
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached)
+                data['amount_requested'] = Decimal(data['amount_requested'])
+                data['interest_rate'] = Decimal(data['interest_rate'])
+                data['created_at'] = datetime.fromisoformat(data['created_at'])
+                data['updated_at'] = datetime.fromisoformat(data['updated_at'])
+                return LoanResponse(success=True, message="Loan retrieved from cache", loan=LoanType(**data))
+
         try:
             loans_collection = get_loans_collection()
             loan_crud = LoanCRUD(loans_collection)
@@ -124,6 +146,11 @@ class LoanQuery:
                  raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to view this loan")
 
             loan_type = convert_loan_db_to_loan_type(loan_db)
+            
+            # Skip caching for now due to async method serialization issues with strawberry.asdict
+            # if redis:
+            #     redis.setex(cache_key, 3600, json.dumps(strawberry.asdict(loan_type), default=json_serial))
+
             return LoanResponse(success=True, message="Loan retrieved successfully", loan=loan_type)
         except HTTPException as e:
             raise e
@@ -145,6 +172,23 @@ class LoanQuery:
         if current_user.role not in ["admin", "staff"]: # Example role check
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"loans:list:{skip}:{limit}:{borrower_id}"
+        
+        if redis:
+            cached = redis.get(cache_key)
+            if cached:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached)
+                loans = []
+                for l in data['loans']:
+                    l['amount_requested'] = Decimal(l['amount_requested'])
+                    l['interest_rate'] = Decimal(l['interest_rate'])
+                    l['created_at'] = datetime.fromisoformat(l['created_at'])
+                    l['updated_at'] = datetime.fromisoformat(l['updated_at'])
+                    loans.append(LoanType(**l))
+                return LoansResponse(success=True, message="Loans retrieved from cache", loans=loans, total=data['total'])
+
         try:
             loans_collection = get_loans_collection()
             loan_crud = LoanCRUD(loans_collection)
@@ -157,6 +201,15 @@ class LoanQuery:
             total = await loan_crud.count_loans(borrower_id=str(borrower_id) if borrower_id else None)
 
             loans_type = [convert_loan_db_to_loan_type(loan_db) for loan_db in loans_db]
+            
+            # Skip caching for now due to async method serialization issues with strawberry.asdict
+            # if redis:
+            #     cache_data = {
+            #         'total': total,
+            #         'loans': [strawberry.asdict(l) for l in loans_type]
+            #     }
+            #     redis.setex(cache_key, 3600, json.dumps(cache_data, default=json_serial))
+
             return LoansResponse(
                 success=True,
                 message="Loans retrieved successfully",
@@ -171,6 +224,15 @@ class LoanQuery:
 
 @strawberry.type
 class LoanMutation:
+    async def _clear_loan_cache(self, redis, loan_id=None):
+        if not redis: return
+        keys = redis.keys("loans:list:*")
+        if loan_id:
+            keys.append(f"loan:{loan_id}")
+        if keys:
+            redis.delete(*keys)
+            print(f"--- Cache cleared for loans ---")
+
     @strawberry.mutation
     async def create_loan(self, info: Info, input: LoanCreateInput) -> LoanResponse:
         """Create a new loan application"""
@@ -200,6 +262,10 @@ class LoanMutation:
             
             loan_db = await loan_crud.create_loan(loan_create)
             loan_type = convert_loan_db_to_loan_type(loan_db)
+            
+            redis = info.context.get("request").app.state.redis
+            await self._clear_loan_cache(redis)
+
             return LoanResponse(success=True, message="Loan application created successfully", loan=loan_type)
         except HTTPException as e:
             raise e
@@ -231,6 +297,10 @@ class LoanMutation:
                 return LoanResponse(success=False, message="Loan not found")
             
             loan_type = convert_loan_db_to_loan_type(loan_db)
+            
+            redis = info.context.get("request").app.state.redis
+            await self._clear_loan_cache(redis, loan_id)
+
             return LoanResponse(success=True, message="Loan updated successfully", loan=loan_type)
         except HTTPException as e:
             raise e
@@ -261,6 +331,9 @@ class LoanMutation:
             if not success:
                 return LoanResponse(success=False, message="Loan not found or could not be deleted")
             
+            redis = info.context.get("request").app.state.redis
+            await self._clear_loan_cache(redis, loan_id)
+
             return LoanResponse(success=True, message="Loan deleted successfully")
         except HTTPException as e:
             raise e

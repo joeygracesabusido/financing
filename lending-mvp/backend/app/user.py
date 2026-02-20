@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Import models and schemas
 from .models import UserInDB, UserCreate, UserUpdate, PyObjectId
-from .schema import UserType, UserCreateInput, UserUpdateInput, LoginInput, LoginResponse, UserResponse, UsersResponse
+from .schema import UserType, UserCreateInput, UserUpdateInput, LoginInput, LoginResponse, UserResponse, UsersResponse, LogoutResponse
 from .database import get_users_collection
 from .database.crud import UserCRUD
 from .auth.security import verify_password, create_access_token
@@ -89,9 +89,29 @@ class Query:
 @strawberry.type
 class Mutation:
     @strawberry.field
-    async def login(self, input: LoginInput) -> LoginResponse:
+    async def login(self, info: Info, input: LoginInput) -> LoginResponse:
         """User login"""
         print(f"--- Login attempt for username: {input.username} ---")
+        
+        request = info.context.get("request")
+        redis = request.app.state.redis
+        
+        if redis:
+            # Simple rate limiting by username
+            # Key expires after 5 minutes
+            rate_limit_key = f"login_limit:{input.username}"
+            attempts = redis.get(rate_limit_key)
+            if attempts and int(attempts) >= 5:
+                print(f"--- Rate limit exceeded for {input.username} ---")
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many login attempts. Please try again later."
+                )
+            
+            # Increment attempts and set expiry for 5 minutes
+            redis.incr(rate_limit_key)
+            redis.expire(rate_limit_key, 300)
+
         users_collection = get_users_collection()
         user_crud = UserCRUD(users_collection)
 
@@ -105,7 +125,11 @@ class Mutation:
         if user_db:
             password_ok = verify_password(input.password, user_db.hashed_password)
             print(f"Password verification result: {password_ok}")
-            if not password_ok:
+            if password_ok:
+                # Clear rate limit on successful login
+                if redis:
+                    redis.delete(f"login_limit:{input.username}")
+            else:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Incorrect username or password"
@@ -222,30 +246,54 @@ class Mutation:
                 message=f"Error updating user: {str(e)}"
             )
 
-    @strawberry.field
-    async def delete_user(self, info: Info, user_id: str) -> UserResponse:
-        """Delete a user"""
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user or current_user.role != "admin":
-            raise Exception("Not authorized")
-
-        try:
-            users_collection = get_users_collection()
-            user_crud = UserCRUD(users_collection)
-
-            success = await user_crud.delete_user(user_id)
-            if not success:
+        @strawberry.field
+        async def delete_user(self, info: Info, user_id: str) -> UserResponse:
+            """Delete a user"""
+            current_user: UserInDB = info.context.get("current_user")
+            if not current_user or current_user.role != "admin":
+                raise Exception("Not authorized")
+    
+            try:
+                users_collection = get_users_collection()
+                user_crud = UserCRUD(users_collection)
+    
+                success = await user_crud.delete_user(user_id)
+                if not success:
+                    return UserResponse(
+                        success=False,
+                        message="User not found"
+                    )
+    
+                return UserResponse(
+                    success=True,
+                    message="User deleted successfully"
+                )
+            except Exception as e:
                 return UserResponse(
                     success=False,
-                    message="User not found"
+                    message=f"Error deleting user: {str(e)}"
                 )
-
-            return UserResponse(
-                success=True,
-                message="User deleted successfully"
-            )
-        except Exception as e:
-            return UserResponse(
-                success=False,
-                message=f"Error deleting user: {str(e)}"
-            )
+    
+        @strawberry.field
+        async def logout(self, info: Info) -> LogoutResponse:
+            """User logout - blacklist the token"""
+            token = info.context.get("token")
+            request = info.context.get("request")
+            
+            if not token:
+                return LogoutResponse(success=False, message="No active session found")
+                
+            try:
+                # Get redis from app state
+                redis = request.app.state.redis
+                if redis:
+                    # Blacklist the token for 30 minutes (matching token expiry)
+                    # In a real app, you might want to calculate remaining TTL
+                    redis.setex(f"blacklist:{token}", 1800, "true")
+                    print(f"--- Token blacklisted: {token} ---")
+                
+                return LogoutResponse(success=True, message="Logged out successfully")
+            except Exception as e:
+                print(f"Error during logout: {e}")
+                return LogoutResponse(success=False, message=f"Logout failed: {str(e)}")
+    

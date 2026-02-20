@@ -5,6 +5,11 @@ from strawberry.fastapi import GraphQLRouter
 from pydantic import BaseModel
 from typing import Dict
 
+from redis import Redis
+import httpx
+import json
+import os
+
 from .schema import Query, Mutation as SchemaMutation
 from .user import Query as getUser, Mutation as createUser
 from .customer import Query as getCustomer, Mutation as createCustomer
@@ -117,7 +122,7 @@ async def get_context(request: Request) -> dict:
         # GET requests are usually introspection or IDE load
         # You can make this stricter by checking path/query params if needed
         print("--- Allowing unauthenticated GET (Playground/introspection) ---")
-        return {"current_user": None}  # or some guest context
+        return {"current_user": None, "request": request}  # or some guest context
 
     # For POST (real queries/mutations) → enforce auth
     if not auth_header or not auth_header.startswith("Bearer "):
@@ -130,6 +135,14 @@ async def get_context(request: Request) -> dict:
 
     try:
         token = auth_header.replace("Bearer ", "", 1)
+        
+        # Check if token is blacklisted in Redis
+        if app.state.redis:
+            is_blacklisted = app.state.redis.get(f"blacklist:{token}")
+            if is_blacklisted:
+                print(f"--- Token is blacklisted: {token} ---")
+                raise HTTPException(status_code=401, detail="Token has been revoked")
+
         payload = verify_token(token)
         print(f"Decoded Token Payload: {payload}")
         if not payload:
@@ -147,8 +160,10 @@ async def get_context(request: Request) -> dict:
             raise HTTPException(status_code=401, detail="User not found")
 
         print("--- Exiting get_context (authenticated) ---")
-        return {"current_user": current_user}
+        return {"current_user": current_user, "request": request, "token": token}
 
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error during authentication: {e}")
         raise HTTPException(
@@ -166,6 +181,14 @@ app = FastAPI(title="Lending MVP API")
 @app.on_event("startup")
 async def startup_event():
     await create_indexes()
+
+    redis_host = os.getenv("REDIS_HOST", "localhost")
+    app.state.redis = Redis(host=redis_host, port=6379, db=0)  
+    app.state.http_client = httpx.AsyncClient() 
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    app.state.redis.close()
 
 # Configure CORS middleware
 origins = [
@@ -188,7 +211,7 @@ async def root():
     return {"message": "Welcome to the Lending MVP API"}
 
 @app.post("/api-login/")
-async def api_login(login_request: LoginRequest):
+async def api_login(login_request: LoginRequest, request: Request):
     """
     Bridge endpoint to the GraphQL login mutation.
     Accepts username and password in a POST request body.
@@ -218,7 +241,8 @@ async def api_login(login_request: LoginRequest):
         variable_values={
             "username": login_request.username,
             "password": login_request.password
-        }
+        },
+        context_value={"request": request}
     )
     
     if result.errors:

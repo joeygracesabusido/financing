@@ -20,8 +20,18 @@ services:
       - ./backend/app:/app/app # Mount local code for live reload
     depends_on:
       - mongodb
+      - redis
     env_file:
       - ./.env
+    environment:
+      - REDIS_HOST=redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: lending_redis
+    # ports:
+    #   - "6379:6379"
     restart: unless-stopped
 
   frontend:

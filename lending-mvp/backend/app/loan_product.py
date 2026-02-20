@@ -2,7 +2,7 @@ import strawberry
 from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
-
+import json
 from app.basemodel.loan_product_model import (
     LoanProduct as PydanticLoanProduct,
     LoanProductCreate as PydanticLoanProductCreate,
@@ -10,6 +10,14 @@ from app.basemodel.loan_product_model import (
     PyObjectId,
 )
 from app.database import loan_product_crud
+from strawberry.types import Info
+
+def decimal_default(obj):
+    if isinstance(obj, Decimal):
+        return str(obj)
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError
 
 @strawberry.type
 class LoanProduct:
@@ -50,32 +58,99 @@ class LoanProductUpdateInput:
     security: Optional[str] = None
     br_lc: Optional[str] = None
 
+def convert_lp_db_to_type(lp: PydanticLoanProduct) -> LoanProduct:
+    data = lp.model_dump()
+    data['id'] = str(lp.id)
+    return LoanProduct(**data)
+
 @strawberry.type
 class LoanProductQuery:
     @strawberry.field
-    async def loan_product(self, id: str) -> Optional[LoanProduct]:
+    async def loan_product(self, info: Info, id: str) -> Optional[LoanProduct]:
+        redis = info.context.get("request").app.state.redis
+        cache_key = f"loan_product:{id}"
+        
+        if redis:
+            cached_data = redis.get(cache_key)
+            if cached_data:
+                print(f"--- Cache hit for {cache_key} ---")
+                data = json.loads(cached_data)
+                data['default_interest_rate'] = Decimal(data['default_interest_rate'])
+                data['created_at'] = datetime.fromisoformat(data['created_at'])
+                data['updated_at'] = datetime.fromisoformat(data['updated_at'])
+                return LoanProduct(**data)
+
         loan_product_data = await loan_product_crud.get_loan_product_by_id(id)
-        return LoanProduct(**loan_product_data.model_dump()) if loan_product_data else None
+        if loan_product_data:
+            result = convert_lp_db_to_type(loan_product_data)
+            if redis:
+                redis.setex(cache_key, 3600, json.dumps(strawberry.asdict(result), default=decimal_default))
+            return result
+        return None
 
     @strawberry.field
-    async def loan_products(self) -> List[LoanProduct]:
+    async def loan_products(self, info: Info) -> List[LoanProduct]:
+        redis = info.context.get("request").app.state.redis
+        cache_key = "loan_products:all"
+        
+        if redis:
+            cached_data = redis.get(cache_key)
+            if cached_data:
+                print(f"--- Cache hit for {cache_key} ---")
+                data_list = json.loads(cached_data)
+                results = []
+                for data in data_list:
+                    data['default_interest_rate'] = Decimal(data['default_interest_rate'])
+                    data['created_at'] = datetime.fromisoformat(data['created_at'])
+                    data['updated_at'] = datetime.fromisoformat(data['updated_at'])
+                    results.append(LoanProduct(**data))
+                return results
+
         loan_products_data = await loan_product_crud.get_all_loan_products()
-        return [LoanProduct(**lp.model_dump()) for lp in loan_products_data]
+        results = [convert_lp_db_to_type(lp) for lp in loan_products_data]
+        
+        if redis:
+            serializable_data = [strawberry.asdict(r) for r in results]
+            redis.setex(cache_key, 3600, json.dumps(serializable_data, default=decimal_default))
+            
+        return results
 
 @strawberry.type
 class LoanProductMutation:
+    async def _clear_loan_product_cache(self, redis, id=None):
+        if not redis:
+            return
+        keys_to_delete = ["loan_products:all"]
+        if id:
+            keys_to_delete.append(f"loan_product:{id}")
+        redis.delete(*keys_to_delete)
+        print(f"--- Cache cleared for {keys_to_delete} ---")
+
     @strawberry.mutation
-    async def create_loan_product(self, input: LoanProductCreateInput) -> LoanProduct:
+    async def create_loan_product(self, info: Info, input: LoanProductCreateInput) -> LoanProduct:
         loan_product_data = PydanticLoanProductCreate(**input.__dict__)
         new_loan_product = await loan_product_crud.create_loan_product(loan_product_data)
-        return LoanProduct(**new_loan_product.model_dump())
+        
+        redis = info.context.get("request").app.state.redis
+        await self._clear_loan_product_cache(redis)
+        
+        return convert_lp_db_to_type(new_loan_product)
 
     @strawberry.mutation
-    async def update_loan_product(self, id: str, input: LoanProductUpdateInput) -> Optional[LoanProduct]:
+    async def update_loan_product(self, info: Info, id: str, input: LoanProductUpdateInput) -> Optional[LoanProduct]:
         loan_product_data = PydanticLoanProductUpdate(**input.__dict__)
         updated_loan_product = await loan_product_crud.update_loan_product(id, loan_product_data)
-        return LoanProduct(**updated_loan_product.model_dump()) if updated_loan_product else None
+        
+        if updated_loan_product:
+            redis = info.context.get("request").app.state.redis
+            await self._clear_loan_product_cache(redis, id)
+            return convert_lp_db_to_type(updated_loan_product)
+        return None
 
     @strawberry.mutation
-    async def delete_loan_product(self, id: str) -> bool:
-        return await loan_product_crud.delete_loan_product(id)
+    async def delete_loan_product(self, info: Info, id: str) -> bool:
+        success = await loan_product_crud.delete_loan_product(id)
+        if success:
+            redis = info.context.get("request").app.state.redis
+            await self._clear_loan_product_cache(redis, id)
+        return success

@@ -62,6 +62,11 @@ class UserResponse:
     user: Optional[UserType] = None
 
 @strawberry.type
+class LogoutResponse:
+    success: bool
+    message: str
+
+@strawberry.type
 class UsersResponse:
     success: bool
     message: str

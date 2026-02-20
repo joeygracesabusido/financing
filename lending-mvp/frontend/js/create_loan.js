@@ -26,11 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const borrowerId = document.getElementById('borrower-id').value.trim();
         const loanId = document.getElementById('loan-id').value.trim();
+        const loanProduct = document.getElementById('loan-product').value.trim();
         const amountRequested = parseFloat(document.getElementById('amount-requested').value);
         const termMonths = parseInt(document.getElementById('term-months').value, 10);
         const interestRate = parseFloat(document.getElementById('interest-rate').value);
 
-        if (!borrowerId || isNaN(amountRequested) || isNaN(termMonths) || isNaN(interestRate)) {
+        if (!borrowerId || !loanProduct || isNaN(amountRequested) || isNaN(termMonths) || isNaN(interestRate)) {
             formMessage.textContent = 'Please fill in all fields with valid data.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
             return;
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loanData = {
             borrowerId: borrowerId,
             loanId: loanId || null,
+            loanProduct: loanProduct,
             amountRequested: amountRequested,
             termMonths: termMonths,
             interestRate: interestRate
