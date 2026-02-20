@@ -9,13 +9,14 @@ strawberry-graphql[fastapi]
 motor
 pymongo
 
-# Database — PostgreSQL (Phase 1 migration scaffolding)
+# Database — PostgreSQL (Phase 1)
 asyncpg
 sqlalchemy[asyncio]
 alembic
 
-# Cache & Sessions — Redis
+# Cache, Sessions & Background Tasks
 redis[asyncio]
+arq
 
 # Authentication
 python-jose[cryptography]
@@ -23,9 +24,23 @@ passlib[bcrypt]==1.7.4
 bcrypt>=4.0.1,<5.0.0
 python-dotenv
 
+# 2FA / TOTP
+pyotp
+qrcode[pil]
+Pillow
+
+# File handling
+aiofiles
+
 # Configuration
 pydantic-settings
 pydantic
 
 # Utilities
 python-multipart
+
+# Testing
+pytest
+pytest-asyncio
+httpx
+python-dateutil==2.8.2

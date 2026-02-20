@@ -88,6 +88,8 @@ services:
       - "8001:8000"
     volumes:
       - ./backend/app:/app/app
+      - ./backend/alembic:/app/alembic
+      - ./backend/alembic.ini:/app/alembic.ini
     depends_on:
       mongodb:
         condition: service_healthy
@@ -104,6 +106,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-lending_user}:${POSTGRES_PASSWORD:-lending_secret}@postgres:5432/${POSTGRES_DB:-lending_db}
       # Redis
       REDIS_URL: redis://:${REDIS_PASSWORD:-lending_redis_pass}@redis:6379/0
+      # Enable demo data seeding
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
 
   # ── Frontend (React + Vite dev server) ────────────────────────────────────
   frontend:
@@ -122,5 +126,5 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://localhost:8001/graphql}
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:8001}
+      VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://backend:8000/graphql}
+      VITE_API_URL: ${VITE_API_URL:-http://backend:8000}
