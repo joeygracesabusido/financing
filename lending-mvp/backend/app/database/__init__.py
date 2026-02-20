@@ -1,16 +1,21 @@
 import motor.motor_asyncio
 from ..config import settings
 
-client = motor.motor_asyncio.AsyncIOMotorClient(settings.DATABASE_URL)
-db = client[settings.DATABASE_NAME]
+client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URL)
+db = client[settings.MONGO_DB_NAME]
 
 # Collections
 users_collection = db["users"]
 loans_collection = db["loans"]
 ledger_collection = db["ledger_entries"]
-customers_collection = db["customers"] # Added customers collection
-loan_transactions_collection = db["loan_transactions"] # Added loan_transactions collection
-loan_products_collection = db["loan_products"] # Added loan_products collection
+customers_collection = db["customers"]
+loan_transactions_collection = db["loan_transactions"]
+loan_products_collection = db["loan_products"]
+savings_collection = db["savings"]
+transactions_collection = db["transactions"]
+standing_orders_collection = db["standing_orders"]
+interest_ledger_collection = db["interest_ledger"]
+
 
 def get_users_collection():
     return users_collection
@@ -21,16 +26,28 @@ def get_loans_collection():
 def get_ledger_collection():
     return ledger_collection
 
-def get_customers_collection(): # Added getter for customers collection
+def get_customers_collection():
     return customers_collection
 
-def get_loan_transactions_collection(): # Added getter for loan_transactions collection
+def get_loan_transactions_collection():
     return loan_transactions_collection
 
-def get_loan_products_collection(): # Added getter for loan_products collection
+def get_loan_products_collection():
     return loan_products_collection
 
-def get_db(): # Added getter for the database client
+def get_savings_collection():
+    return savings_collection
+
+def get_transactions_collection():
+    return transactions_collection
+
+def get_standing_orders_collection():
+    return standing_orders_collection
+
+def get_interest_ledger_collection():
+    return interest_ledger_collection
+
+def get_db():
     return db
 
 async def create_indexes():

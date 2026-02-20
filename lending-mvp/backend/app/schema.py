@@ -33,7 +33,7 @@ class UserCreateInput:
     username: str
     full_name: str
     password: str
-    role: Optional[str] = "user"
+    role: Optional[str] = "customer"
 
 @strawberry.input
 class UserUpdateInput:
@@ -46,14 +46,16 @@ class UserUpdateInput:
 
 @strawberry.input
 class LoginInput:
-    username: str # Can be email or username
+    username: str  # Can be email or username
     password: str
+    totp_code: Optional[str] = None  # Optional 2FA TOTP code
 
 @strawberry.type
 class LoginResponse:
     access_token: str
     token_type: str
-    user: UserType
+    user: Optional[UserType] = None
+    refresh_token: Optional[str] = strawberry.field(name="refreshToken", default=None)
 
 @strawberry.type
 class UserResponse:

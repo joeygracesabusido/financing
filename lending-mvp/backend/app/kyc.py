@@ -247,4 +247,26 @@ class KYCMutation:
             all_docs = result.scalars().all()
             risk_score = _compute_risk_score(list(all_docs))
 
+            # ── Sync kyc_status to MongoDB customer record ────────────────
+            has_verified = any(d.status == "verified" for d in all_docs)
+            has_any_submitted = len(all_docs) > 0
+            if has_verified:
+                new_kyc_status = "verified"
+            elif status == "rejected" and not has_verified:
+                new_kyc_status = "rejected"
+            else:
+                new_kyc_status = "submitted"
+
+            try:
+                from .database import get_customers_collection
+                from bson import ObjectId
+                customers_col = get_customers_collection()
+                await customers_col.update_one(
+                    {"_id": ObjectId(doc.customer_id)},
+                    {"$set": {"kyc_status": new_kyc_status, "risk_score": risk_score}},
+                )
+            except Exception:
+                pass  # Non-fatal: log would appear in AuditMiddleware
+
         return KYCDocumentResponse(success=True, message=f"Document {status}", document=_row_to_type(doc), risk_score=risk_score)
+

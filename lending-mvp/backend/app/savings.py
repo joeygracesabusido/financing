@@ -3,17 +3,37 @@ from typing import List, Optional
 from strawberry.types import Info
 from .database import get_db
 from .database.savings_crud import SavingsCRUD
-from .basemodel.savings_model import RegularSavings, HighYieldSavings, TimeDeposit, SavingsAccountBase
+from .basemodel.savings_model import (
+    RegularSavings, HighYieldSavings, TimeDeposit, SavingsAccountBase,
+    ShareCapitalAccount, GoalSavings, MinorSavingsAccount, JointAccount
+)
 from .models import UserInDB
-#from .schema import SavingsAccountType, SavingsAccountCreateInput, SavingsAccountResponse, SavingsAccountsResponse
 from .customer import CustomerType, convert_customer_db_to_customer_type
 from .database.customer_crud import CustomerCRUD
 from decimal import Decimal
 from datetime import datetime, timedelta
 
 
+# Savings Account Types
+@strawberry.enum
+class SavingsAccountKind:
+    REGULAR = "regular"
+    HIGH_YIELD = "high_yield"
+    TIME_DEPOSIT = "time_deposit"
+    SHARE_CAPITAL = "share_capital"
+    GOAL_SAVINGS = "goal_savings"
+    MINOR_SAVINGS = "minor_savings"
+    JOINT_ACCOUNT = "joint_account"
 
-# Savings Types
+
+@strawberry.enum
+class AccountStatus:
+    ACTIVE = "active"
+    FROZEN = "frozen"
+    CLOSED = "closed"
+    MATURED = "matured"
+
+
 @strawberry.type
 class SavingsAccountType:
     id: strawberry.ID
@@ -26,6 +46,13 @@ class SavingsAccountType:
     created_at: datetime
     updated_at: datetime
     status: str
+    interest_rate: Optional[float] = None
+    maturity_date: Optional[datetime] = None
+    target_amount: Optional[float] = None
+    target_date: Optional[datetime] = None
+    guardian_id: Optional[str] = None
+    secondary_owner_id: Optional[str] = None
+    operation_mode: Optional[str] = None
     customer: Optional[CustomerType] = None
 
     @strawberry.field
@@ -43,17 +70,26 @@ class SavingsAccountType:
 
 @strawberry.input
 class SavingsAccountCreateInput:
-    customer_id: strawberry.ID # Customer ID to link the account
+    customer_id: strawberry.ID
     account_number: str
-    type: str # e.g., "basic", "interest-bearing", "fixed-deposit"
-    balance: float = 0.00 # Initial deposit
+    type: str
+    balance: float = 0.00
     currency: str = "PHP"
     status: str = "active"
-    opened_at: datetime # Date the account was opened
-    interest_rate: Optional[float] = None # For HighYieldSavings and TimeDeposit
-    interest_paid_frequency: Optional[str] = None # For HighYieldSavings
-    principal: Optional[float] = None # For TimeDeposit
-    term_days: Optional[int] = None # For TimeDeposit
+    opened_at: datetime
+    interest_rate: Optional[float] = None
+    interest_paid_frequency: Optional[str] = None
+    principal: Optional[float] = None
+    term_days: Optional[int] = None
+    target_amount: Optional[float] = None
+    target_date: Optional[datetime] = None
+    goal_name: Optional[str] = None
+    guardian_id: Optional[str] = None
+    guardian_name: Optional[str] = None
+    minor_date_of_birth: Optional[datetime] = None
+    secondary_owner_id: Optional[str] = None
+    secondary_owner_name: Optional[str] = None
+    operation_mode: Optional[str] = "EITHER"
 
 @strawberry.type
 class SavingsAccountResponse:
@@ -171,7 +207,6 @@ class SavingsMutation:
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
 
-        # Logic to create the correct type of account based on input
         account_data = {
             "account_number": input.account_number,
             "user_id": str(input.customer_id),
@@ -195,24 +230,98 @@ class SavingsMutation:
                 account_data["principal"] = input.principal
             if input.term_days is not None:
                 account_data["term_days"] = input.term_days
-                # Calculate maturity_date
                 account_data["maturity_date"] = input.opened_at + timedelta(days=input.term_days)
             if input.interest_rate is not None:
                 account_data["interest_rate"] = input.interest_rate
             account_to_create = TimeDeposit(**account_data)
+        elif input.type == "share_capital":
+            account_data["membership_date"] = input.opened_at
+            account_data["minimum_share"] = 100.00
+            account_data["share_value"] = 100.00
+            account_data["total_shares"] = int(input.balance / 100) if input.balance > 0 else 0
+            account_to_create = ShareCapitalAccount(**account_data)
+        elif input.type == "goal_savings":
+            account_data["target_amount"] = input.target_amount or 0.0
+            account_data["target_date"] = input.target_date or (input.opened_at + timedelta(days=365))
+            account_data["goal_name"] = input.goal_name or "Savings Goal"
+            account_data["current_savings"] = input.balance
+            account_data["interest_rate"] = input.interest_rate or 1.50
+            account_to_create = GoalSavings(**account_data)
+        elif input.type == "minor_savings":
+            if not input.guardian_id or not input.guardian_name:
+                return SavingsAccountResponse(success=False, message="Guardian info required for minor account")
+            account_data["guardian_id"] = input.guardian_id
+            account_data["guardian_name"] = input.guardian_name
+            account_data["minor_date_of_birth"] = input.minor_date_of_birth or input.opened_at
+            account_data["interest_rate"] = input.interest_rate or 0.50
+            account_to_create = MinorSavingsAccount(**account_data)
+        elif input.type == "joint_account":
+            if not input.secondary_owner_id or not input.secondary_owner_name:
+                return SavingsAccountResponse(success=False, message="Secondary owner info required for joint account")
+            account_data["primary_owner_id"] = str(input.customer_id)
+            account_data["secondary_owner_id"] = input.secondary_owner_id
+            account_data["secondary_owner_name"] = input.secondary_owner_name
+            account_data["operation_mode"] = input.operation_mode or "EITHER"
+            account_to_create = JointAccount(**account_data)
         else:
             return SavingsAccountResponse(success=False, message=f"Invalid account type: {input.type}")
         
         created_account = await savings_crud.create_savings_account(account_to_create)
-        
-        # We need to get the full dict from the DB to map it
         created_account_data = await savings_crud.get_savings_account_by_id(str(created_account.id))
-
         account = map_db_account_to_strawberry_type(created_account_data)
 
         return SavingsAccountResponse(success=True, message="Savings account created", account=account)
-    
-     # @strawberry.mutation
-    # async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
-    #     from .savings import SavingsMutation
-    #     return await SavingsMutation().createSavingsAccount(info, input)
+
+
+@strawberry.input
+class FundTransferInput:
+    from_account_id: strawberry.ID
+    to_account_id: strawberry.ID
+    amount: float
+    notes: Optional[str] = None
+
+
+@strawberry.input
+class StandingOrderInput:
+    source_account_id: strawberry.ID
+    destination_account_id: strawberry.ID
+    amount: float
+    frequency: str
+    start_date: datetime
+    end_date: Optional[datetime] = None
+    is_active: bool = True
+
+
+@strawberry.type
+class FundTransferResponse:
+    success: bool
+    message: str
+    transaction_id: Optional[str] = None
+
+
+@strawberry.type
+class StandingOrderResponse:
+    success: bool
+    message: str
+    standing_order_id: Optional[str] = None
+
+
+@strawberry.type
+class StatementData:
+    account_number: str
+    period_start: datetime
+    period_end: datetime
+    opening_balance: float
+    closing_balance: float
+    total_deposits: float
+    total_withdrawals: float
+    total_credits: float
+    total_debits: float
+    transactions: List[TransactionType]
+
+
+@strawberry.type
+class StatementResponse:
+    success: bool
+    message: str
+    statement: Optional[StatementData] = None

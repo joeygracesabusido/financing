@@ -56,3 +56,63 @@ class TimeDeposit(SavingsAccountBase):
         return v
 
 
+class ShareCapitalAccount(SavingsAccountBase):
+    type: Literal["share_capital"] = "share_capital"
+    minimum_share: float = float(100.00)
+    share_value: float = float(100.00)
+    total_shares: int = 0
+    membership_date: datetime
+
+
+class GoalSavings(SavingsAccountBase):
+    type: Literal["goal_savings"] = "goal_savings"
+    target_amount: float
+    target_date: datetime
+    goal_name: str
+    current_savings: float = 0.00
+    interest_rate: float = float(1.50)
+    auto_deposit_amount: Optional[float] = None
+    auto_deposit_frequency: Optional[str] = None
+
+    @field_validator("target_date")
+    @classmethod
+    def validate_future_target(cls, v: datetime):
+        if v <= datetime.utcnow():
+            raise ValueError("Target date must be in future")
+        return v
+
+
+class MinorSavingsAccount(SavingsAccountBase):
+    type: Literal["minor_savings"] = "minor_savings"
+    guardian_id: PyObjectId
+    guardian_name: str
+    minor_date_of_birth: datetime
+    allowed_withdrawal_age: int = 18
+    interest_rate: float = float(0.50)
+    max_withdrawal_amount: float = float(10000.00)
+    requires_guardian_consent: bool = True
+
+
+class JointAccount(SavingsAccountBase):
+    type: Literal["joint_account"] = "joint_account"
+    primary_owner_id: PyObjectId
+    secondary_owner_id: PyObjectId
+    secondary_owner_name: str
+    operation_mode: Literal["AND", "OR", "EITHER"] = "EITHER"
+    interest_rate: float = float(0.25)
+
+
+class InterestRateTier(BaseModel):
+    min_balance: Decimal
+    max_balance: Decimal
+    rate: Decimal
+
+
+class SavingsAccountWithInterest(SavingsAccountBase):
+    interest_rate: float = 0.00
+    interest_rate_tiers: Optional[List[InterestRateTier]] = None
+    withholding_tax_rate: Decimal = Decimal("0.20")
+    last_interest_posted_date: Optional[datetime] = None
+    accumulated_interest: Decimal = Decimal("0.00")
+
+

@@ -77,6 +77,11 @@ class LoanApplication(Base):
     review_note = Column(Text, nullable=True)
     disbursement_method = Column(String(50), nullable=True)  # cash | bank_transfer | cheque | savings_transfer
 
+    # Phase 2.2 — Approval workflow tracking
+    reviewed_by = Column(String(64), nullable=True)        # mongo user_id of reviewer (loan officer)
+    approved_by = Column(String(64), nullable=True)        # mongo user_id of approver (branch manager/admin)
+    rejected_reason = Column(Text, nullable=True)          # reason for rejection
+
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     disbursed_at = Column(DateTime(timezone=True), nullable=True)
@@ -161,3 +166,136 @@ class LoanTransaction(Base):
     
     timestamp = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     processed_by = Column(String(64), nullable=True) # mongo user id
+
+
+# ---------------------------------------------------------------------------
+# Credit Scoring (5 Cs)
+# ---------------------------------------------------------------------------
+class CreditScore(Base):
+    __tablename__ = "credit_scores"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    loan_id = Column(BigInteger, ForeignKey("loan_applications.id"), nullable=False, index=True)
+    
+    # Character - credit history assessment
+    character_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    character_notes = Column(Text, nullable=True)
+    
+    # Capacity - ability to repay
+    capacity_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    capacity_notes = Column(Text, nullable=True)
+    
+    # Capital - financial reserves
+    capital_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    capital_notes = Column(Text, nullable=True)
+    
+    # Collateral - security offered
+    collateral_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    collateral_notes = Column(Text, nullable=True)
+    
+    # Conditions - economic conditions
+    conditions_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    conditions_notes = Column(Text, nullable=True)
+    
+    # Overall score (weighted average)
+    overall_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    recommendation = Column(String(50), nullable=True)  # "approve" | "review" | "reject"
+    
+    dti_ratio = Column(Numeric(10, 4), nullable=True)  # Debt-to-Income ratio
+    dti_score = Column(Numeric(5, 2), nullable=True)  # 0-100
+    
+    assessed_by = Column(String(64), nullable=True)
+    assessed_at = Column(DateTime(timezone=True), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Loan Application Documents
+# ---------------------------------------------------------------------------
+class LoanApplicationDocument(Base):
+    __tablename__ = "loan_application_documents"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    loan_id = Column(BigInteger, ForeignKey("loan_applications.id"), nullable=False, index=True)
+    
+    doc_type = Column(String(100), nullable=False)  # "payslip" | "itr" | "coe" | "bank_statement" | "other"
+    file_name = Column(String(255), nullable=False)
+    file_path = Column(String(500), nullable=True)
+    file_size_bytes = Column(BigInteger, nullable=True)
+    mime_type = Column(String(100), nullable=True)
+    
+    status = Column(String(50), nullable=False, default="pending")  # pending | verified | rejected
+    rejection_reason = Column(Text, nullable=True)
+    
+    uploaded_by = Column(String(64), nullable=True)
+    verified_by = Column(String(64), nullable=True)
+    verified_at = Column(DateTime(timezone=True), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Disbursement Checklist
+# ---------------------------------------------------------------------------
+class DisbursementChecklist(Base):
+    __tablename__ = "disbursement_checklist"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    loan_id = Column(BigInteger, ForeignKey("loan_applications.id"), nullable=False, index=True)
+    
+    item_name = Column(String(200), nullable=False)
+    item_description = Column(Text, nullable=True)
+    is_required = Column(Boolean, nullable=False, default=True)
+    
+    status = Column(String(50), nullable=False, default="pending")  # pending | satisfied | waived
+    notes = Column(Text, nullable=True)
+    satisfied_by = Column(String(64), nullable=True)
+    satisfied_at = Column(DateTime(timezone=True), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Partial Disbursement (Tranches)
+# ---------------------------------------------------------------------------
+class LoanTranche(Base):
+    __tablename__ = "loan_tranches"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    loan_id = Column(BigInteger, ForeignKey("loan_applications.id"), nullable=False, index=True)
+    
+    tranche_number = Column(BigInteger, nullable=False)
+    amount = Column(Numeric(14, 2), nullable=False)
+    release_date = Column(DateTime(timezone=True), nullable=True)
+    
+    status = Column(String(50), nullable=False, default="pending")  # pending | released | cancelled
+    released_by = Column(String(64), nullable=True)
+    released_at = Column(DateTime(timezone=True), nullable=True)
+    notes = Column(Text, nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Promise-to-Pay (PTP) Tracking
+# ---------------------------------------------------------------------------
+class PromiseToPay(Base):
+    __tablename__ = "promise_to_pay"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    loan_id = Column(BigInteger, ForeignKey("loan_applications.id"), nullable=False, index=True)
+    
+    ptp_date = Column(Date, nullable=False)
+    ptp_amount = Column(Numeric(14, 2), nullable=False)
+    
+    contact_method = Column(String(50), nullable=True)  # "phone" | "email" | "sms" | "in_person"
+    contact_attempted = Column(BigInteger, nullable=False, default=0)
+    contact_result = Column(Text, nullable=True)  # notes on the conversation
+    
+    status = Column(String(50), nullable=False, default="pending")  # pending | broken | fulfilled | cancelled
+    fulfilled_at = Column(DateTime(timezone=True), nullable=True)
+    broken_reason = Column(Text, nullable=True)
+    
+    created_by = Column(String(64), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

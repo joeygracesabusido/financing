@@ -10,11 +10,22 @@
 |---|---|
 | Customer CRUD | ✅ Done |
 | Savings Accounts (Regular) | ✅ Done |
+| Savings Accounts (Time Deposit, Share Capital, Goal, Minor, Joint) | ✅ Done |
 | Deposits & Withdrawals | ✅ Done |
+| Fund Transfers | ✅ Done |
+| Standing Orders | ✅ Done |
+| Interest Computation | ✅ Done |
+| Statement Generation | ✅ Done |
 | Loan Creation | ✅ Done |
 | Loan Products | ✅ Done |
 | Basic Auth (JWT) | ✅ Done |
 | Minimum Balance Enforcement | ✅ Done |
+| Credit Scoring (5 Cs) | ✅ Done |
+| DTI Ratio Check | ✅ Done |
+| Loan Application Documents | ✅ Done |
+| Disbursement Checklist | ✅ Done |
+| Partial Disbursement (Tranches) | ✅ Done |
+| Promise-to-Pay (PTP) Tracking | ✅ Done |
 
 ---
 
@@ -23,27 +34,27 @@
 > **Goal**: Make the core engine production-ready, compliant, and scalable.
 
 ### 1.1 Infrastructure
-- [ ] **Migrate DB to PostgreSQL** — relational integrity for financial data (ACID compliance)
-- [ ] **Alembic migrations** — version-controlled schema changes
-- [ ] **Redis** — session management, rate limiting, background job queues (Celery/ARQ)
-- [ ] **React frontend** — modern SPA with role-based views
-- [ ] **Background task queue** — async loan calculations, notifications, statement generation
+- [x] **Migrate DB to PostgreSQL** — relational integrity for financial data (ACID compliance)
+- [x] **Alembic migrations** — version-controlled schema changes
+- [x] **Redis** — session management, rate limiting, background job queues (Celery/ARQ)
+- [x] **React frontend** — modern SPA with role-based views
+- [x] **Background task queue** — async loan calculations, notifications, statement generation
 
 ### 1.2 User & Role Management
-- [ ] **Multi-role system**: Admin, Loan Officer, Teller, Branch Manager, Auditor, Customer (self-service)
-- [ ] **Branch/Office management** — multi-branch support
-- [ ] **Audit logs** — every action logged with user, timestamp, IP
-- [ ] **Two-Factor Authentication (2FA)** — TOTP (Google Authenticator) or SMS OTP
-- [ ] **Password policies** — expiry, complexity, history
-- [ ] **Session management** — concurrent session limits, forced logout
+- [x] **Multi-role system**: Admin, Loan Officer, Teller, Branch Manager, Auditor, Customer (self-service)
+- [x] **Branch/Office management** — multi-branch support
+- [x] **Audit logs** — every action logged with user, timestamp, IP
+- [x] **Two-Factor Authentication (2FA)** — TOTP (Google Authenticator) or SMS OTP
+- [x] **Password policies** — expiry, complexity, history
+- [x] **Session management** — concurrent session limits, forced logout
 
 ### 1.3 Customer (Member) Management
-- [ ] **KYC workflow** — document upload (government ID, proof of address), verification status
-- [ ] **Customer risk profile** — risk scoring based on KYC data
-- [ ] **Customer categories** — Individual, Joint, Corporate/Business
-- [ ] **Beneficiaries/Next of Kin** — linked contact persons
-- [ ] **Customer timeline/activity log** — full audit trail per customer
-- [ ] **Duplicate detection** — alert on similar names/IDs
+- [x] **KYC workflow** — document upload (government ID, proof of address), verification status
+- [x] **Customer risk profile** — risk scoring based on KYC data
+- [x] **Customer categories** — Individual, Joint, Corporate/Business
+- [x] **Beneficiaries/Next of Kin** — linked contact persons
+- [x] **Customer timeline/activity log** — full audit trail per customer
+- [x] **Duplicate detection** — alert on similar names/IDs
 
 ---
 
@@ -52,44 +63,44 @@
 > **Goal**: Match industry-standard microfinance/bank loan processing capabilities.
 
 ### 2.1 Loan Products (Enhanced)
-- [ ] **Amortization types**: Flat rate, Declining balance, Balloon payment, Interest-only
-- [ ] **Repayment frequencies**: Daily, Weekly, Bi-weekly, Monthly, Quarterly, Bullet
-- [ ] **Grace periods** — principal-only and full grace periods
-- [ ] **Penalty/late fee engine** — configurable penalty rates, waiver workflow
-- [ ] **Origination fees** — deducted upfront or spread across installments
-- [ ] **Prepayment rules** — allowed, restricted, with/without penalty
-- [ ] **Loan limits per customer** — individual borrowing cap
+- [x] **Amortization types**: Flat rate, Declining balance, Balloon payment, Interest-only
+- [x] **Repayment frequencies**: Daily, Weekly, Bi-weekly, Monthly, Quarterly, Bullet
+- [x] **Grace periods** — principal-only and full grace periods
+- [x] **Penalty/late fee engine** — configurable penalty rates, waiver workflow
+- [x] **Origination fees** — deducted upfront or spread across installments
+- [x] **Prepayment rules** — allowed, restricted, with/without penalty
+- [x] **Loan limits per customer** — individual borrowing cap
 
 ### 2.2 Loan Application & Approval
-- [ ] **Multi-stage approval workflow** — Loan Officer → Branch Manager → Credit Committee
-- [ ] **Credit scoring engine** — 5 Cs (Character, Capacity, Capital, Collateral, Conditions)
-- [ ] **Debt-to-Income (DTI) ratio check** — automated eligibility assessment
-- [ ] **Collateral management** — register assets (land, vehicle, jewelry) against loans
-- [ ] **Co-maker/guarantor support** — linked guarantor profiles
-- [ ] **Loan application forms** with document attachments (payslips, ITR, COE)
-- [ ] **Loan calculator** — client-facing amortization schedule preview
+- [x] **Multi-stage approval workflow** — Loan Officer → Branch Manager → Credit Committee
+- [x] **Credit scoring engine** — 5 Cs (Character, Capacity, Capital, Collateral, Conditions)
+- [x] **Debt-to-Income (DTI) ratio check** — automated eligibility assessment
+- [x] **Collateral management** — register assets (land, vehicle, jewelry) against loans
+- [x] **Co-maker/guarantor support** — linked guarantor profiles
+- [x] **Loan application forms** with document attachments (payslips, ITR, COE)
+- [x] **Loan calculator** — client-facing amortization schedule preview
 
 ### 2.3 Loan Disbursement
-- [ ] **Disbursement methods**: Cash, check, transfer to savings, mobile money
-- [ ] **Disbursement checklist** — pre-disbursement requirements tracking
-- [ ] **Loan releases** — partial disbursement (tranches) for construction loans
+- [x] **Disbursement methods**: Cash, check, transfer to savings, mobile money
+- [x] **Disbursement checklist** — pre-disbursement requirements tracking
+- [x] **Loan releases** — partial disbursement (tranches) for construction loans
 
 ### 2.4 Loan Repayment & Collections
-- [ ] **Amortization schedule** — auto-generated with expected due dates
-- [ ] **Repayment posting** — principal vs. interest vs. penalty split (waterfall logic)
-- [ ] **OR (Official Receipt) generation** — printable receipts for each payment
-- [ ] **Overpayment handling** — credit to next period or savings
-- [ ] **Restructuring/Refinancing** — extend term, adjust rate, capitalize arrears
-- [ ] **Write-off workflow** — approval chain, provision entries
-- [ ] **Collections dashboard** — aging buckets (Current, 1–30, 31–60, 61–90, 90+ DPD)
-- [ ] **Promise-to-Pay (PTP) tracking** — collection call outcomes logged
+- [x] **Amortization schedule** — auto-generated with expected due dates
+- [x] **Repayment posting** — principal vs. interest vs. penalty split (waterfall logic)
+- [x] **OR (Official Receipt) generation** — printable receipts for each payment
+- [x] **Overpayment handling** — credit to next period or savings
+- [x] **Restructuring/Refinancing** — extend term, adjust rate, capitalize arrears
+- [x] **Write-off workflow** — approval chain, provision entries
+- [x] **Collections dashboard** — aging buckets (Current, 1–30, 31–60, 61–90, 90+ DPD)
+- [x] **Promise-to-Pay (PTP) tracking** — collection call outcomes logged
 
 ### 2.5 Loan Accounting (Double-Entry)
-- [ ] **General Ledger (GL)** — double-entry bookkeeping for every transaction
-- [ ] **Chart of Accounts (CoA)** — standard banking CoA (Assets, Liabilities, Capital, Income, Expense)
-- [ ] **Loan disbursement journal** — Dr: Loans Receivable, Cr: Cash/Savings
-- [ ] **Interest accrual** — daily/monthly accrual entries
-- [ ] **Provision for loan losses** — based on PAR aging
+- [x] **General Ledger (GL)** — double-entry bookkeeping for every transaction
+- [x] **Chart of Accounts (CoA)** — standard banking CoA (Assets, Liabilities, Capital, Income, Expense)
+- [x] **Loan disbursement journal** — Dr: Loans Receivable, Cr: Cash/Savings
+- [x] **Interest accrual** — daily/monthly accrual entries
+- [x] **Provision for loan losses** — based on PAR aging
 
 ---
 
@@ -98,29 +109,29 @@
 > **Goal**: Full savings bank functionality.
 
 ### 3.1 Savings Account Types
-- [ ] **Regular Passbook Savings** (existing, enhanced)
-- [ ] **Time Deposit / Certificate of Deposit (CD)** — fixed term, higher rate, maturity handling
-- [ ] **Share Capital Account** (for cooperatives) — mandatory savings tied to membership
-- [ ] **Christmas Club / Goal Savings** — target amount + target date
-- [ ] **Minors' Savings Account** — minor-specific rules, guardian linkage
-- [ ] **Joint Accounts** — multiple signatories (AND/OR rules)
+- [x] **Regular Passbook Savings** (existing, enhanced)
+- [x] **Time Deposit / Certificate of Deposit (CD)** — fixed term, higher rate, maturity handling
+- [x] **Share Capital Account** (for cooperatives) — mandatory savings tied to membership
+- [x] **Christmas Club / Goal Savings** — target amount + target date
+- [x] **Minors' Savings Account** — minor-specific rules, guardian linkage
+- [x] **Joint Accounts** — multiple signatories (AND/OR rules)
 
 ### 3.2 Interest Computation
-- [ ] **Daily balance method** — compute interest on end-of-day balance
-- [ ] **Average daily balance (ADB)** — monthly average
-- [ ] **Interest posting** — configurable frequency (monthly, quarterly, annually)
-- [ ] **Withholding tax (WHT) deduction** — auto-deduct at interest posting
-- [ ] **Interest rate tiers** — higher rates for higher balances
+- [x] **Daily balance method** — compute interest on end-of-day balance
+- [x] **Average daily balance (ADB)** — monthly average
+- [x] **Interest posting** — configurable frequency (monthly, quarterly, annually)
+- [x] **Withholding tax (WHT) deduction** — auto-deduct at interest posting
+- [x] **Interest rate tiers** — higher rates for higher balances
 
 ### 3.3 Deposit Transactions
-- [ ] **Cash-in / Cash-out** (enhanced with teller session tracking)
-- [ ] **Fund transfer between accounts** — internal transfers
+- [x] **Cash-in / Cash-out** (enhanced with teller session tracking)
+- [x] **Fund transfer between accounts** — internal transfers
 - [ ] **Check deposits** — clearing period, hold release schedule
-- [ ] **Standing orders / Auto-debit** — scheduled automatic transfers/payments
-- [ ] **Balance inquiry** — mobile/online self-service
+- [x] **Standing orders / Auto-debit** — scheduled automatic transfers/payments
+- [x] **Balance inquiry** — mobile/online self-service
 
 ### 3.4 Passbook / e-Statement
-- [ ] **Transaction statement generation** — PDF export, email delivery
+- [x] **Transaction statement generation** — PDF export, email delivery
 - [ ] **Passbook printing support** — dot-matrix formatted output
 - [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES
 
