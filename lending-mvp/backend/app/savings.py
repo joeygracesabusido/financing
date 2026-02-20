@@ -1,4 +1,5 @@
 import strawberry
+from enum import Enum
 from typing import List, Optional
 from strawberry.types import Info
 from .database import get_db
@@ -16,7 +17,7 @@ from datetime import datetime, timedelta
 
 # Savings Account Types
 @strawberry.enum
-class SavingsAccountKind:
+class SavingsAccountKind(Enum):
     REGULAR = "regular"
     HIGH_YIELD = "high_yield"
     TIME_DEPOSIT = "time_deposit"
@@ -27,7 +28,7 @@ class SavingsAccountKind:
 
 
 @strawberry.enum
-class AccountStatus:
+class AccountStatus(Enum):
     ACTIVE = "active"
     FROZEN = "frozen"
     CLOSED = "closed"
@@ -37,22 +38,22 @@ class AccountStatus:
 @strawberry.type
 class SavingsAccountType:
     id: strawberry.ID
-    account_number: str
-    user_id: strawberry.ID
+    account_number: str = strawberry.field(name="accountNumber")
+    user_id: strawberry.ID = strawberry.field(name="userId")
     type: str
     balance: float
     currency: str
-    opened_at: datetime
-    created_at: datetime
-    updated_at: datetime
+    opened_at: datetime = strawberry.field(name="openedAt")
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
     status: str
-    interest_rate: Optional[float] = None
-    maturity_date: Optional[datetime] = None
-    target_amount: Optional[float] = None
-    target_date: Optional[datetime] = None
-    guardian_id: Optional[str] = None
-    secondary_owner_id: Optional[str] = None
-    operation_mode: Optional[str] = None
+    interest_rate: Optional[float] = strawberry.field(name="interestRate", default=None)
+    maturity_date: Optional[datetime] = strawberry.field(name="maturityDate", default=None)
+    target_amount: Optional[float] = strawberry.field(name="targetAmount", default=None)
+    target_date: Optional[datetime] = strawberry.field(name="targetDate", default=None)
+    guardian_id: Optional[str] = strawberry.field(name="guardianId", default=None)
+    secondary_owner_id: Optional[str] = strawberry.field(name="secondaryOwnerId", default=None)
+    operation_mode: Optional[str] = strawberry.field(name="operationMode", default=None)
     customer: Optional[CustomerType] = None
 
     @strawberry.field
@@ -108,8 +109,8 @@ class SavingsAccountsResponse:
 @strawberry.type
 class TransactionType:
     id: strawberry.ID
-    account_id: strawberry.ID
-    transaction_type: str # e.g., "deposit", "withdrawal"
+    account_id: strawberry.ID = strawberry.field(name="accountId")
+    transaction_type: str = strawberry.field(name="transactionType") # e.g., "deposit", "withdrawal"
     amount: float
     timestamp: datetime
     notes: Optional[str] = None

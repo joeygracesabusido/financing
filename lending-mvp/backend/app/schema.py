@@ -21,11 +21,11 @@ class UserType:
     id: strawberry.ID
     email: str
     username: str
-    full_name: str
-    is_active: bool
+    full_name: str = strawberry.field(name="fullName")
+    is_active: bool = strawberry.field(name="isActive")
     role: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
 
 @strawberry.input
 class UserCreateInput:

@@ -11,7 +11,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.future import select
 
 from .models import UserInDB
-from .database.pg_models import get_db_session
+from .database.postgres import get_db_session
 from .database.pg_accounting_models import GLAccount, JournalEntry, JournalLine
 
 # ── Default Chart of Accounts ────────────────────────────────────────────
@@ -52,7 +52,7 @@ DEFAULT_COA = [
 
 async def seed_chart_of_accounts():
     """Seed the standard Chart of Accounts if empty."""
-    from .database.pg_models import get_db_session as gds
+    from .database.postgres import get_db_session as gds
     async for session in gds():
         result = await session.execute(select(GLAccount).limit(1))
         if result.scalar_one_or_none():
@@ -76,8 +76,8 @@ class GLAccountType:
     name: str
     type: str
     description: Optional[str]
-    created_at: datetime
-    updated_at: datetime
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
 
 
 @strawberry.input
@@ -105,7 +105,7 @@ class GLAccountResponse:
 @strawberry.type
 class JournalLineType:
     id: strawberry.ID
-    account_code: str
+    account_code: str = strawberry.field(name="accountCode")
     debit: Decimal
     credit: Decimal
     description: Optional[str]
@@ -114,10 +114,10 @@ class JournalLineType:
 @strawberry.type
 class JournalEntryType:
     id: strawberry.ID
-    reference_no: str
+    reference_no: str = strawberry.field(name="referenceNo")
     description: Optional[str]
     timestamp: datetime
-    created_by: Optional[str]
+    created_by: Optional[str] = strawberry.field(name="createdBy")
     lines: List[JournalLineType]
 
 

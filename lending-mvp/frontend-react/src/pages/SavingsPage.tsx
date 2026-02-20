@@ -7,10 +7,13 @@ import { useState } from 'react'
 interface SavingsAccount {
     id: string
     accountNumber: string
-    accountType: string
+    type: string
     balance: number
-    customerName: string
+    currency: string
+    openedAt: string
+    status: string
     createdAt: string
+    updatedAt: string
 }
 
 const accountTypeBadge: Record<string, string> = {
@@ -23,13 +26,12 @@ export default function SavingsPage() {
     const [search, setSearch] = useState('')
     const { data, loading, error } = useQuery(GET_SAVINGS)
 
-    const accounts: SavingsAccount[] = data?.savingsAccounts ?? []
+    const accounts: SavingsAccount[] = data?.savingsAccounts?.accounts ?? []
     const filtered = accounts.filter((a) => {
         const q = search.toLowerCase()
         return (
             !q ||
-            a.accountNumber?.toLowerCase().includes(q) ||
-            a.customerName?.toLowerCase().includes(q)
+            a.accountNumber?.toLowerCase().includes(q)
         )
     })
 
@@ -95,17 +97,17 @@ export default function SavingsPage() {
                                     <td colSpan={5} className="py-16 text-center text-muted-foreground text-sm">No savings accounts found</td>
                                 </tr>
                             ) : (
-                                filtered.map((a) => (
+                                 filtered.map((a) => (
                                     <tr key={a.id} className="data-table-row">
                                         <td className="px-5 py-3.5 font-mono text-sm text-primary">{a.accountNumber}</td>
-                                        <td className="px-5 py-3.5 text-sm font-medium text-foreground">{a.customerName}</td>
+                                        <td className="px-5 py-3.5 text-sm font-medium text-foreground">Customer Name</td>
                                         <td className="px-5 py-3.5">
-                                            <span className={`px-2 py-1 rounded-md border text-xs font-medium ${accountTypeBadge[a.accountType] ?? 'text-muted-foreground bg-muted/10 border-border'}`}>
-                                                {a.accountType?.replace('_', ' ')}
+                                            <span className={`px-2 py-1 rounded-md border text-xs font-medium ${accountTypeBadge[a.type] ?? 'text-muted-foreground bg-muted/10 border-border'}`}>
+                                                {a.type?.replace('_', ' ')}
                                             </span>
                                         </td>
                                         <td className="px-5 py-3.5 text-sm font-semibold text-foreground">{formatCurrency(a.balance)}</td>
-                                        <td className="px-5 py-3.5 text-sm text-muted-foreground">{formatDate(a.createdAt)}</td>
+                                        <td className="px-5 py-3.5 text-sm text-muted-foreground">{formatDate(a.openedAt)}</td>
                                     </tr>
                                 ))
                             )}

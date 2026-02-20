@@ -67,14 +67,12 @@ export default function DashboardPage() {
     const { data, loading } = useQuery(GET_DASHBOARD_STATS)
 
     const totalCustomers = data?.customers?.length ?? 0
-    const totalSavings = data?.savingsAccounts?.reduce(
+    const totalSavings = data?.savingsAccounts?.accounts?.reduce(
         (sum: number, a: { balance: number }) => sum + (a.balance || 0), 0
     ) ?? 0
-    const totalLoans = data?.loans?.reduce(
-        (sum: number, l: { outstandingBalance: number }) => sum + (l.outstandingBalance || 0), 0
-    ) ?? 0
-    const activeLoans = data?.loans?.filter((l: { status: string }) => l.status === 'active').length ?? 0
-    const overdueLoans = data?.loans?.filter(
+    const totalLoans = data?.loans?.total ?? 0
+    const activeLoans = data?.loans?.loans?.filter((l: { status: string }) => l.status === 'active').length ?? 0
+    const overdueLoans = data?.loans?.loans?.filter(
         (l: { status: string }) => l.status === 'overdue' || l.status === 'defaulted'
     ).length ?? 0
 

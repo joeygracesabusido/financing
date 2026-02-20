@@ -11,18 +11,18 @@ from fastapi import HTTPException, status
 from sqlalchemy.future import select
 
 from .models import UserInDB
-from .database.pg_models import get_db_session
+from .database.postgres import get_db_session
 from .database.pg_loan_models import LoanCollateral, LoanApplication
 
 
 @strawberry.type
 class CollateralType:
     id: strawberry.ID
-    loan_id: int
+    loan_id: int = strawberry.field(name="loanId")
     type: str           # vehicle | real_estate | deposit | jewelry | equipment | other
     value: Decimal
     description: Optional[str]
-    created_at: datetime
+    created_at: datetime = strawberry.field(name="createdAt")
 
 
 @strawberry.input
@@ -45,7 +45,7 @@ class CollateralsResponse:
     success: bool
     message: str
     collaterals: List[CollateralType]
-    total_value: Decimal
+    total_value: Decimal = strawberry.field(name="totalValue")
 
 
 def _db_to_type(c: LoanCollateral) -> CollateralType:

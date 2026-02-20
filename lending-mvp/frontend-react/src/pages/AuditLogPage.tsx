@@ -1,33 +1,7 @@
 import { useState } from 'react'
-import { useQuery, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { ScrollText, Filter, Search, User, Clock, Activity } from 'lucide-react'
-
-const GET_AUDIT_LOGS = gql`
-  query GetAuditLogs {
-    auditLogs {
-      success
-      message
-      logs {
-        id
-        userId
-        username
-        role
-        action
-        entity
-        entityId
-        ipAddress
-        status
-        detail
-        createdAt
-      }
-      total
-    }
-  }
-`
-
-// Fallback: query audit logs independently via REST if GraphQL not set up
-// For now we'll use mock data structure and note that the GQL resolver needs backend
-// The backend stores these in PG — add a GQL query resolver in Phase 1.2 enhancement
+import { GET_AUDIT_LOGS } from '@/api/queries'
 
 export default function AuditLogPage() {
     const [search, setSearch] = useState('')

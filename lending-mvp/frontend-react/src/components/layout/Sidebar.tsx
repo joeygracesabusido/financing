@@ -11,15 +11,28 @@ import {
     LogOut,
     ChevronRight,
     Building2,
+    GitBranch,
+    ScrollText,
+    ShieldCheck,
+    UserCog,
+    AlertTriangle,
+    BookOpen,
 } from 'lucide-react'
 
+// Role-based nav configuration
+// Each item can define `roles` (whitelist) — if omitted, visible to all authenticated users
 const navItems = [
-    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/customers', icon: Users, label: 'Customers' },
-    { to: '/savings', icon: PiggyBank, label: 'Savings Accounts' },
-    { to: '/loans', icon: CreditCard, label: 'Loans' },
-    { to: '/transactions', icon: ArrowLeftRight, label: 'Transactions' },
-    { to: '/loan-products', icon: Package, label: 'Loan Products' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: null },
+    { to: '/customers', icon: Users, label: 'Customers', roles: ['admin', 'loan_officer', 'branch_manager', 'teller'] },
+    { to: '/savings', icon: PiggyBank, label: 'Savings Accounts', roles: ['admin', 'loan_officer', 'branch_manager', 'teller'] },
+    { to: '/loans', icon: CreditCard, label: 'Loans', roles: ['admin', 'loan_officer', 'branch_manager'] },
+    { to: '/transactions', icon: ArrowLeftRight, label: 'Transactions', roles: ['admin', 'teller', 'loan_officer', 'branch_manager'] },
+    { to: '/loan-products', icon: Package, label: 'Loan Products', roles: ['admin', 'loan_officer', 'branch_manager'] },
+    { to: '/collections', icon: AlertTriangle, label: 'Collections', roles: ['admin', 'loan_officer', 'branch_manager'] },
+    { to: '/chart-of-accounts', icon: BookOpen, label: 'Chart of Accounts', roles: ['admin', 'branch_manager'] },
+    { to: '/branches', icon: GitBranch, label: 'Branches', roles: ['admin', 'branch_manager'] },
+    { to: '/audit-logs', icon: ScrollText, label: 'Audit Logs', roles: ['admin', 'auditor'] },
+    { to: '/users', icon: UserCog, label: 'User Management', roles: ['admin'] },
 ]
 
 export default function Sidebar() {
@@ -29,6 +42,20 @@ export default function Sidebar() {
     const handleLogout = () => {
         logout()
         navigate('/login')
+    }
+
+    // Filter nav items based on role
+    const visibleNav = navItems.filter(item =>
+        !item.roles || (user?.role && item.roles.includes(user.role))
+    )
+
+    const roleLabel: Record<string, string> = {
+        admin: 'Administrator',
+        loan_officer: 'Loan Officer',
+        teller: 'Teller',
+        branch_manager: 'Branch Manager',
+        auditor: 'Auditor',
+        customer: 'Customer',
     }
 
     return (
@@ -54,7 +81,7 @@ export default function Sidebar() {
                 <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                     Main Menu
                 </p>
-                {navItems.map(({ to, icon: Icon, label }) => (
+                {visibleNav.map(({ to, icon: Icon, label }) => (
                     <NavLink
                         key={to}
                         to={to}
@@ -67,6 +94,16 @@ export default function Sidebar() {
                         <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
                     </NavLink>
                 ))}
+
+                {/* Security indicator for admin */}
+                {user?.role === 'admin' && (
+                    <div className="mt-4 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                        <div className="flex items-center gap-2 text-xs text-emerald-400">
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            <span>Admin Access</span>
+                        </div>
+                    </div>
+                )}
             </nav>
 
             {/* User Profile */}
@@ -80,7 +117,9 @@ export default function Sidebar() {
                             <p className="text-sm font-medium text-foreground truncate">
                                 {user?.fullName || user?.username}
                             </p>
-                            <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
+                            <p className="text-xs text-muted-foreground capitalize">
+                                {roleLabel[user?.role ?? ''] ?? user?.role}
+                            </p>
                         </div>
                     </div>
                 </div>

@@ -10,7 +10,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.future import select
 
 from .models import UserInDB
-from .database.pg_models import get_db_session
+from .database.postgres import get_db_session
 from .database.pg_loan_models import LoanGuarantor, LoanApplication
 from .database.customer_crud import CustomerCRUD
 from .database import get_customers_collection
@@ -19,9 +19,9 @@ from .database import get_customers_collection
 @strawberry.type
 class GuarantorType:
     id: strawberry.ID
-    loan_id: int
-    customer_id: str
-    created_at: datetime
+    loan_id: int = strawberry.field(name="loanId")
+    customer_id: str = strawberry.field(name="customerId")
+    created_at: datetime = strawberry.field(name="createdAt")
 
     @strawberry.field
     async def guarantor_name(self) -> Optional[str]:

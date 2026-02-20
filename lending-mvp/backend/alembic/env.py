@@ -12,6 +12,8 @@ from alembic import context
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from app.database.pg_models import Base
+import app.database.pg_loan_models
+import app.database.pg_accounting_models
 
 # ── Alembic config ────────────────────────────────────────────────────────────
 config = context.config

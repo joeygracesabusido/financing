@@ -15,6 +15,7 @@ savings_collection = db["savings"]
 transactions_collection = db["transactions"]
 standing_orders_collection = db["standing_orders"]
 interest_ledger_collection = db["interest_ledger"]
+chart_of_accounts_collection = db["chart_of_accounts"]
 
 
 def get_users_collection():
@@ -46,6 +47,9 @@ def get_standing_orders_collection():
 
 def get_interest_ledger_collection():
     return interest_ledger_collection
+
+def get_chart_of_accounts_collection():
+    return chart_of_accounts_collection
 
 def get_db():
     return db

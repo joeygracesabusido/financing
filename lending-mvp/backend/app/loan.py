@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.future import select
 
 from .models import UserInDB
-from .database.pg_models import get_db_session
+from .database.postgres import get_db_session
 from .database.pg_loan_models import LoanApplication, PGLoanProduct
 from .database.customer_crud import CustomerCRUD
 from .database import get_customers_collection
@@ -27,26 +27,26 @@ import aiofiles
 
 @strawberry.type
 class ScheduleRowPreview:
-    installment_number: int
-    due_date: datetime
-    principal_due: Decimal
-    interest_due: Decimal
-    total_due: Decimal
+    installment_number: int = strawberry.field(name="installmentNumber")
+    due_date: datetime = strawberry.field(name="dueDate")
+    principal_due: Decimal = strawberry.field(name="principalDue")
+    interest_due: Decimal = strawberry.field(name="interestDue")
+    total_due: Decimal = strawberry.field(name="totalDue")
     balance: Decimal
 
 @strawberry.type
 class LoanType:
     id: strawberry.ID
-    customer_id: str
-    product_id: int
+    customer_id: str = strawberry.field(name="customerId")
+    product_id: int = strawberry.field(name="productId")
     principal: Decimal
-    term_months: int
-    approved_principal: Optional[Decimal]
-    approved_rate: Optional[Decimal]
+    term_months: int = strawberry.field(name="termMonths")
+    approved_principal: Optional[Decimal] = strawberry.field(name="approvedPrincipal", default=None)
+    approved_rate: Optional[Decimal] = strawberry.field(name="approvedRate", default=None)
     status: str
-    created_at: datetime
-    updated_at: datetime
-    disbursed_at: Optional[datetime]
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
+    disbursed_at: Optional[datetime] = strawberry.field(name="disbursedAt", default=None)
     
     @strawberry.field
     async def product_name(self) -> Optional[str]:

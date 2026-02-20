@@ -2,80 +2,171 @@ import strawberry
 from typing import List, Optional
 from datetime import datetime
 from decimal import Decimal
+from sqlalchemy.future import select
+from .database.postgres import get_db_session
+from .database.pg_loan_models import PGLoanProduct
 
-from app.basemodel.loan_product_model import (
-    LoanProduct as PydanticLoanProduct,
-    LoanProductCreate as PydanticLoanProductCreate,
-    LoanProductUpdate as PydanticLoanProductUpdate,
-    PyObjectId,
-)
-from app.database import loan_product_crud
+
+def _db_to_type(obj: PGLoanProduct) -> "LoanProductType":
+    return LoanProductType(
+        id=strawberry.ID(str(obj.id)),
+        product_code=obj.product_code,
+        name=obj.name,
+        description=obj.description,
+        amortization_type=obj.amortization_type,
+        repayment_frequency=obj.repayment_frequency,
+        interest_rate=obj.interest_rate,
+        penalty_rate=obj.penalty_rate,
+        grace_period_months=obj.grace_period_months,
+        is_active=obj.is_active,
+        created_at=obj.created_at,
+        updated_at=obj.updated_at,
+        # Phase 2.1 enhanced fields
+        principal_only_grace=obj.principal_only_grace,
+        full_grace=obj.full_grace,
+        origination_fee_rate=obj.origination_fee_rate,
+        origination_fee_type=obj.origination_fee_type,
+        prepayment_allowed=obj.prepayment_allowed,
+        prepayment_penalty_rate=obj.prepayment_penalty_rate,
+        customer_loan_limit=obj.customer_loan_limit,
+    )
+
 
 @strawberry.type
-class LoanProduct:
-    id: str
-    product_code: str
-    product_name: str
-    term_type: str
-    gl_code: str
-    type: str
-    default_interest_rate: Decimal
-    template: str
-    security: str
-    br_lc: str
-    created_at: datetime
-    updated_at: datetime
+class LoanProductType:
+    id: strawberry.ID
+    product_code: str = strawberry.field(name="productCode")
+    name: str
+    description: Optional[str]
+    amortization_type: str = strawberry.field(name="amortizationType")
+    repayment_frequency: str = strawberry.field(name="repaymentFrequency")
+    interest_rate: Decimal = strawberry.field(name="interestRate")
+    penalty_rate: Decimal = strawberry.field(name="penaltyRate")
+    grace_period_months: int = strawberry.field(name="gracePeriodMonths")
+    is_active: bool = strawberry.field(name="isActive")
+    created_at: datetime = strawberry.field(name="createdAt")
+    updated_at: datetime = strawberry.field(name="updatedAt")
+    # Phase 2.1
+    principal_only_grace: bool = strawberry.field(name="principalOnlyGrace", default=False)
+    full_grace: bool = strawberry.field(name="fullGrace", default=False)
+    origination_fee_rate: Optional[Decimal] = strawberry.field(name="originationFeeRate", default=None)
+    origination_fee_type: Optional[str] = strawberry.field(name="originationFeeType", default=None)       # "upfront" | "spread"
+    prepayment_allowed: bool = strawberry.field(name="prepaymentAllowed", default=True)
+    prepayment_penalty_rate: Optional[Decimal] = strawberry.field(name="prepaymentPenaltyRate", default=None)
+    customer_loan_limit: Optional[Decimal] = strawberry.field(name="customerLoanLimit", default=None)
+
 
 @strawberry.input
 class LoanProductCreateInput:
     product_code: str
-    product_name: str
-    term_type: str
-    gl_code: str
-    type: str
-    default_interest_rate: Decimal
-    template: str
-    security: str
-    br_lc: str
+    name: str
+    amortization_type: str      # flat_rate | declining_balance | balloon_payment | interest_only
+    repayment_frequency: str    # daily | weekly | bi_weekly | monthly | quarterly | bullet
+    interest_rate: Decimal
+    description: Optional[str] = None
+    penalty_rate: Decimal = Decimal("0.0")
+    grace_period_months: int = 0
+    is_active: bool = True
+    # Phase 2.1
+    principal_only_grace: bool = False
+    full_grace: bool = False
+    origination_fee_rate: Optional[Decimal] = None
+    origination_fee_type: Optional[str] = None
+    prepayment_allowed: bool = True
+    prepayment_penalty_rate: Optional[Decimal] = None
+    customer_loan_limit: Optional[Decimal] = None
+
 
 @strawberry.input
 class LoanProductUpdateInput:
     product_code: Optional[str] = None
-    product_name: Optional[str] = None
-    term_type: Optional[str] = None
-    gl_code: Optional[str] = None
-    type: Optional[str] = None
-    default_interest_rate: Optional[Decimal] = None
-    template: Optional[str] = None
-    security: Optional[str] = None
-    br_lc: Optional[str] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    amortization_type: Optional[str] = None
+    repayment_frequency: Optional[str] = None
+    interest_rate: Optional[Decimal] = None
+    penalty_rate: Optional[Decimal] = None
+    grace_period_months: Optional[int] = None
+    is_active: Optional[bool] = None
+    # Phase 2.1
+    principal_only_grace: Optional[bool] = None
+    full_grace: Optional[bool] = None
+    origination_fee_rate: Optional[Decimal] = None
+    origination_fee_type: Optional[str] = None
+    prepayment_allowed: Optional[bool] = None
+    prepayment_penalty_rate: Optional[Decimal] = None
+    customer_loan_limit: Optional[Decimal] = None
+
 
 @strawberry.type
 class LoanProductQuery:
     @strawberry.field
-    async def loan_product(self, id: str) -> Optional[LoanProduct]:
-        loan_product_data = await loan_product_crud.get_loan_product_by_id(id)
-        return LoanProduct(**loan_product_data.model_dump()) if loan_product_data else None
+    async def loan_product(self, id: strawberry.ID) -> Optional[LoanProductType]:
+        async for session in get_db_session():
+            result = await session.execute(select(PGLoanProduct).filter(PGLoanProduct.id == int(id)))
+            db_obj = result.scalar_one_or_none()
+            if db_obj:
+                return _db_to_type(db_obj)
+            return None
 
     @strawberry.field
-    async def loan_products(self) -> List[LoanProduct]:
-        loan_products_data = await loan_product_crud.get_all_loan_products()
-        return [LoanProduct(**lp.model_dump()) for lp in loan_products_data]
+    async def loan_products(self) -> List[LoanProductType]:
+        async for session in get_db_session():
+            result = await session.execute(select(PGLoanProduct).order_by(PGLoanProduct.id))
+            items = result.scalars().all()
+            return [_db_to_type(obj) for obj in items]
+
 
 @strawberry.type
 class LoanProductMutation:
     @strawberry.mutation
-    async def create_loan_product(self, input: LoanProductCreateInput) -> LoanProduct:
-        loan_product_data = PydanticLoanProductCreate(**input.__dict__)
-        new_loan_product = await loan_product_crud.create_loan_product(loan_product_data)
-        return LoanProduct(**new_loan_product.model_dump())
+    async def create_loan_product(self, input: LoanProductCreateInput) -> LoanProductType:
+        async for session in get_db_session():
+            new_prod = PGLoanProduct(
+                product_code=input.product_code,
+                name=input.name,
+                description=input.description,
+                amortization_type=input.amortization_type,
+                repayment_frequency=input.repayment_frequency,
+                interest_rate=input.interest_rate,
+                penalty_rate=input.penalty_rate,
+                grace_period_months=input.grace_period_months,
+                is_active=input.is_active,
+                principal_only_grace=input.principal_only_grace,
+                full_grace=input.full_grace,
+                origination_fee_rate=input.origination_fee_rate,
+                origination_fee_type=input.origination_fee_type,
+                prepayment_allowed=input.prepayment_allowed,
+                prepayment_penalty_rate=input.prepayment_penalty_rate,
+                customer_loan_limit=input.customer_loan_limit,
+            )
+            session.add(new_prod)
+            await session.flush()
+            await session.refresh(new_prod)
+            return _db_to_type(new_prod)
 
     @strawberry.mutation
-    async def update_loan_product(self, id: str, input: LoanProductUpdateInput) -> Optional[LoanProduct]:
-        loan_product_data = PydanticLoanProductUpdate(**input.__dict__)
-        updated_loan_product = await loan_product_crud.update_loan_product(id, loan_product_data)
-        return LoanProduct(**updated_loan_product.model_dump()) if updated_loan_product else None
+    async def update_loan_product(self, id: strawberry.ID, input: LoanProductUpdateInput) -> Optional[LoanProductType]:
+        async for session in get_db_session():
+            result = await session.execute(select(PGLoanProduct).filter(PGLoanProduct.id == int(id)))
+            obj = result.scalar_one_or_none()
+            if not obj:
+                return None
+
+            update_data = {k: v for k, v in vars(input).items() if v is not None}
+            for key, value in update_data.items():
+                setattr(obj, key, value)
+
+            await session.flush()
+            await session.refresh(obj)
+            return _db_to_type(obj)
 
     @strawberry.mutation
-    async def delete_loan_product(self, id: str) -> bool:
-        return await loan_product_crud.delete_loan_product(id)
+    async def delete_loan_product(self, id: strawberry.ID) -> bool:
+        async for session in get_db_session():
+            result = await session.execute(select(PGLoanProduct).filter(PGLoanProduct.id == int(id)))
+            obj = result.scalar_one_or_none()
+            if obj:
+                await session.delete(obj)
+                return True
+            return False

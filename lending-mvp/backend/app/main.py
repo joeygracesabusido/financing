@@ -6,6 +6,7 @@ from strawberry.fastapi import GraphQLRouter
 from pydantic import BaseModel
 from typing import Dict
 import logging
+import os
 
 from .schema import Query as SchemaQuery, Mutation as SchemaMutation
 from .user import Query as getUser, Mutation as createUser
@@ -27,6 +28,7 @@ from .database.pg_models import Base
 from .database.redis_client import get_redis, close_redis
 from .auth.security import verify_token
 from .audit_middleware import AuditMiddleware
+from .utils.demo_seeder import seed_demo_data
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +143,19 @@ async def lifespan(app: FastAPI):
         logger.info("Chart of Accounts seeded.")
     except Exception as exc:
         logger.warning("CoA seeding failed (non-fatal): %s", exc)
+    
+    # Seed Demo Data (if enabled)
+    try:
+        seed_demo = os.getenv("SEED_DEMO_DATA", "false").lower() == "true"
+        if seed_demo:
+            logger.info("🌱 Seeding demo data...")
+            await seed_demo_data()
+            logger.info("✅ Demo data seeded successfully")
+        else:
+            logger.info("Demo data seeding disabled (set SEED_DEMO_DATA=true to enable)")
+    except Exception as exc:
+        logger.warning("Demo data seeding failed (non-fatal): %s", exc)
+    
     # Warm up Redis connection
     try:
         await get_redis()

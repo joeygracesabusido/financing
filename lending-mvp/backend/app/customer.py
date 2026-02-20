@@ -157,46 +157,19 @@ class CustomersResponse:
     customers: List[CustomerType]
     total: int
 
-@strawberry.field
-async def customer(self, info: Info) -> Optional["CustomerType"]:
-    db = get_db()
-    customer_crud = CustomerCRUD(db.customers)
-        
-    customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
-        
-    if customer_data:
-        return convert_customer_db_to_customer_type(customer_data)
-    return None
 
-
-
-
-
-def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> "CustomerType":
-    """Convert CustomerInDB to CustomerType schema"""
-    return CustomerType(
-        id=strawberry.ID(str(customer_db.id)),
-        last_name=customer_db.last_name,
-        first_name=customer_db.first_name,
-        display_name=customer_db.display_name,
-        middle_name=customer_db.middle_name,
-        tin_no=customer_db.tin_no,
-        sss_no=customer_db.sss_no,
-        permanent_address=customer_db.permanent_address,
-        birth_date=customer_db.birth_date,
-        birth_place=customer_db.birth_place,
-        mobile_number=customer_db.mobile_number,
-        email_address=customer_db.email_address,
-        employer_name_address=customer_db.employer_name_address,
-        job_title=customer_db.job_title,
-        salary_range=customer_db.salary_range,
-        created_at=customer_db.created_at,
-        updated_at=customer_db.updated_at,
-        company_name=customer_db.company_name,
-        company_address=customer_db.company_address,
-        customer_type=customer_db.customer_type,
-        branch=customer_db.branch
-    )
+@strawberry.type
+class Query:
+    @strawberry.field
+    async def customer(self, info: Info) -> Optional["CustomerType"]:
+        db = get_db()
+        customer_crud = CustomerCRUD(db.customers)
+            
+        customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
+            
+        if customer_data:
+            return convert_customer_db_to_customer_type(customer_data)
+        return None
 
     @strawberry.field
     async def customers(self, info: Info, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> CustomersResponse:
@@ -215,7 +188,7 @@ def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> "Customer
             return CustomersResponse(success=False, message=f"Error retrieving customers: {str(e)}", customers=[], total=0)
 
     @strawberry.field
-    async def customer(self, info: Info, customer_id: strawberry.ID) -> CustomerResponse:
+    async def customer_by_id(self, info: Info, customer_id: strawberry.ID) -> CustomerResponse:
         """Get customer by ID."""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller"):
@@ -271,6 +244,33 @@ def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> "Customer
             ) for r in rows
         ]
         return CustomerActivityResponse(success=True, message="OK", activities=activities)
+
+
+def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> "CustomerType":
+    """Convert CustomerInDB to CustomerType schema"""
+    return CustomerType(
+        id=strawberry.ID(str(customer_db.id)),
+        last_name=customer_db.last_name,
+        first_name=customer_db.first_name,
+        display_name=customer_db.display_name,
+        middle_name=customer_db.middle_name,
+        tin_no=customer_db.tin_no,
+        sss_no=customer_db.sss_no,
+        permanent_address=customer_db.permanent_address,
+        birth_date=customer_db.birth_date,
+        birth_place=customer_db.birth_place,
+        mobile_number=customer_db.mobile_number,
+        email_address=customer_db.email_address,
+        employer_name_address=customer_db.employer_name_address,
+        job_title=customer_db.job_title,
+        salary_range=customer_db.salary_range,
+        created_at=customer_db.created_at,
+        updated_at=customer_db.updated_at,
+        company_name=customer_db.company_name,
+        company_address=customer_db.company_address,
+        customer_type=customer_db.customer_type,
+        branch=customer_db.branch
+    )
 
 
 @strawberry.type

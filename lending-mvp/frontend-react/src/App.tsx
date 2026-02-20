@@ -4,10 +4,17 @@ import Sidebar from '@/components/layout/Sidebar'
 import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
 import CustomersPage from '@/pages/CustomersPage'
+import CustomerDetailPage from '@/pages/CustomerDetailPage'
 import SavingsPage from '@/pages/SavingsPage'
 import LoansPage from '@/pages/LoansPage'
+import LoanDetailPage from '@/pages/LoanDetailPage'
 import LoanProductsPage from '@/pages/LoanProductsPage'
 import TransactionsPage from '@/pages/TransactionsPage'
+import BranchesPage from '@/pages/BranchesPage'
+import AuditLogPage from '@/pages/AuditLogPage'
+import UsersPage from '@/pages/UsersPage'
+import CollectionsPage from '@/pages/CollectionsPage'
+import ChartOfAccountsPage from '@/pages/ChartOfAccountsPage'
 
 function ProtectedLayout() {
     const { isAuthenticated } = useAuth()
@@ -23,10 +30,17 @@ function ProtectedLayout() {
                     <Routes>
                         <Route path="/dashboard" element={<DashboardPage />} />
                         <Route path="/customers" element={<CustomersPage />} />
+                        <Route path="/customers/:id" element={<CustomerDetailPage />} />
                         <Route path="/savings" element={<SavingsPage />} />
                         <Route path="/loans" element={<LoansPage />} />
+                        <Route path="/loans/:id" element={<LoanDetailPage />} />
                         <Route path="/loan-products" element={<LoanProductsPage />} />
                         <Route path="/transactions" element={<TransactionsPage />} />
+                        <Route path="/branches" element={<BranchesPage />} />
+                        <Route path="/audit-logs" element={<AuditLogPage />} />
+                        <Route path="/users" element={<UsersPage />} />
+                        <Route path="/collections" element={<CollectionsPage />} />
+                        <Route path="/chart-of-accounts" element={<ChartOfAccountsPage />} />
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </div>
@@ -34,6 +48,7 @@ function ProtectedLayout() {
         </div>
     )
 }
+
 
 function AppRoutes() {
     const { isAuthenticated } = useAuth()
