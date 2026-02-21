@@ -42,6 +42,8 @@ async def create_indexes():
         await users_collection.create_index("email", unique=True)
         await users_collection.create_index("username", unique=True)
         await customers_collection.create_index("display_name", unique=True)
+        await loans_collection.create_index("loan_id", unique=True)
+        await loan_products_collection.create_index("product_name", unique=True)
         print("Indexes created successfully.")
     except Exception as e:
         print(f"Error creating indexes: {e}")

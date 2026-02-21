@@ -246,54 +246,54 @@ class Mutation:
                 message=f"Error updating user: {str(e)}"
             )
 
-        @strawberry.field
-        async def delete_user(self, info: Info, user_id: str) -> UserResponse:
-            """Delete a user"""
-            current_user: UserInDB = info.context.get("current_user")
-            if not current_user or current_user.role != "admin":
-                raise Exception("Not authorized")
-    
-            try:
-                users_collection = get_users_collection()
-                user_crud = UserCRUD(users_collection)
-    
-                success = await user_crud.delete_user(user_id)
-                if not success:
-                    return UserResponse(
-                        success=False,
-                        message="User not found"
-                    )
-    
-                return UserResponse(
-                    success=True,
-                    message="User deleted successfully"
-                )
-            except Exception as e:
+    @strawberry.field
+    async def delete_user(self, info: Info, user_id: str) -> UserResponse:
+        """Delete a user"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise Exception("Not authorized")
+
+        try:
+            users_collection = get_users_collection()
+            user_crud = UserCRUD(users_collection)
+
+            success = await user_crud.delete_user(user_id)
+            if not success:
                 return UserResponse(
                     success=False,
-                    message=f"Error deleting user: {str(e)}"
+                    message="User not found"
                 )
-    
-        @strawberry.field
-        async def logout(self, info: Info) -> LogoutResponse:
-            """User logout - blacklist the token"""
-            token = info.context.get("token")
-            request = info.context.get("request")
+
+            return UserResponse(
+                success=True,
+                message="User deleted successfully"
+            )
+        except Exception as e:
+            return UserResponse(
+                success=False,
+                message=f"Error deleting user: {str(e)}"
+            )
+
+    @strawberry.field
+    async def logout(self, info: Info) -> LogoutResponse:
+        """User logout - blacklist the token"""
+        token = info.context.get("token")
+        request = info.context.get("request")
+        
+        if not token:
+            return LogoutResponse(success=False, message="No active session found")
             
-            if not token:
-                return LogoutResponse(success=False, message="No active session found")
-                
-            try:
-                # Get redis from app state
-                redis = request.app.state.redis
-                if redis:
-                    # Blacklist the token for 30 minutes (matching token expiry)
-                    # In a real app, you might want to calculate remaining TTL
-                    redis.setex(f"blacklist:{token}", 1800, "true")
-                    print(f"--- Token blacklisted: {token} ---")
-                
-                return LogoutResponse(success=True, message="Logged out successfully")
-            except Exception as e:
-                print(f"Error during logout: {e}")
-                return LogoutResponse(success=False, message=f"Logout failed: {str(e)}")
+        try:
+            # Get redis from app state
+            redis = request.app.state.redis
+            if redis:
+                # Blacklist the token for 30 minutes (matching token expiry)
+                # In a real app, you might want to calculate remaining TTL
+                redis.setex(f"blacklist:{token}", 1800, "true")
+                print(f"--- Token blacklisted: {token} ---")
+            
+            return LogoutResponse(success=True, message="Logged out successfully")
+        except Exception as e:
+            print(f"Error during logout: {e}")
+            return LogoutResponse(success=False, message=f"Logout failed: {str(e)}")
     

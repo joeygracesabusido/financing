@@ -24,3 +24,5 @@ pydantic
 
 redis
 httpx
+jinja2
+aiofiles

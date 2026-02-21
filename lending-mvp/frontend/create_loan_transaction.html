@@ -72,15 +72,15 @@
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Service Information</h2>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <div>
-                                <label for="loan-id" class="block text-gray-700 text-sm font-bold mb-2">Commercial bank: <span class="text-red-500">*</span></label>
+                                <label for="commercial_bank" class="block text-gray-700 text-sm font-bold mb-2">Commercial bank: <span class="text-red-500">*</span></label>
                                 <input type="text" id="commercial_bank" name="commercial_bank" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                             </div>
                             <div>
-                                <label for="borrower-name" class="block text-gray-700 text-sm font-bold mb-2">Servicing Branch:</label>
+                                <label for="servicing-branch" class="block text-gray-700 text-sm font-bold mb-2">Servicing Branch:</label>
                                 <input type="text" id="servicing-branch" name="servicing-branch" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             </div>
                             <div>
-                                <label for="loan-product" class="block text-gray-700 text-sm font-bold mb-2">Region:</label>
+                                <label for="region" class="block text-gray-700 text-sm font-bold mb-2">Region:</label>
                                 <input type="text" id="region" name="region" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             </div>
                         </div>
@@ -104,6 +104,16 @@
                                 <label for="loan-product" class="block text-gray-700 text-sm font-bold mb-2">Loan Product:</label>
                                 <input type="text" id="loan-product" list="loan-product-list" placeholder="Start typing loan product" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                                 <datalist id="loan-product-list"></datalist>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="term-months" class="block text-gray-700 text-sm font-bold mb-2">Terms (Months):</label>
+                                <input type="number" id="term-months" name="termMonths" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g. 12">
+                            </div>
+                            <div>
+                                <label for="interest-rate" class="block text-gray-700 text-sm font-bold mb-2">Interest Rate (%):</label>
+                                <input type="number" step="0.01" id="interest-rate" name="interestRate" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g. 5.00">
                             </div>
                         </div>
                     </div>

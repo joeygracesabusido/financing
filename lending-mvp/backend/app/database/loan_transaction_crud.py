@@ -38,11 +38,21 @@ class LoanTransactionCRUD:
         transactions_data = await self.collection.find({"loan_id": loan_id}).skip(skip).limit(limit).to_list(length=limit)
         return [LoanTransaction.model_validate(transaction_data) for transaction_data in transactions_data]
 
-    async def get_loan_transactions(self, skip: int = 0, limit: int = 100, loan_id: Optional[str] = None, search_term: Optional[str] = None) -> List[LoanTransaction]:
+    async def get_loan_transactions(self, skip: int = 0, limit: int = 100, loan_id: Optional[str] = None, search_term: Optional[str] = None, transaction_type: Optional[str] = None) -> List[LoanTransaction]:
         query: Dict[str, Any] = {}
         if loan_id:
-            query["loan_id"] = loan_id
+            # Try matching loan_id as string, ObjectId (if valid), or integer (if numeric)
+            id_matches = [loan_id]
+            if ObjectId.is_valid(loan_id):
+                id_matches.append(ObjectId(loan_id))
+            if loan_id.isdigit():
+                id_matches.append(int(loan_id))
+            
+            query["loan_id"] = {"$in": id_matches}
         
+        if transaction_type:
+            query["transaction_type"] = transaction_type
+
         if search_term:
             query["$or"] = [
                 {"borrower_name": {"$regex": search_term, "$options": "i"}},
@@ -54,10 +64,20 @@ class LoanTransactionCRUD:
         transactions_data = await self.collection.find(query).skip(skip).limit(limit).to_list(length=limit)
         return [LoanTransaction.model_validate(transaction_data) for transaction_data in transactions_data]
 
-    async def count_loan_transactions(self, loan_id: Optional[str] = None, search_term: Optional[str] = None) -> int:
+    async def count_loan_transactions(self, loan_id: Optional[str] = None, search_term: Optional[str] = None, transaction_type: Optional[str] = None) -> int:
         query: Dict[str, Any] = {}
         if loan_id:
-            query["loan_id"] = loan_id
+            # Same robust matching for count
+            id_matches = [loan_id]
+            if ObjectId.is_valid(loan_id):
+                id_matches.append(ObjectId(loan_id))
+            if loan_id.isdigit():
+                id_matches.append(int(loan_id))
+            
+            query["loan_id"] = {"$in": id_matches}
+
+        if transaction_type:
+            query["transaction_type"] = transaction_type
             
         if search_term:
             query["$or"] = [

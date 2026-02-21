@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusDisplay = document.getElementById('detail-status');
     const amountRequestedDisplay = document.getElementById('detail-amount-requested');
     const balanceDisplay = document.getElementById('detail-balance');
+    const interestBalanceDisplay = document.getElementById('detail-interest-balance');
     const interestRateDisplay = document.getElementById('detail-interest-rate');
     const termDisplay = document.getElementById('detail-term');
     const createdAtDisplay = document.getElementById('detail-created-at');
@@ -57,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     const getLoanTransactionsQuery = `
-        query GetLoanTransactions($loanId: ID!) {
-            loanTransactions(loanId: $loanId) {
+        query GetLoanTransactions($loanId: ID, $transactionType: String) {
+            loanTransactions(loanId: $loanId, transactionType: $transactionType) {
                 success
                 message
                 transactions {
@@ -86,6 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     `;
+
+    const formatCurrency = (amount) => {
+        if (amount === null || amount === undefined || isNaN(amount)) return '₱0.00';
+        return '₱' + new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    };
 
     const fetchLoanDetails = async () => {
         console.log('=== FETCHING LOAN DETAILS ===');
@@ -143,9 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Amount Requested
                 const amountRequested = parseFloat(loan.amountRequested);
-                amountRequestedDisplay.textContent = !isNaN(amountRequested) 
-                    ? `₱${amountRequested.toFixed(2)}` 
-                    : '₱0.00';
+                amountRequestedDisplay.textContent = formatCurrency(amountRequested);
                 
                 // Interest Rate
                 const interestRate = parseFloat(loan.interestRate);
@@ -154,7 +161,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     : '-';
                 
                 // Term
-                termDisplay.textContent = loan.termMonths || '-';
+                const termMonths = parseInt(loan.termMonths);
+                termDisplay.textContent = termMonths || '-';
+
+                // Interest Balance Calculation (Per Annum rate for monthly term):
+                // (Amount * (Rate / 100) / 12 months) * termMonths
+                if (!isNaN(amountRequested) && !isNaN(interestRate) && !isNaN(termMonths) && termMonths > 0) {
+                    const monthlyRate = (interestRate / 100) / 12;
+                    const totalInterestForTerm = amountRequested * monthlyRate * termMonths;
+                    interestBalanceDisplay.textContent = formatCurrency(totalInterestForTerm);
+                } else {
+                    interestBalanceDisplay.textContent = '₱0.00';
+                }
                 
                 // Created At
                 if (loan.createdAt) {
@@ -202,7 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     query: getLoanTransactionsQuery,
-                    variables: { loanId: loanId }
+                    variables: { 
+                        loanId: loanId,
+                        transactionType: null // We want ALL transactions here
+                    }
                 })
             });
             
@@ -268,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.innerHTML = `
                 <td class="p-3">${new Date(t.transactionDate).toLocaleString()}</td>
                 <td class="p-3 font-medium">${t.transactionType.toUpperCase()}</td>
-                <td class="p-3 font-bold ${amountClass}">${amountPrefix}₱${parseFloat(t.amount).toFixed(2)}</td>
+                <td class="p-3 font-bold ${amountClass}">${amountPrefix}${formatCurrency(parseFloat(t.amount))}</td>
                 <td class="p-3 text-sm text-gray-600">${t.notes || '-'}</td>
             `;
             transactionsTableBody.appendChild(row);
@@ -297,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         console.log('💾 Final balance:', balance);
-        balanceDisplay.textContent = `₱${balance.toFixed(2)}`;
+        balanceDisplay.textContent = formatCurrency(balance);
         if (balance <= 0) {
             balanceDisplay.className = 'font-bold text-green-600';
             console.log('✅ Balance is zero or negative (good - fully paid)');

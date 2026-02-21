@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // GraphQL query to fetch loan transactions
     let getLoanTransactionsQuery = `
-        query GetLoanTransactions($loanId: ID, $searchTerm: String, $skip: Int, $limit: Int) {
-            loanTransactions(loanId: $loanId, searchTerm: $searchTerm, skip: $skip, limit: $limit) {
+        query GetLoanTransactions($loanId: ID, $searchTerm: String, $skip: Int, $limit: Int, $transactionType: String) {
+            loanTransactions(loanId: $loanId, searchTerm: $searchTerm, skip: $skip, limit: $limit, transactionType: $transactionType) {
                 success
                 message
                 transactions {
@@ -30,13 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     // Fetching loan transactions with optional filters
-    const fetchLoanTransactions = async (loanId = null, searchTerm = null, skip = 0, limit = 100) => {
+    const fetchLoanTransactions = async (loanId = null, searchTerm = null, skip = 0, limit = 100, transactionType = 'disbursement') => {
         const token = localStorage.getItem('accessToken');
         
         console.log('=== Fetching Loan Transactions ===');
         console.log('Token exists:', !!token);
         console.log('Loan ID filter:', loanId);
         console.log('Search term:', searchTerm);
+        console.log('Transaction Type:', transactionType);
         
         if (!token) {
             console.error('❌ Authentication token not found.');
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     query: getLoanTransactionsQuery,
-                    variables: { loanId, searchTerm, skip, limit }
+                    variables: { loanId, searchTerm, skip, limit, transactionType }
                 })
             });
 

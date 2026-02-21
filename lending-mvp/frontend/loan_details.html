@@ -19,10 +19,10 @@
                 </div>
                 <nav>
                     <ul>
-                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
                         <li class="mb-4">
-                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
-                                <i class="fas fa-users mr-3"></i> Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left p-2 rounded-lg transition duration-200">
+                                <i class="fas fa-exchange-alt mr-3"></i>Customer <i class="fas fa-chevron-down ml-auto"></i>
                             </button>
                             <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
                                 <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
@@ -30,97 +30,117 @@
                             </div>
                         </li>
                         <li class="mb-4">
-                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
-                                <i class="fas fa-piggy-bank mr-3"></i> Savings <i class="fas fa-chevron-down ml-auto"></i>
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left p-2 rounded-lg transition duration-200">
+                                <i class="fas fa-exchange-alt mr-3"></i>Saving<i class="fas fa-chevron-down ml-auto"></i>
                             </button>
                             <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
-                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings Accounts</a>
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings</a>
                                 <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
                             </div>
                         </li>
                         <li class="mb-4">
-                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left">
-                                <i class="fas fa-hand-holding-usd mr-3"></i> Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left transition duration-200">
+                                <i class="fas fa-hand-holding-usd mr-3"></i>Loans <i class="fas fa-chevron-down ml-auto"></i>
                             </button>
                             <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
                                 <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
                                 <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
-                                <a href="loan_transaction.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Loan Transactions</a>
+                                <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
                             </div>
                         </li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-cog mr-3"></i> Settings</a></li>
                     </ul>
                 </nav>
             </div>
             <div>
                 <ul>
-                    <li class="mb-4"><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                    <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-question-circle mr-3"></i> Help</a></li>
+                    <li><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
                 </ul>
             </div>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-grow p-8">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-bold">Loan Details: <span id="loan-id-display" class="text-green-600">Loading...</span></h1>
-                <a href="loan_transaction.html" class="text-gray-600 hover:text-gray-800 font-bold"><i class="fas fa-arrow-left mr-2"></i> Back to Transactions</a>
-            </div>
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold">Loan Details: <span id="loan-id-display" class="text-green-600">Loading...</span></h1>
+                    <p class="text-gray-500">Comprehensive view of loan information and transaction history.</p>
+                </div>
+                <div class="flex items-center">
+                    <a href="loan_transaction.html" class="mr-4 text-green-500 hover:text-green-700 font-bold"><i class="fas fa-arrow-left mr-2"></i> Back to Transactions</a>
+                    <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                </div>
+            </header>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Loan Information -->
                 <div class="lg:col-span-2 space-y-8">
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
-                        <h2 class="text-xl font-bold mb-4 border-b pb-2">Loan Information</h2>
-                        <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex justify-between items-center mb-4 border-b pb-2">
+                            <h2 class="text-xl font-bold">Loan Information</h2>
+                            <i class="fas fa-info-circle text-gray-400"></i>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
                             <div>
-                                <p class="text-gray-500 text-sm">Borrower Names</p>
-                                <p id="detail-borrower-name" class="font-bold">-</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Borrower Name</p>
+                                <p id="detail-borrower-name" class="text-lg font-bold text-gray-800">-</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Loan Product</p>
-                                <p id="detail-loan-product" class="font-bold">-</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Loan Product</p>
+                                <p id="detail-loan-product" class="text-lg font-bold text-gray-800">-</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Status</p>
-                                <p id="detail-status" class="font-bold">-</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Status</p>
+                                <p id="detail-status" class="text-lg font-bold">-</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Amount Requested</p>
-                                <p id="detail-amount-requested" class="font-bold text-green-600">₱0.00</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Amount Requested</p>
+                                <p id="detail-amount-requested" class="text-2xl font-extrabold text-green-600">₱0.00</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Remaining Balance</p>
-                                <p id="detail-balance" class="font-bold text-red-600">₱0.00</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Remaining Balance</p>
+                                <p id="detail-balance" class="text-2xl font-extrabold text-red-600">₱0.00</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Interest Rate</p>
-                                <p id="detail-interest-rate" class="font-bold">-</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Interest Balance</p>
+                                <p id="detail-interest-balance" class="text-2xl font-extrabold text-blue-600">₱0.00</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Term (Months)</p>
-                                <p id="detail-term" class="font-bold">-</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Interest Rate</p>
+                                <p id="detail-interest-rate" class="text-lg font-bold text-gray-800">-</p>
                             </div>
                             <div>
-                                <p class="text-gray-500 text-sm">Created At</p>
-                                <p id="detail-created-at" class="font-bold">-</p>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Term (Months)</p>
+                                <p id="detail-term" class="text-lg font-bold text-gray-800">-</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Created At</p>
+                                <p id="detail-created-at" class="text-lg font-bold text-gray-800">-</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Transaction History -->
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
-                        <h2 class="text-xl font-bold mb-4 border-b pb-2">Transaction History</h2>
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-bold">Transaction History</h2>
+                            <span class="text-gray-400 text-sm"><i class="fas fa-history mr-1"></i> Recent Activity</span>
+                        </div>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
+                            <table class="w-full">
                                 <thead>
-                                    <tr class="bg-gray-100 text-sm font-bold text-gray-600">
-                                        <th class="p-3">Date</th>
-                                        <th class="p-3">Type</th>
-                                        <th class="p-3">Amount</th>
-                                        <th class="p-3">Notes</th>
+                                    <tr class="text-left text-gray-500 text-xs uppercase tracking-wider border-b">
+                                        <th class="pb-3">DATE</th>
+                                        <th class="pb-3">TYPE</th>
+                                        <th class="pb-3">AMOUNT</th>
+                                        <th class="pb-3">NOTES</th>
                                     </tr>
                                 </thead>
                                 <tbody id="transactions-table-body">
-                                    <tr><td colspan="4" class="p-3 text-center">Loading transactions...</td></tr>
+                                    <tr><td colspan="4" class="py-4 text-center text-gray-400 italic">Loading transactions...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -129,26 +149,31 @@
 
                 <!-- Payment Form -->
                 <div class="space-y-8">
-                    <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-green-500">
-                        <h2 class="text-xl font-bold mb-4">Make a Payment</h2>
-                        <form id="payment-form">
-                            <div class="mb-4">
-                                <label for="payment-amount" class="block text-gray-700 text-sm font-bold mb-2">Payment Amount <span class="text-red-500">*</span></label>
-                                <input type="number" step="0.01" id="payment-amount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="0.00" required>
+                    <div class="bg-white p-6 rounded-lg shadow border-t-4 border-green-500">
+                        <h2 class="text-xl font-bold mb-6 flex items-center">
+                            <i class="fas fa-plus-circle text-green-500 mr-2"></i> Make a Payment
+                        </h2>
+                        <form id="payment-form" class="space-y-4">
+                            <div>
+                                <label for="payment-amount" class="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Payment Amount <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-gray-400">₱</span>
+                                    <input type="number" step="0.01" id="payment-amount" class="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200" placeholder="0.00" required>
+                                </div>
                             </div>
-                            <div class="mb-4">
-                                <label for="payment-date" class="block text-gray-700 text-sm font-bold mb-2">Payment Date</label>
-                                <input type="datetime-local" id="payment-date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <div>
+                                <label for="payment-date" class="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Payment Date</label>
+                                <input type="datetime-local" id="payment-date" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200">
                             </div>
-                            <div class="mb-4">
-                                <label for="payment-notes" class="block text-gray-700 text-sm font-bold mb-2">Notes</label>
-                                <textarea id="payment-notes" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Optional notes..."></textarea>
+                            <div>
+                                <label for="payment-notes" class="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Notes</label>
+                                <textarea id="payment-notes" rows="3" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200" placeholder="Optional notes..."></textarea>
                             </div>
-                            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full transition duration-200">
-                                Submit Payment
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg w-full shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center">
+                                <i class="fas fa-check-circle mr-2"></i> Submit Payment
                             </button>
                         </form>
-                        <div id="payment-message" class="mt-4 text-sm font-bold"></div>
+                        <div id="payment-message" class="mt-4 text-sm font-bold text-center"></div>
                     </div>
                 </div>
             </div>

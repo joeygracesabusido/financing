@@ -18,7 +18,10 @@ def json_serial(obj):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
-    raise TypeError ("Type %s not serializable" % type(obj))
+    try:
+        return str(obj)
+    except:
+        raise TypeError ("Type %s not serializable" % type(obj))
 
 def map_db_transaction_to_strawberry_type(trans_data: TransactionInDB) -> TransactionType:
     """Maps a TransactionInDB object from the DB to a TransactionType."""
@@ -76,7 +79,8 @@ class TransactionQuery:
 
 @strawberry.type
 class TransactionMutation:
-    async def _clear_transaction_cache(self, redis, account_id):
+    @staticmethod
+    async def _clear_transaction_cache(redis, account_id):
         if not redis: return
         # Clear transaction list for this account
         redis.delete(f"transactions:list:{account_id}")
@@ -117,7 +121,7 @@ class TransactionMutation:
         transaction = map_db_transaction_to_strawberry_type(created_transaction)
         
         redis = info.context.get("request").app.state.redis
-        await self._clear_transaction_cache(redis, input.account_id)
+        await TransactionMutation._clear_transaction_cache(redis, input.account_id)
 
         return TransactionResponse(success=True, message=f"{trans_type.capitalize()} successful", transaction=transaction)
 

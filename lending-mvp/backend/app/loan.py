@@ -20,7 +20,10 @@ def json_serial(obj):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
-    raise TypeError ("Type %s not serializable" % type(obj))
+    try:
+        return str(obj)
+    except:
+        raise TypeError ("Type %s not serializable" % type(obj))
 
 # Loan Types (Strawberry)
 @strawberry.type
@@ -224,14 +227,37 @@ class LoanQuery:
 
 @strawberry.type
 class LoanMutation:
-    async def _clear_loan_cache(self, redis, loan_id=None):
+    @staticmethod
+    async def _clear_loan_cache(redis, loan_id=None):
         if not redis: return
-        keys = redis.keys("loans:list:*")
+        
+        # Clear list caches
+        keys_to_delete = redis.keys("loans:list:*")
+        if not isinstance(keys_to_delete, list):
+            keys_to_delete = []
+            
         if loan_id:
-            keys.append(f"loan:{loan_id}")
-        if keys:
-            redis.delete(*keys)
-            print(f"--- Cache cleared for loans ---")
+            # Add the primary ID to delete
+            keys_to_delete.append(f"loan:{loan_id}")
+            
+            # Also try to find the custom loanId to clear its cache too
+            try:
+                loans_collection = get_loans_collection()
+                loan_crud = LoanCRUD(loans_collection)
+                loan_db = await loan_crud.get_loan_by_id(str(loan_id))
+                if loan_db:
+                    if str(loan_db.id) != str(loan_id):
+                        keys_to_delete.append(f"loan:{loan_db.id}")
+                    if loan_db.loan_id and str(loan_db.loan_id) != str(loan_id):
+                        keys_to_delete.append(f"loan:{loan_db.loan_id}")
+            except Exception as e:
+                print(f"Error during cache clearing: {e}")
+
+        if keys_to_delete:
+            # Filter unique keys and ensure they are strings for delete
+            unique_keys = list(set([k.decode() if isinstance(k, bytes) else k for k in keys_to_delete]))
+            redis.delete(*unique_keys)
+            print(f"--- Cache cleared for loans: {unique_keys} ---")
 
     @strawberry.mutation
     async def create_loan(self, info: Info, input: LoanCreateInput) -> LoanResponse:
@@ -239,37 +265,42 @@ class LoanMutation:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-        if current_user.role not in ["admin", "staff", "user"]: # Even users can apply for loans
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to create loans")
+        
+        print(f"--- Mutation: create_loan ---")
+        print(f"Input: {input}")
 
         try:
             loans_collection = get_loans_collection()
             loan_crud = LoanCRUD(loans_collection)
 
-            # Ensure the borrower_id is either the current user's ID or, for admin/staff, explicitly provided
-            if current_user.role == "user":
-                if str(input.borrower_id) != str(current_user.id):
-                    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Users can only create loans for themselves.")
+            # Convert Strawberry input to dict and handle types
+            loan_data = {k: v for k, v in strawberry.asdict(input).items() if v is not None}
+            print(f"Mapped Loan Data: {loan_data}")
             
+            # Map types explicitly for the Pydantic model
             loan_create = LoanCreate(
-                borrower_id=PyObjectId(str(input.borrower_id)),
-                loan_id=input.loan_id,
-                loan_product=input.loan_product,
-                amount_requested=input.amount_requested,
-                term_months=input.term_months,
-                interest_rate=input.interest_rate
+                borrower_id=PyObjectId(str(loan_data["borrower_id"])),
+                loan_id=loan_data.get("loan_id"),
+                loan_product=loan_data.get("loan_product"),
+                amount_requested=loan_data["amount_requested"],
+                term_months=loan_data["term_months"],
+                interest_rate=loan_data["interest_rate"]
             )
+            print(f"LoanCreate Pydantic: {loan_create}")
             
             loan_db = await loan_crud.create_loan(loan_create)
+            print(f"Loan Created in DB: {loan_db.id}")
+            
             loan_type = convert_loan_db_to_loan_type(loan_db)
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_cache(redis)
+            await LoanMutation._clear_loan_cache(redis)
 
             return LoanResponse(success=True, message="Loan application created successfully", loan=loan_type)
-        except HTTPException as e:
-            raise e
         except Exception as e:
+            print(f"Error in create_loan mutation: {e}")
+            import traceback
+            traceback.print_exc()
             return LoanResponse(success=False, message=f"Error creating loan: {str(e)}")
 
     @strawberry.mutation
@@ -278,33 +309,40 @@ class LoanMutation:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-        # Only admin/staff can update loans for now, or potentially the borrower for certain fields
-        if current_user.role not in ["admin", "staff"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update loans")
+
+        print(f"--- Mutation: update_loan ---")
+        print(f"Loan ID: {loan_id}, Input: {input}")
 
         try:
             loans_collection = get_loans_collection()
             loan_crud = LoanCRUD(loans_collection)
 
-            loan_update_data = input.model_dump(exclude_unset=True)
+            # Convert Strawberry input to dict and remove None values (exclude_unset equivalent)
+            loan_update_data = {k: v for k, v in strawberry.asdict(input).items() if v is not None}
+            print(f"Mapped Update Data: {loan_update_data}")
+            
             if "borrower_id" in loan_update_data and loan_update_data["borrower_id"] is not None:
                 loan_update_data["borrower_id"] = PyObjectId(str(loan_update_data["borrower_id"]))
 
             loan_update = LoanUpdate(**loan_update_data)
+            print(f"LoanUpdate Pydantic: {loan_update}")
             
             loan_db = await loan_crud.update_loan(str(loan_id), loan_update)
             if not loan_db:
+                print(f"Loan not found for ID: {loan_id}")
                 return LoanResponse(success=False, message="Loan not found")
             
+            print(f"Loan Updated in DB: {loan_db.id}")
             loan_type = convert_loan_db_to_loan_type(loan_db)
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_cache(redis, loan_id)
+            await LoanMutation._clear_loan_cache(redis, loan_id)
 
             return LoanResponse(success=True, message="Loan updated successfully", loan=loan_type)
-        except HTTPException as e:
-            raise e
         except Exception as e:
+            print(f"Error in update_loan mutation: {e}")
+            import traceback
+            traceback.print_exc()
             return LoanResponse(success=False, message=f"Error updating loan: {str(e)}")
 
     @strawberry.mutation
@@ -332,7 +370,7 @@ class LoanMutation:
                 return LoanResponse(success=False, message="Loan not found or could not be deleted")
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_cache(redis, loan_id)
+            await LoanMutation._clear_loan_cache(redis, loan_id)
 
             return LoanResponse(success=True, message="Loan deleted successfully")
         except HTTPException as e:

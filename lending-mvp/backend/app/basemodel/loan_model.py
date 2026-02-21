@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, field_serializer
 from typing import Optional, List, Any
 from datetime import datetime, date
 from bson import ObjectId
@@ -44,19 +44,23 @@ class PyObjectId(ObjectId):
 # --- Loan Models ---
 class LoanBase(BaseModel):
     borrower_id: Any # Allow string or ObjectId
-    loan_id: Optional[str] = Field(None, alias="loanId")
-    loan_product: Optional[str] = Field(None, alias="loanProduct")
+    loan_id: Optional[str] = Field(None, alias="loan_id")
+    loan_product: Optional[str] = Field(None, alias="loan_product")
     amount_requested: Decimal
     term_months: int
     interest_rate: Decimal # Annual rate
+
+    @field_serializer('amount_requested', 'interest_rate')
+    def serialize_decimal(self, value: Decimal):
+        return float(value)
 
 class LoanCreate(LoanBase):
     pass
 
 class LoanUpdate(BaseModel):
     borrower_id: Optional[Any] = None
-    loan_id: Optional[str] = Field(None, alias="loanId")
-    loan_product: Optional[str] = Field(None, alias="loanProduct")
+    loan_id: Optional[str] = Field(None, alias="loan_id")
+    loan_product: Optional[str] = Field(None, alias="loan_product")
     amount_requested: Optional[Decimal] = None
     term_months: Optional[int] = None
     interest_rate: Optional[Decimal] = None

@@ -20,7 +20,10 @@ def json_serial(obj):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
-    raise TypeError ("Type %s not serializable" % type(obj))
+    try:
+        return str(obj)
+    except:
+        raise TypeError ("Type %s not serializable" % type(obj))
 
 # Customer Types
 @strawberry.type
@@ -259,7 +262,8 @@ class Query:
 
 @strawberry.type
 class Mutation:
-    async def _clear_customer_cache(self, redis, customer_id=None):
+    @staticmethod
+    async def _clear_customer_cache(redis, customer_id=None):
         if not redis: return
         keys = redis.keys("customers:list:*")
         if customer_id:
@@ -293,7 +297,7 @@ class Mutation:
             customer = convert_customer_db_to_customer_type(customer_db)
 
             redis = info.context.get("request").app.state.redis
-            await self._clear_customer_cache(redis)
+            await Mutation._clear_customer_cache(redis)
 
             return CustomerResponse(
                 success=True,
@@ -330,7 +334,7 @@ class Mutation:
             customer = convert_customer_db_to_customer_type(customer_db)
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_customer_cache(redis, customer_id)
+            await Mutation._clear_customer_cache(redis, customer_id)
 
             return CustomerResponse(
                 success=True,
@@ -361,7 +365,7 @@ class Mutation:
                 )
 
             redis = info.context.get("request").app.state.redis
-            await self._clear_customer_cache(redis, customer_id)
+            await Mutation._clear_customer_cache(redis, customer_id)
 
             return CustomerResponse(
                 success=True,

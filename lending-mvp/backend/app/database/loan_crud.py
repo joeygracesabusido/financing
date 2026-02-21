@@ -42,7 +42,14 @@ class LoanCRUD:
         query = {"$or": query_conditions}
         loan_data = await self.collection.find_one(query)
         if loan_data:
-            return Loan.model_validate(loan_data)
+            try:
+                return Loan.model_validate(loan_data)
+            except Exception as e:
+                print(f"Error validating loan data from DB: {e}")
+                print(f"Data: {loan_data}")
+                # Fallback: try to fix the data or return a partial object if possible
+                # For now, just re-raise or return None
+                raise e
         return None
 
     async def get_loans(self, skip: int = 0, limit: int = 100, borrower_id: Optional[str] = None) -> List[Loan]:
@@ -60,10 +67,12 @@ class LoanCRUD:
         return await self.collection.count_documents(query)
 
     async def update_loan(self, loan_id: str, loan_update: LoanUpdate) -> Optional[Loan]:
-        if not ObjectId.is_valid(loan_id):
+        # First find the loan to get its internal _id
+        existing_loan = await self.get_loan_by_id(loan_id)
+        if not existing_loan:
             return None
 
-        update_data = loan_update.model_dump(exclude_unset=True)
+        update_data = loan_update.model_dump(exclude_unset=True, by_alias=True)
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc)
             # Ensure borrower_id is converted to ObjectId if present
@@ -71,12 +80,11 @@ class LoanCRUD:
                 update_data["borrower_id"] = ObjectId(update_data["borrower_id"])
 
             result = await self.collection.update_one(
-                {"_id": ObjectId(loan_id)},
+                {"_id": existing_loan.id},
                 {"$set": update_data}
             )
-            if result.modified_count == 1:
-                return await self.get_loan_by_id(loan_id)
-        return None
+            return await self.get_loan_by_id(str(existing_loan.id))
+        return existing_loan
 
     async def delete_loan(self, loan_id: str) -> bool:
         if not ObjectId.is_valid(loan_id):

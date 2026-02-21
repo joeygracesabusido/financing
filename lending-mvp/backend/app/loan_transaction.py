@@ -17,6 +17,9 @@ def json_serial(obj):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
+    if hasattr(obj, '__str__'):
+        # This handles strawberry.ID and other custom types that can be stringified
+        return str(obj)
     raise TypeError ("Type %s not serializable" % type(obj))
 
 # Loan Transaction Types (Strawberry)
@@ -109,19 +112,24 @@ class LoanTransactionsResponse:
     total: int
 
 def convert_db_to_transaction_type(db_obj: LoanTransaction) -> LoanTransactionType:
-    data = db_obj.model_dump()
-    # model_dump with by_alias=True was used in CRUD, but model_validate should handle either.
-    # To be safe, we map fields manually.
-    
+    # Ensure datetime fields are actual datetime objects (Pydantic should do this, but being safe)
+    def ensure_datetime(dt):
+        if isinstance(dt, str):
+            try:
+                return datetime.fromisoformat(dt.replace('Z', '+00:00'))
+            except:
+                return datetime.utcnow()
+        return dt
+
     transaction_type = LoanTransactionType(
         id=strawberry.ID(str(db_obj.id)),
         loan_id=strawberry.ID(str(db_obj.loan_id)),
         transaction_type=db_obj.transaction_type,
         amount=db_obj.amount,
-        transaction_date=db_obj.transaction_date,
+        transaction_date=ensure_datetime(db_obj.transaction_date),
         notes=db_obj.notes,
-        created_at=db_obj.created_at,
-        updated_at=db_obj.updated_at,
+        created_at=ensure_datetime(db_obj.created_at),
+        updated_at=ensure_datetime(db_obj.updated_at),
         commercial_bank=db_obj.commercial_bank,
         servicing_branch=db_obj.servicing_branch,
         region=db_obj.region,
@@ -154,34 +162,43 @@ class LoanTransactionQuery:
         redis = info.context.get("request").app.state.redis
         cache_key = f"loan_transaction:{transaction_id}"
         
-        # Skip caching for now due to async method serialization issues
         # if redis:
         #     cached = redis.get(cache_key)
         #     if cached:
         #         print(f"--- Cache hit for {cache_key} ---")
         #         data = json.loads(cached)
         #         
-        #         # Convert back types
+        #         # Convert back types using camelCase keys from asdict
         #         if data.get('amount'): data['amount'] = Decimal(str(data['amount']))
-        #         if data.get('transaction_date'): data['transaction_date'] = datetime.fromisoformat(data['transaction_date'])
-        #         if data.get('created_at'): data['created_at'] = datetime.fromisoformat(data['created_at'])
-        #         if data.get('updated_at'): data['updated_at'] = datetime.fromisoformat(data['updated_at'])
-        #         
-        #         borrower_name = data.get('_borrower_name')
+        #         if data.get('transactionDate'): data['transactionDate'] = datetime.fromisoformat(data['transactionDate'])
+        #         if data.get('createdAt'): data['createdAt'] = datetime.fromisoformat(data['createdAt'])
+        #         if data.get('updatedAt'): data['updatedAt'] = datetime.fromisoformat(data['updatedAt'])
         #         
         #         # Filter for constructor
-        #         allowed_keys = {
-        #             'id', 'loan_id', 'transaction_type', 'amount', 'transaction_date', 'notes',
-        #             'created_at', 'updated_at', 'commercial_bank', 'servicing_branch', 'region',
-        #             'loan_product', 'reference_number', 'debit_account', 'credit_account',
-        #             'disbursement_method', 'disbursement_status', 'cheque_number',
-        #             'beneficiary_bank', 'beneficiary_account', 'approved_by', 'processed_by'
-        #         }
-        #         
-        #         final_data = {k: v for k, v in data.items() if k in allowed_keys}
-        #         
+        #         final_data = {}
+        #         for k, v in data.items():
+        #             if k == 'loanId': final_data['loan_id'] = strawberry.ID(v)
+        #             elif k == 'transactionType': final_data['transaction_type'] = v
+        #             elif k == 'transactionDate': final_data['transaction_date'] = v
+        #             elif k == 'createdAt': final_data['created_at'] = v
+        #             elif k == 'updatedAt': final_data['updated_at'] = v
+        #             elif k == 'commercialBank': final_data['commercial_bank'] = v
+        #             elif k == 'servicingBranch': final_data['servicing_branch'] = v
+        #             elif k == 'referenceNumber': final_data['reference_number'] = v
+        #             elif k == 'debitAccount': final_data['debit_account'] = v
+        #             elif k == 'creditAccount': final_data['credit_account'] = v
+        #             elif k == 'disbursementMethod': final_data['disbursement_method'] = v
+        #             elif k == 'disbursementStatus': final_data['disbursement_status'] = v
+        #             elif k == 'chequeNumber': final_data['cheque_number'] = v
+        #             elif k == 'beneficiaryBank': final_data['beneficiary_bank'] = v
+        #             elif k == 'beneficiaryAccount': final_data['beneficiary_account'] = v
+        #             elif k == 'approvedBy': final_data['approved_by'] = v
+        #             elif k == 'processedBy': final_data['processed_by'] = v
+        #             elif k == 'borrowerName': final_data['borrower_name'] = v
+        #             elif k == 'loanProduct': final_data['loan_product'] = v
+        #             else: final_data[k] = v
+        #
         #         obj = LoanTransactionType(**final_data)
-        #         obj._borrower_name = borrower_name
         #         return LoanTransactionResponse(success=True, message="Loan transaction retrieved from cache", transaction=obj)
 
         try:
@@ -194,9 +211,8 @@ class LoanTransactionQuery:
             
             transaction_type = convert_db_to_transaction_type(transaction_db)
             
-            # Skip caching for now due to async method serialization issues
-            # if redis:
-            #     redis.setex(cache_key, 3600, json.dumps(strawberry.asdict(transaction_type), default=json_serial))
+            if redis:
+                redis.setex(cache_key, 3600, json.dumps(strawberry.asdict(transaction_type), default=json_serial))
 
             return LoanTransactionResponse(success=True, message="Loan transaction retrieved successfully", transaction=transaction_type)
         except HTTPException as e:
@@ -212,9 +228,10 @@ class LoanTransactionQuery:
         skip: int = 0,
         limit: int = 100,
         loan_id: Optional[strawberry.ID] = None,
-        search_term: Optional[str] = None
+        search_term: Optional[str] = None,
+        transaction_type: Optional[str] = None
     ) -> LoanTransactionsResponse:
-        """Get a list of loan transactions with optional filtering by loan_id or search_term"""
+        """Get a list of loan transactions with optional filtering by loan_id, search_term or transaction_type"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
@@ -222,9 +239,8 @@ class LoanTransactionQuery:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
         redis = info.context.get("request").app.state.redis
-        cache_key = f"loan_transactions:list:{skip}:{limit}:{loan_id}:{search_term}"
+        cache_key = f"loan_transactions:list:{skip}:{limit}:{loan_id}:{search_term}:{transaction_type}"
         
-        # Skip caching for now due to async method serialization issues
         # if redis:
         #     cached = redis.get(cache_key)
         #     if cached:
@@ -232,25 +248,36 @@ class LoanTransactionQuery:
         #         cache_data = json.loads(cached)
         #         transactions = []
         #         
-        #         allowed_keys = {
-        #             'id', 'loan_id', 'transaction_type', 'amount', 'transaction_date', 'notes',
-        #             'created_at', 'updated_at', 'commercial_bank', 'servicing_branch', 'region',
-        #             'loan_product', 'reference_number', 'debit_account', 'credit_account',
-        #             'disbursement_method', 'disbursement_status', 'cheque_number',
-        #             'beneficiary_bank', 'beneficiary_account', 'approved_by', 'processed_by'
-        #         }
-        #
         #         for t in cache_data['transactions']:
         #             if t.get('amount'): t['amount'] = Decimal(str(t['amount']))
-        #             if t.get('transaction_date'): t['transaction_date'] = datetime.fromisoformat(t['transaction_date'])
-        #             if t.get('created_at'): t['created_at'] = datetime.fromisoformat(t['created_at'])
-        #             if t.get('updated_at'): t['updated_at'] = datetime.fromisoformat(t['updated_at'])
+        #             if t.get('transactionDate'): t['transactionDate'] = datetime.fromisoformat(t['transactionDate'])
+        #             if t.get('createdAt'): t['createdAt'] = datetime.fromisoformat(t['createdAt'])
+        #             if t.get('updatedAt'): t['updatedAt'] = datetime.fromisoformat(t['updatedAt'])
         #             
-        #             borrower_name = t.get('_borrower_name')
-        #             final_t = {k: v for k, v in t.items() if k in allowed_keys}
+        #             final_t = {}
+        #             for k, v in t.items():
+        #                 if k == 'loanId': final_t['loan_id'] = strawberry.ID(v)
+        #                 elif k == 'transactionType': final_t['transaction_type'] = v
+        #                 elif k == 'transactionDate': final_t['transaction_date'] = v
+        #                 elif k == 'createdAt': final_t['created_at'] = v
+        #                 elif k == 'updatedAt': final_t['updated_at'] = v
+        #                 elif k == 'commercialBank': final_t['commercial_bank'] = v
+        #                 elif k == 'servicingBranch': final_t['servicing_branch'] = v
+        #                 elif k == 'referenceNumber': final_t['reference_number'] = v
+        #                 elif k == 'debitAccount': final_t['debit_account'] = v
+        #                 elif k == 'creditAccount': final_t['credit_account'] = v
+        #                 elif k == 'disbursementMethod': final_t['disbursement_method'] = v
+        #                 elif k == 'disbursementStatus': final_t['disbursement_status'] = v
+        #                 elif k == 'chequeNumber': final_t['cheque_number'] = v
+        #                 elif k == 'beneficiaryBank': final_t['beneficiary_bank'] = v
+        #                 elif k == 'beneficiaryAccount': final_t['beneficiary_account'] = v
+        #                 elif k == 'approvedBy': final_t['approved_by'] = v
+        #                 elif k == 'processedBy': final_t['processed_by'] = v
+        #                 elif k == 'borrowerName': final_t['borrower_name'] = v
+        #                 elif k == 'loanProduct': final_t['loan_product'] = v
+        #                 else: final_t[k] = v
         #                     
         #             obj = LoanTransactionType(**final_t)
-        #             obj._borrower_name = borrower_name
         #             transactions.append(obj)
         #         return LoanTransactionsResponse(success=True, message="Loan transactions retrieved from cache", transactions=transactions, total=cache_data['total'])
 
@@ -258,12 +285,21 @@ class LoanTransactionQuery:
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
             
-            transactions_db = await transaction_crud.get_loan_transactions(skip=skip, limit=limit, loan_id=str(loan_id) if loan_id else None, search_term=search_term)
-            total = await transaction_crud.count_loan_transactions(loan_id=str(loan_id) if loan_id else None, search_term=search_term)
+            transactions_db = await transaction_crud.get_loan_transactions(
+                skip=skip, 
+                limit=limit, 
+                loan_id=str(loan_id) if loan_id else None, 
+                search_term=search_term,
+                transaction_type=transaction_type
+            )
+            total = await transaction_crud.count_loan_transactions(
+                loan_id=str(loan_id) if loan_id else None, 
+                search_term=search_term,
+                transaction_type=transaction_type
+            )
 
             transactions_type = [convert_db_to_transaction_type(t) for t in transactions_db]
             
-            # Skip caching for now due to async method serialization issues
             # if redis:
             #     cache_data = {
             #         'total': total,
@@ -286,7 +322,8 @@ class LoanTransactionQuery:
 
 @strawberry.type
 class LoanTransactionMutation:
-    async def _clear_loan_transaction_cache(self, redis, transaction_id=None):
+    @staticmethod
+    async def _clear_loan_transaction_cache(redis, transaction_id=None):
         if not redis: return
         if transaction_id:
             redis.delete(f"loan_transaction:{transaction_id}")
@@ -335,7 +372,7 @@ class LoanTransactionMutation:
             transaction_type = convert_db_to_transaction_type(transaction_db)
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_transaction_cache(redis)
+            await LoanTransactionMutation._clear_loan_transaction_cache(redis)
 
             return LoanTransactionResponse(success=True, message="Loan transaction created successfully", transaction=transaction_type)
         except HTTPException as e:
@@ -366,7 +403,7 @@ class LoanTransactionMutation:
             transaction_type = convert_db_to_transaction_type(transaction_db)
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_transaction_cache(redis, transaction_id)
+            await LoanTransactionMutation._clear_loan_transaction_cache(redis, transaction_id)
 
             return LoanTransactionResponse(success=True, message="Loan transaction updated successfully", transaction=transaction_type)
         except HTTPException as e:
@@ -392,7 +429,7 @@ class LoanTransactionMutation:
                 return LoanTransactionResponse(success=False, message="Loan transaction not found or could not be deleted")
             
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_transaction_cache(redis, transaction_id)
+            await LoanTransactionMutation._clear_loan_transaction_cache(redis, transaction_id)
 
             return LoanTransactionResponse(success=True, message="Loan transaction deleted successfully")
         except HTTPException as e:

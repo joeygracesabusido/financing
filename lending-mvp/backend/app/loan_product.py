@@ -17,7 +17,10 @@ def decimal_default(obj):
         return str(obj)
     if isinstance(obj, datetime):
         return obj.isoformat()
-    raise TypeError
+    try:
+        return str(obj)
+    except:
+        raise TypeError ("Type %s not serializable" % type(obj))
 
 @strawberry.type
 class LoanProduct:
@@ -117,13 +120,15 @@ class LoanProductQuery:
 
 @strawberry.type
 class LoanProductMutation:
-    async def _clear_loan_product_cache(self, redis, id=None):
+    @staticmethod
+    async def _clear_loan_product_cache(redis, id=None):
         if not redis:
             return
         keys_to_delete = ["loan_products:all"]
         if id:
             keys_to_delete.append(f"loan_product:{id}")
-        redis.delete(*keys_to_delete)
+        if keys_to_delete:
+            redis.delete(*keys_to_delete)
         print(f"--- Cache cleared for {keys_to_delete} ---")
 
     @strawberry.mutation
@@ -132,7 +137,7 @@ class LoanProductMutation:
         new_loan_product = await loan_product_crud.create_loan_product(loan_product_data)
         
         redis = info.context.get("request").app.state.redis
-        await self._clear_loan_product_cache(redis)
+        await LoanProductMutation._clear_loan_product_cache(redis)
         
         return convert_lp_db_to_type(new_loan_product)
 
@@ -143,7 +148,7 @@ class LoanProductMutation:
         
         if updated_loan_product:
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_product_cache(redis, id)
+            await LoanProductMutation._clear_loan_product_cache(redis, id)
             return convert_lp_db_to_type(updated_loan_product)
         return None
 
@@ -152,5 +157,5 @@ class LoanProductMutation:
         success = await loan_product_crud.delete_loan_product(id)
         if success:
             redis = info.context.get("request").app.state.redis
-            await self._clear_loan_product_cache(redis, id)
+            await LoanProductMutation._clear_loan_product_cache(redis, id)
         return success

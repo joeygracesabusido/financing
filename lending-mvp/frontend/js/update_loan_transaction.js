@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
         beneficiaryAccount: 'beneficiary-account',
         approvedBy: 'approved-by',
         processedBy: 'processed-by',
-        notes: 'notes'
+        notes: 'notes',
+        termMonths: 'term-months',
+        interestRate: 'interest-rate'
     };
 
     const elements = {};
@@ -141,6 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     populateLoanProductDatalist();
 
     let originalLoanId = null; // To store loan_id for redirection
+    let internalLoanObjectId = null; // To store the actual loan ID for mutation
 
     // GraphQL Query to fetch a single loan transaction
     const getLoanTransactionQuery = `
@@ -175,6 +178,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     `;
 
+    const getLoanDetailsQuery = `
+        query GetLoan($loanId: ID!) {
+            loan(loanId: $loanId) {
+                success
+                message
+                loan {
+                    id
+                    termMonths
+                    interestRate
+                }
+            }
+        }
+    `;
+
     // GraphQL Mutation to update a loan transaction
     const updateLoanTransactionMutation = `
         mutation UpdateLoanTransaction($transactionId: ID!, $input: LoanTransactionUpdateInput!) {
@@ -185,6 +202,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     id
                     loanId
                 }
+            }
+        }
+    `;
+
+    const updateLoanMutation = `
+        mutation UpdateLoan($loanId: ID!, $input: LoanUpdateInput!) {
+            updateLoan(loanId: $loanId, input: $input) {
+                success
+                message
             }
         }
     `;
@@ -238,6 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (transaction) {
                 populateForm(transaction);
                 originalLoanId = transaction.loanId;
+                
+                // Fetch associated loan details
+                fetchLoanDetails(transaction.loanId);
             } else {
                 console.warn('No transaction data found in response.');
                 formMessage.textContent = 'Loan transaction not found.';
@@ -248,6 +277,32 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error in fetchLoanTransactionData:', error);
             formMessage.textContent = 'Error connecting to the server.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
+        }
+    };
+
+    const fetchLoanDetails = async (loanId) => {
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: getLoanDetailsQuery,
+                    variables: { loanId: loanId }
+                })
+            });
+            const result = await response.json();
+            const loan = result.data?.loan?.loan;
+            if (loan) {
+                internalLoanObjectId = loan.id;
+                if (elements.termMonths) elements.termMonths.value = loan.termMonths || '';
+                if (elements.interestRate) elements.interestRate.value = loan.interestRate || '';
+            }
+        } catch (error) {
+            console.error('Error fetching loan details:', error);
         }
     };
 
@@ -341,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Sending update data:', loanTransactionUpdateData);
 
         try {
+            // 1. Update Transaction
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
@@ -357,31 +413,70 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const result = await response.json();
-            console.log('Update result:', result);
+            console.log('Update Result (Transaction):', result);
 
             if (result.errors) {
-                console.error('Update Errors:', result.errors);
-                formMessage.textContent = `Error: ${result.errors[0].message}`;
-                formMessage.className = 'mt-4 text-sm font-bold text-red-500';
-                return;
+                throw new Error(result.errors[0].message);
+            }
+
+            // 2. Update Loan (Terms, Interest, and Product) if disbursement
+            let loanSyncMessage = "";
+            if (elements.transactionType.value === 'disbursement' && internalLoanObjectId) {
+                const loanUpdateData = {
+                    termMonths: parseInt(elements.termMonths.value),
+                    interestRate: parseFloat(elements.interestRate.value),
+                    loanProduct: elements.loanProduct.value.trim() || null
+                };
+                
+                console.log('Synchronizing Loan update with data:', loanUpdateData);
+                
+                try {
+                    const loanResponse = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            query: updateLoanMutation,
+                            variables: {
+                                loanId: internalLoanObjectId,
+                                input: loanUpdateData
+                            }
+                        })
+                    });
+                    
+                    const loanResult = await loanResponse.json();
+                    console.log('Update Result (Loan):', loanResult);
+                    
+                    if (loanResult.errors) {
+                        console.error('Loan Update Errors:', loanResult.errors);
+                        loanSyncMessage = " (Note: Associated loan record could not be updated: " + loanResult.errors[0].message + ")";
+                    } else if (loanResult.data?.updateLoan?.success) {
+                        loanSyncMessage = " and associated loan record updated!";
+                    }
+                } catch (e) {
+                    console.error('Failed to sync loan update:', e);
+                    loanSyncMessage = " (Note: Failed to connect for loan update)";
+                }
             }
 
             const updateResult = result.data?.updateLoanTransaction;
             if (updateResult?.success) {
-                formMessage.textContent = updateResult.message || 'Loan transaction updated successfully!';
+                formMessage.textContent = 'Loan transaction' + (loanSyncMessage || ' updated successfully!');
                 formMessage.className = 'mt-4 text-sm font-bold text-green-500';
                 setTimeout(() => {
                     let redirectUrl = 'loan_transaction.html';
                     if (originalLoanId) redirectUrl += `?loan_id=${originalLoanId}`;
                     window.location.href = redirectUrl;
-                }, 1500);
+                }, 2000);
             } else {
                 formMessage.textContent = updateResult?.message || 'Failed to update loan transaction.';
                 formMessage.className = 'mt-4 text-sm font-bold text-red-500';
             }
         } catch (error) {
             console.error('Error in update:', error);
-            formMessage.textContent = 'An unexpected error occurred.';
+            formMessage.textContent = `Error: ${error.message}`;
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
         }
     });

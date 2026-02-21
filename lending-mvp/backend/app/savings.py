@@ -18,7 +18,10 @@ def json_serial(obj):
         return obj.isoformat()
     if isinstance(obj, Decimal):
         return str(obj)
-    raise TypeError ("Type %s not serializable" % type(obj))
+    try:
+        return str(obj)
+    except:
+        raise TypeError ("Type %s not serializable" % type(obj))
 
 # Savings Types
 @strawberry.type
@@ -215,7 +218,8 @@ class SavingsQuery:
 
 @strawberry.type
 class SavingsMutation:
-    async def _clear_savings_cache(self, redis, account_id=None):
+    @staticmethod
+    async def _clear_savings_cache(redis, account_id=None):
         if not redis: return
         keys = redis.keys("savings_accounts:list:*")
         if account_id:
@@ -273,7 +277,7 @@ class SavingsMutation:
         account = map_db_account_to_strawberry_type(created_account_data)
 
         redis = info.context.get("request").app.state.redis
-        await self._clear_savings_cache(redis)
+        await SavingsMutation._clear_savings_cache(redis)
 
         return SavingsAccountResponse(success=True, message="Savings account created", account=account)
     

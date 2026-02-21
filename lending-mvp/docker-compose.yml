@@ -18,6 +18,7 @@ services:
       - "8001:8000"
     volumes:
       - ./backend/app:/app/app # Mount local code for live reload
+      - ./frontend:/app/frontend # Mount frontend for templates
     depends_on:
       - mongodb
       - redis
