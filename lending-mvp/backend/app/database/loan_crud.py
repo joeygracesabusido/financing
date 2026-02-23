@@ -2,6 +2,7 @@ from typing import List, Optional, Dict, Any
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from datetime import datetime, timezone
+from decimal import Decimal
 from app.basemodel.loan_model import Loan, LoanCreate, LoanUpdate, PyObjectId
 
 class LoanCRUD:
@@ -78,6 +79,11 @@ class LoanCRUD:
             # Ensure borrower_id is converted to ObjectId if present
             if "borrower_id" in update_data and isinstance(update_data["borrower_id"], str):
                 update_data["borrower_id"] = ObjectId(update_data["borrower_id"])
+
+            # Convert Decimal objects to float for MongoDB
+            for k, v in update_data.items():
+                if isinstance(v, Decimal):
+                    update_data[k] = float(v)
 
             result = await self.collection.update_one(
                 {"_id": existing_loan.id},

@@ -67,20 +67,20 @@ class LoanType:
 
 @strawberry.input
 class LoanCreateInput:
-    borrower_id: strawberry.ID
+    borrower_id: strawberry.ID = strawberry.field(name="borrowerId")
     loan_id: Optional[str] = strawberry.field(name="loanId", default=None)
     loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
-    amount_requested: Decimal
-    term_months: int
-    interest_rate: Decimal
+    amount_requested: Decimal = strawberry.field(name="amountRequested")
+    term_months: int = strawberry.field(name="termMonths")
+    interest_rate: Decimal = strawberry.field(name="interestRate")
 
 @strawberry.input
 class LoanUpdateInput:
-    borrower_id: Optional[strawberry.ID] = None
+    borrower_id: Optional[strawberry.ID] = strawberry.field(name="borrowerId", default=None)
     loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
-    amount_requested: Optional[Decimal] = None
-    term_months: Optional[int] = None
-    interest_rate: Optional[Decimal] = None
+    amount_requested: Optional[Decimal] = strawberry.field(name="amountRequested", default=None)
+    term_months: Optional[int] = strawberry.field(name="termMonths", default=None)
+    interest_rate: Optional[Decimal] = strawberry.field(name="interestRate", default=None)
     status: Optional[str] = None
 
 @strawberry.type
@@ -159,6 +159,26 @@ class LoanQuery:
             raise e
         except Exception as e:
             return LoanResponse(success=False, message=f"Error retrieving loan: {str(e)}")
+
+    @strawberry.field
+    async def loan_by_id_string(self, info: Info, loan_id: str) -> LoanResponse:
+        """Get a single loan by its custom loan_id string (e.g. 'LOAN-123')"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+        
+        try:
+            loans_collection = get_loans_collection()
+            loan_crud = LoanCRUD(loans_collection)
+            loan_db = await loan_crud.get_loan_by_id(loan_id)
+
+            if not loan_db:
+                return LoanResponse(success=False, message="Loan not found")
+            
+            loan_type = convert_loan_db_to_loan_type(loan_db)
+            return LoanResponse(success=True, message="Loan retrieved successfully", loan=loan_type)
+        except Exception as e:
+            return LoanResponse(success=False, message=f"Error retrieving loan by string: {str(e)}")
 
     @strawberry.field
     async def loans(

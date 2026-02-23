@@ -134,9 +134,77 @@ document.addEventListener('DOMContentLoaded', () => {
             loanProducts.forEach(product => {
                 const option = document.createElement('option');
                 option.value = `${product.productCode} - ${product.productName}`;
+                option.dataset.id = product.id;
                 loanProductDatalist.appendChild(option);
             });
         }
+    }
+
+    function getSelectedLoanProductId() {
+        if (!elements.loanProduct) return null;
+        const value = elements.loanProduct.value.trim();
+        const options = loanProductDatalist.options;
+        
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value === value) {
+                return options[i].dataset.id;
+            }
+        }
+        return null;
+    }
+
+    const GET_LOAN_PRODUCT_QUERY = `
+        query GetLoanProduct($id: String!) {
+            loanProduct(id: $id) {
+                id
+                productCode
+                productName
+                termType
+                defaultInterestRate
+            }
+        }
+    `;
+
+    async function populateLoanProductDetails(productId) {
+        if (!productId) return;
+        const token = localStorage.getItem('accessToken');
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    query: GET_LOAN_PRODUCT_QUERY,
+                    variables: { id: productId }
+                })
+            });
+            const data = await response.json();
+            const product = data.data?.loanProduct;
+            if (product) {
+                const termMatch = product.termType ? product.termType.match(/(\d+)/) : null;
+                if (termMatch && elements.termMonths) {
+                    elements.termMonths.value = termMatch[1];
+                }
+                if (product.defaultInterestRate !== null && elements.interestRate) {
+                    elements.interestRate.value = parseFloat(product.defaultInterestRate).toFixed(2);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching loan product details:', error);
+        }
+    }
+
+    if (elements.loanProduct) {
+        const handleLoanProductSelection = async () => {
+            const productId = getSelectedLoanProductId();
+            if (productId) {
+                await populateLoanProductDetails(productId);
+            }
+        };
+        elements.loanProduct.addEventListener('change', handleLoanProductSelection);
+        elements.loanProduct.addEventListener('blur', handleLoanProductSelection);
     }
 
     populateBorrowerDatalist();
@@ -187,12 +255,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     id
                     termMonths
                     interestRate
+                    borrowerName
+                    loanProduct
                 }
             }
         }
     `;
 
-    // GraphQL Mutation to update a loan transaction
+    const getLoanByStringQuery = `
+        query GetLoanByString($loanId: String!) {
+            loanByIdString(loanId: $loanId) {
+                success
+                message
+                loan {
+                    id
+                    termMonths
+                    interestRate
+                    borrowerName
+                    loanProduct
+                }
+            }
+        }
+    `;
+
+    // ... (rest of the mutations)
     const updateLoanTransactionMutation = `
         mutation UpdateLoanTransaction($transactionId: ID!, $input: LoanTransactionUpdateInput!) {
             updateLoanTransaction(transactionId: $transactionId, input: $input) {
@@ -282,8 +368,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchLoanDetails = async (loanId) => {
         const token = localStorage.getItem('accessToken');
+        console.log(`--- Fetching Loan Details for loanId: "${loanId}" ---`);
         try {
-            const response = await fetch(API_URL, {
+            // 1. Try by internal ID first
+            let response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -294,12 +382,50 @@ document.addEventListener('DOMContentLoaded', () => {
                     variables: { loanId: loanId }
                 })
             });
-            const result = await response.json();
-            const loan = result.data?.loan?.loan;
+            let result = await response.json();
+            let loan = result.data?.loan?.loan;
+
+            // 2. Fallback to by-string if not found
+            if (!loan) {
+                console.log(`   Loan not found by internal ID, trying as custom loanId string...`);
+                response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        query: getLoanByStringQuery,
+                        variables: { loanId: loanId }
+                    })
+                });
+                result = await response.json();
+                loan = result.data?.loanByIdString?.loan;
+            }
+
             if (loan) {
+                console.log(`✅ Loan found! Internal ObjectID: ${loan.id}`);
                 internalLoanObjectId = loan.id;
-                if (elements.termMonths) elements.termMonths.value = loan.termMonths || '';
-                if (elements.interestRate) elements.interestRate.value = loan.interestRate || '';
+                
+                // Populate term and rate if not already set or if empty
+                if (elements.termMonths && (!elements.termMonths.value || elements.termMonths.value === '')) {
+                    elements.termMonths.value = loan.termMonths !== null && loan.termMonths !== undefined ? loan.termMonths : '';
+                    console.log(`   Set termMonths to: ${elements.termMonths.value}`);
+                }
+                if (elements.interestRate && (!elements.interestRate.value || elements.interestRate.value === '')) {
+                    elements.interestRate.value = loan.interestRate !== null && loan.interestRate !== undefined ? loan.interestRate : '';
+                    console.log(`   Set interestRate to: ${elements.interestRate.value}`);
+                }
+
+                // Fallback for borrower name and loan product if not on transaction
+                if (elements.borrowerName && (!elements.borrowerName.value || elements.borrowerName.value === 'N/A' || elements.borrowerName.value === '')) {
+                    elements.borrowerName.value = loan.borrowerName || '';
+                }
+                if (elements.loanProduct && (!elements.loanProduct.value || elements.loanProduct.value === '')) {
+                    elements.loanProduct.value = loan.loanProduct || '';
+                }
+            } else {
+                console.warn(`❌ No loan record found for "${loanId}". Loan update sync will be skipped.`);
             }
         } catch (error) {
             console.error('Error fetching loan details:', error);
@@ -311,7 +437,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const setVal = (key, value) => {
             if (elements[key]) {
-                elements[key].value = value || '';
+                // Better handling for null, undefined, or 'N/A'
+                if (value === null || value === undefined || value === 'N/A') {
+                    elements[key].value = '';
+                } else {
+                    elements[key].value = value;
+                }
                 console.log(`Set ${key} (${fields[key]}) to: "${elements[key].value}"`);
             }
         };
@@ -325,7 +456,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setVal('loanProduct', transaction.loanProduct);
         setVal('transactionType', transaction.transactionType);
         setVal('referenceNumber', transaction.referenceNumber);
-        setVal('amount', transaction.amount);
+        
+        // Amount formatting
+        if (elements.amount) {
+            elements.amount.value = transaction.amount !== null && transaction.amount !== undefined ? parseFloat(transaction.amount) : '';
+        }
+        
         setVal('debitAccount', transaction.debitAccount);
         setVal('creditAccount', transaction.creditAccount);
         setVal('disbursementMethod', transaction.disbursementMethod);
@@ -419,16 +555,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(result.errors[0].message);
             }
 
-            // 2. Update Loan (Terms, Interest, and Product) if disbursement
+            // 2. Update Loan (Terms, Interest, and Product)
             let loanSyncMessage = "";
-            if (elements.transactionType.value === 'disbursement' && internalLoanObjectId) {
+            if (internalLoanObjectId) {
+                const termVal = parseInt(elements.termMonths.value);
+                const rateVal = elements.interestRate.value ? elements.interestRate.value.toString() : null;
+                const amountVal = elements.amount.value ? elements.amount.value.toString() : null;
+                
                 const loanUpdateData = {
-                    termMonths: parseInt(elements.termMonths.value),
-                    interestRate: parseFloat(elements.interestRate.value),
                     loanProduct: elements.loanProduct.value.trim() || null
                 };
                 
+                // Only include numerical fields if they are valid numbers
+                if (!isNaN(termVal)) loanUpdateData.termMonths = termVal;
+                if (rateVal && !isNaN(parseFloat(rateVal))) loanUpdateData.interestRate = rateVal;
+                if (amountVal && !isNaN(parseFloat(amountVal))) loanUpdateData.amountRequested = amountVal;
+                
                 console.log('Synchronizing Loan update with data:', loanUpdateData);
+                console.log('Internal Loan ObjectID:', internalLoanObjectId);
                 
                 try {
                     const loanResponse = await fetch(API_URL, {
@@ -454,11 +598,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         loanSyncMessage = " (Note: Associated loan record could not be updated: " + loanResult.errors[0].message + ")";
                     } else if (loanResult.data?.updateLoan?.success) {
                         loanSyncMessage = " and associated loan record updated!";
+                    } else {
+                        const errorMsg = loanResult.data?.updateLoan?.message || 'Unknown reason';
+                        console.warn('Loan update was not successful:', errorMsg);
+                        loanSyncMessage = " (Note: Loan record sync returned false: " + errorMsg + ")";
                     }
                 } catch (e) {
                     console.error('Failed to sync loan update:', e);
                     loanSyncMessage = " (Note: Failed to connect for loan update)";
                 }
+            } else {
+                console.warn('Skipping loan record sync: internalLoanObjectId is null.');
             }
 
             const updateResult = result.data?.updateLoanTransaction;

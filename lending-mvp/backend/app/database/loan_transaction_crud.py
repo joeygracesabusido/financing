@@ -2,6 +2,7 @@ from typing import List, Optional, Dict, Any
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorCollection
 from datetime import datetime, timezone
+from decimal import Decimal
 from ..basemodel.loan_transaction_model import LoanTransaction, LoanTransactionBase
 from ..models import PyObjectId
 
@@ -92,16 +93,28 @@ class LoanTransactionCRUD:
         if not ObjectId.is_valid(transaction_id):
             return None
 
+        # Always fetch the transaction first
+        transaction = await self.get_loan_transaction_by_id(transaction_id)
+        if not transaction:
+            return None
+
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc)
+
+            # Convert Decimal objects to float for MongoDB if necessary
+            # (Though motor usually handles Decimal if configured, but to be safe)
+            for k, v in update_data.items():
+                if isinstance(v, Decimal):
+                    update_data[k] = float(v)
 
             result = await self.collection.update_one(
                 {"_id": ObjectId(transaction_id)},
                 {"$set": update_data}
             )
-            if result.modified_count == 1:
-                return await self.get_loan_transaction_by_id(transaction_id)
-        return None
+            # Fetch fresh data after update
+            return await self.get_loan_transaction_by_id(transaction_id)
+        
+        return transaction
 
     async def delete_loan_transaction(self, transaction_id: str) -> bool:
         if not ObjectId.is_valid(transaction_id):

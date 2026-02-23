@@ -431,7 +431,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 region: document.getElementById('region')?.value.trim() || null,
                 borrowerName: borrowerSearchInput.value.trim() || null,
                 loanProduct: loanProductSearchInput.value.trim() || null,
-                disbursementStatus: document.getElementById('disbursement-status')?.value || 'pending'
+                referenceNumber: document.getElementById('reference-number')?.value.trim() || null,
+                debitAccount: document.getElementById('debit-account')?.value.trim() || null,
+                creditAccount: document.getElementById('credit-account')?.value.trim() || null,
+                disbursementMethod: document.getElementById('disbursement-method')?.value || null,
+                disbursementStatus: document.getElementById('disbursement-status')?.value || 'pending',
+                chequeNumber: document.getElementById('cheque-number')?.value.trim() || null,
+                beneficiaryBank: document.getElementById('beneficiary-bank')?.value.trim() || null,
+                beneficiaryAccount: document.getElementById('beneficiary-account')?.value.trim() || null,
+                approvedBy: document.getElementById('approved-by')?.value.trim() || null,
+                processedBy: document.getElementById('processed-by')?.value.trim() || null
             };
 
             const transRes = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ query: createLoanTransactionMutation, variables: { input: transactionInput } }) });
