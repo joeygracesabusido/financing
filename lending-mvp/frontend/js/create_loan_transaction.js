@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     id
                     termMonths
                     interestRate
-                    loanProduct
+                    loanProductId
                     customer {
                         id
                         displayName
@@ -331,7 +331,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     borrowerSearchInput.value = loan.customer.displayName;
                     currentBorrowerId = loan.customer.id;
                 }
-                loanProductSearchInput.value = loan.loanProduct || '';
+                if (loan.loanProductId) {
+                    // We have the ID, we need to find the product name from the list
+                    const options = loanProductDatalist.options;
+                    let found = false;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].dataset.id === loan.loanProductId) {
+                            loanProductSearchInput.value = options[i].value;
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        // Fallback: try fetching it
+                        populateLoanProductDetails(loan.loanProductId).then(() => {
+                            // After populating details, we might need to set the search input value
+                            // but we don't know the productName yet without another query or waiting
+                        });
+                    }
+                }
                 termMonthsInput.value = loan.termMonths || '';
                 interestRateInput.value = loan.interestRate || '';
             }
@@ -351,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const type = transactionTypeSelect.value;
         const amount = parseFloat(amountInput.value);
         const borrowerId = getSelectedBorrowerId();
+        const loanProductId = getSelectedLoanProductId();
 
         if (!loanId || !type || isNaN(amount) || amount <= 0) {
             formMessage.textContent = 'Please fill in all required fields.';
@@ -377,11 +396,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const loanInput = {
                     borrowerId: borrowerId,
                     loanId: loanId,
-                    loanProduct: loanProductSearchInput.value.trim(),
+                    loanProductId: loanProductId,
                     amountRequested: amount.toString(),
                     termMonths: parseInt(termMonthsInput.value) || 12,
                     interestRate: (interestRateInput.value || "0")
                 };
+
+                // Add status update logic: if disbursement is completed, make loan active
+                const disbursementStatus = document.getElementById('disbursement-status')?.value || 'pending';
+                if (type === 'disbursement' && disbursementStatus === 'completed') {
+                    loanInput.status = 'active';
+                    console.log('--- Disbursement completed, setting loan status to ACTIVE ---');
+                }
 
                 let syncQuery, syncVars;
                 if (!loanExists) {
@@ -394,10 +420,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     syncVars = { 
                         loanId: loanId, 
                         input: { 
-                            loanProduct: loanInput.loanProduct, 
+                            loanProductId: loanInput.loanProductId, 
                             amountRequested: loanInput.amountRequested, 
                             termMonths: loanInput.termMonths, 
-                            interestRate: loanInput.interestRate 
+                            interestRate: loanInput.interestRate,
+                            modeOfPayment: loanInput.modeOfPayment,
+                            status: loanInput.status
                         } 
                     };
                 }
@@ -430,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 servicingBranch: document.getElementById('servicing-branch')?.value.trim() || null,
                 region: document.getElementById('region')?.value.trim() || null,
                 borrowerName: borrowerSearchInput.value.trim() || null,
-                loanProduct: loanProductSearchInput.value.trim() || null,
+                loanProductId: loanProductId,
                 referenceNumber: document.getElementById('reference-number')?.value.trim() || null,
                 debitAccount: document.getElementById('debit-account')?.value.trim() || null,
                 creditAccount: document.getElementById('credit-account')?.value.trim() || null,

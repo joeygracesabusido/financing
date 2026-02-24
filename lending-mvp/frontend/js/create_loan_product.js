@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const template = document.getElementById('template').value;
             const security = document.getElementById('security').value;
             const brLc = document.getElementById('brLc').value;
+            const modeOfPayment = document.getElementById('mode_of_payment').value;
 
             const query = `
                 mutation CreateLoanProduct($input: LoanProductCreateInput!) {
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         template
                         security
                         brLc
+                        modeOfPayment
                         createdAt
                     }
                 }
@@ -48,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     template,
                     security,
                     brLc,
+                    modeOfPayment
                 },
             };
 

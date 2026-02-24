@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const templateInput       = document.getElementById('template');
     const securityInput       = document.getElementById('security');
     const brLcInput           = document.getElementById('br-lc');
+    const modeOfPaymentInput  = document.getElementById('mode-of-payment');
 
     // GraphQL Query - Fetch single loan product
     const getLoanProductQuery = `
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 template
                 security
                 brLc
+                modeOfPayment
                 createdAt
             }
         }
@@ -57,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 template
                 security
                 brLc
+                modeOfPayment
                 createdAt
             }
         }
@@ -133,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         templateInput.value       = loanProduct.template    || '';
         securityInput.value       = loanProduct.security    || '';
         brLcInput.value           = loanProduct.brLc        || '';
+        modeOfPaymentInput.value  = loanProduct.modeOfPayment || '';
     };
 
     updateLoanProductForm.addEventListener('submit', async (event) => {
@@ -168,7 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 : null,
             template:    templateInput.value.trim()    || null,
             security:    securityInput.value.trim()    || null,
-            brLc:        brLcInput.value.trim()        || null
+            brLc:        brLcInput.value.trim()        || null,
+            modeOfPayment: modeOfPaymentInput.value || null
         };
 
         console.log('Sending update with:', { id: productId, input: loanProductUpdateData }); // ← debug

@@ -50,6 +50,9 @@ class LoanProductBase(BaseModel):
     template: str = Field(..., min_length=1, max_length=50)
     security: str = Field(..., min_length=1, max_length=50) # e.g., Secured, Unsecured
     br_lc: str = Field(..., min_length=1, max_length=50) # e.g., Branch, Lending
+    mode_of_payment: Optional[str] = Field(None, alias="mode_of_payment") # e.g., Daily, Weekly, Monthly, Quarterly, Semi Annualy, Annually
+    created_by: Optional[str] = Field(None, alias="created_by")
+    updated_by: Optional[str] = Field(None, alias="updated_by")
 
 class LoanProductCreate(LoanProductBase):
     pass
@@ -64,6 +67,9 @@ class LoanProductUpdate(BaseModel):
     template: Optional[str] = Field(None, min_length=1, max_length=50)
     security: Optional[str] = Field(None, min_length=1, max_length=50)
     br_lc: Optional[str] = Field(None, min_length=1, max_length=50)
+    mode_of_payment: Optional[str] = Field(None, min_length=1, max_length=50)
+    created_by: Optional[str] = Field(None, alias="created_by")
+    updated_by: Optional[str] = Field(None, alias="updated_by")
 
 class LoanProduct(LoanProductBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")

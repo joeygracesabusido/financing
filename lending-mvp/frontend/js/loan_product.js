@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 template
                 security
                 brLc
+                modeOfPayment
                 createdAt
             }
         }
@@ -178,6 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="p-3">${product.template || 'N/A'}</td>
                 <td class="p-3">${product.security || 'N/A'}</td>
                 <td class="p-3">${product.brLc || 'N/A'}</td>
+                <td class="p-3">${product.modeOfPayment || 'N/A'}</td>
                 <td class="p-3">${createdAt}</td>
                 <td class="p-3">
                     <button class="text-blue-500 hover:text-blue-700 mr-2 edit-loan-btn" data-id="${product.id}"><i class="fas fa-edit"></i></button>

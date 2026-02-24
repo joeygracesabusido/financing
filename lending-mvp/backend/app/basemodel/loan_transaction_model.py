@@ -16,7 +16,7 @@ class LoanTransactionBase(BaseModel):
     servicing_branch: Optional[str] = Field(None, alias="servicing_branch")
     region: Optional[str] = Field(None, alias="region")
     borrower_name: Optional[str] = Field(None, alias="borrower_name")
-    loan_product: Optional[str] = Field(None, alias="loan_product")
+    loan_product_id: Optional[str] = Field(None, alias="loan_product_id")
     reference_number: Optional[str] = Field(None, alias="reference_number")
     debit_account: Optional[str] = Field(None, alias="debit_account")
     credit_account: Optional[str] = Field(None, alias="credit_account")
@@ -27,6 +27,8 @@ class LoanTransactionBase(BaseModel):
     beneficiary_account: Optional[str] = Field(None, alias="beneficiary_account")
     approved_by: Optional[str] = Field(None, alias="approved_by")
     processed_by: Optional[str] = Field(None, alias="processed_by")
+    created_by: Optional[str] = Field(None, alias="created_by")
+    updated_by: Optional[str] = Field(None, alias="updated_by")
 
     @field_serializer('amount')
     def serialize_amount(self, value: Decimal):

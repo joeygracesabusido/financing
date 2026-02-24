@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const interestBalanceDisplay = document.getElementById('detail-interest-balance');
     const interestRateDisplay = document.getElementById('detail-interest-rate');
     const termDisplay = document.getElementById('detail-term');
+    const modeOfPaymentDisplay = document.getElementById('detail-mode-of-payment');
     const createdAtDisplay = document.getElementById('detail-created-at');
     const transactionsTableBody = document.getElementById('transactions-table-body');
 
@@ -20,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const paymentDateInput = document.getElementById('payment-date');
     const paymentNotesInput = document.getElementById('payment-notes');
     const paymentMessage = document.getElementById('payment-message');
+
+    let currentBalance = 0;
+    let totalInterest = 0;
 
     if (!loanId) {
         alert('Loan ID not provided.');
@@ -42,7 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 loan {
                     id
                     borrowerName
-                    loanProduct
+                    loanProduct {
+                        productName
+                        termType
+                        defaultInterestRate
+                        modeOfPayment
+                    }
                     amountRequested
                     termMonths
                     interestRate
@@ -69,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     transactionDate
                     notes
                     borrowerName
-                    loanProduct
+                    loanProduct {
+                        productName
+                    }
                 }
                 total
             }
@@ -84,6 +95,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 transaction {
                     id
                 }
+            }
+        }
+    `;
+
+    const updateLoanMutation = `
+        mutation UpdateLoan($loanId: ID!, $input: LoanUpdateInput!) {
+            updateLoan(loanId: $loanId, input: $input) {
+                success
+                message
             }
         }
     `;
@@ -145,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     : (loan.customer?.displayName || 'N/A');
                 
                 borrowerNameDisplay.textContent = borrowerName;
-                loanProductDisplay.textContent = loan.loanProduct || 'N/A';
+                loanProductDisplay.textContent = loan.loanProduct?.productName || 'N/A';
                 
                 const status = loan.status ? loan.status.toLowerCase() : 'unknown';
                 statusDisplay.textContent = status.toUpperCase();
@@ -154,23 +174,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 const amountRequested = parseFloat(loan.amountRequested);
                 amountRequestedDisplay.textContent = formatCurrency(amountRequested);
                 
-                // Interest Rate
-                const interestRate = parseFloat(loan.interestRate);
+                // Interest Rate - Prefer product's defaultInterestRate
+                const interestRate = loan.loanProduct?.defaultInterestRate !== undefined 
+                    ? parseFloat(loan.loanProduct.defaultInterestRate) 
+                    : parseFloat(loan.interestRate);
+                
                 interestRateDisplay.textContent = !isNaN(interestRate) 
                     ? `${interestRate}%` 
                     : '-';
                 
-                // Term
-                const termMonths = parseInt(loan.termMonths);
+                // Term - Prefer product's termType (extracting months)
+                let termMonths = parseInt(loan.termMonths);
+                if (loan.loanProduct?.termType) {
+                    const match = loan.loanProduct.termType.match(/(\d+)/);
+                    if (match) termMonths = parseInt(match[1]);
+                }
                 termDisplay.textContent = termMonths || '-';
+
+                // Mode of Payment
+                if (modeOfPaymentDisplay) {
+                    modeOfPaymentDisplay.textContent = loan.loanProduct?.modeOfPayment || 'N/A';
+                }
 
                 // Interest Balance Calculation (Per Annum rate for monthly term):
                 // (Amount * (Rate / 100) / 12 months) * termMonths
                 if (!isNaN(amountRequested) && !isNaN(interestRate) && !isNaN(termMonths) && termMonths > 0) {
                     const monthlyRate = (interestRate / 100) / 12;
-                    const totalInterestForTerm = amountRequested * monthlyRate * termMonths;
-                    interestBalanceDisplay.textContent = formatCurrency(totalInterestForTerm);
+                    totalInterest = amountRequested * monthlyRate * termMonths;
+                    interestBalanceDisplay.textContent = formatCurrency(totalInterest);
                 } else {
+                    totalInterest = 0;
                     interestBalanceDisplay.textContent = '₱0.00';
                 }
                 
@@ -256,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (transactions.length === 0) {
             console.warn('⚠️ No transactions found');
-            transactionsTableBody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-gray-500">No transactions found.</td></tr>';
+            transactionsTableBody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-gray-500">No transactions found.</td></tr>';
             return;
         }
 
@@ -286,12 +319,31 @@ document.addEventListener('DOMContentLoaded', () => {
             const amountClass = isRepayment ? 'text-green-600' : 'text-red-600';
             const amountPrefix = isRepayment ? '-' : '+';
 
+            let actionsHtml = '';
+            if (isRepayment) {
+                actionsHtml = `<button class="text-blue-500 hover:text-blue-700 edit-btn" data-id="${t.id}"><i class="fas fa-edit"></i> Edit</button>`;
+            }
+
             row.innerHTML = `
                 <td class="p-3">${new Date(t.transactionDate).toLocaleString()}</td>
                 <td class="p-3 font-medium">${t.transactionType.toUpperCase()}</td>
                 <td class="p-3 font-bold ${amountClass}">${amountPrefix}${formatCurrency(parseFloat(t.amount))}</td>
                 <td class="p-3 text-sm text-gray-600">${t.notes || '-'}</td>
+                <td class="p-3 text-sm">${actionsHtml}</td>
             `;
+
+            const editBtn = row.querySelector('.edit-btn');
+            if (editBtn) {
+                editBtn.addEventListener('click', (e) => {
+                    const transactionId = e.currentTarget.getAttribute('data-id');
+                    if (t.transactionType === 'repayment') {
+                        window.location.href = `update_payment.html?id=${transactionId}`;
+                    } else {
+                        window.location.href = `update_loan_transaction.html?id=${transactionId}`;
+                    }
+                });
+            }
+
             transactionsTableBody.appendChild(row);
         });
         
@@ -301,25 +353,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculateBalance = (transactions) => {
         console.log('💰 Calculating balance from', transactions.length, 'transactions');
         
-        let balance = 0;
+        currentBalance = 0;
         transactions.forEach((t, index) => {
             const amt = parseFloat(t.amount);
-            const oldBalance = balance;
+            const oldBalance = currentBalance;
             
             if (t.transactionType === 'disbursement') {
-                balance += amt;
-                console.log(`  Step ${index + 1}: Disbursement +${amt} (${oldBalance} → ${balance})`);
+                currentBalance += amt;
+                console.log(`  Step ${index + 1}: Disbursement +${amt} (${oldBalance} → ${currentBalance})`);
             } else if (t.transactionType === 'repayment') {
-                balance -= amt;
-                console.log(`  Step ${index + 1}: Repayment -${amt} (${oldBalance} → ${balance})`);
+                currentBalance -= amt;
+                console.log(`  Step ${index + 1}: Repayment -${amt} (${oldBalance} → ${currentBalance})`);
             } else {
                 console.log(`  Step ${index + 1}: Other type '${t.transactionType}' - skipped`);
             }
         });
         
-        console.log('💾 Final balance:', balance);
-        balanceDisplay.textContent = formatCurrency(balance);
-        if (balance <= 0) {
+        console.log('💾 Principal sum:', currentBalance);
+        const finalRemainingBalance = currentBalance + totalInterest;
+        console.log('💾 Final balance (plus interest):', finalRemainingBalance);
+        balanceDisplay.textContent = formatCurrency(finalRemainingBalance);
+        if (finalRemainingBalance <= 0) {
             balanceDisplay.className = 'font-bold text-green-600';
             console.log('✅ Balance is zero or negative (good - fully paid)');
         } else {
@@ -370,6 +424,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (mutationResult?.success) {
                 paymentMessage.textContent = 'Payment recorded successfully!';
+                
+                // Check if loan is now fully paid (Principal + Interest)
+                if ((currentBalance + totalInterest) - amount <= 0) {
+                    console.log('--- Loan fully paid (Principal + Interest), updating status to PAID ---');
+                    try {
+                        await fetch(API_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                query: updateLoanMutation,
+                                variables: {
+                                    loanId: loanId,
+                                    input: { status: 'paid' }
+                                }
+                            })
+                        });
+                        paymentMessage.textContent += ' Loan status updated to PAID.';
+                    } catch (e) {
+                        console.error('Failed to update loan status to paid:', e);
+                    }
+                }
+
                 paymentMessage.className = 'mt-4 text-sm font-bold text-green-500';
                 paymentForm.reset();
                 // Reset date
@@ -386,6 +465,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    fetchLoanDetails();
-    fetchTransactionsAndCalculateBalance();
+    const init = async () => {
+        await fetchLoanDetails();
+        await fetchTransactionsAndCalculateBalance();
+    };
+
+    init();
 });

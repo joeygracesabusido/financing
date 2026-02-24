@@ -29,6 +29,26 @@
                                 <a href="add_customer.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Add New Customer</a>
                             </div>
                         </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-piggy-bank mr-3"></i>Saving<i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-hand-holding-usd mr-3"></i>Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="loan-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
+                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
+                                <a href="payment_transaction.html" class="block text-gray-600 hover:text-gray-800">Payment Transactions</a>
+                            </div>
+                        </li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-cog mr-3"></i> Settings</a></li>
@@ -171,6 +191,36 @@
             alert('Logged out!'); // Replace with actual logout logic
             window.location.href = 'login.html'; // Redirect to login page
         });
+
+        // Dropdown functionality for Customer
+        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
+        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
+
+        if (customerDropdownBtn && customerDropdownMenu) {
+            customerDropdownBtn.addEventListener('click', () => {
+                customerDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Dropdown functionality for Savings
+        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
+        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
+
+        if (savingsDropdownBtn && savingsDropdownMenu) {
+            savingsDropdownBtn.addEventListener('click', () => {
+                savingsDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Dropdown functionality for Loans
+        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
+        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
+
+        if (loanDropdownBtn && loanDropdownMenu) {
+            loanDropdownBtn.addEventListener('click', () => {
+                loanDropdownMenu.classList.toggle('hidden');
+            });
+        }
     </script>
 
     <script src="js/add_customer.js"></script>

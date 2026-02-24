@@ -13,6 +13,8 @@ from .database import get_loans_collection, get_db, get_customers_collection
 from .database.loan_crud import LoanCRUD
 from .database.customer_crud import CustomerCRUD
 from .customer import CustomerType, convert_customer_db_to_customer_type
+from .loan_product import LoanProduct, convert_lp_db_to_type
+from .database import loan_product_crud
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -31,13 +33,47 @@ class LoanType:
     id: strawberry.ID
     borrower_id: strawberry.ID
     loan_id: Optional[str] = strawberry.field(name="loanId")
-    loan_product: Optional[str] = strawberry.field(name="loanProduct")
+    loan_product_id: Optional[str] = strawberry.field(name="loanProductId")
     amount_requested: Decimal = strawberry.field(name="amountRequested")
     term_months: int = strawberry.field(name="termMonths")
     interest_rate: Decimal = strawberry.field(name="interestRate")
+    mode_of_payment: Optional[str] = strawberry.field(name="modeOfPayment", default=None)
     status: str
     created_at: datetime = strawberry.field(name="createdAt")
     updated_at: datetime = strawberry.field(name="updatedAt")
+
+    @strawberry.field(name="loanProduct")
+    async def loan_product(self, info: Info) -> Optional[LoanProduct]:
+        if not self.loan_product_id:
+            return None
+        
+        # Check if it's a valid ObjectId (new relational structure)
+        from bson import ObjectId
+        if ObjectId.is_valid(self.loan_product_id):
+            try:
+                product_data = await loan_product_crud.get_loan_product_by_id(self.loan_product_id)
+                if product_data:
+                    return convert_lp_db_to_type(product_data)
+            except Exception as e:
+                print(f"Error resolving loan product by ID for loan {self.id}: {e}")
+        
+        # Fallback: if not an ID or not found by ID, it might be a legacy string name
+        # We return a dummy LoanProduct object with just the name
+        return LoanProduct(
+            id="legacy",
+            product_code="LEGACY",
+            product_name=self.loan_product_id,
+            term_type="N/A",
+            gl_code="N/A",
+            type="LEGACY",
+            default_interest_rate=Decimal("0.0"),
+            template="N/A",
+            security="N/A",
+            br_lc="N/A",
+            mode_of_payment="N/A",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
 
     @strawberry.field(name="borrowerName")
     async def borrower_name(self, info: Info) -> Optional[str]:
@@ -69,19 +105,22 @@ class LoanType:
 class LoanCreateInput:
     borrower_id: strawberry.ID = strawberry.field(name="borrowerId")
     loan_id: Optional[str] = strawberry.field(name="loanId", default=None)
-    loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
+    loan_product_id: Optional[str] = strawberry.field(name="loanProductId", default=None)
     amount_requested: Decimal = strawberry.field(name="amountRequested")
     term_months: int = strawberry.field(name="termMonths")
     interest_rate: Decimal = strawberry.field(name="interestRate")
+    mode_of_payment: Optional[str] = strawberry.field(name="modeOfPayment", default=None)
+    status: Optional[str] = strawberry.field(default=None)
 
 @strawberry.input
 class LoanUpdateInput:
     borrower_id: Optional[strawberry.ID] = strawberry.field(name="borrowerId", default=None)
-    loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
+    loan_product_id: Optional[str] = strawberry.field(name="loanProductId", default=None)
     amount_requested: Optional[Decimal] = strawberry.field(name="amountRequested", default=None)
     term_months: Optional[int] = strawberry.field(name="termMonths", default=None)
     interest_rate: Optional[Decimal] = strawberry.field(name="interestRate", default=None)
-    status: Optional[str] = None
+    mode_of_payment: Optional[str] = strawberry.field(name="modeOfPayment", default=None)
+    status: Optional[str] = strawberry.field(default=None)
 
 @strawberry.type
 class LoanResponse:
@@ -102,7 +141,7 @@ def convert_loan_db_to_loan_type(loan_db: Loan) -> LoanType:
         id=strawberry.ID(str(loan_db.id)),
         borrower_id=strawberry.ID(str(loan_db.borrower_id)),
         loan_id=loan_db.loan_id,
-        loan_product=loan_db.loan_product,
+        loan_product_id=loan_db.loan_product_id,
         amount_requested=loan_db.amount_requested,
         term_months=loan_db.term_months,
         interest_rate=loan_db.interest_rate,
@@ -301,10 +340,12 @@ class LoanMutation:
             loan_create = LoanCreate(
                 borrower_id=PyObjectId(str(loan_data["borrower_id"])),
                 loan_id=loan_data.get("loan_id"),
-                loan_product=loan_data.get("loan_product"),
+                loan_product_id=loan_data.get("loan_product_id"),
                 amount_requested=loan_data["amount_requested"],
                 term_months=loan_data["term_months"],
-                interest_rate=loan_data["interest_rate"]
+                interest_rate=loan_data["interest_rate"],
+                mode_of_payment=loan_data.get("mode_of_payment"),
+                status=loan_data.get("status")
             )
             print(f"LoanCreate Pydantic: {loan_create}")
             

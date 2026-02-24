@@ -18,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     id
                     loanId
                     borrowerName
-                    loanProduct
+                    loanProduct {
+                        productName
+                    }
                     transactionType
                     amount
                     transactionDate
@@ -180,6 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const formatCurrency = (amount) => {
+        if (amount === null || amount === undefined || isNaN(amount)) return '₱0.00';
+        return '₱' + new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(amount);
+    };
+
     const populateTable = (transactions) => {
         console.log('🔄 Populating table with', transactions?.length || 0, 'transactions');
         
@@ -203,9 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="p-3">${transaction.id || 'N/A'}</td>
                 <td class="p-3">${transaction.loanId || 'N/A'}</td>
                 <td class="p-3">${transaction.borrowerName || 'N/A'}</td>
-                <td class="p-3">${transaction.loanProduct || 'N/A'}</td>
+                <td class="p-3">${transaction.loanProduct?.productName || 'N/A'}</td>
                 <td class="p-3">${transaction.transactionType || 'N/A'}</td>
-                <td class="p-3">₱${transaction.amount ? parseFloat(transaction.amount).toFixed(2) : '0.00'}</td>
+                <td class="p-3 font-bold">${formatCurrency(transaction.amount)}</td>
                 <td class="p-3">${transactionDate}</td>
                 <td class="p-3">${transaction.notes || 'N/A'}</td>
                 <td class="p-3 text-sm">

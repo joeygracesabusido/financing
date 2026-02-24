@@ -230,7 +230,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     servicingBranch
                     region
                     borrowerName
-                    loanProduct
+                    loanProduct {
+                        productName
+                    }
+                    loanProductId
                     referenceNumber
                     debitAccount
                     creditAccount
@@ -256,7 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     termMonths
                     interestRate
                     borrowerName
-                    loanProduct
+                    loanProduct {
+                        productName
+                    }
+                    loanProductId
                 }
             }
         }
@@ -272,7 +278,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     termMonths
                     interestRate
                     borrowerName
-                    loanProduct
+                    loanProduct {
+                        productName
+                    }
+                    loanProductId
                 }
             }
         }
@@ -422,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     elements.borrowerName.value = loan.borrowerName || '';
                 }
                 if (elements.loanProduct && (!elements.loanProduct.value || elements.loanProduct.value === '')) {
-                    elements.loanProduct.value = loan.loanProduct || '';
+                    elements.loanProduct.value = loan.loanProduct?.productName || '';
                 }
             } else {
                 console.warn(`❌ No loan record found for "${loanId}". Loan update sync will be skipped.`);
@@ -453,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setVal('region', transaction.region);
         setVal('loanId', transaction.loanId);
         setVal('borrowerName', transaction.borrowerName);
-        setVal('loanProduct', transaction.loanProduct);
+        setVal('loanProduct', transaction.loanProduct?.productName);
         setVal('transactionType', transaction.transactionType);
         setVal('referenceNumber', transaction.referenceNumber);
         
@@ -516,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             servicingBranch: elements.servicingBranch.value.trim() || null,
             region: elements.region.value.trim() || null,
             borrowerName: elements.borrowerName.value.trim() || null,
-            loanProduct: elements.loanProduct.value.trim() || null,
+            loanProductId: getSelectedLoanProductId(),
             referenceNumber: elements.referenceNumber.value.trim() || null,
             debitAccount: elements.debitAccount.value.trim() || null,
             creditAccount: elements.creditAccount.value.trim() || null,
@@ -563,8 +572,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const amountVal = elements.amount.value ? elements.amount.value.toString() : null;
                 
                 const loanUpdateData = {
-                    loanProduct: elements.loanProduct.value.trim() || null
+                    loanProductId: getSelectedLoanProductId()
                 };
+
+                // Add status update logic: if disbursement is completed, make loan active
+                if (elements.transactionType.value === 'disbursement' && elements.disbursementStatus.value === 'completed') {
+                    loanUpdateData.status = 'active';
+                    console.log('--- Disbursement completed, setting loan status to ACTIVE ---');
+                }
                 
                 // Only include numerical fields if they are valid numbers
                 if (!isNaN(termVal)) loanUpdateData.termMonths = termVal;

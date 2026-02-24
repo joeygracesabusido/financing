@@ -107,10 +107,12 @@ class LoanTransactionCRUD:
                 if isinstance(v, Decimal):
                     update_data[k] = float(v)
 
+            print(f"DEBUG: LoanTransactionCRUD.update_loan_transaction - updating doc {transaction_id} with {update_data}")
             result = await self.collection.update_one(
                 {"_id": ObjectId(transaction_id)},
                 {"$set": update_data}
             )
+            print(f"DEBUG: LoanTransactionCRUD.update_loan_transaction - matched: {result.matched_count}, modified: {result.modified_count}")
             # Fetch fresh data after update
             return await self.get_loan_transaction_by_id(transaction_id)
         

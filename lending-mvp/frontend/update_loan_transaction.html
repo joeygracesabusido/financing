@@ -46,6 +46,7 @@
                                 <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
                                 <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
                                 <a href="loan_transaction.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Loan Transactions</a>
+                                <a href="payment_transaction.html" class="block text-gray-600 hover:text-gray-800">Payment Transactions</a>
                             </div>
                         </li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
@@ -82,7 +83,26 @@
                             </div>
                             <div>
                                 <label for="region" class="block text-gray-700 text-sm font-bold mb-2">Region:</label>
-                                <input type="text" id="region" name="region" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <select id="region" name="region" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                    <option value="">Select Region</option>
+                                    <option value="NCR">National Capital Region (NCR)</option>
+                                    <option value="CAR">Cordillera Administrative Region (CAR)</option>
+                                    <option value="Region I">Ilocos Region (Region I)</option>
+                                    <option value="Region II">Cagayan Valley (Region II)</option>
+                                    <option value="Region III">Central Luzon (Region III)</option>
+                                    <option value="Region IV-A">CALABARZON (Region IV-A)</option>
+                                    <option value="Region IV-B">MIMAROPA Region (Region IV-B)</option>
+                                    <option value="Region V">Bicol Region (Region V)</option>
+                                    <option value="Region VI">Western Visayas (Region VI)</option>
+                                    <option value="Region VII">Central Visayas (Region VII)</option>
+                                    <option value="Region VIII">Eastern Visayas (Region VIII)</option>
+                                    <option value="Region IX">Zamboanga Peninsula (Region IX)</option>
+                                    <option value="Region X">Northern Mindanao (Region X)</option>
+                                    <option value="Region XI">Davao Region (Region XI)</option>
+                                    <option value="Region XII">Soccsksargen (Region XII)</option>
+                                    <option value="Region XIII">Caraga Region (Region XIII)</option>
+                                    <option value="BARMM">Bangsamoro Autonomous Region in Muslim Mindanao (BARMM)</option>
+                                </select>
                             </div>
                         </div>
                     </div>

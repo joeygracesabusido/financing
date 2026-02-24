@@ -46,6 +46,7 @@
                                 <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
                                 <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
                                 <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
+                                <a href="payment_transaction.html" class="block text-gray-600 hover:text-gray-800">Payment Transactions</a>
                             </div>
                         </li>
                         <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
@@ -108,9 +109,23 @@
                             <input type="text" id="security" name="security" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                     </div>
-                    <div class="mb-4">
-                        <label for="br-lc" class="block text-gray-700 text-sm font-bold mb-2">Branch/LC:</label>
-                        <input type="text" id="br-lc" name="brLc" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="br-lc" class="block text-gray-700 text-sm font-bold mb-2">Branch/LC:</label>
+                            <input type="text" id="br-lc" name="brLc" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+                        <div>
+                            <label for="mode-of-payment" class="block text-gray-700 text-sm font-bold mb-2">Mode of Payment:</label>
+                            <select id="mode-of-payment" name="modeOfPayment" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                                <option value="">Select Mode of Payment</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Quarterly">Quarterly</option>
+                                <option value="Semi Annualy">Semi Annualy</option>
+                                <option value="Annually">Annually</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="flex items-center justify-between mt-6">
                         <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">

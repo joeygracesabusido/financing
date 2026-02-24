@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Payment</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between shadow-lg">
+            <div>
+                <div class="flex items-center mb-10">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg mr-3"></div>
+                    <span class="text-2xl font-bold">IJE Software</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4">
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left p-2 rounded-lg transition duration-200">
+                                <i class="fas fa-exchange-alt mr-3"></i>Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
+                                <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left p-2 rounded-lg transition duration-200">
+                                <i class="fas fa-exchange-alt mr-3"></i>Saving<i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left transition duration-200">
+                                <i class="fas fa-hand-holding-usd mr-3"></i>Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
+                                <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
+                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
+                                <a href="payment_transaction.html" class="block text-gray-600 hover:text-gray-800">Payment Transactions</a>
+                            </div>
+                        </li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-cog mr-3"></i> Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <ul>
+                    <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-question-circle mr-3"></i> Help</a></li>
+                    <li><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg transition duration-200"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-8 flex flex-col items-center justify-center">
+            <div class="w-full max-w-md">
+                <header class="mb-8">
+                    <h1 class="text-3xl font-bold text-center">Update Payment</h1>
+                    <p class="text-gray-500 text-center">Modify payment transaction details.</p>
+                </header>
+
+                <div class="bg-white p-6 rounded-lg shadow border-t-4 border-green-500">
+                    <h2 class="text-xl font-bold mb-6 flex items-center">
+                        <i class="fas fa-edit text-green-500 mr-2"></i> Update a Payment
+                    </h2>
+                    <form id="update-payment-form" class="space-y-4">
+                        <input type="hidden" id="transaction-id">
+                        <input type="hidden" id="loan-id">
+                        <div>
+                            <label for="payment-amount" class="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Payment Amount <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2 text-gray-400">₱</span>
+                                <input type="number" step="0.01" id="payment-amount" class="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200" placeholder="0.00" required>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="payment-date" class="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Payment Date</label>
+                            <input type="datetime-local" id="payment-date" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200">
+                        </div>
+                        <div>
+                            <label for="payment-notes" class="block text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Notes</label>
+                            <textarea id="payment-notes" rows="3" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition duration-200" placeholder="Optional notes..."></textarea>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg flex-grow shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center">
+                                <i class="fas fa-save mr-2"></i> Update Payment
+                            </button>
+                            <button type="button" id="cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg shadow-sm transition duration-200">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                    <div id="payment-message" class="mt-4 text-sm font-bold text-center"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/update_payment.js"></script>
+    <script>
+        // Sidebar dropdowns
+        ['customer', 'savings', 'loan'].forEach(type => {
+            const btn = document.getElementById(`${type}-dropdown-btn`);
+            const menu = document.getElementById(`${type}-dropdown-menu`);
+            if (btn && menu) {
+                btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+            }
+        });
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

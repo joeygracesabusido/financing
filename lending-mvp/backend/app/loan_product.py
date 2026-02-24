@@ -34,6 +34,9 @@ class LoanProduct:
     template: str
     security: str
     br_lc: str
+    mode_of_payment: Optional[str] = None
+    created_by: Optional[str] = None
+    updated_by: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -48,6 +51,7 @@ class LoanProductCreateInput:
     template: str
     security: str
     br_lc: str
+    mode_of_payment: Optional[str] = None
 
 @strawberry.input
 class LoanProductUpdateInput:
@@ -60,6 +64,7 @@ class LoanProductUpdateInput:
     template: Optional[str] = None
     security: Optional[str] = None
     br_lc: Optional[str] = None
+    mode_of_payment: Optional[str] = None
 
 def convert_lp_db_to_type(lp: PydanticLoanProduct) -> LoanProduct:
     data = lp.model_dump()
@@ -133,7 +138,14 @@ class LoanProductMutation:
 
     @strawberry.mutation
     async def create_loan_product(self, info: Info, input: LoanProductCreateInput) -> LoanProduct:
-        loan_product_data = PydanticLoanProductCreate(**input.__dict__)
+        current_user = info.context.get("current_user")
+        user_id = str(current_user.id) if current_user else "system"
+        
+        data = input.__dict__.copy()
+        data["created_by"] = user_id
+        data["updated_by"] = user_id
+        
+        loan_product_data = PydanticLoanProductCreate(**data)
         new_loan_product = await loan_product_crud.create_loan_product(loan_product_data)
         
         redis = info.context.get("request").app.state.redis
@@ -143,7 +155,13 @@ class LoanProductMutation:
 
     @strawberry.mutation
     async def update_loan_product(self, info: Info, id: str, input: LoanProductUpdateInput) -> Optional[LoanProduct]:
-        loan_product_data = PydanticLoanProductUpdate(**input.__dict__)
+        current_user = info.context.get("current_user")
+        user_id = str(current_user.id) if current_user else "system"
+        
+        data = input.__dict__.copy()
+        data["updated_by"] = user_id
+        
+        loan_product_data = PydanticLoanProductUpdate(**data)
         updated_loan_product = await loan_product_crud.update_loan_product(id, loan_product_data)
         
         if updated_loan_product:

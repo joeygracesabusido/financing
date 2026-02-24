@@ -30,8 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const amountRequested = parseFloat(document.getElementById('amount-requested').value);
         const termMonths = parseInt(document.getElementById('term-months').value, 10);
         const interestRate = parseFloat(document.getElementById('interest-rate').value);
+        const modeOfPayment = document.getElementById('mode-of-payment').value;
 
-        if (!borrowerId || !loanProduct || isNaN(amountRequested) || isNaN(termMonths) || isNaN(interestRate)) {
+        if (!borrowerId || !loanProduct || isNaN(amountRequested) || isNaN(termMonths) || isNaN(interestRate) || !modeOfPayment) {
             formMessage.textContent = 'Please fill in all fields with valid data.';
             formMessage.className = 'mt-4 text-sm font-bold text-red-500';
             return;
@@ -48,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loanProduct: loanProduct,
             amountRequested: amountRequested,
             termMonths: termMonths,
-            interestRate: interestRate
+            interestRate: interestRate,
+            modeOfPayment: modeOfPayment
         };
 
         formMessage.textContent = 'Creating loan...';

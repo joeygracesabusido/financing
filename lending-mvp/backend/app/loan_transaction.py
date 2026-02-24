@@ -10,6 +10,8 @@ from .basemodel.loan_transaction_model import LoanTransaction, LoanTransactionBa
 from .models import UserInDB
 from .database import get_loan_transactions_collection
 from .database.loan_transaction_crud import LoanTransactionCRUD
+from .loan_product import LoanProduct, convert_lp_db_to_type
+from .database import loan_product_crud
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -38,7 +40,7 @@ class LoanTransactionType:
     commercial_bank: Optional[str] = strawberry.field(name="commercialBank", default=None)
     servicing_branch: Optional[str] = strawberry.field(name="servicingBranch", default=None)
     region: Optional[str] = strawberry.field(name="region", default=None)
-    loan_product: Optional[str] = strawberry.field(name="loanProduct", default=None)
+    loan_product_id: Optional[str] = strawberry.field(name="loanProductId", default=None)
     reference_number: Optional[str] = strawberry.field(name="referenceNumber", default=None)
     debit_account: Optional[str] = strawberry.field(name="debitAccount", default=None)
     credit_account: Optional[str] = strawberry.field(name="creditAccount", default=None)
@@ -49,6 +51,39 @@ class LoanTransactionType:
     beneficiary_account: Optional[str] = strawberry.field(name="beneficiaryAccount", default=None)
     approved_by: Optional[str] = strawberry.field(name="approvedBy", default=None)
     processed_by: Optional[str] = strawberry.field(name="processedBy", default=None)
+    created_by: Optional[str] = strawberry.field(name="createdBy", default=None)
+    updated_by: Optional[str] = strawberry.field(name="updatedBy", default=None)
+
+    @strawberry.field(name="loanProduct")
+    async def loan_product(self, info: Info) -> Optional[LoanProduct]:
+        if not self.loan_product_id:
+            return None
+        
+        from bson import ObjectId
+        if ObjectId.is_valid(self.loan_product_id):
+            try:
+                product_data = await loan_product_crud.get_loan_product_by_id(self.loan_product_id)
+                if product_data:
+                    return convert_lp_db_to_type(product_data)
+            except Exception as e:
+                print(f"Error resolving loan product by ID for transaction {self.id}: {e}")
+        
+        # Fallback: if not an ID or not found by ID, it might be a legacy string name
+        return LoanProduct(
+            id="legacy",
+            product_code="LEGACY",
+            product_name=self.loan_product_id,
+            term_type="N/A",
+            gl_code="N/A",
+            type="LEGACY",
+            default_interest_rate=Decimal("0.0"),
+            template="N/A",
+            security="N/A",
+            br_lc="N/A",
+            mode_of_payment="N/A",
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
     
     # Internal field to store the name from DB
     borrower_name: Optional[str] = strawberry.field(name="borrowerName", default="N/A")
@@ -64,7 +99,7 @@ class LoanTransactionCreateInput:
     servicing_branch: Optional[str] = None
     region: Optional[str] = None
     borrower_name: Optional[str] = None
-    loan_product: Optional[str] = None
+    loan_product_id: Optional[str] = strawberry.field(name="loanProductId", default=None)
     reference_number: Optional[str] = None
     debit_account: Optional[str] = None
     credit_account: Optional[str] = None
@@ -86,7 +121,7 @@ class LoanTransactionUpdateInput:
     servicing_branch: Optional[str] = None
     region: Optional[str] = None
     borrower_name: Optional[str] = None
-    loan_product: Optional[str] = None
+    loan_product_id: Optional[str] = strawberry.field(name="loanProductId", default=None)
     reference_number: Optional[str] = None
     debit_account: Optional[str] = None
     credit_account: Optional[str] = None
@@ -122,6 +157,7 @@ def convert_db_to_transaction_type(db_obj: LoanTransaction) -> LoanTransactionTy
         return dt
 
     transaction_type = LoanTransactionType(
+
         id=strawberry.ID(str(db_obj.id)),
         loan_id=strawberry.ID(str(db_obj.loan_id)),
         transaction_type=db_obj.transaction_type,
@@ -133,7 +169,7 @@ def convert_db_to_transaction_type(db_obj: LoanTransaction) -> LoanTransactionTy
         commercial_bank=db_obj.commercial_bank,
         servicing_branch=db_obj.servicing_branch,
         region=db_obj.region,
-        loan_product=db_obj.loan_product,
+        loan_product_id=db_obj.loan_product_id,
         reference_number=db_obj.reference_number,
         debit_account=db_obj.debit_account,
         credit_account=db_obj.credit_account,
@@ -144,6 +180,8 @@ def convert_db_to_transaction_type(db_obj: LoanTransaction) -> LoanTransactionTy
         beneficiary_account=db_obj.beneficiary_account,
         approved_by=db_obj.approved_by,
         processed_by=db_obj.processed_by,
+        created_by=db_obj.created_by,
+        updated_by=db_obj.updated_by,
         borrower_name=db_obj.borrower_name or "N/A"
     )
     return transaction_type
@@ -345,6 +383,8 @@ class LoanTransactionMutation:
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
 
+            user_id = str(current_user.id)
+
             loan_transaction_base = LoanTransactionBase(
                 loan_id=str(input.loan_id),
                 transaction_type=input.transaction_type,
@@ -355,7 +395,7 @@ class LoanTransactionMutation:
                 servicing_branch=input.servicing_branch,
                 region=input.region,
                 borrower_name=input.borrower_name,
-                loan_product=input.loan_product,
+                loan_product_id=input.loan_product_id,
                 reference_number=input.reference_number,
                 debit_account=input.debit_account,
                 credit_account=input.credit_account,
@@ -365,7 +405,9 @@ class LoanTransactionMutation:
                 beneficiary_bank=input.beneficiary_bank,
                 beneficiary_account=input.beneficiary_account,
                 approved_by=input.approved_by,
-                processed_by=input.processed_by
+                processed_by=input.processed_by,
+                created_by=user_id,
+                updated_by=user_id
             )
             
             transaction_db = await transaction_crud.create_loan_transaction(loan_transaction_base)
@@ -393,8 +435,15 @@ class LoanTransactionMutation:
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
 
+            user_id = str(current_user.id)
+
+            print(f"DEBUG: update_loan_transaction input: {input}")
             update_data = {k: (float(v) if isinstance(v, Decimal) else v) 
                            for k, v in strawberry.asdict(input).items() if v is not None}
+            
+            update_data["updated_by"] = user_id
+            
+            print(f"DEBUG: update_loan_transaction update_data: {update_data}")
             
             transaction_db = await transaction_crud.update_loan_transaction(str(transaction_id), update_data)
             if not transaction_db:

@@ -45,10 +45,12 @@ class PyObjectId(ObjectId):
 class LoanBase(BaseModel):
     borrower_id: Any # Allow string or ObjectId
     loan_id: Optional[str] = Field(None, alias="loan_id")
-    loan_product: Optional[str] = Field(None, alias="loan_product")
+    loan_product_id: Optional[str] = Field(None, alias="loan_product_id")
     amount_requested: Decimal
     term_months: int
     interest_rate: Decimal # Annual rate
+    mode_of_payment: Optional[str] = Field(None, alias="mode_of_payment")
+    status: Optional[str] = Field(None, alias="status")
 
     @field_serializer('amount_requested', 'interest_rate')
     def serialize_decimal(self, value: Decimal):
@@ -60,10 +62,11 @@ class LoanCreate(LoanBase):
 class LoanUpdate(BaseModel):
     borrower_id: Optional[Any] = None
     loan_id: Optional[str] = Field(None, alias="loan_id")
-    loan_product: Optional[str] = Field(None, alias="loan_product")
+    loan_product_id: Optional[str] = Field(None, alias="loan_product_id")
     amount_requested: Optional[Decimal] = None
     term_months: Optional[int] = None
     interest_rate: Optional[Decimal] = None
+    mode_of_payment: Optional[str] = Field(None, alias="mode_of_payment")
     status: Optional[str] = None # pending, approved, active, paid, rejected
 
 class Loan(LoanBase): # This is effectively LoanInDB
