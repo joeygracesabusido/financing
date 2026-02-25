@@ -24,6 +24,7 @@ from .accounting import create_journal_entry
 from datetime import date
 from .config import settings
 import aiofiles
+from .utils.receipt_generator import generate_receipt_pdf
 
 @strawberry.type
 class ScheduleRowPreview:
@@ -458,9 +459,52 @@ class LoanMutation:
             )
 
             await session.commit()
+            
+            # Generate Official Receipt PDF
+            receipt_data = {
+                "receipt_number": txn.receipt_number,
+                "date": datetime.now().strftime("%Y-%m-%d"),
+                "customer_name": loan.customer_name or "N/A",
+                "customer_id": loan.customer_id,
+                "customer_address": "N/A",  # Would need customer details
+                "loan_number": f"LOAN-{loan.id:06d}",
+                "amount": net_disbursement,
+                "description": f"Net disbursement (origination fee: {origination_fee})" if origination_fee > 0 else "Loan disbursement",
+                "payment_method": loan.disbursement_method or "Bank Transfer",
+                "transaction_type": "Loan Disbursement",
+                "breakdown": {
+                    "principal": net_disbursement,
+                    "total": net_disbursement,
+                },
+                "journal_entries": [
+                    {"account_code": "1300", "account_name": "Loans Receivable", "debit": loan_qty, "credit": Decimal("0")},
+                    {"account_code": "1010", "account_name": "Cash in Bank", "debit": Decimal("0"), "credit": net_disbursement},
+                ],
+                "processed_by": current_user.username if current_user else "system",
+                "processed_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            
+            if origination_fee > 0:
+                receipt_data["journal_entries"].append({
+                    "account_code": "4200",
+                    "account_name": "Origination Fee Income",
+                    "debit": Decimal("0"),
+                    "credit": origination_fee
+                })
+            
+            try:
+                receipt_pdf = generate_receipt_pdf(receipt_data)
+                receipt_path = f"/tmp/receipt_{txn.receipt_number}.pdf"
+                with open(receipt_path, "wb") as f:
+                    f.write(receipt_pdf)
+            except Exception as e:
+                print(f"Warning: Failed to generate receipt PDF: {e}")
+                receipt_path = None
+            
             msg = f"Loan disbursed — net release: {net_disbursement}"
             if origination_fee > 0:
                 msg += f" (origination fee: {origination_fee} deducted upfront)"
+            msg += f" | Receipt: {txn.receipt_number}"
             return LoanResponse(success=True, message=msg)
 
     @strawberry.mutation
@@ -1675,3 +1719,113 @@ class ExtendedLoanMutation:
                     created_at=p.created_at
                 ) for p in ptps]
             )
+
+    # ── Loan Restructuring/Refinancing ────────────────────────────────────────
+    @strawberry.mutation
+    async def restructure_loan(self, info: Info, loan_id: int, input: "LoanRestructureInput") -> LoanResponse:
+        """Restructure a loan - extend term, adjust rate, or capitalize arrears."""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role not in ["admin", "staff", "branch_manager"]:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+        async for session in get_db_session():
+            result = await session.execute(select(LoanApplication).filter(LoanApplication.id == loan_id))
+            loan = result.scalar_one_or_none()
+            
+            if not loan or loan.status not in ["active", "past_due"]:
+                return LoanResponse(success=False, message="Loan not found or cannot be restructured")
+            
+            # Calculate new schedule based on restructuring input
+            current_principal = loan.approved_principal or loan.principal
+            current_rate = loan.approved_rate or 0
+            
+            # Apply restructuring changes
+            new_term_months = input.term_months or loan.term_months
+            new_rate = input.interest_rate or current_rate
+            new_principal = current_principal
+            
+            # Capitalize arrears if specified
+            if input.capitalize_arrears:
+                arrears_amount = input.arrears_amount or Decimal("0")
+                new_principal += arrears_amount
+            
+            # Update loan
+            loan.term_months = new_term_months
+            loan.approved_rate = new_rate
+            
+            # Create restructuring record
+            restructure_log = LoanRestructureLog(
+                loan_id=loan.id,
+                old_term_months=loan.term_months,
+                old_interest_rate=current_rate,
+                old_principal=current_principal,
+                new_term_months=new_term_months,
+                new_interest_rate=new_rate,
+                new_principal=new_principal,
+                capitalize_arrears=input.capitalize_arrears or False,
+                arrears_amount=input.arrears_amount or Decimal("0"),
+                reason=input.reason or "Customer request",
+                created_by=str(current_user.id),
+                created_at=datetime.now()
+            )
+            session.add(restructure_log)
+            
+            # Generate new amortization schedule
+            rate_monthly = new_rate / Decimal(100) / Decimal(12)
+            
+            # Clear old schedule
+            old_sched_result = await session.execute(
+                select(AmortizationSchedule).filter(AmortizationSchedule.loan_id == loan.id)
+            )
+            old_schedules = old_sched_result.scalars().all()
+            for sched in old_schedules:
+                session.delete(sched)
+            
+            # Generate new schedule
+            preview_rows = _build_schedule_preview(
+                new_principal, new_rate, new_term_months,
+                loan.amortization_type or "declining_balance",
+                datetime.now()
+            )
+            
+            for row in preview_rows:
+                new_sched = AmortizationSchedule(
+                    loan_id=loan.id,
+                    installment_number=row.installment_number,
+                    due_date=row.due_date,
+                    principal_due=row.principal_due,
+                    interest_due=row.interest_due,
+                )
+                session.add(new_sched)
+            
+            await session.commit()
+            
+            return LoanResponse(
+                success=True,
+                message=f"Loan restructured successfully. New term: {new_term_months} months, Rate: {new_rate}%"
+            )
+
+    @strawberry.type
+    class LoanRestructureLog:
+        id: strawberry.ID
+        loan_id: int
+        old_term_months: int
+        old_interest_rate: Decimal
+        old_principal: Decimal
+        new_term_months: int
+        new_interest_rate: Decimal
+        new_principal: Decimal
+        capitalize_arrears: bool
+        arrears_amount: Decimal
+        reason: str
+        created_by: str
+        created_at: datetime
+
+
+@strawberry.input
+class LoanRestructureInput:
+    term_months: Optional[int] = None
+    interest_rate: Optional[Decimal] = None
+    capitalize_arrears: Optional[bool] = None
+    arrears_amount: Optional[Decimal] = None
+    reason: Optional[str] = None

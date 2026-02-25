@@ -299,3 +299,29 @@ class PromiseToPay(Base):
     
     created_by = Column(String(64), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Loan Restructure Log
+# ---------------------------------------------------------------------------
+class LoanRestructureLog(Base):
+    __tablename__ = "loan_restructure_logs"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    loan_id = Column(BigInteger, ForeignKey("loan_applications.id"), nullable=False, index=True)
+    
+    old_term_months = Column(BigInteger, nullable=False)
+    old_interest_rate = Column(Numeric(10, 4), nullable=False)
+    old_principal = Column(Numeric(14, 2), nullable=False)
+    
+    new_term_months = Column(BigInteger, nullable=False)
+    new_interest_rate = Column(Numeric(10, 4), nullable=False)
+    new_principal = Column(Numeric(14, 2), nullable=False)
+    
+    capitalize_arrears = Column(Boolean, nullable=False, default=False)
+    arrears_amount = Column(Numeric(14, 2), nullable=True)
+    
+    reason = Column(Text, nullable=True)
+    
+    created_by = Column(String(64), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)

@@ -39,6 +39,9 @@ pydantic
 # Utilities
 python-multipart
 
+# PDF Generation
+fpdf2
+
 # Testing
 pytest
 pytest-asyncio
