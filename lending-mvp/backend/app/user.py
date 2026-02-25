@@ -27,6 +27,14 @@ def convert_user_db_to_user_type(user_db: UserInDB) -> UserType:
 @strawberry.type
 class Query:
     @strawberry.field
+    async def me(self, info: Info) -> Optional[UserType]:
+        """Get currently authenticated user"""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user:
+            return None
+        return convert_user_db_to_user_type(current_user)
+
+    @strawberry.field
     async def users(self, info: Info, skip: int = 0, limit: int = 100) -> UsersResponse:
         """Get all users"""
         current_user: UserInDB = info.context.get("current_user")

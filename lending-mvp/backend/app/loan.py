@@ -145,6 +145,7 @@ def convert_loan_db_to_loan_type(loan_db: Loan) -> LoanType:
         amount_requested=loan_db.amount_requested,
         term_months=loan_db.term_months,
         interest_rate=loan_db.interest_rate,
+        mode_of_payment=loan_db.mode_of_payment,
         status=loan_db.status,
         created_at=loan_db.created_at,
         updated_at=loan_db.updated_at

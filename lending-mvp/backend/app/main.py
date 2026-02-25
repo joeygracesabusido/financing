@@ -18,6 +18,7 @@ from .transaction import TransactionQuery, TransactionMutation
 from .loan import LoanQuery, LoanMutation
 from .loan_transaction import LoanTransactionQuery, LoanTransactionMutation # Import LoanTransactionQuery and LoanTransactionMutation
 from .loan_product import LoanProductQuery, LoanProductMutation # Import LoanProductQuery and LoanProductMutation
+from .recent_transactions import RecentTransactionsQuery
 from .database import create_indexes, get_users_collection
 from .database.crud import UserCRUD
 from .auth.security import verify_token
@@ -30,7 +31,7 @@ class LoginRequest(BaseModel):
 
 # --- Strawberry GraphQL Setup ---
 @strawberry.type
-class Query(getUser, getCustomer, SavingsQuery, TransactionQuery, LoanQuery, LoanTransactionQuery, LoanProductQuery): # Add LoanProductQuery
+class Query(getUser, getCustomer, SavingsQuery, TransactionQuery, LoanQuery, LoanTransactionQuery, LoanProductQuery, RecentTransactionsQuery): # Add RecentTransactionsQuery
     pass
 
 @strawberry.type

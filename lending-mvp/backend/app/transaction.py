@@ -87,8 +87,14 @@ class TransactionMutation:
         # Clear savings account detail and lists as balance changed
         redis.delete(f"savings_account:{account_id}")
         keys = redis.keys("savings_accounts:list:*")
-        if keys:
-            redis.delete(*keys)
+        for key in keys:
+            redis.delete(key)
+        
+        # Clear recent transactions cache
+        rt_keys = redis.keys("recent_transactions:*")
+        for key in rt_keys:
+            redis.delete(key)
+            
         print(f"--- Cache cleared for transactions and savings account {account_id} ---")
 
     async def _create_transaction(self, info: Info, input: TransactionCreateInput, trans_type: str) -> TransactionResponse:

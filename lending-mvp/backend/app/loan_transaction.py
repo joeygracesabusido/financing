@@ -12,6 +12,8 @@ from .database import get_loan_transactions_collection
 from .database.loan_transaction_crud import LoanTransactionCRUD
 from .loan_product import LoanProduct, convert_lp_db_to_type
 from .database import loan_product_crud
+from .database import get_loans_collection
+from .database.loan_crud import LoanCRUD
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -53,26 +55,42 @@ class LoanTransactionType:
     processed_by: Optional[str] = strawberry.field(name="processedBy", default=None)
     created_by: Optional[str] = strawberry.field(name="createdBy", default=None)
     updated_by: Optional[str] = strawberry.field(name="updatedBy", default=None)
+    
+    # Internal storage for the borrower name from DB
+    borrower_name_db: strawberry.Private[Optional[str]] = "N/A"
 
     @strawberry.field(name="loanProduct")
     async def loan_product(self, info: Info) -> Optional[LoanProduct]:
-        if not self.loan_product_id:
+        target_product_id = self.loan_product_id
+        
+        # If transaction doesn't have loanProductId, fetch from the loan
+        if not target_product_id:
+            try:
+                loans_collection = get_loans_collection()
+                loan_crud = LoanCRUD(loans_collection)
+                loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
+                if loan_db:
+                    target_product_id = loan_db.loan_product_id
+            except Exception as e:
+                print(f"Error fetching loan for product fallback: {e}")
+
+        if not target_product_id:
             return None
         
         from bson import ObjectId
-        if ObjectId.is_valid(self.loan_product_id):
+        if ObjectId.is_valid(target_product_id):
             try:
-                product_data = await loan_product_crud.get_loan_product_by_id(self.loan_product_id)
+                product_data = await loan_product_crud.get_loan_product_by_id(target_product_id)
                 if product_data:
                     return convert_lp_db_to_type(product_data)
             except Exception as e:
-                print(f"Error resolving loan product by ID for transaction {self.id}: {e}")
+                print(f"Error resolving loan product by ID {target_product_id}: {e}")
         
         # Fallback: if not an ID or not found by ID, it might be a legacy string name
         return LoanProduct(
             id="legacy",
             product_code="LEGACY",
-            product_name=self.loan_product_id,
+            product_name=str(target_product_id),
             term_type="N/A",
             gl_code="N/A",
             type="LEGACY",
@@ -85,8 +103,31 @@ class LoanTransactionType:
             updated_at=datetime.utcnow()
         )
     
-    # Internal field to store the name from DB
-    borrower_name: Optional[str] = strawberry.field(name="borrowerName", default="N/A")
+    @strawberry.field(name="borrowerName")
+    async def borrower_name_resolver(self, info: Info) -> Optional[str]:
+        # Use stored name if available and not "N/A"
+        if self.borrower_name_db and self.borrower_name_db != "N/A":
+            return self.borrower_name_db
+            
+        # Fallback: fetch from the loan
+        try:
+            loans_collection = get_loans_collection()
+            loan_crud = LoanCRUD(loans_collection)
+            loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
+            if loan_db:
+                # We have the loan, now get the borrower name from it
+                # The loan itself has a borrower_name resolver or customer.displayName
+                from .database import get_customers_collection
+                from .database.customer_crud import CustomerCRUD
+                customers_collection = get_customers_collection()
+                customer_crud = CustomerCRUD(customers_collection)
+                customer_data = await customer_crud.get_customer_by_id(str(loan_db.borrower_id))
+                if customer_data:
+                    return customer_data.display_name
+        except Exception as e:
+            print(f"Error resolving borrower name fallback for transaction {self.id}: {e}")
+            
+        return "N/A"
 
 @strawberry.input
 class LoanTransactionCreateInput:
@@ -182,7 +223,7 @@ def convert_db_to_transaction_type(db_obj: LoanTransaction) -> LoanTransactionTy
         processed_by=db_obj.processed_by,
         created_by=db_obj.created_by,
         updated_by=db_obj.updated_by,
-        borrower_name=db_obj.borrower_name or "N/A"
+        borrower_name_db=db_obj.borrower_name or "N/A"
     )
     return transaction_type
 
@@ -368,6 +409,12 @@ class LoanTransactionMutation:
         keys = redis.keys("loan_transactions:list:*")
         for key in keys:
             redis.delete(key)
+            
+        # Clear recent transactions cache
+        rt_keys = redis.keys("recent_transactions:*")
+        for key in rt_keys:
+            redis.delete(key)
+            
         print(f"--- Cache cleared for loan transactions ---")
 
     @strawberry.mutation

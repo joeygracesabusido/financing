@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loanData = {
             borrowerId: borrowerId,
             loanId: loanId || null,
-            loanProduct: loanProduct,
+            loanProductId: loanProduct,
             amountRequested: amountRequested,
             termMonths: termMonths,
             interestRate: interestRate,

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const termDisplay = document.getElementById('detail-term');
     const modeOfPaymentDisplay = document.getElementById('detail-mode-of-payment');
     const createdAtDisplay = document.getElementById('detail-created-at');
+    const dueDateDisplay = document.getElementById('detail-due-date');
     const transactionsTableBody = document.getElementById('transactions-table-body');
 
     const paymentForm = document.getElementById('payment-form');
@@ -24,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentBalance = 0;
     let totalInterest = 0;
+    let currentLoanBorrowerName = 'N/A';
+    let currentLoanProductId = null;
 
     if (!loanId) {
         alert('Loan ID not provided.');
@@ -164,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? loan.borrowerName 
                     : (loan.customer?.displayName || 'N/A');
                 
+                currentLoanBorrowerName = borrowerName;
+                currentLoanProductId = loan.loanProductId;
+
                 borrowerNameDisplay.textContent = borrowerName;
                 loanProductDisplay.textContent = loan.loanProduct?.productName || 'N/A';
                 
@@ -212,6 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     createdAtDisplay.textContent = new Date(loan.createdAt).toLocaleDateString();
                 } else {
                     createdAtDisplay.textContent = '-';
+                }
+
+                // Due Date - calculated from createdAt + termMonths
+                if (loan.createdAt && termMonths && termMonths > 0) {
+                    const createdAt = new Date(loan.createdAt);
+                    const dueDate = new Date(createdAt);
+                    dueDate.setMonth(dueDate.getMonth() + termMonths);
+                    dueDateDisplay.textContent = dueDate.toLocaleDateString();
+                } else {
+                    dueDateDisplay.textContent = '-';
                 }
                 
                 // Set status color
@@ -407,16 +423,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({
                     query: createLoanTransactionMutation,
-                    variables: {
-                        input: {
-                            loanId: loanId,
-                            transactionType: 'repayment',
-                            amount: amount,
-                            transactionDate: date,
-                            notes: notes || 'Loan repayment'
-                        }
-                    }
-                })
+                                                variables: {
+                                                    input: {
+                                                        loanId: loanId,
+                                                        transactionType: 'repayment',
+                                                        amount: amount,
+                                                        transactionDate: date,
+                                                        notes: notes || 'Loan repayment',
+                                                        borrowerName: currentLoanBorrowerName,
+                                                        loanProductId: currentLoanProductId
+                                                    }
+                                                }                })
             });
 
             const result = await response.json();

@@ -40,9 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalSavingsDisplay = document.getElementById('total-savings-display');
     const expenseDisplay = document.getElementById('expense-display');
     const totalBalanceDisplay = document.getElementById('total-balance-display');
+    const recentTransactionsTbody = document.getElementById('recent-transactions-tbody');
+    const userNameDisplay = document.getElementById('user-name-display');
 
     const DASHBOARD_DATA_QUERY = `
         query GetDashboardData {
+            me {
+                fullName
+            }
             savingsAccounts {
                 accounts {
                     balance
@@ -62,14 +67,56 @@ document.addEventListener('DOMContentLoaded', () => {
                     amount
                 }
             }
+            recentTransactions(limit: 10) {
+                id
+                date
+                amount
+                name
+                user
+                method
+                category
+            }
         }
     `;
 
     const formatCurrency = (amount) => {
-        return '₱' + new Intl.NumberFormat('en-US', {
+        const sign = amount < 0 ? '-' : '';
+        const absAmount = Math.abs(amount);
+        return sign + '₱' + new Intl.NumberFormat('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        }).format(amount);
+        }).format(absAmount);
+    };
+
+    const populateRecentTransactions = (transactions) => {
+        if (!recentTransactionsTbody) return;
+        recentTransactionsTbody.innerHTML = '';
+
+        if (transactions.length === 0) {
+            recentTransactionsTbody.innerHTML = '<tr><td colspan="6" class="p-3 text-center text-gray-500">No recent transactions.</td></tr>';
+            return;
+        }
+
+        transactions.forEach(tx => {
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50';
+            
+            const date = new Date(tx.date);
+            const formattedDate = date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + 
+                                  date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            
+            const amountClass = tx.amount < 0 ? 'text-red-600' : 'text-green-600';
+            
+            row.innerHTML = `
+                <td class="py-3 text-sm">${formattedDate}</td>
+                <td class="py-3 text-sm font-bold ${amountClass}">${formatCurrency(tx.amount)}</td>
+                <td class="py-3 text-sm font-medium text-blue-600">${tx.user}</td>
+                <td class="py-3 text-sm font-medium">${tx.name}</td>
+                <td class="py-3 text-sm text-gray-600">${tx.method}</td>
+                <td class="py-3 text-sm"><span class="px-2 py-1 bg-gray-100 rounded-full text-xs">${tx.category}</span></td>
+            `;
+            recentTransactionsTbody.appendChild(row);
+        });
     };
 
     const fetchDashboardData = async () => {
@@ -90,9 +137,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const me = result.data?.me;
+            if (me && userNameDisplay) {
+                userNameDisplay.textContent = me.fullName;
+            }
+
             const savingsAccounts = result.data?.savingsAccounts?.accounts || [];
             const loans = result.data?.loans?.loans || [];
             const loanTransactions = result.data?.loanTransactions?.transactions || [];
+            const recentTransactions = result.data?.recentTransactions || [];
+
+            // Populate Table
+            populateRecentTransactions(recentTransactions);
 
             // Calculate Total Savings
             const totalSavings = savingsAccounts.reduce((sum, account) => sum + (account.balance || 0), 0);
@@ -100,7 +156,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalSavingsDisplay.textContent = formatCurrency(totalSavings);
             }
 
-            // Calculate Total Loan Balance (Expenses)
+            // Calculate Income (Total Repayments)
+            const totalRepayments = loanTransactions.reduce((sum, tx) => {
+                if (tx.transactionType === 'repayment') {
+                    return sum + (parseFloat(tx.amount) || 0);
+                }
+                return sum;
+            }, 0);
+
+            const incomeDisplay = document.getElementById('income-display');
+            if (incomeDisplay) {
+                incomeDisplay.textContent = formatCurrency(totalRepayments);
+            }
+
+            // Calculate Total Loan Principal Balance
             // Principal Balance = sum(disbursements) - sum(repayments)
             let totalLoanPrincipalBalance = loanTransactions.reduce((balance, tx) => {
                 const amount = parseFloat(tx.amount) || 0;
@@ -125,15 +194,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return sum;
             }, 0);
 
-            const totalOutstandingLoanBalance = totalLoanPrincipalBalance + totalCalculatedInterest;
+            const totalOutstandingLoanBalance = Math.max(0, totalLoanPrincipalBalance + totalCalculatedInterest);
 
             if (expenseDisplay) {
                 expenseDisplay.textContent = formatCurrency(totalOutstandingLoanBalance);
             }
 
-            // Update Total Balance
+            // Update Total Balance (Total Assets = Cash in Savings + Outstanding Loans)
             if (totalBalanceDisplay) {
-                totalBalanceDisplay.textContent = formatCurrency(totalSavings - totalOutstandingLoanBalance);
+                totalBalanceDisplay.textContent = formatCurrency(totalSavings + totalOutstandingLoanBalance);
             }
 
         } catch (error) {
