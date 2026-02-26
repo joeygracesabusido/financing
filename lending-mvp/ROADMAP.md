@@ -137,13 +137,13 @@
 - [x] **Fund transfer between accounts** — internal transfers
 - [x] **Standing orders / Auto-debit** — scheduled automatic transfers/payments
 - [x] **Balance inquiry** — mobile/online self-service
-- [ ] **Check deposits** — clearing period, hold release schedule
-- [ ] **Passbook printing support** — dot-matrix formatted output
-- [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES
+- [ ] **Check deposits** — clearing period, hold release schedule (Not in Phase 4)
+- [ ] **Passbook printing support** — dot-matrix formatted output (Not in Phase 4)
+- [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES (Not in Phase 4)
 
 ### 3.4 Passbook / e-Statement
-- [ ] **Passbook printing support** — dot-matrix formatted output
-- [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES
+- [ ] **Passbook printing support** — dot-matrix formatted output (Not in Phase 4)
+- [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES (Not in Phase 4)
 
 ---
 

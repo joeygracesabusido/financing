@@ -166,3 +166,46 @@ class PasswordHistory(Base):
     user_id = Column(String(64), nullable=False, index=True)
     hashed_password = Column(String(200), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# AML Alerts (BSP Circular 1048, RA 9160)
+# ---------------------------------------------------------------------------
+class AMLAlert(Base):
+    __tablename__ = "aml_alerts"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    customer_id = Column(String(64), nullable=False, index=True)
+    transaction_id = Column(String(64), nullable=True)
+    alert_type = Column(String(50), nullable=False)  # "suspicious_activity", "ctr", "pep", "sar"
+    severity = Column(String(20), nullable=False)  # "low", "medium", "high"
+    description = Column(Text, nullable=True)
+    reported_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+    reported_by = Column(String(64), nullable=True)
+    status = Column(String(20), nullable=False, default="pending_review")  # "pending_review", "investigated", "reported"
+    requires_filing = Column(Boolean, default=False, nullable=False)
+    ctr_amount = Column(Float, nullable=True)
+    resolved_at = Column(DateTime(timezone=True), nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+    resolved_by = Column(String(64), nullable=True)
+    
+    __table_args__ = (
+        Index("ix_aml_alerts_customer", "customer_id"),
+        Index("ix_aml_alerts_type", "alert_type"),
+        Index("ix_aml_alerts_status", "status"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# PEP Database (for reference - in production, integrate with external PEP databases)
+# ---------------------------------------------------------------------------
+class PEPRecord(Base):
+    __tablename__ = "pep_records"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    name = Column(String(200), nullable=False, unique=True)
+    position = Column(String(200), nullable=True)
+    country = Column(String(100), nullable=True)
+    pep_type = Column(String(50), nullable=True)  # "foreign_pep", "domestic_pep", "pep_associate"
+    added_date = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)

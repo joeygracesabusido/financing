@@ -720,6 +720,96 @@ export const GET_JOURNAL_ENTRIES = gql`
   }
 `
 
+// ── AML Compliance ─────────────────────────────────────────────────────────────
+export const GET_AML_ALERTS = gql`
+  query GetAmlAlerts($skip: Int, $limit: Int) {
+    getAmlAlerts(skip: $skip, limit: $limit) {
+      success message total alerts {
+        id customer_id alert_type severity description reported_at status
+      }
+    }
+  }
+`
+
+export const GET_PAR_METRICS = gql`
+  query GetParMetrics {
+    getParMetrics {
+      total_outstanding
+      par1 { amount loan_count percentage }
+      par7 { amount loan_count percentage }
+      par30 { amount loan_count percentage }
+      par90 { amount loan_count percentage }
+      current { amount loan_count percentage }
+    }
+  }
+`
+
+export const GET_NPL_METRICS = gql`
+  query GetNplMetrics {
+    getNplMetrics {
+      total_loans npl_count npl_amount npl_ratio npl_by_category
+    }
+  }
+`
+
+export const GET_LLR_METRICS = gql`
+  query GetLlrMetrics {
+    getLlrMetrics {
+      total_loans_outstanding llr_required llr_by_bucket llr_current_balance llr_needed llr_provision_required
+    }
+  }
+`
+
+export const GET_INCOME_STATEMENT = gql`
+  query GetIncomeStatement($period_start: DateTime!, $period_end: DateTime!) {
+    getIncomeStatement(period_start: $period_start, period_end: $period_end) {
+      period_start period_end revenues expenses profit_before_tax net_income
+    }
+  }
+`
+
+export const GET_BALANCE_SHEET = gql`
+  query GetBalanceSheet($as_of_date: DateTime!) {
+    getBalanceSheet(as_of_date: $as_of_date) {
+      as_of_date assets liabilities equity
+    }
+  }
+`
+
+export const GET_UNRESOLVED_ALERTS = gql`
+  query GetUnresolvedAlerts($severity: String) {
+    getUnresolvedAlerts(severity: $severity) {
+      success message total alerts {
+        id customer_id alert_type severity description reported_at status
+      }
+    }
+  }
+`
+
+export const RESOLVE_ALERT = gql`
+  mutation ResolveAlert($alert_id: Int!, $status: String!, $resolution_notes: String!) {
+    resolveAlert(alert_id: $alert_id, status: $status, resolution_notes: $resolution_notes) {
+      success alert_id new_status resolved_at message
+    }
+  }
+`
+
+export const ESCALATE_ALERT = gql`
+  mutation EscalateAlert($alert_id: Int!, $escalated_to: String!, $reason: String!) {
+    escalateAlert(alert_id: $alert_id, escalated_to: $escalated_to, reason: $reason) {
+      success alert_id escalated_to reason message
+    }
+  }
+`
+
+export const RUN_COMPLIANCE_REPORTS = gql`
+  mutation RunComplianceReports($report_type: String!) {
+    runComplianceReports(report_type: $report_type) {
+      generated_at period reports status error
+    }
+  }
+`
+
 // ── Dashboard Stats ────────────────────────────────────────────────────────────
 export const GET_DASHBOARD_STATS = gql`
   query GetDashboardStats {
