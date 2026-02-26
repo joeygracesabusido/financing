@@ -126,5 +126,5 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://backend:8000/graphql}
-      VITE_API_URL: ${VITE_API_URL:-http://backend:8000}
+      VITE_GRAPHQL_URL: ${VITE_GRAPHQL_URL:-http://172.24.0.1:8001/graphql}
+      VITE_API_URL: ${VITE_API_URL:-http://172.24.0.1:8001}

@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     TOTP_TEMP_TOKEN_EXPIRE_MINUTES: int = 5        # Temp token issued during 2FA step
 
     # ── Session Management ────────────────────────────────────────────────────
-    MAX_CONCURRENT_SESSIONS: int = 5              # Max simultaneous logins per user
+    MAX_CONCURRENT_SESSIONS: int = 20              # Max simultaneous logins per user
 
     # ── File Uploads (KYC docs) ───────────────────────────────────────────────
     UPLOAD_DIR: str = "/tmp/kyc_uploads"
