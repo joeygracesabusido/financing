@@ -14,11 +14,11 @@
 | Deposits & Withdrawals | ✅ Done |
 | Fund Transfers | ✅ Done |
 | Standing Orders | ✅ Done |
-| Interest Computation | ✅ Done |
-| Statement Generation | ✅ Done |
+| Interest Computation (ADB, WHT, tiers) | ✅ Done |
+| e-Statement Generation (PDF) | ✅ Done |
 | Loan Creation | ✅ Done |
-| Loan Products | ✅ Done |
-| Basic Auth (JWT) | ✅ Done |
+| Loan Products (all amortization types) | ✅ Done |
+| Basic Auth (JWT + 2FA) | ✅ Done |
 | Minimum Balance Enforcement | ✅ Done |
 | Credit Scoring (5 Cs) | ✅ Done |
 | DTI Ratio Check | ✅ Done |
@@ -26,6 +26,11 @@
 | Disbursement Checklist | ✅ Done |
 | Partial Disbursement (Tranches) | ✅ Done |
 | Promise-to-Pay (PTP) Tracking | ✅ Done |
+| Official Receipt (OR) PDF Generator | ✅ Done |
+| Loan Restructuring (term/rate/arrears) | ✅ Done |
+| Loan Calculator (4 types) | ✅ Done |
+| Double-Entry Accounting (GL) | ✅ Done |
+| Chart of Accounts | ✅ Done |
 
 ---
 
@@ -126,12 +131,13 @@
 ### 3.3 Deposit Transactions
 - [x] **Cash-in / Cash-out** (enhanced with teller session tracking)
 - [x] **Fund transfer between accounts** — internal transfers
-- [ ] **Check deposits** — clearing period, hold release schedule
 - [x] **Standing orders / Auto-debit** — scheduled automatic transfers/payments
 - [x] **Balance inquiry** — mobile/online self-service
+- [ ] **Check deposits** — clearing period, hold release schedule
+- [ ] **Passbook printing support** — dot-matrix formatted output
+- [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES
 
 ### 3.4 Passbook / e-Statement
-- [x] **Transaction statement generation** — PDF export, email delivery
 - [ ] **Passbook printing support** — dot-matrix formatted output
 - [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES
 
@@ -195,6 +201,38 @@
 
 ---
 
+## In Progress (Q1 2026)
+
+> **Current focus**: Backend infrastructure, PostgreSQL migration, Redis integration.
+
+### Recent Implementation (Feb 2026)
+
+| Feature | Status |
+|---|---|
+| PostgreSQL Migration | ✅ Complete |
+| Redis Caching & Sessions | ✅ Complete |
+| Background Job Queue (ARQ) | ✅ Complete |
+| Double-Entry Bookkeeping | ✅ Complete |
+| Credit Scoring Engine | ✅ Complete |
+| DTI Ratio Calculator | ✅ Complete |
+| Loan Tranche Management | ✅ Complete |
+| Loan Restructuring | ✅ Complete |
+| OR PDF Generator | ✅ Complete |
+| Loan Calculator UI | ✅ Complete |
+| PTP Tracking | ✅ Complete |
+| Share Capital / Goal / Minor / Joint Accounts | ✅ Complete |
+
+### Next Up (Feb-Mar 2026)
+
+- [ ] **Email notifications** (SendGrid/Twilio integration in `worker.py`)
+- [ ] **PDF generation with MinIO/S3** storage
+- [ ] **Daily interest computation** for savings accounts (ARQ worker)
+- [ ] **Authorization checks** in loan transactions (`loan_transaction.py`)
+- [ ] **Passbook printing** (dot-matrix output)
+- [ ] **Check deposits** (clearing period & hold release)
+
+---
+
 ## Phase 6 — Advanced Features (Year 2+)
 
 ### 6.1 Loan Origination System (LOS) Integration
@@ -247,4 +285,4 @@
 
 ---
 
-*Last updated: February 2026 | Maintained by: Engineering Team*
+*Last updated: February 26, 2026 | Maintained by: Engineering Team*
