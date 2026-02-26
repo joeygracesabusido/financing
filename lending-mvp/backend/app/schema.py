@@ -249,6 +249,151 @@ class NotificationHistoryResponse:
     notifications: List[NotificationHistoryType]
     total: int
 
+
+# --- Teller & Payment Gateway Types ---
+
+# Transaction Limit Types
+@strawberry.type
+class TransactionLimitConfig:
+    id: strawberry.ID
+    role: str
+    daily_limit: float = strawberry.field(name="dailyLimit")
+    weekly_limit: float = strawberry.field(name="weeklyLimit")
+    monthly_limit: float = strawberry.field(name="monthlyLimit")
+    single_transaction_limit: float = strawberry.field(name="singleTransactionLimit")
+    branch_id: Optional[str] = strawberry.field(name="branchId", default=None)
+    active: bool
+
+
+@strawberry.input
+class TransactionLimitCreateInput:
+    role: str
+    daily_limit: float = strawberry.field(name="dailyLimit")
+    weekly_limit: float = strawberry.field(name="weeklyLimit")
+    monthly_limit: float = strawberry.field(name="monthlyLimit")
+    single_transaction_limit: float = strawberry.field(name="singleTransactionLimit")
+    branch_id: Optional[str] = strawberry.field(name="branchId", default=None)
+    active: Optional[bool] = True
+
+
+@strawberry.input
+class TransactionLimitUpdateInput:
+    daily_limit: Optional[float] = None
+    weekly_limit: Optional[float] = None
+    monthly_limit: Optional[float] = None
+    single_transaction_limit: Optional[float] = None
+    active: Optional[bool] = None
+
+
+# Payment Gateway Types
+@strawberry.type
+class PaymentGatewayResponse:
+    payment_id: str = strawberry.field(name="paymentId")
+    gateway: str
+    amount: float
+    status: str
+    reference_id: str = strawberry.field(name="referenceId")
+    timestamp: datetime
+    mobile_number: Optional[str] = None
+    email: Optional[str] = None
+    destination_account: Optional[str] = strawberry.field(name="destinationAccount", default=None)
+    destination_bank_code: Optional[str] = strawberry.field(name="destinationBankCode", default=None)
+    batch_id: Optional[str] = strawberry.field(name="batchId", default=None)
+
+
+@strawberry.input
+class GCashPaymentInput:
+    amount: float
+    mobile_number: str
+    reference_id: str = strawberry.field(name="referenceId")
+    payment_type: str = strawberry.field(name="paymentType", default="loan_repayment")
+    customer_id: Optional[str] = strawberry.field(name="customerId", default=None)
+    notes: Optional[str] = None
+
+
+@strawberry.input
+class MayaPaymentInput:
+    amount: float
+    email: str
+    reference_id: str = strawberry.field(name="referenceId")
+    payment_type: str = strawberry.field(name="paymentType", default="loan_repayment")
+    customer_id: Optional[str] = strawberry.field(name="customerId", default=None)
+    notes: Optional[str] = None
+
+
+@strawberry.input
+class InstaPayInput:
+    amount: float
+    source_account: str = strawberry.field(name="sourceAccount")
+    destination_account: str = strawberry.field(name="destinationAccount")
+    destination_bank_code: str = strawberry.field(name="destinationBankCode")
+    reference_id: str = strawberry.field(name="referenceId")
+    payment_type: str = strawberry.field(name="paymentType", default="transfer")
+    notes: Optional[str] = None
+
+
+@strawberry.input
+class PESONetInput:
+    amount: float
+    source_account: str = strawberry.field(name="sourceAccount")
+    destination_account: str = strawberry.field(name="destinationAccount")
+    destination_bank_code: str = strawberry.field(name="destinationBankCode")
+    reference_id: str = strawberry.field(name="referenceId")
+    payment_type: str = strawberry.field(name="paymentType", default="single")
+    batch_id: Optional[str] = strawberry.field(name="batchId", default=None)
+    notes: Optional[str] = None
+
+
+@strawberry.type
+class PaymentMethod:
+    id: str
+    name: str
+    type: str
+    supported_operations: List[str] = strawberry.field(name="supportedOperations")
+    features: Optional[List[str]] = None
+
+
+# Cash Drawer Session Types
+@strawberry.type
+class CashDrawerSession:
+    session_id: strawberry.ID = strawberry.field(name="sessionId")
+    teller_id: str = strawberry.field(name="tellerId")
+    branch_id: str = strawberry.field(name="branchId")
+    opening_time: datetime = strawberry.field(name="openingTime")
+    initial_amount: float = strawberry.field(name="initialAmount")
+    current_amount: float = strawberry.field(name="currentAmount")
+    status: str
+    closing_time: Optional[datetime] = strawberry.field(name="closingTime", default=None)
+    expected_amount: Optional[float] = strawberry.field(name="expectedAmount", default=None)
+    actual_amount: Optional[float] = strawberry.field(name="actualAmount", default=None)
+    variance: Optional[float] = None
+    variance_reason: Optional[str] = strawberry.field(name="varianceReason", default=None)
+    notes: Optional[str] = None
+
+
+@strawberry.input
+class CashDrawerOpeningInput:
+    teller_id: str = strawberry.field(name="tellerId")
+    branch_id: str = strawberry.field(name="branchId")
+    initial_amount: float = strawberry.field(name="initialAmount")
+    notes: Optional[str] = None
+
+
+@strawberry.input
+class CashDrawerClosingInput:
+    session_id: strawberry.ID = strawberry.field(name="sessionId")
+    expected_amount: float = strawberry.field(name="expectedAmount")
+    actual_amount: float = strawberry.field(name="actualAmount")
+    variance_reason: Optional[str] = strawberry.field(name="varianceReason", default=None)
+    notes: Optional[str] = None
+
+
+@strawberry.type
+class TellerSessionResponse:
+    success: bool
+    session: Optional[CashDrawerSession] = None
+    message: str
+
 # Payment Details for QR Scan
 @strawberry.type
 class PaymentDetailsType:

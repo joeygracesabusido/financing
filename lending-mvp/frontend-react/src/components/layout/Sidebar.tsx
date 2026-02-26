@@ -21,6 +21,9 @@ import {
     Send,
     QrCode,
     Briefcase,
+    Wallet,
+    Settings,
+    Smartphone,
 } from 'lucide-react'
 
 // Role-based nav configuration
@@ -38,6 +41,11 @@ const navItems = [
     { to: '/branches', icon: GitBranch, label: 'Branches', roles: ['admin', 'branch_manager'] },
     { to: '/audit-logs', icon: ScrollText, label: 'Audit Logs', roles: ['admin', 'auditor'] },
     { to: '/users', icon: UserCog, label: 'User Management', roles: ['admin'] },
+    { to: '/teller/cash-drawer', icon: Wallet, label: 'Cash Drawer', roles: ['teller', 'admin'] },
+    { to: '/teller/payment-gateway', icon: Smartphone, label: 'Payment Gateway', roles: ['teller', 'admin'] },
+    { to: '/teller/transaction-limits', icon: Settings, label: 'Transaction Limits', roles: ['admin'] },
+    { to: '/teller/qrcode', icon: QrCode, label: 'QR Code', roles: ['teller', 'admin'] },
+    { to: '/customer/notifications', icon: Settings, label: 'Notifications', roles: ['customer'] },
 ]
 
 export default function Sidebar() {
@@ -118,6 +126,14 @@ export default function Sidebar() {
                         >
                             <Send className="w-4 h-4 flex-shrink-0" />
                             <span className="flex-1">Transfer Funds</span>
+                            <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                        </NavLink>
+                        <NavLink
+                            to="/customer/notifications"
+                            className={({ isActive }) => cn('sidebar-item group', isActive && 'active')}
+                        >
+                            <Settings className="w-4 h-4 flex-shrink-0" />
+                            <span className="flex-1">Notifications</span>
                             <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
                         </NavLink>
                         <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 mt-4">

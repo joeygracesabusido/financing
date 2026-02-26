@@ -272,8 +272,75 @@ def _parse_redis_settings(url: str) -> RedisSettings:
     return RedisSettings(host=host, port=int(port), password=password)
 
 
+# ── Teller & Payment Gateway Notifications ───────────────────────────────────
+
+async def send_teller_cash_drawer_notification(ctx, teller_id: str, message: str, session_id: str):
+    """Send notification for teller cash drawer operations"""
+    logger.info("send_teller_cash_drawer_notification | teller=%s session=%s", teller_id, session_id)
+    
+    try:
+        # Fetch teller email
+        from ..database.user_crud import UserCRUD
+        from ..database import get_users_collection
+        
+        users_collection = get_users_collection()
+        user_crud = UserCRUD(users_collection)
+        teller = await user_crud.get_user_by_id(teller_id)
+        
+        if teller and teller.email:
+            await send_notification(ctx, teller_id, message, "email", "Teller Cash Drawer Notification")
+        
+        # Send SMS if configured
+        if os.environ.get("TWILIO_SID"):
+            await send_notification(ctx, teller_id, message, "sms", "")
+        
+        logger.info(f"Notifications sent to teller {teller_id}")
+        return {"status": "ok", "teller_id": teller_id, "session_id": session_id}
+    except Exception as e:
+        logger.error(f"Failed to send teller notification: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+async def send_payment_gateway_notification(ctx, user_id: str, message: str, payment_type: str, gateway: str):
+    """Send notification for payment gateway operations"""
+    logger.info("send_payment_gateway_notification | user=%s gateway=%s payment_type=%s", user_id, gateway, payment_type)
+    
+    try:
+        # Send email notification
+        await send_notification(ctx, user_id, message, "email", f"Payment {payment_type.title()} via {gateway}")
+        
+        # Send SMS for important payments
+        if payment_type in ["loan_repayment", "deposit"]:
+            await send_notification(ctx, user_id, f"Payment {payment_type} processed via {gateway}", "sms", "")
+        
+        logger.info(f"Payment notifications sent to user {user_id}")
+        return {"status": "ok", "user_id": user_id, "gateway": gateway}
+    except Exception as e:
+        logger.error(f"Failed to send payment notification: {e}")
+        return {"status": "error", "message": str(e)}
+
+
+async def send_transaction_limit_notification(ctx, user_id: str, message: str):
+    """Send notification for transaction limit updates"""
+    logger.info("send_transaction_limit_notification | user=%s", user_id)
+    
+    try:
+        # Send email notification
+        await send_notification(ctx, user_id, message, "email", "Transaction Limits Updated")
+        return {"status": "ok", "user_id": user_id}
+    except Exception as e:
+        logger.error(f"Failed to send transaction limit notification: {e}")
+        return {"status": "error", "message": str(e)}
+
+
 class WorkerSettings:
-    functions = [generate_loan_statement, send_notification]
+    functions = [
+        generate_loan_statement, 
+        send_notification,
+        send_teller_cash_drawer_notification,
+        send_payment_gateway_notification,
+        send_transaction_limit_notification
+    ]
     cron_jobs = [
         cron(accrue_daily_interest, hour=0, minute=0),  # midnight UTC daily
     ]
