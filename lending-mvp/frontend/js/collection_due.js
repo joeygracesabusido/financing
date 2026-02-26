@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loans.length === 0) {
             collectionDueTableBody.innerHTML = `
                 <tr>
-                    <td colspan="9" class="p-4 text-center text-gray-500">
+                    <td colspan="8" class="p-4 text-center text-gray-500">
                         No loans found with collections due in this period
                     </td>
                 </tr>
@@ -330,14 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${loan.status}
                         </span>
                     </td>
-                    <td class="p-3 text-sm">
-                        <a href="loan_details.html?id=${loan.id}" class="text-blue-500 hover:text-blue-700 mr-2" title="View Details">
-                            <i class="fas fa-eye"></i> View
-                        </a>
-                        <a href="amortization.html?id=${loan.id}" class="text-indigo-500 hover:text-indigo-700" title="Amortization">
-                            <i class="fas fa-calendar-alt"></i> Amortization
-                        </a>
-                    </td>
                 `;
                 collectionDueTableBody.appendChild(row);
             } catch (error) {
@@ -393,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn('Query unsuccessful:', loansResponse?.message);
                 collectionDueTableBody.innerHTML = `
                     <tr>
-                        <td colspan="9" class="p-4 text-center text-red-500">
+                        <td colspan="8" class="p-4 text-center text-red-500">
                             Error loading loans: ${loansResponse?.message || 'Unknown error'}
                         </td>
                     </tr>
@@ -415,7 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching loans:', error);
             collectionDueTableBody.innerHTML = `
                 <tr>
-                    <td colspan="9" class="p-4 text-center text-red-500">
+                    <td colspan="8" class="p-4 text-center text-red-500">
                         Error loading loans. Please check your connection.
                     </td>
                 </tr>

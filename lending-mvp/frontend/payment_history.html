@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment History</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        @media print {
+            aside, .no-print {
+                display: none !important;
+            }
+            main {
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+            .shadow-lg {
+                shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between shadow-lg no-print">
+            <div>
+                <div class="flex items-center mb-10">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg mr-3"></div>
+                    <span class="text-2xl font-bold">IJE Software</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4">
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-users mr-3"></i> Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
+                                <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-piggy-bank mr-3"></i> Savings <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings Accounts</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left">
+                                <i class="fas fa-hand-holding-usd mr-3"></i> Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
+                                <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
+                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
+                                <a href="payment_transaction.html" class="block text-gray-600 hover:text-gray-800">Payment Transactions</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <ul>
+                    <li class="mb-4"><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700 p-2 rounded-lg"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-8">
+            <div class="flex justify-between items-center mb-8 no-print">
+                <h1 class="text-3xl font-bold">Payment History</h1>
+                <div class="space-x-4">
+                    <button onclick="window.print()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"><i class="fas fa-print mr-2"></i> Print</button>
+                    <a href="loan_transaction.html" class="text-gray-600 hover:text-gray-800 font-bold"><i class="fas fa-arrow-left mr-2"></i> Back</a>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 shadow-sm border border-gray-300 max-w-5xl mx-auto">
+                <div class="flex justify-between items-start mb-6 border-b-2 border-gray-400 pb-4">
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-800">Payment History</h1>
+                        <p class="text-blue-600 text-sm mt-1">Generated by IJE Software Lending System</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="flex items-center justify-end">
+                            <span class="text-2xl font-bold text-gray-700">IJE<span class="text-blue-500 italic">Software</span></span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Loan ID: <span id="loan-id-display">-</span></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-12 mb-8">
+                    <!-- Left: Loan Information -->
+                    <div class="space-y-0.5">
+                        <h3 class="bg-gray-200 px-2 py-1 font-bold text-gray-700 border border-gray-300">Loan Information</h3>
+                        <div class="flex border border-gray-300">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Borrower</div>
+                            <div id="summary-borrower" class="w-1/3 p-1 px-2 text-sm text-right font-medium">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Loan Amount</div>
+                            <div id="summary-principal" class="w-1/3 p-1 px-2 text-sm text-right font-medium">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Annual Interest Rate</div>
+                            <div id="summary-rate" class="w-1/3 p-1 px-2 text-sm text-right">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Term of Loan in Months</div>
+                            <div id="summary-term" class="w-1/3 p-1 px-2 text-sm text-right">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Payment Frequency</div>
+                            <div id="summary-frequency" class="w-1/3 p-1 px-2 text-sm text-right">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Payment Summary -->
+                    <div class="space-y-0.5">
+                        <h3 class="bg-gray-200 px-2 py-1 font-bold text-gray-700 border border-gray-300">Payment Summary</h3>
+                        <div class="flex border border-gray-300">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Total Amount Due</div>
+                            <div id="summary-total-due" class="w-1/3 p-1 px-2 text-sm text-right">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Total Paid</div>
+                            <div id="summary-total-paid" class="w-1/3 p-1 px-2 text-sm text-right text-green-600 font-medium">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Remaining Balance</div>
+                            <div id="summary-remaining" class="w-1/3 p-1 px-2 text-sm text-right text-red-600 font-medium">-</div>
+                        </div>
+                        <div class="flex border border-gray-300 border-t-0">
+                            <div class="w-2/3 bg-gray-50 p-1 px-2 text-sm border-r border-gray-300">Payments Made</div>
+                            <div id="summary-payments-count" class="w-1/3 p-1 px-2 text-sm text-right">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">Payment Schedule</h3>
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-800 text-white text-sm font-bold">
+                                <th class="p-2 px-3 border border-gray-600 w-12 text-center">No.</th>
+                                <th class="p-2 px-3 border border-gray-600 text-center">Due Date</th>
+                                <th class="p-2 px-3 border border-gray-600 text-right">Amount Due</th>
+                                <th class="p-2 px-3 border border-gray-600 text-right">Principal</th>
+                                <th class="p-2 px-3 border border-gray-600 text-right">Interest</th>
+                                <th class="p-2 px-3 border border-gray-600 text-right">Payment Made</th>
+                                <th class="p-2 px-3 border border-gray-600 text-center">Payment Date</th>
+                                <th class="p-2 px-3 border border-gray-600 text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payment-history-table-body" class="text-sm">
+                            <!-- JS will populate this -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/payment_history.js"></script>
+    <script>
+        // Sidebar dropdowns
+        ['customer', 'savings', 'loan'].forEach(type => {
+            const btn = document.getElementById(`${type}-dropdown-btn`);
+            const menu = document.getElementById(`${type}-dropdown-menu`);
+            if (btn && menu) {
+                btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+            }
+        });
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

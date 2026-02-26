@@ -219,8 +219,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="p-3">${transactionDate}</td>
                 <td class="p-3">${transaction.notes || 'N/A'}</td>
                 <td class="p-3 text-sm">
-                    <button class="text-blue-500 hover:text-blue-700 mr-2 view-loan-btn" data-loan-id="${transaction.loanId}" title="View Loan Details"><i class="fas fa-eye"></i>Views</button>
-                    <button class="text-indigo-500 hover:text-indigo-700 mr-2 amortization-btn" data-loan-id="${transaction.loanId}" title="Amortization Schedule"><i class="fas fa-calendar-alt"></i> Amortization</button>
+                    <button class="text-blue-500 hover:text-blue-700 mr-2 view-loan-btn" data-loan-id="${transaction.loanId}" title="View Loan Details"><i class="fas fa-eye"></i></button>
+                    <button class="text-indigo-500 hover:text-indigo-700 mr-2 amortization-btn" data-loan-id="${transaction.loanId}" title="Amortization Schedule"><i class="fas fa-calendar-alt"></i></button>
+                    <button class="text-green-500 hover:text-green-700 mr-2 payment-history-btn" data-loan-id="${transaction.loanId}" title="Payment History"><i class="fas fa-history"></i></button>
                     <button class="text-yellow-500 hover:text-yellow-700 mr-2 edit-transaction-btn" data-id="${transaction.id}" title="Edit Transaction"><i class="fas fa-edit"></i></button>
                     <button class="text-red-500 hover:text-red-700 delete-transaction-btn" data-id="${transaction.id}" title="Delete Transaction"><i class="fas fa-trash"></i></button>
                 </td>
@@ -241,6 +242,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     const loanId = event.currentTarget.dataset.loanId;
                     console.log('📅 Viewing amortization for loan:', loanId);
                     window.location.href = `amortization.html?id=${loanId}`;
+                });
+            }
+
+            const paymentHistoryButton = row.querySelector('.payment-history-btn');
+            if (paymentHistoryButton) {
+                paymentHistoryButton.addEventListener('click', (event) => {
+                    const loanId = event.currentTarget.dataset.loanId;
+                    console.log('📜 Viewing payment history for loan:', loanId);
+                    window.location.href = `payment_history.html?id=${loanId}`;
                 });
             }
 
