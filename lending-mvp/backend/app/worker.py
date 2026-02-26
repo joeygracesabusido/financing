@@ -39,10 +39,83 @@ async def send_notification(ctx, user_id: str, message: str, channel: str = "ema
 async def accrue_daily_interest(ctx):
     """
     Daily cron: compute and post interest for all savings accounts.
+    - Fetches all active savings accounts with interest rates
+    - Computes daily interest using: daily_rate = annual_rate / 365
+    - Posts interest to ledger via accounting_service
+    - Updates account balance
     """
     logger.info("accrue_daily_interest | running")
-    # TODO: iterate savings accounts, compute interest, write ledger entry
-    return {"status": "done"}
+    
+    try:
+        from datetime import date
+        from decimal import Decimal
+        
+        from app.database import get_savings_collection
+        from app.database.savings_crud import SavingsCRUD
+        from app.services.accounting_service import post_transaction
+        
+        savings_collection = get_savings_collection()
+        savings_crud = SavingsCRUD(savings_collection)
+        
+        # Get all active savings accounts
+        accounts = await savings_crud.get_all_savings_accounts()
+        
+        interest_accounts_processed = 0
+        total_interest_posted = Decimal("0.00")
+        
+        for account in accounts:
+            # Only process accounts with interest rates and active status
+            if not hasattr(account, 'interest_rate') or account.interest_rate is None:
+                continue
+            if account.status != "active":
+                continue
+            
+            account_id = str(account.id)
+            balance = Decimal(str(account.balance))
+            annual_rate = Decimal(str(account.interest_rate))
+            
+            # Calculate daily interest rate (annual rate / 365)
+            daily_rate = annual_rate / Decimal("365")
+            
+            # Calculate daily interest
+            daily_interest = (balance * daily_rate) / Decimal("100")
+            
+            if daily_interest <= 0:
+                continue
+            
+            # Update account balance
+            success = await savings_crud.update_balance(account_id, daily_interest)
+            
+            if success:
+                interest_accounts_processed += 1
+                total_interest_posted += daily_interest
+                
+                # Post to ledger: Debit Interest Expense, Credit Interest Payable
+                # Using standard GL accounts (you can customize these based on your chart of accounts)
+                debit_account = "5600"  # Interest Expense
+                credit_account = "2200"  # Interest Payable
+                
+                await post_transaction(debit_account, credit_account, daily_interest)
+                
+                logger.info(
+                    "Daily interest posted | account=%s interest=%.2f balance=%.2f",
+                    account_id, float(daily_interest), float(balance + daily_interest)
+                )
+        
+        logger.info(
+            "accrue_daily_interest | completed | accounts_processed=%d total_interest=%.2f",
+            interest_accounts_processed, float(total_interest_posted)
+        )
+        
+        return {
+            "status": "success",
+            "accounts_processed": interest_accounts_processed,
+            "total_interest_posted": str(total_interest_posted)
+        }
+        
+    except Exception as e:
+        logger.error("accrue_daily_interest | error: %s", str(e))
+        return {"status": "error", "message": str(e)}
 
 
 # ── Worker settings ───────────────────────────────────────────────────────────
