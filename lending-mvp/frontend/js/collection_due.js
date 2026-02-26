@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentFilter = 'weekly';
     let allLoans = [];
+    let allAmortizationData = {}; // Cache amortization data: loanId -> scheduleData
 
     // Get the current date range based on filter
     const getCurrentDateRange = (filter) => {
@@ -22,24 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
             endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
             label = 'Today';
         } else if (filter === 'weekly') {
-            // Start of current week (Monday)
-            const dayOfWeek = now.getDay();
-            const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysToMonday, 0, 0, 0);
-            // End of current week (Sunday)
-            endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 6, 23, 59, 59);
-            label = 'This Week';
+            // Next 7 days
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7, 23, 59, 59);
+            label = 'Next 7 Days';
         } else if (filter === 'monthly') {
-            startDate = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
-            endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
-            label = 'This Month';
+            // Next 30 days
+            startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+            endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30, 23, 59, 59);
+            label = 'Next 30 Days';
         }
 
         return { startDate, endDate, label };
     };
 
-    // GraphQL query to fetch loans
+    // GraphQL query to fetch loans with full details for amortization
     const getLoansQuery = `
         query GetLoans($skip: Int, $limit: Int) {
             loans(skip: $skip, limit: $limit) {
@@ -53,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     loanProduct {
                         productName
                         modeOfPayment
+                        defaultInterestRate
                     }
                     amountRequested
                     termMonths
@@ -75,23 +74,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }).format(amount);
     };
 
-    // Check if a loan is due within the current date range
-    const isLoanDueInRange = (loan, startDate, endDate) => {
-        if (currentFilter === 'all') return true;
-
-        // Only show active or approved loans
-        if (loan.status !== 'active' && loan.status !== 'approved' && loan.status !== 'paid') return false;
+    // Calculate amortization schedule for a loan
+    const calculateAmortizationSchedule = (loan) => {
+        const principal = parseFloat(loan.amountRequested) || 0;
+        const annualRatePercent = parseFloat(loan.loanProduct?.defaultInterestRate || loan.interestRate || 0);
+        const annualRate = annualRatePercent / 100;
+        const termMonths = parseInt(loan.termMonths) || 0;
+        const modeOfPayment = (loan.loanProduct?.modeOfPayment || loan.modeOfPayment || 'monthly').toLowerCase();
 
         const createdAtStr = loan.createdAt || new Date().toISOString();
-        const startOfLoan = new Date(createdAtStr);
-        const termMonths = parseInt(loan.termMonths) || 1;
-        const modeOfPayment = (loan.modeOfPayment || loan.loanProduct?.modeOfPayment || 'monthly').toLowerCase();
+        const startDate = new Date(createdAtStr);
 
-        // Calculate all installment dates
-        const installmentDates = [];
-        let currentDate = new Date(startOfLoan);
+        // Calculate periodic values
+        let periodsPerYear = 12;
+        let totalPaymentsCount = termMonths;
 
-        // First payment date depends on modeOfPayment
+        switch (modeOfPayment) {
+            case 'daily':
+                periodsPerYear = 360;
+                totalPaymentsCount = termMonths * 30;
+                break;
+            case 'weekly':
+                periodsPerYear = 52;
+                totalPaymentsCount = Math.round(termMonths * 52 / 12);
+                break;
+            case 'bi-weekly':
+                periodsPerYear = 26;
+                totalPaymentsCount = Math.round(termMonths * 26 / 12);
+                break;
+            case 'quarterly':
+                periodsPerYear = 4;
+                totalPaymentsCount = Math.round(termMonths / 3);
+                break;
+            case 'semi-annually':
+            case 'semi annually':
+                periodsPerYear = 2;
+                totalPaymentsCount = Math.round(termMonths / 6);
+                break;
+            case 'annually':
+                periodsPerYear = 1;
+                totalPaymentsCount = Math.round(termMonths / 12);
+                break;
+            case 'monthly':
+            default:
+                periodsPerYear = 12;
+                totalPaymentsCount = termMonths;
+                break;
+        }
+
+        const periodicRate = annualRate / periodsPerYear;
+
+        // Calculate periodic payment using standard amortization formula
+        let periodicPayment = 0;
+        if (periodicRate > 0) {
+            periodicPayment = (principal * periodicRate * Math.pow(1 + periodicRate, totalPaymentsCount)) /
+                (Math.pow(1 + periodicRate, totalPaymentsCount) - 1);
+        } else {
+            periodicPayment = principal / totalPaymentsCount;
+        }
+
+        // Generate schedule
+        const schedule = [];
+        let currentDate = new Date(startDate);
+        let remainingBalance = principal;
+
+        // Calculate first payment date
         switch (modeOfPayment) {
             case 'daily': currentDate.setDate(currentDate.getDate() + 1); break;
             case 'weekly': currentDate.setDate(currentDate.getDate() + 7); break;
@@ -105,33 +152,21 @@ document.addEventListener('DOMContentLoaded', () => {
             default: currentDate.setMonth(currentDate.getMonth() + 1); break;
         }
 
-        // Calculate number of installments based on term and mode
-        let totalInstallments = termMonths;
-        switch (modeOfPayment) {
-            case 'daily': totalInstallments = termMonths * 30; break;
-            case 'weekly': totalInstallments = Math.round(termMonths * 52 / 12); break;
-            case 'bi-weekly': totalInstallments = Math.round(termMonths * 26 / 12); break;
-            case 'quarterly': totalInstallments = Math.round(termMonths / 3); break;
-            case 'semi-annually':
-            case 'semi annually':
-                totalInstallments = Math.round(termMonths / 6); break;
-            case 'annually': totalInstallments = Math.round(termMonths / 12); break;
-            case 'monthly':
-            default: totalInstallments = termMonths; break;
-        }
+        for (let i = 0; i < totalPaymentsCount; i++) {
+            const interestPayment = remainingBalance * periodicRate;
+            const principalPayment = periodicPayment - interestPayment;
+            remainingBalance = Math.max(0, remainingBalance - principalPayment);
 
-        if (totalInstallments === 0 && termMonths > 0) totalInstallments = 1;
+            schedule.push({
+                paymentNumber: i + 1,
+                paymentDate: new Date(currentDate),
+                principalPayment: parseFloat(principalPayment.toFixed(2)),
+                interestPayment: parseFloat(interestPayment.toFixed(2)),
+                totalPayment: parseFloat(periodicPayment.toFixed(2)),
+                remainingBalance: parseFloat(remainingBalance.toFixed(2))
+            });
 
-        for (let i = 0; i < totalInstallments; i++) {
-            const normalizedDueDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-            const normalizedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-            const normalizedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-
-            if (normalizedDueDate >= normalizedStart && normalizedDueDate <= normalizedEnd) {
-                return true;
-            }
-
-            // Increment for next installment
+            // Increment to next payment date
             switch (modeOfPayment) {
                 case 'daily': currentDate.setDate(currentDate.getDate() + 1); break;
                 case 'weekly': currentDate.setDate(currentDate.getDate() + 7); break;
@@ -144,12 +179,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'monthly':
                 default: currentDate.setMonth(currentDate.getMonth() + 1); break;
             }
-
-            // If we've passed the end range, we can stop
-            if (currentDate > endDate) break;
         }
 
-        return false;
+        return schedule;
+    };
+
+    // Get all installment dates for a loan within a date range
+    // (This function is now replaced by calculateAmortizationSchedule above)
+
+    // Check if a loan has collections due within the current date range
+    const isLoanDueInRange = (loan, startDate, endDate) => {
+        if (currentFilter === 'all') return loan.status === 'active' || loan.status === 'approved' || loan.status === 'paid';
+        if (loan.status !== 'active' && loan.status !== 'approved' && loan.status !== 'paid') return false;
+
+        // Generate amortization schedule and check if any payments fall in the range
+        const schedule = calculateAmortizationSchedule(loan);
+        return schedule.some(payment => {
+            const paymentDate = new Date(payment.paymentDate);
+            const normalizedPaymentDate = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
+            const normalizedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+            const normalizedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+            return normalizedPaymentDate >= normalizedStart && normalizedPaymentDate <= normalizedEnd;
+        });
     };
 
     // Filter loans based on current filter setting
@@ -160,57 +211,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update date range display text
     const updateDateRangeDisplay = (filter) => {
-        const { label } = getCurrentDateRange(filter);
-        dateRangeDisplay.textContent = `Showing loans due ${label.toLowerCase()}`;
+        const { label, startDate, endDate } = getCurrentDateRange(filter);
+        const startStr = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endStr = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        dateRangeDisplay.textContent = `Showing loans due ${label.toLowerCase()} (${startStr} - ${endStr})`;
     };
 
-    // Calculate the next due date for display
-    const getNextDueDate = (loan) => {
-        const now = new Date();
-        const startOfLoan = new Date(loan.createdAt);
-        const termMonths = parseInt(loan.termMonths) || 1;
-        const modeOfPayment = (loan.modeOfPayment || loan.loanProduct?.modeOfPayment || 'monthly').toLowerCase();
-
-        let currentDate = new Date(startOfLoan);
-        // Initial payment date
-        switch (modeOfPayment) {
-            case 'daily': currentDate.setDate(currentDate.getDate() + 1); break;
-            case 'weekly': currentDate.setDate(currentDate.getDate() + 7); break;
-            case 'bi-weekly': currentDate.setDate(currentDate.getDate() + 14); break;
-            case 'quarterly': currentDate.setMonth(currentDate.getMonth() + 3); break;
-            case 'semi-annually':
-            case 'semi annually':
-                currentDate.setMonth(currentDate.getMonth() + 6); break;
-            case 'annually': currentDate.setFullYear(currentDate.getFullYear() + 1); break;
-            case 'monthly':
-            default: currentDate.setMonth(currentDate.getMonth() + 1); break;
-        }
-
-        // Find the first payment date that is today or in the future
-        // We also need a limit to avoid infinite loops if term is large
-        const maxMonths = termMonths + 12;
-        const stopDate = new Date(startOfLoan);
-        stopDate.setMonth(stopDate.getMonth() + maxMonths);
-
-        while (currentDate < now && currentDate < stopDate) {
-             switch (modeOfPayment) {
-                case 'daily': currentDate.setDate(currentDate.getDate() + 1); break;
-                case 'weekly': currentDate.setDate(currentDate.getDate() + 7); break;
-                case 'bi-weekly': currentDate.setDate(currentDate.getDate() + 14); break;
-                case 'quarterly': currentDate.setMonth(currentDate.getMonth() + 3); break;
-                case 'semi-annually':
-                case 'semi annually':
-                    currentDate.setMonth(currentDate.getMonth() + 6); break;
-                case 'annually': currentDate.setFullYear(currentDate.getFullYear() + 1); break;
-                case 'monthly':
-                default: currentDate.setMonth(currentDate.getMonth() + 1); break;
-            }
-        }
-        return currentDate;
-    };
-
-    // Populate the table with loans
-    const populateTable = (loans) => {
+    // Populate the table with loans and their collection data
+    const populateTable = (loans, startDate, endDate) => {
         if (!collectionDueTableBody) return;
 
         collectionDueTableBody.innerHTML = '';
@@ -219,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             collectionDueTableBody.innerHTML = `
                 <tr>
                     <td colspan="9" class="p-4 text-center text-gray-500">
-                        No loans found matching the criteria
+                        No loans found with collections due in this period
                     </td>
                 </tr>
             `;
@@ -233,47 +241,108 @@ document.addEventListener('DOMContentLoaded', () => {
             loanCountDisplay.textContent = `${loans.length} loan${loans.length !== 1 ? 's' : ''}`;
         }
 
+        const now = new Date();
+
         loans.forEach(loan => {
-            const dueDate = getNextDueDate(loan);
-            const dueDateDisplay = dueDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            try {
+                // Get the loan's payment frequency
+                const loanModeOfPayment = (loan.loanProduct?.modeOfPayment || loan.modeOfPayment || 'monthly').toLowerCase();
+                
+                // Get amortization schedule
+                const schedule = allAmortizationData[loan.id] || calculateAmortizationSchedule(loan);
+                allAmortizationData[loan.id] = schedule;
 
-            // Determine overdue status
-            const now = new Date();
-            const isOverdue = dueDate < now && loan.status !== 'paid';
+                // Find payments due in this date range
+                const paymentsInRange = schedule.filter(payment => {
+                    const paymentDate = new Date(payment.paymentDate);
+                    const normalizedPaymentDate = new Date(paymentDate.getFullYear(), paymentDate.getMonth(), paymentDate.getDate());
+                    const normalizedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                    const normalizedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                    return normalizedPaymentDate >= normalizedStart && normalizedPaymentDate <= normalizedEnd;
+                });
 
-            const row = document.createElement('tr');
-            row.className = 'border-b hover:bg-gray-50';
+                // Skip if no payments in range
+                if (paymentsInRange.length === 0) return;
 
-            row.innerHTML = `
-                <td class="p-3 font-medium text-blue-600">${loan.loanId || loan.id}</td>
-                <td class="p-3">${loan.borrowerName || 'N/A'}</td>
-                <td class="p-3">${loan.loanProduct?.productName || 'N/A'}</td>
-                <td class="p-3 font-bold">${formatCurrency(loan.amountRequested)}</td>
-                <td class="p-3">${loan.termMonths} months</td>
-                <td class="p-3">${loan.interestRate}%</td>
-                <td class="p-3 ${isOverdue ? 'text-red-600 font-bold' : 'text-gray-700'}">
-                    ${dueDateDisplay}
-                    ${isOverdue ? '<span class="ml-2 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded">Overdue</span>' : ''}
-                </td>
-                <td class="p-3">
-                    <span class="px-2 py-1 rounded-full text-xs font-medium
-                        ${loan.status === 'approved' || loan.status === 'active' ? 'bg-green-100 text-green-800' :
-                          loan.status === 'paid' ? 'bg-blue-100 text-blue-800' :
-                          loan.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'}">
-                        ${loan.status}
-                    </span>
-                </td>
-                <td class="p-3 text-sm">
-                    <a href="loan_details.html?id=${loan.id}" class="text-blue-500 hover:text-blue-700 mr-2" title="View Details">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <a href="amortization.html?id=${loan.id}" class="text-indigo-500 hover:text-indigo-700" title="Amortization">
-                        <i class="fas fa-calendar-alt"></i> Amortization
-                    </a>
-                </td>
-            `;
-            collectionDueTableBody.appendChild(row);
+                // Calculate totals for this loan in the range
+                const totalCollectionAmount = paymentsInRange.reduce((sum, p) => sum + p.totalPayment, 0);
+                const totalPrincipal = paymentsInRange.reduce((sum, p) => sum + p.principalPayment, 0);
+                const totalInterest = paymentsInRange.reduce((sum, p) => sum + p.interestPayment, 0);
+
+                // Get next due date
+                const nextPayment = schedule.find(p => new Date(p.paymentDate) >= now);
+                const nextDueDate = nextPayment ? new Date(nextPayment.paymentDate) : null;
+                const nextDueDateDisplay = nextDueDate ? 
+                    nextDueDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 
+                    'N/A';
+
+                // Check if overdue
+                const isOverdue = nextDueDate && nextDueDate < now && loan.status !== 'paid';
+
+                // Build payment schedule display for this range
+                let paymentScheduleHtml = '<div class="text-xs text-gray-600 mt-2 space-y-1 max-h-48 overflow-y-auto">';
+                paymentsInRange.forEach(payment => {
+                    const paymentDate = new Date(payment.paymentDate);
+                    const dateDisplay = paymentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const isPast = paymentDate < now;
+                    paymentScheduleHtml += `
+                        <div class="p-2 border rounded ${isPast ? 'bg-gray-100' : 'bg-blue-50'}">
+                            <div class="flex justify-between">
+                                <span class="${isPast ? 'text-gray-400 line-through' : 'font-medium'}">${dateDisplay}</span>
+                                <span class="font-medium">${formatCurrency(payment.totalPayment)}</span>
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                Principal: ${formatCurrency(payment.principalPayment)} | Interest: ${formatCurrency(payment.interestPayment)}
+                            </div>
+                        </div>
+                    `;
+                });
+                paymentScheduleHtml += '</div>';
+
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50';
+
+                row.innerHTML = `
+                    <td class="p-3 font-medium text-blue-600">${loan.loanId || loan.id}</td>
+                    <td class="p-3">${loan.borrowerName || 'N/A'}</td>
+                    <td class="p-3">${loan.loanProduct?.productName || 'N/A'}</td>
+                    <td class="p-3 font-bold">${formatCurrency(loan.amountRequested)}</td>
+                    <td class="p-3">${loan.termMonths} months</td>
+                    <td class="p-3">${loan.interestRate || loan.loanProduct?.defaultInterestRate || 0}%</td>
+                    <td class="p-3 ${isOverdue ? 'text-red-600 font-bold' : 'text-gray-700'}">
+                        <div class="font-bold text-lg">${formatCurrency(totalCollectionAmount)}</div>
+                        <div class="text-xs text-gray-500 mt-1">
+                            Principal: ${formatCurrency(totalPrincipal)}<br>
+                            Interest: ${formatCurrency(totalInterest)}
+                        </div>
+                        <div class="text-xs text-gray-600 mt-2 font-semibold">
+                            Next Due: ${nextDueDateDisplay}
+                        </div>
+                        ${isOverdue ? '<span class="mt-2 px-2 py-0.5 bg-red-100 text-red-800 text-xs rounded inline-block">Overdue</span>' : ''}
+                        ${paymentScheduleHtml}
+                    </td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                            ${loan.status === 'approved' || loan.status === 'active' ? 'bg-green-100 text-green-800' :
+                              loan.status === 'paid' ? 'bg-blue-100 text-blue-800' :
+                              loan.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'}">
+                            ${loan.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-sm">
+                        <a href="loan_details.html?id=${loan.id}" class="text-blue-500 hover:text-blue-700 mr-2" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="amortization.html?id=${loan.id}" class="text-indigo-500 hover:text-indigo-700" title="Amortization">
+                            <i class="fas fa-calendar-alt"></i> Amortization
+                        </a>
+                    </td>
+                `;
+                collectionDueTableBody.appendChild(row);
+            } catch (error) {
+                console.error('Error processing loan:', loan.id, error);
+            }
         });
     };
 
@@ -337,9 +406,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('First loan:', allLoans[0]);
 
             // Apply current filter
+            const { startDate, endDate } = getCurrentDateRange(currentFilter);
             const filteredLoans = getLoansInRange(currentFilter);
             console.log('Filtered loans:', filteredLoans.length);
-            populateTable(filteredLoans);
+            populateTable(filteredLoans, startDate, endDate);
 
         } catch (error) {
             console.error('Error fetching loans:', error);
@@ -356,10 +426,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filter change handler
     const handleFilterChange = (event) => {
         currentFilter = event.target.value;
+        const { startDate, endDate, label } = getCurrentDateRange(currentFilter);
         updateDateRangeDisplay(currentFilter);
 
         const filteredLoans = getLoansInRange(currentFilter);
-        populateTable(filteredLoans);
+        populateTable(filteredLoans, startDate, endDate);
     };
 
     // Initialize
@@ -371,6 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fetch loans and apply initial filter
         fetchLoans();
+        const { startDate, endDate } = getCurrentDateRange(currentFilter);
         updateDateRangeDisplay(currentFilter);
     };
 
