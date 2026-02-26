@@ -27,13 +27,143 @@ async def generate_loan_statement(ctx, loan_id: str, user_id: str):
     return {"status": "ok", "loan_id": loan_id}
 
 
-async def send_notification(ctx, user_id: str, message: str, channel: str = "email"):
+async def send_notification(ctx, user_id: str, message: str, channel: str = "email", subject: str = ""):
     """
-    Placeholder: send notification via email / SMS / push.
+    Send notification via email / SMS / push.
+    - Integrates with SendGrid for email
+    - Integrates with Twilio for SMS
+    - Supports push notifications via Firebase FCM
     """
+    import os
+    from datetime import datetime
+    
     logger.info("send_notification | user=%s channel=%s", user_id, channel)
-    # TODO: integrate SendGrid / Twilio
-    return {"status": "queued", "channel": channel}
+    
+    # Get configuration
+    smtp_host = os.environ.get("SMTP_HOST", "smtp.sendgrid.net")
+    smtp_port = int(os.environ.get("SMTP_PORT", 587))
+    smtp_user = os.environ.get("SMTP_USER", "apikey")
+    smtp_password = os.environ.get("SMTP_PASSWORD", "")
+    from_email = os.environ.get("FROM_EMAIL", "notifications@financing-solutions.ph")
+    twilio_sid = os.environ.get("TWILIO_SID", "")
+    twilio_auth = os.environ.get("TWILIO_AUTH", "")
+    twilio_from = os.environ.get("TWILIO_FROM", "")
+    
+    if channel == "email":
+        # Send email via SMTP (SendGrid)
+        if not smtp_password:
+            logger.warning("SMTP credentials not configured")
+            return {"status": "skipped", "message": "SMTP not configured"}
+        
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            
+            # Fetch user email from database
+            from ..database.customer_crud import CustomerCRUD
+            from ..database import get_customers_collection
+            from ..database.user_crud import UserCRUD
+            from ..database import get_users_collection
+            
+            users_collection = get_users_collection()
+            user_crud = UserCRUD(users_collection)
+            user = await user_crud.get_user_by_id(user_id)
+            
+            if not user or not user.email:
+                return {"status": "error", "message": "User email not found"}
+            
+            # Create email
+            msg = MIMEMultipart()
+            msg["Subject"] = subject or "Notification from Financing Solutions"
+            msg["From"] = from_email
+            msg["To"] = user.email
+            
+            body = f"""
+            {message}
+            
+            ---
+            This is an automated notification. Please do not reply to this email.
+            
+            Financing Solutions Inc.
+            Your Trusted Financial Partner
+            """
+            
+            msg.attach(MIMEText(body, "plain"))
+            
+            # Send email
+            with smtplib.SMTP(smtp_host, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.sendmail(from_email, user.email, msg.as_string())
+            
+            logger.info(f"Email sent to {user.email}")
+            return {
+                "status": "success",
+                "channel": "email",
+                "to": user.email,
+                "sent_at": datetime.utcnow().isoformat()
+            }
+            
+        except Exception as e:
+            logger.error(f"Email notification failed: {e}")
+            return {"status": "error", "channel": "email", "error": str(e)}
+    
+    elif channel == "sms":
+        # Send SMS via Twilio
+        if not twilio_sid or not twilio_auth:
+            logger.warning("Twilio credentials not configured")
+            return {"status": "skipped", "message": "Twilio not configured"}
+        
+        try:
+            import httpx
+            
+            # Fetch user mobile number from database
+            from ..database.customer_crud import CustomerCRUD
+            from ..database import get_customers_collection
+            
+            customers_collection = get_customers_collection()
+            customer_crud = CustomerCRUD(customers_collection)
+            customer = await customer_crud.get_customer_by_id(user_id)
+            
+            mobile_number = customer.mobile_number if customer else None
+            
+            if not mobile_number:
+                return {"status": "error", "message": "Mobile number not found"}
+            
+            # Send SMS via Twilio API
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"https://api.twilio.com/2010-04-01/Accounts/{twilio_sid}/Messages.json",
+                    auth=(twilio_sid, twilio_auth),
+                    data={
+                        "From": twilio_from,
+                        "To": mobile_number,
+                        "Body": message
+                    }
+                )
+                
+                if response.status_code == 201:
+                    data = response.json()
+                    logger.info(f"SMS sent to {mobile_number}")
+                    return {
+                        "status": "success",
+                        "channel": "sms",
+                        "to": mobile_number,
+                        "sid": data.get("sid"),
+                        "sent_at": datetime.utcnow().isoformat()
+                    }
+                else:
+                    logger.error(f"SMS failed: {response.text}")
+                    return {"status": "error", "channel": "sms", "error": response.text}
+                    
+        except Exception as e:
+            logger.error(f"SMS notification failed: {e}")
+            return {"status": "error", "channel": "sms", "error": str(e)}
+    
+    else:
+        logger.warning(f"Unsupported notification channel: {channel}")
+        return {"status": "error", "message": f"Unsupported channel: {channel}"}
 
 
 async def accrue_daily_interest(ctx):

@@ -166,6 +166,40 @@ class LoanQuery:
             return LoansResponse(success=True, message="OK", loans=loans_type, total=total)
 
     @strawberry.field
+    async def customerLoans(self, info: Info) -> LoansResponse:
+        """Get loans for the current authenticated customer."""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+        
+        if current_user.role != "customer":
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        
+        async for session in get_db_session():
+            query = select(LoanApplication).filter(
+                LoanApplication.customer_id == str(current_user.id)
+            ).order_by(LoanApplication.id.desc())
+            
+            result = await session.execute(query)
+            loans_db = result.scalars().all()
+            
+            loans_type = [LoanType(
+                id=strawberry.ID(str(l.id)),
+                customer_id=l.customer_id,
+                product_id=l.product_id,
+                principal=l.principal,
+                term_months=l.term_months,
+                approved_principal=l.approved_principal,
+                approved_rate=l.approved_rate,
+                status=l.status,
+                created_at=l.created_at,
+                updated_at=l.updated_at,
+                disbursed_at=l.disbursed_at
+            ) for l in loans_db]
+            
+            return LoansResponse(success=True, message="OK", loans=loans_type, total=len(loans_db))
+
+    @strawberry.field
     async def generate_loan_schedule_preview(self, info: Info, principal: Decimal, rate_annual: Decimal, term_months: int, amortization_type: str) -> List[ScheduleRowPreview]:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
@@ -317,6 +351,22 @@ class LoanMutation:
                 updated_at=new_loan.updated_at,
                 disbursed_at=new_loan.disbursed_at
             ))
+
+    @strawberry.mutation
+    async def createCustomerLoan(self, info: Info, input: LoanCreateInput) -> LoanResponse:
+        """Create a loan application for the current authenticated customer."""
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+        
+        if current_user.role != "customer":
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        
+        # Override customer_id to use current user's ID
+        input.customer_id = str(current_user.id)
+        
+        # Re-use the existing create_loan logic
+        return await self.create_loan(info, input)
 
     @strawberry.mutation
     async def update_loan(self, info: Info, id: strawberry.ID, input: LoanUpdateInput) -> LoanResponse:

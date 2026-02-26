@@ -827,3 +827,178 @@ export const GET_DASHBOARD_STATS = gql`
   }
 `
 
+// ── Customer Portal - Dashboard ────────────────────────────────────────────────
+export const GET_CUSTOMER_PORTAL_STATS = gql`
+    query GetCustomerPortalStats {
+        loans { 
+            success 
+            loans { 
+                id 
+                status 
+                principal 
+                product_name 
+                next_due_date 
+            } 
+            total 
+        }
+        savingsAccounts {
+            success
+            accounts {
+                id
+                account_name
+                account_type
+                balance
+                interest_rate
+            }
+            total
+        }
+    }
+`
+
+export const GET_CUSTOMER_LOANS = gql`
+    query GetCustomerLoans {
+        loans { 
+            success 
+            loans { 
+                id 
+                status 
+                principal 
+                product_name 
+                next_due_date 
+                created_at 
+            } 
+            total 
+        }
+    }
+`
+
+export const GET_CUSTOMER_SAVINGS = gql`
+    query GetCustomerSavings {
+        savingsAccounts {
+            success
+            accounts {
+                id
+                account_name
+                account_type
+                balance
+                interest_rate
+                account_number
+            }
+            total
+        }
+    }
+`
+
+// ── Customer Portal - Loan Application ─────────────────────────────────────────
+export const CREATE_CUSTOMER_LOAN = gql`
+    mutation CreateCustomerLoan($input: LoanCreateInput!) {
+        createCustomerLoan(input: $input) {
+            success
+            message
+            loan {
+                id
+                customer_id
+                product_id
+                principal
+                term_months
+                status
+                created_at
+            }
+        }
+    }
+`
+
+// ── QR Code Payment ────────────────────────────────────────────────────────────
+export const GENERATE_QR_CODE = gql`
+    query GenerateQRCode($accountNumber: String!, $amount: Float!, $reference: String, $bankCode: String) {
+        generateQRCode(accountNumber: $accountNumber, amount: $amount, reference: $reference, bankCode: $bankCode) {
+            qrCode
+            paymentUrl
+            accountNumber
+            amount
+            reference
+            bankCode
+        }
+    }
+`
+
+export const SCAN_QR_CODE = gql`
+    mutation ScanQRCode($qrData: String!) {
+        scanQRCode(qrData: $qrData) {
+            success
+            message
+            paymentDetails {
+                accountNumber
+                amount
+                reference
+                bankCode
+            }
+        }
+    }
+`
+
+// ── Fund Transfer ──────────────────────────────────────────────────────────────
+export const CREATE_FUND_TRANSFER = gql`
+    mutation CreateFundTransfer($input: FundTransferInput!) {
+        createFundTransfer(input: $input) {
+            success
+            message
+            transfer {
+                id
+                fromAccount
+                toAccount
+                amount
+                status
+                createdAt
+            }
+        }
+    }
+`
+
+// ── Notifications ──────────────────────────────────────────────────────────────
+export const GET_NOTIFICATION_PREFERENCES = gql`
+    query GetNotificationPreferences {
+        notificationPreferences {
+            emailEnabled
+            smsEnabled
+            pushEnabled
+            emailNotifications
+            smsNotifications
+            pushNotifications
+        }
+    }
+`
+
+export const UPDATE_NOTIFICATION_PREFERENCES = gql`
+    mutation UpdateNotificationPreferences($input: NotificationPreferencesInput!) {
+        updateNotificationPreferences(input: $input) {
+            success
+            message
+            preferences {
+                emailEnabled
+                smsEnabled
+                pushEnabled
+                emailNotifications
+                smsNotifications
+                pushNotifications
+            }
+        }
+    }
+`
+
+export const GET_NOTIFICATION_HISTORY = gql`
+    query GetNotificationHistory($skip: Int, $limit: Int) {
+        notificationHistory(skip: $skip, limit: $limit) {
+            success
+            notifications {
+                id
+                channel
+                message
+                status
+                sentAt
+            }
+            total
+        }
+    }
+`
+

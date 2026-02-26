@@ -17,12 +17,17 @@ import {
     UserCog,
     AlertTriangle,
     BookOpen,
+    FileText,
+    Send,
+    QrCode,
+    Briefcase,
 } from 'lucide-react'
 
 // Role-based nav configuration
 // Each item can define `roles` (whitelist) — if omitted, visible to all authenticated users
 const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', roles: null },
+    { to: '/customer/dashboard', icon: LayoutDashboard, label: 'My Portal', roles: ['customer'] },
     { to: '/customers', icon: Users, label: 'Customers', roles: ['admin', 'loan_officer', 'branch_manager', 'teller'] },
     { to: '/savings', icon: PiggyBank, label: 'Savings Accounts', roles: ['admin', 'loan_officer', 'branch_manager', 'teller'] },
     { to: '/loans', icon: CreditCard, label: 'Loans', roles: ['admin', 'loan_officer', 'branch_manager'] },
@@ -55,7 +60,7 @@ export default function Sidebar() {
         teller: 'Teller',
         branch_manager: 'Branch Manager',
         auditor: 'Auditor',
-        customer: 'Customer',
+        customer: 'Member',
     }
 
     return (
@@ -78,9 +83,49 @@ export default function Sidebar() {
 
             {/* Navigation */}
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-                <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    Main Menu
-                </p>
+                {user?.role === 'customer' && (
+                    <>
+                        <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                            My Account
+                        </p>
+                        <NavLink
+                            to="/customer/dashboard"
+                            className={({ isActive }) => cn('sidebar-item group', isActive && 'active')}
+                        >
+                            <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+                            <span className="flex-1">Dashboard</span>
+                            <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                        </NavLink>
+                        <NavLink
+                            to="/customer/loans/new"
+                            className={({ isActive }) => cn('sidebar-item group', isActive && 'active')}
+                        >
+                            <FileText className="w-4 h-4 flex-shrink-0" />
+                            <span className="flex-1">New Loan</span>
+                            <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                        </NavLink>
+                        <NavLink
+                            to="/customer/loans/repayment"
+                            className={({ isActive }) => cn('sidebar-item group', isActive && 'active')}
+                        >
+                            <FileText className="w-4 h-4 flex-shrink-0" />
+                            <span className="flex-1">Repayment History</span>
+                            <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                        </NavLink>
+                        <NavLink
+                            to="/customer/transfer"
+                            className={({ isActive }) => cn('sidebar-item group', isActive && 'active')}
+                        >
+                            <Send className="w-4 h-4 flex-shrink-0" />
+                            <span className="flex-1">Transfer Funds</span>
+                            <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-50 transition-opacity" />
+                        </NavLink>
+                        <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 mt-4">
+                            Settings
+                        </p>
+                    </>
+                )}
+
                 {visibleNav.map(({ to, icon: Icon, label }) => (
                     <NavLink
                         key={to}

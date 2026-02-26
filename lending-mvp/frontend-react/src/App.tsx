@@ -16,6 +16,10 @@ import UsersPage from '@/pages/UsersPage'
 import CollectionsPage from '@/pages/CollectionsPage'
 import ChartOfAccountsPage from '@/pages/ChartOfAccountsPage'
 import SavingsDetailPage from '@/pages/SavingsDetailPage'
+import CustomerDashboardPage from '@/pages/CustomerDashboardPage'
+import CustomerLoanApplicationPage from '@/pages/CustomerLoanApplicationPage'
+import CustomerRepaymentHistoryPage from '@/pages/CustomerRepaymentHistoryPage'
+import CustomerTransferPage from '@/pages/CustomerTransferPage'
 
 function ProtectedLayout() {
     const { isAuthenticated } = useAuth()
@@ -30,6 +34,10 @@ function ProtectedLayout() {
                 <div className="p-6 max-w-screen-2xl mx-auto">
                     <Routes>
                         <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/customer/dashboard" element={<CustomerDashboardPage />} />
+                        <Route path="/customer/loans/new" element={<CustomerLoanApplicationPage />} />
+                        <Route path="/customer/loans/repayment" element={<CustomerRepaymentHistoryPage />} />
+                        <Route path="/customer/transfer" element={<CustomerTransferPage />} />
                         <Route path="/customers" element={<CustomersPage />} />
                         <Route path="/customers/:id" element={<CustomerDetailPage />} />
                         <Route path="/savings" element={<SavingsPage />} />

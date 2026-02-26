@@ -3,6 +3,7 @@ from typing import List, Optional
 from decimal import Decimal
 from datetime import datetime, date
 from strawberry.types import Info
+from fastapi import HTTPException
 
 #from .database import get_db
 # from .database.customer_crud import CustomerCRUD
@@ -205,18 +206,241 @@ class Query:
     #     from .savings import SavingsQuery
     #     return await SavingsQuery().savingsAccounts(info)
 
+# QR Code Payment Types
+@strawberry.type
+class QRCodeResponse:
+    qr_code: str = strawberry.field(name="qrCode")
+    payment_url: str = strawberry.field(name="paymentUrl")
+    account_number: str = strawberry.field(name="accountNumber")
+    amount: float
+    reference: Optional[str] = None
+    bank_code: Optional[str] = strawberry.field(name="bankCode", default=None)
+
+# Notification Preference Types
+@strawberry.type
+class NotificationPreferencesType:
+    email_enabled: bool = strawberry.field(name="emailEnabled")
+    sms_enabled: bool = strawberry.field(name="smsEnabled")
+    push_enabled: bool = strawberry.field(name="pushEnabled")
+    email_notifications: List[str] = strawberry.field(name="emailNotifications", default_factory=list)
+    sms_notifications: List[str] = strawberry.field(name="smsNotifications", default_factory=list)
+    push_notifications: List[str] = strawberry.field(name="pushNotifications", default_factory=list)
+
+@strawberry.input
+class NotificationPreferencesInput:
+    email_enabled: Optional[bool] = None
+    sms_enabled: Optional[bool] = None
+    push_enabled: Optional[bool] = None
+    email_notifications: Optional[List[str]] = None
+    sms_notifications: Optional[List[str]] = None
+    push_notifications: Optional[List[str]] = None
+
+@strawberry.type
+class NotificationHistoryType:
+    id: strawberry.ID
+    channel: str
+    message: str
+    status: str
+    sent_at: datetime = strawberry.field(name="sentAt")
+
+@strawberry.type
+class NotificationHistoryResponse:
+    success: bool
+    notifications: List[NotificationHistoryType]
+    total: int
+
+# Payment Details for QR Scan
+@strawberry.type
+class PaymentDetailsType:
+    account_number: str = strawberry.field(name="accountNumber")
+    amount: float
+    reference: Optional[str] = None
+    bank_code: Optional[str] = strawberry.field(name="bankCode", default=None)
+
+# Fund Transfer Types
+@strawberry.input
+class FundTransferInput:
+    from_account: str = strawberry.field(name="fromAccount")
+    to_account: str = strawberry.field(name="toAccount")
+    amount: float
+    reference: Optional[str] = None
+    transfer_type: Optional[str] = None
+
+@strawberry.type
+class FundTransferResponse:
+    success: bool
+    message: str
+    transfer: Optional["FundTransferType"] = None
+
+@strawberry.type
+class FundTransferType:
+    id: strawberry.ID
+    from_account: str = strawberry.field(name="fromAccount")
+    to_account: str = strawberry.field(name="toAccount")
+    amount: float
+    status: str
+    created_at: datetime = strawberry.field(name="createdAt")
+
+# --- GraphQL Queries ---
+
+@strawberry.type
+class Query:
+    # ... existing queries ...
+
+    @strawberry.field
+    async def generate_qr_code(
+        self,
+        account_number: str,
+        amount: float,
+        reference: Optional[str] = None,
+        bank_code: Optional[str] = None
+    ) -> QRCodeResponse:
+        """Generate a QR code for payment collection."""
+        from ..utils.qr_payment import generate_payment_qr_code
+        
+        qr_code_data = await generate_payment_qr_code({
+            "account_number": account_number,
+            "amount": amount,
+            "reference": reference,
+            "bank_code": bank_code
+        })
+        
+        payment_url = f"{bank_code or 'PH'}|{account_number}|{amount:.2f}|{reference or ''}"
+        
+        return QRCodeResponse(
+            qr_code=qr_code_data,
+            payment_url=payment_url,
+            account_number=account_number,
+            amount=amount,
+            reference=reference,
+            bank_code=bank_code
+        )
+    
+    @strawberry.field
+    async def notification_preferences(self, info: Info) -> NotificationPreferencesType:
+        """Get notification preferences for the current user."""
+        current_user = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        return NotificationPreferencesType(
+            email_enabled=True,
+            sms_enabled=False,
+            push_enabled=True,
+            email_notifications=["payment_reminder", "loan_due", "transfer_confirmation"],
+            sms_notifications=["payment_reminder", "loan_due"],
+            push_notifications=["payment_reminder", "loan_due", "transfer_confirmation", "system_update"]
+        )
+    
+    @strawberry.field
+    async def notification_history(
+        self,
+        info: Info,
+        skip: int = 0,
+        limit: int = 20
+    ) -> NotificationHistoryResponse:
+        """Get notification history for the current user."""
+        current_user = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        # In a real app, this would fetch from a notifications database
+        notifications = [
+            NotificationHistoryType(
+                id=strawberry.ID("1"),
+                channel="email",
+                message="Loan payment received",
+                status="delivered",
+                sent_at=datetime.utcnow()
+            ),
+            NotificationHistoryType(
+                id=strawberry.ID("2"),
+                channel="push",
+                message="New loan statement available",
+                status="delivered",
+                sent_at=datetime.utcnow()
+            )
+        ]
+        
+        return NotificationHistoryResponse(
+            success=True,
+            notifications=notifications,
+            total=len(notifications)
+        )
+
 # --- GraphQL Mutations ---
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    async def disburse_loan(self, loan_id: str) -> str:
-        # Business logic should be a service layer
-        success = await loan_service.disburse_loan(loan_id)
-        return "Disbursement successful" if success else "Disbursement failed"
+    async def scan_qr_code(self, qr_data: str) -> dict:
+        """Scan and process a QR code."""
+        # In a real app, this would parse the QR data and validate
+        if not qr_data.startswith("PH") and not qr_data.startswith("GCASH"):
+            return {"success": False, "message": "Invalid QR code format"}
+        
+        # Parse QR data
+        parts = qr_data.split("|")
+        if len(parts) < 3:
+            return {"success": False, "message": "Invalid QR code data"}
+        
+        return {
+            "success": True,
+            "message": "QR code scanned successfully",
+            "paymentDetails": {
+                "accountNumber": parts[1],
+                "amount": float(parts[2]) if len(parts) > 2 else 0,
+                "reference": parts[3] if len(parts) > 3 else None,
+                "bankCode": parts[0]
+            }
+        }
     
-    # These fields are typically defined in their respective modules and then composed in main.py
-    # @strawberry.mutation
-    # async def createSavingsAccount(self, info: Info, input: SavingsAccountCreateInput) -> SavingsAccountResponse:
-    #     from .savings import SavingsMutation
-    #     return await SavingsMutation().createSavingsAccount(info, input)
+    @strawberry.mutation
+    async def update_notification_preferences(
+        self,
+        info: Info,
+        input: NotificationPreferencesInput
+    ) -> NotificationPreferencesType:
+        """Update notification preferences for the current user."""
+        current_user = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        # In a real app, this would update the user's preferences in the database
+        return NotificationPreferencesType(
+            email_enabled=input.email_enabled or True,
+            sms_enabled=input.sms_enabled or False,
+            push_enabled=input.push_enabled or True,
+            email_notifications=input.email_notifications or ["payment_reminder", "loan_due", "transfer_confirmation"],
+            sms_notifications=input.sms_notifications or ["payment_reminder", "loan_due"],
+            push_notifications=input.push_notifications or ["payment_reminder", "loan_due", "transfer_confirmation", "system_update"]
+        )
+    
+    @strawberry.mutation
+    async def create_fund_transfer(
+        self,
+        info: Info,
+        input: FundTransferInput
+    ) -> FundTransferResponse:
+        """Create a fund transfer request."""
+        current_user = info.context.get("current_user")
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        # In a real app, this would process the transfer through the transaction service
+        from datetime import datetime
+        
+        return FundTransferResponse(
+            success=True,
+            message="Fund transfer request created successfully",
+            transfer=FundTransferType(
+                id=strawberry.ID("transfer-123"),
+                from_account=input.from_account,
+                to_account=input.to_account,
+                amount=input.amount,
+                status="pending",
+                created_at=datetime.utcnow()
+            )
+        )
+    
+    # ... existing mutations ...

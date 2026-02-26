@@ -185,15 +185,14 @@ class SavingsQuery:
         return SavingsAccountResponse(success=True, message="Account retrieved", account=account)
 
     @strawberry.field
-    async def savingsAccounts(self, info: Info, searchTerm: Optional[str] = None) -> SavingsAccountsResponse:
+    async def savingsAccounts(self, info: Info, searchTerm: Optional[str] = None, customerId: Optional[str] = None) -> SavingsAccountsResponse:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
             return SavingsAccountsResponse(success=False, message="Not authenticated", accounts=[], total=0)
 
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
-        accounts_data = await savings_crud.get_all_savings_accounts(search_term=searchTerm) # Pass search_term to CRUD
-        
+        accounts_data = await savings_crud.get_all_savings_accounts(search_term=searchTerm, customer_id=customerId or (str(current_user.id) if current_user.role == "customer" else None)) # Pass search_term to CRUD
         accounts = [map_db_account_to_strawberry_type(acc) for acc in accounts_data]
         return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts, total=len(accounts))
 
