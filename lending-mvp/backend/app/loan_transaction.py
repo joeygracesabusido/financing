@@ -174,7 +174,14 @@ class LoanTransactionQuery:
             if not transaction_db:
                 return LoanTransactionResponse(success=False, message="Loan transaction not found")
             
-            # TODO: Add authorization check based on loan_id and current_user
+            if current_user.role == "staff":
+                from .database import get_loans_collection
+                from .database.loan_crud import LoanCRUD
+                loans_collection = get_loans_collection()
+                loan_crud = LoanCRUD(loans_collection)
+                loan_db = await loan_crud.get_loan_by_id(str(transaction_db.loan_id))
+                if loan_db and loan_db.borrower_id != current_user.id:
+                    return LoanTransactionResponse(success=False, message="Not authorized to access this loan transaction")
             
             transaction_type = convert_loan_transaction_db_to_loan_transaction_type(transaction_db)
             return LoanTransactionResponse(success=True, message="Loan transaction retrieved successfully", transaction=transaction_type)
@@ -206,7 +213,16 @@ class LoanTransactionQuery:
             
             transactions_db = await transaction_crud.get_loan_transactions(skip=skip, limit=limit, loan_id=str(loan_id) if loan_id else None)
             total = await transaction_crud.count_loan_transactions(loan_id=str(loan_id) if loan_id else None)
-
+            
+            if current_user.role == "staff" and loan_id:
+                from .database import get_loans_collection
+                from .database.loan_crud import LoanCRUD
+                loans_collection = get_loans_collection()
+                loan_crud = LoanCRUD(loans_collection)
+                loan_db = await loan_crud.get_loan_by_id(str(loan_id))
+                if loan_db and loan_db.borrower_id != current_user.id:
+                    return LoanTransactionsResponse(success=False, message="Not authorized to access this loan's transactions", transactions=[], total=0)
+            
             transactions_type = [convert_loan_transaction_db_to_loan_transaction_type(t) for t in transactions_db]
             return LoanTransactionsResponse(
                 success=True,
