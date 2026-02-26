@@ -31,6 +31,10 @@
 | Loan Calculator (4 types) | ✅ Done |
 | Double-Entry Accounting (GL) | ✅ Done |
 | Chart of Accounts | ✅ Done |
+| Loan Transaction Authorization | ✅ Done (Feb 2026) |
+| Daily Interest Worker | ✅ Done (Feb 2026) |
+| Savings Detail Page with Passbook | ✅ Done (Feb 2026) |
+| e2e Tests (Authorization + Savings) | ✅ Done (Feb 2026) |
 
 ---
 
@@ -140,6 +144,42 @@
 ### 3.4 Passbook / e-Statement
 - [ ] **Passbook printing support** — dot-matrix formatted output
 - [ ] **Monthly e-Statements** — email delivery via SendGrid/AWS SES
+
+---
+
+## Q1 2026 Implementation Status
+
+> **Recent Achievements (Feb 2026)**
+
+| Feature | Status | Details |
+|---|---|---|
+| **Loan Transaction Authorization** | ✅ Complete | RBAC checks in `backend/app/loan_transaction.py:177-184` |
+| **Daily Interest Computation** | ✅ Complete | ARQ cron job at midnight UTC, `worker.py:39-85` |
+| **Savings Detail Page** | ✅ Complete | Full page with passbook printing, `SavingsDetailPage.tsx` |
+| **e2e Tests** | ✅ Complete | Authorization + Savings tests passing |
+
+### Implementation Details
+
+**Loan Transaction Authorization (Feb 26, 2026)**
+- File: `backend/app/loan_transaction.py:177-184, 216-223`
+- Staff users can only access transactions for their own loans
+- Admin users retain full access
+- Authorization verified via borrower_id matching current_user.id
+- E2E tests: 3 passing tests (`tests/loan-transaction-authorization.spec.ts`)
+
+**Daily Interest Worker (Feb 26, 2026)**
+- File: `backend/app/worker.py:39-85`
+- Cron job runs at midnight UTC daily
+- Formula: `daily_interest = (balance × (rate / 365)) / 100`
+- Posts to ledger via double-entry accounting
+- Updates account balance atomically
+- Unit tests: All interest computation logic tests passing
+
+**Savings Detail Page with Passbook (Feb 26, 2026)**
+- File: `frontend-react/src/pages/SavingsDetailPage.tsx`
+- Three tabs: Overview, Transactions, Passbook
+- Print passbook functionality with dot-matrix formatted output
+- E2E tests: 2 passing tests (`tests/savings-passbook.spec.ts`)
 
 ---
 
@@ -286,3 +326,13 @@
 ---
 
 *Last updated: February 26, 2026 | Maintained by: Engineering Team*
+
+---
+
+## Recent Updates (Q1 2026)
+
+### February 26, 2026
+- ✅ Loan transaction authorization with RBAC enforcement
+- ✅ Daily interest computation worker (ARQ cron job)
+- ✅ Savings Detail Page with passbook printing
+- ✅ E2E tests for authorization and savings features
