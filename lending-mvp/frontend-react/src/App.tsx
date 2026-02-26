@@ -15,6 +15,7 @@ import AuditLogPage from '@/pages/AuditLogPage'
 import UsersPage from '@/pages/UsersPage'
 import CollectionsPage from '@/pages/CollectionsPage'
 import ChartOfAccountsPage from '@/pages/ChartOfAccountsPage'
+import SavingsDetailPage from '@/pages/SavingsDetailPage'
 
 function ProtectedLayout() {
     const { isAuthenticated } = useAuth()
@@ -41,6 +42,7 @@ function ProtectedLayout() {
                         <Route path="/users" element={<UsersPage />} />
                         <Route path="/collections" element={<CollectionsPage />} />
                         <Route path="/chart-of-accounts" element={<ChartOfAccountsPage />} />
+                        <Route path="/savings/:id" element={<SavingsDetailPage />} />
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </div>
