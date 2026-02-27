@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardBody, CardFooter, Button, Input, Typography, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, Badge, Alert } from '@material-tailwind/react';
-
+import { useNavigate } from 'react-router-dom';
+import { Card, CardHeader, CardContent as CardBody, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 interface NotificationPreferences {
   emailEnabled: boolean;
   smsEnabled: boolean;
@@ -87,7 +90,7 @@ export default function NotificationPreferencesPage() {
       const updatedItems = currentItems.includes(item)
         ? currentItems.filter((i) => i !== item)
         : [...currentItems, item];
-      
+
       return {
         ...prev,
         [`${category}Notifications`]: updatedItems,
@@ -98,17 +101,17 @@ export default function NotificationPreferencesPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="max-w-4xl mx-auto">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800">
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-t-xl mb-4 p-6">
           <div className="flex justify-between items-center">
             <div>
-              <Typography variant="h4" className="text-white">
+              <h2 className="text-2xl font-semibold tracking-tight text-white">
                 Notification Preferences
-              </Typography>
-              <Typography variant="h6" className="text-blue-100">
+              </h2>
+              <p className="text-lg text-blue-100 mt-1">
                 Configure how you receive notifications
-              </Typography>
+              </p>
             </div>
-            <Button variant="text" onClick={() => navigate('/dashboard')} className="text-white hover:text-blue-100">
+            <Button variant="ghost" onClick={() => navigate('/dashboard')} className="text-white hover:text-blue-100 hover:bg-white/10">
               Back to Dashboard
             </Button>
           </div>
@@ -117,20 +120,20 @@ export default function NotificationPreferencesPage() {
         <CardBody>
           {notification && (
             <Alert
-              color={notification.type === 'success' ? 'green' : 'red'}
+              variant={notification.type === 'success' ? 'default' : 'destructive'}
               className="mb-6"
             >
-              {notification.message}
+              <AlertDescription>{notification.message}</AlertDescription>
             </Alert>
           )}
 
           <div className="mb-8">
-            <Typography variant="h5" className="text-gray-700 mb-4">
+            <h3 className="text-xl font-semibold tracking-tight text-gray-700 mb-4">
               Notification Channels
-            </Typography>
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className={`border-${preferences.emailEnabled ? 'blue' : 'gray'}-300`}>
+              <Card className={`border ${preferences.emailEnabled ? 'border-blue-300' : 'border-gray-300'}`}>
                 <CardBody>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -140,26 +143,23 @@ export default function NotificationPreferencesPage() {
                         </svg>
                       </div>
                       <div>
-                        <Typography variant="h6" className={`font-semibold ${preferences.emailEnabled ? 'text-blue-600' : 'text-gray-600'}`}>
+                        <h4 className={`text-base font-semibold ${preferences.emailEnabled ? 'text-blue-600' : 'text-gray-600'}`}>
                           Email Notifications
-                        </Typography>
-                        <Typography variant="small" className="text-gray-500">
+                        </h4>
+                        <p className="text-sm font-medium leading-none text-gray-500 mt-1">
                           {preferences.emailEnabled ? 'Enabled' : 'Disabled'}
-                        </Typography>
+                        </p>
                       </div>
                     </div>
-                    <Button
-                      variant="text"
-                      onClick={() => handleToggle('email')}
-                      className={`w-12 h-6 rounded-full transition-colors ${preferences.emailEnabled ? 'bg-blue-500' : 'bg-gray-300'}`}
-                    >
-                      <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${preferences.emailEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                    </Button>
+                    <Checkbox
+                      checked={preferences.emailEnabled}
+                      onCheckedChange={() => handleToggle('email')}
+                    />
                   </div>
                 </CardBody>
               </Card>
 
-              <Card className={`border-${preferences.smsEnabled ? 'green' : 'gray'}-300`}>
+              <Card className={`border ${preferences.smsEnabled ? 'border-green-300' : 'border-gray-300'}`}>
                 <CardBody>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -169,26 +169,23 @@ export default function NotificationPreferencesPage() {
                         </svg>
                       </div>
                       <div>
-                        <Typography variant="h6" className={`font-semibold ${preferences.smsEnabled ? 'text-green-600' : 'text-gray-600'}`}>
+                        <h4 className={`text-base font-semibold ${preferences.smsEnabled ? 'text-green-600' : 'text-gray-600'}`}>
                           SMS Notifications
-                        </Typography>
-                        <Typography variant="small" className="text-gray-500">
+                        </h4>
+                        <p className="text-sm font-medium leading-none text-gray-500 mt-1">
                           {preferences.smsEnabled ? 'Enabled' : 'Disabled'}
-                        </Typography>
+                        </p>
                       </div>
                     </div>
-                    <Button
-                      variant="text"
-                      onClick={() => handleToggle('sms')}
-                      className={`w-12 h-6 rounded-full transition-colors ${preferences.smsEnabled ? 'bg-green-500' : 'bg-gray-300'}`}
-                    >
-                      <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${preferences.smsEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                    </Button>
+                    <Checkbox
+                      checked={preferences.smsEnabled}
+                      onCheckedChange={() => handleToggle('sms')}
+                    />
                   </div>
                 </CardBody>
               </Card>
 
-              <Card className={`border-${preferences.pushEnabled ? 'purple' : 'gray'}-300`}>
+              <Card className={`border ${preferences.pushEnabled ? 'border-purple-300' : 'border-gray-300'}`}>
                 <CardBody>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -198,21 +195,18 @@ export default function NotificationPreferencesPage() {
                         </svg>
                       </div>
                       <div>
-                        <Typography variant="h6" className={`font-semibold ${preferences.pushEnabled ? 'text-purple-600' : 'text-gray-600'}`}>
+                        <h4 className={`text-base font-semibold ${preferences.pushEnabled ? 'text-purple-600' : 'text-gray-600'}`}>
                           Push Notifications
-                        </Typography>
-                        <Typography variant="small" className="text-gray-500">
+                        </h4>
+                        <p className="text-sm font-medium leading-none text-gray-500 mt-1">
                           {preferences.pushEnabled ? 'Enabled' : 'Disabled'}
-                        </Typography>
+                        </p>
                       </div>
                     </div>
-                    <Button
-                      variant="text"
-                      onClick={() => handleToggle('push')}
-                      className={`w-12 h-6 rounded-full transition-colors ${preferences.pushEnabled ? 'bg-purple-500' : 'bg-gray-300'}`}
-                    >
-                      <div className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform ${preferences.pushEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
-                    </Button>
+                    <Checkbox
+                      checked={preferences.pushEnabled}
+                      onCheckedChange={() => handleToggle('push')}
+                    />
                   </div>
                 </CardBody>
               </Card>
@@ -220,21 +214,20 @@ export default function NotificationPreferencesPage() {
           </div>
 
           <div className="border-t pt-6">
-            <Typography variant="h5" className="text-gray-700 mb-4">
+            <h3 className="text-xl font-semibold tracking-tight text-gray-700 mb-4">
               Notification Types
-            </Typography>
+            </h3>
 
             <div className="space-y-4">
               <div>
-                <Typography variant="small" className="font-medium text-gray-600 mb-2 block">
+                <span className="text-sm font-medium leading-none text-gray-600 mb-2 block">
                   Email Notifications
-                </Typography>
+                </span>
                 <div className="flex flex-wrap gap-2">
                   {['Loan Approval', 'Payment Reminder', 'Account Update', 'Statement Ready', 'Promotional Offers'].map((item) => (
                     <Badge
                       key={item}
-                      color={preferences.emailNotifications.includes(item) ? 'blue' : 'gray'}
-                      variant={preferences.emailNotifications.includes(item) ? 'filled' : 'outline'}
+                      variant={preferences.emailNotifications.includes(item) ? 'default' : 'outline'}
                       onClick={() => toggleNotificationType('email', item)}
                       className="cursor-pointer"
                     >
@@ -245,17 +238,16 @@ export default function NotificationPreferencesPage() {
               </div>
 
               <div>
-                <Typography variant="small" className="font-medium text-gray-600 mb-2 block">
+                <span className="text-sm font-medium leading-none text-gray-600 mb-2 block">
                   SMS Notifications
-                </Typography>
+                </span>
                 <div className="flex flex-wrap gap-2">
                   {['Transaction Alert', 'Payment Due', 'Security Notification', 'Cash Drawer Reconciliation', 'Loan Repayment'].map((item) => (
                     <Badge
                       key={item}
-                      color={preferences.smsNotifications.includes(item) ? 'green' : 'gray'}
-                      variant={preferences.smsNotifications.includes(item) ? 'filled' : 'outline'}
+                      variant={preferences.smsNotifications.includes(item) ? 'default' : 'outline'}
                       onClick={() => toggleNotificationType('sms', item)}
-                      className="cursor-pointer"
+                      className="cursor-pointer bg-green-500 hover:bg-green-600"
                     >
                       {item}
                     </Badge>
@@ -264,17 +256,16 @@ export default function NotificationPreferencesPage() {
               </div>
 
               <div>
-                <Typography variant="small" className="font-medium text-gray-600 mb-2 block">
+                <span className="text-sm font-medium leading-none text-gray-600 mb-2 block">
                   Push Notifications
-                </Typography>
+                </span>
                 <div className="flex flex-wrap gap-2">
                   {['All Notifications', 'Loan Updates', 'Payment Reminders', 'Account Changes', 'Security Alerts'].map((item) => (
                     <Badge
                       key={item}
-                      color={preferences.pushNotifications.includes(item) ? 'purple' : 'gray'}
-                      variant={preferences.pushNotifications.includes(item) ? 'filled' : 'outline'}
+                      variant={preferences.pushNotifications.includes(item) ? 'default' : 'outline'}
                       onClick={() => toggleNotificationType('push', item)}
-                      className="cursor-pointer"
+                      className="cursor-pointer bg-purple-500 hover:bg-purple-600"
                     >
                       {item}
                     </Badge>
@@ -291,12 +282,12 @@ export default function NotificationPreferencesPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <Typography variant="small" className="text-gray-600">
+                  <span className="text-sm font-medium leading-none text-gray-600">
                     Last Notification Sent:
-                  </Typography>
-                  <Typography variant="small" className="font-medium text-blue-600">
+                  </span>
+                  <span className="text-sm font-semibold leading-none text-blue-600 ml-2">
                     {new Date(preferences.lastNotificationTime).toLocaleString()}
-                  </Typography>
+                  </span>
                 </div>
               </div>
             </div>
@@ -304,10 +295,10 @@ export default function NotificationPreferencesPage() {
         </CardBody>
 
         <CardFooter className="flex justify-between items-center mt-6">
-          <Button variant="text" onClick={() => navigate('/dashboard')}>
+          <Button variant="outline" onClick={() => navigate('/dashboard')}>
             Cancel
           </Button>
-          <Button variant="filled" color="blue" onClick={handleSavePreferences} disabled={loading}>
+          <Button onClick={handleSavePreferences} disabled={loading} className="bg-blue-600 hover:bg-blue-700">
             {loading ? 'Saving...' : 'Save Preferences'}
           </Button>
         </CardFooter>

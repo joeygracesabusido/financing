@@ -20,7 +20,6 @@ import {
     FileText,
     Send,
     QrCode,
-    Briefcase,
     Wallet,
     Settings,
     Smartphone,

@@ -2,9 +2,6 @@ import { useQuery } from '@apollo/client'
 import { GET_CUSTOMER_LOANS } from '@/api/queries'
 import { formatCurrency } from '@/lib/utils'
 import {
-    Clock,
-    CheckCircle,
-    AlertCircle,
     XCircle,
     Download,
 } from 'lucide-react'
@@ -51,13 +48,13 @@ export default function CustomerRepaymentHistoryPage() {
                                 <div>
                                     <CardTitle className="text-lg">{loan.product_name}</CardTitle>
                                     <p className="text-sm text-muted-foreground">
-                                        Principal: {formatCurrency(loan.principal)} | 
+                                        Principal: {formatCurrency(loan.principal)} |
                                         Term: {loan.term_months} months
                                     </p>
                                 </div>
                                 <Badge className={statusColors[loan.status] || 'bg-gray-500/10 text-gray-500'}>
                                     {loan.status}
-                                </badge>
+                                </Badge>
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -65,8 +62,8 @@ export default function CustomerRepaymentHistoryPage() {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">Next Payment</span>
                                     <span>
-                                        {loan.next_due_date 
-                                            ? new Date(loan.next_due_date).toLocaleDateString() 
+                                        {loan.next_due_date
+                                            ? new Date(loan.next_due_date).toLocaleDateString()
                                             : 'N/A'}
                                     </span>
                                 </div>

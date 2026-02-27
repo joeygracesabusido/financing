@@ -92,7 +92,7 @@ frontend-react/.next/
 frontend-react/test-results/
 frontend-react/playwright-report/
 frontend-react/playwright/.cache/
-
+lending-mvp/frontend-react/node_modules/
 # Backend specific
 backend/venv/
 backend/.env

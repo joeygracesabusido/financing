@@ -1,20 +1,14 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuery, useMutation } from '@apollo/client'
+import { useQuery } from '@apollo/client'
+import { GET_SAVINGS_ACCOUNT } from '@/api/queries'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import {
-    PiggyBank, ArrowLeft, Printer, Download, History,
-    Calculator, Lock, AlertCircle, CheckCircle
+    PiggyBank, ArrowLeft, Printer, Download,
+    AlertCircle, CheckCircle
 } from 'lucide-react'
 import { useState } from 'react'
 
-interface SavingsTransaction {
-    id: string
-    accountId: string
-    transactionType: string
-    amount: number
-    timestamp: string
-    notes?: string
-}
+
 
 interface SavingsAccount {
     id: string
@@ -38,7 +32,7 @@ export default function SavingsDetailPage() {
     const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'passbook'>('overview')
 
-    const { data, loading, error, refetch } = useQuery(GET_SAVINGS_ACCOUNT, {
+    const { data, loading, error } = useQuery(GET_SAVINGS_ACCOUNT, {
         variables: { id }
     })
 
@@ -113,7 +107,7 @@ export default function SavingsDetailPage() {
             </body>
             </html>
         `
-        
+
         const printWindow = window.open('', '_blank')
         if (printWindow) {
             printWindow.document.write(printContent)
@@ -153,7 +147,7 @@ export default function SavingsDetailPage() {
         )
     }
 
-    const accountTypeBadge = {
+    const accountTypeBadge: Record<string, string> = {
         regular: 'bg-blue-400/10 text-blue-400 border-blue-400/20',
         high_yield: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20',
         time_deposit: 'bg-purple-400/10 text-purple-400 border-purple-400/20',
@@ -238,9 +232,9 @@ export default function SavingsDetailPage() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="w-px bg-border md:w-px md:h-auto" />
-                    
+
                     <div className="flex-1">
                         <h2 className="text-lg font-semibold mb-4">Account Details</h2>
                         <div className="space-y-4">
@@ -277,31 +271,28 @@ export default function SavingsDetailPage() {
             <div className="flex gap-2 border-b border-border">
                 <button
                     onClick={() => setActiveTab('overview')}
-                    className={`px-4 py-2.5 text-sm font-medium transition-colors ${
-                        activeTab === 'overview'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'overview'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
                 >
                     Overview
                 </button>
                 <button
                     onClick={() => setActiveTab('transactions')}
-                    className={`px-4 py-2.5 text-sm font-medium transition-colors ${
-                        activeTab === 'transactions'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'transactions'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
                 >
                     Transactions
                 </button>
                 <button
                     onClick={() => setActiveTab('passbook')}
-                    className={`px-4 py-2.5 text-sm font-medium transition-colors ${
-                        activeTab === 'passbook'
-                            ? 'text-primary border-b-2 border-primary'
-                            : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`px-4 py-2.5 text-sm font-medium transition-colors ${activeTab === 'passbook'
+                        ? 'text-primary border-b-2 border-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
                 >
                     Passbook
                 </button>
@@ -331,7 +322,7 @@ export default function SavingsDetailPage() {
                                 </div>
                             </button>
                         </div>
-                        
+
                         <h3 className="text-lg font-semibold mt-6">Account Timeline</h3>
                         <div className="space-y-3">
                             <div className="flex items-start gap-4">
@@ -385,13 +376,13 @@ export default function SavingsDetailPage() {
                                 Print Passbook
                             </button>
                         </div>
-                        
+
                         <div className="border-2 border-emerald-500/20 rounded-xl p-6 bg-emerald-500/5">
                             <div className="text-center mb-6">
                                 <h3 className="text-2xl font-bold text-emerald-600">SAVINGS PASSBOOK</h3>
                                 <p className="text-sm text-muted-foreground mt-1">Official Transaction Record</p>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm">
                                 <div>
                                     <p className="text-xs text-muted-foreground">Account Number</p>
@@ -410,7 +401,7 @@ export default function SavingsDetailPage() {
                                     <p className="text-sm">{formatDate(account.openedAt)}</p>
                                 </div>
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <h4 className="text-sm font-semibold text-muted-foreground uppercase">Transaction History</h4>
                                 <div className="border border-border rounded-lg overflow-hidden">
@@ -443,7 +434,7 @@ export default function SavingsDetailPage() {
                                     </table>
                                 </div>
                             </div>
-                            
+
                             <div className="mt-6 pt-6 border-t border-emerald-500/20 text-center text-sm text-muted-foreground">
                                 <p>For official transactions only</p>
                                 <p className="mt-2 text-xs">Printed on {new Date().toLocaleDateString('en-PH')}</p>

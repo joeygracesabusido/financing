@@ -55,7 +55,6 @@ class Query(
     GuarantorQuery,
     CollectionsQuery,
     ChartOfAccountsQuery,
-    ExtendedLoanMutation,
 ):
     pass
 

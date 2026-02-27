@@ -1,6 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardHeader, CardBody, CardFooter, Button, Input, Typography, Alert, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@material-tailwind/react';
+import { cn, formatCurrency } from '@/lib/utils';
+import {
+  Smartphone,
+  CreditCard,
+  Building2,
+  ArrowRightLeft,
+  Zap,
+  Clock,
+  ArrowLeft,
+  CheckCircle2,
+  AlertCircle,
+  LayoutDashboard,
+  Wallet,
+  RefreshCcw
+} from 'lucide-react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function TellerPaymentGatewayPage() {
   const [selectedGateway, setSelectedGateway] = useState<string | null>(null);
@@ -78,6 +97,11 @@ export default function TellerPaymentGatewayPage() {
         });
       }
 
+      if (!response) {
+        setNotification({ message: 'Please select a valid payment method', type: 'error' });
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         setPaymentResult(data);
@@ -93,258 +117,267 @@ export default function TellerPaymentGatewayPage() {
     }
   };
 
-  const handleGetMethods = async () => {
-    try {
-      const response = await fetch('/api/v1/payment-gateway/methods');
-      if (response.ok) {
-        const methods = await response.json();
-        console.log('Available payment methods:', methods);
-      }
-    } catch (error) {
-      console.error('Failed to fetch payment methods:', error);
-    }
-  };
+  const paymentMethods = [
+    { id: 'gcash', name: 'GCash', icon: Smartphone, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+    { id: 'maya', name: 'Maya', icon: Wallet, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+    { id: 'instapay', name: 'InstaPay', icon: Zap, color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+    { id: 'pesonet', name: 'PESONet', icon: Building2, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-4xl mx-auto">
-        <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800">
-          <Typography variant="h4" className="text-white">
-            Payment Gateway
-          </Typography>
-          <Typography variant="h6" className="text-blue-100">
-            Select payment method to process transactions
-          </Typography>
-        </CardHeader>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Payment Gateway</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Process external payments and bank transfers
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/dashboard')}
+          className="rounded-lg bg-secondary/50"
+        >
+          <LayoutDashboard className="w-4 h-4 mr-2" />
+          Dashboard
+        </Button>
+      </div>
 
-        <CardBody>
-          {/* Payment Method Selection */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            {[
-              { id: 'gcash', name: 'GCash', icon: '📱' },
-              { id: 'maya', name: 'Maya', icon: '💳' },
-              { id: 'instapay', name: 'InstaPay', icon: '🏦' },
-              { id: 'pesonet', name: 'PESONet', icon: '🔄' },
-            ].map((method) => (
-              <Button
-                key={method.id}
-                variant={selectedGateway === method.id ? 'filled' : 'outlined'}
-                color={selectedGateway === method.id ? 'blue' : 'gray'}
-                onClick={() => setSelectedGateway(method.id)}
-              >
-                <span className="mr-2">{method.icon}</span>
-                {method.name}
-              </Button>
-            ))}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column - Selection & Form */}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="glass rounded-2xl p-6 border border-border/50">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Select Payment Method</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {paymentMethods.map((method) => {
+                const Icon = method.icon;
+                const isActive = selectedGateway === method.id;
+                return (
+                  <button
+                    key={method.id}
+                    onClick={() => setSelectedGateway(method.id)}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-4 rounded-xl border transition-all duration-200 gap-2",
+                      isActive
+                        ? "bg-primary/15 border-primary shadow-lg shadow-primary/10 scale-[1.02]"
+                        : "bg-secondary/30 border-border/50 hover:border-primary/50"
+                    )}
+                  >
+                    <div className={cn("p-2 rounded-lg", method.bg)}>
+                      <Icon className={cn("w-6 h-6", method.color)} />
+                    </div>
+                    <span className={cn("text-sm font-bold", isActive ? "text-primary" : "text-foreground")}>
+                      {method.name}
+                    </span>
+                    {isActive && (
+                      <div className="w-1 h-1 bg-primary rounded-full mt-1" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Payment Form */}
-          {selectedGateway && (
-            <Card className="mb-6">
-              <CardHeader>
-                <Typography variant="h5">Process {selectedGateway.toUpperCase()} Payment</Typography>
-              </CardHeader>
-              <CardBody>
-                <form onSubmit={handleProcessPayment} className="space-y-4">
-                  <div>
+          {selectedGateway ? (
+            <div className="glass rounded-2xl p-6 border border-border/50">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4 text-primary" />
+                </div>
+                <h2 className="font-semibold text-foreground">
+                  {paymentMethods.find(m => m.id === selectedGateway)?.name} Payment Details
+                </h2>
+              </div>
+
+              <form onSubmit={handleProcessPayment} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase">Amount (PHP)</label>
+                  <div className="relative">
                     <Input
-                      label="Amount (PHP)"
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
+                      placeholder="0.00"
                       required
-                      variant="outlined"
+                      className="pl-9 bg-secondary/30 border-border/50 rounded-xl h-11"
                     />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium">₱</span>
                   </div>
-                  <div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase">Reference ID</label>
+                  <Input
+                    type="text"
+                    value={reference}
+                    onChange={(e) => setReference(e.target.value)}
+                    placeholder="Enter reference"
+                    required
+                    className="bg-secondary/30 border-border/50 rounded-xl h-11"
+                  />
+                </div>
+
+                {selectedGateway === 'gcash' && (
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-medium text-muted-foreground uppercase">Mobile Number</label>
                     <Input
-                      label="Reference ID"
                       type="text"
-                      value={reference}
-                      onChange={(e) => setReference(e.target.value)}
+                      value={mobileNumber}
+                      onChange={(e) => setMobileNumber(e.target.value)}
+                      placeholder="0917 123 4567"
                       required
-                      variant="outlined"
+                      className="bg-secondary/30 border-border/50 rounded-xl h-11"
                     />
                   </div>
+                )}
 
-                  {selectedGateway === 'gcash' && (
-                    <div>
+                {selectedGateway === 'maya' && (
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-xs font-medium text-muted-foreground uppercase">Email Address</label>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="customer@example.com"
+                      required
+                      className="bg-secondary/30 border-border/50 rounded-xl h-11"
+                    />
+                  </div>
+                )}
+
+                {(selectedGateway === 'instapay' || selectedGateway === 'pesonet') && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground uppercase">Destination Account</label>
                       <Input
-                        label="Mobile Number (09XX-XXX-XXXX)"
                         type="text"
-                        value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value)}
-                        placeholder="09171234567"
+                        value={destinationAccount}
+                        onChange={(e) => setDestinationAccount(e.target.value)}
+                        placeholder="Account Number"
                         required
-                        variant="outlined"
+                        className="bg-secondary/30 border-border/50 rounded-xl h-11"
                       />
-                      <Typography variant="body2" className="text-gray-600">
-                        Example: 09171234567
-                      </Typography>
                     </div>
-                  )}
-
-                  {selectedGateway === 'maya' && (
-                    <div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-muted-foreground uppercase">Bank Code</label>
                       <Input
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        value={destinationBankCode}
+                        onChange={(e) => setDestinationBankCode(e.target.value)}
+                        placeholder="e.g. 002"
                         required
-                        variant="outlined"
+                        className="bg-secondary/30 border-border/50 rounded-xl h-11"
                       />
                     </div>
-                  )}
+                  </>
+                )}
 
-                  {(selectedGateway === 'instapay' || selectedGateway === 'pesonet') && (
-                    <>
-                      <div>
-                        <Input
-                          label="Destination Account Number"
-                          type="text"
-                          value={destinationAccount}
-                          onChange={(e) => setDestinationAccount(e.target.value)}
-                          required
-                          variant="outlined"
-                        />
-                      </div>
-                      <div>
-                        <Input
-                          label="Destination Bank Code"
-                          type="text"
-                          value={destinationBankCode}
-                          onChange={(e) => setDestinationBankCode(e.target.value)}
-                          required
-                          variant="outlined"
-                        />
-                      </div>
-                      <Typography variant="body2" className="text-gray-600 mt-2">
-                        Philippine Bank Codes: 002 (BDO), 003 (BPI), 001 (PNB), etc.
-                      </Typography>
-                    </>
-                  )}
-
-                  <Button type="submit" variant="filled" disabled={loading || !amount} className="w-full">
+                <div className="md:col-span-2 pt-2">
+                  <Button type="submit" disabled={loading || !amount} className="w-full h-11 rounded-xl font-semibold">
+                    {loading ? <RefreshCcw className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
                     {loading ? 'Processing Payment...' : 'Process Payment'}
                   </Button>
-                </form>
-              </CardBody>
-            </Card>
-          )}
-
-          {/* Payment Result */}
-          {paymentResult && (
-            <Card className="mb-6">
-              <CardHeader>
-                <Typography variant="h5">Payment Result</Typography>
-              </CardHeader>
-              <CardBody>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Typography variant="body2" className="font-medium">Payment ID:</Typography>
-                    <Typography variant="body2">{paymentResult.payment_id}</Typography>
-                  </div>
-                  <div className="flex justify-between">
-                    <Typography variant="body2" className="font-medium">Gateway:</Typography>
-                    <Typography variant="body2">{paymentResult.gateway}</Typography>
-                  </div>
-                  <div className="flex justify-between">
-                    <Typography variant="body2" className="font-medium">Amount:</Typography>
-                    <Typography variant="body2">₱{paymentResult.amount.toLocaleString()}</Typography>
-                  </div>
-                  <div className="flex justify-between">
-                    <Typography variant="body2" className="font-medium">Status:</Typography>
-                    <Typography variant="body2" className="text-green-600 font-bold">
-                      {paymentResult.status}
-                    </Typography>
-                  </div>
-                  <div className="flex justify-between">
-                    <Typography variant="body2" className="font-medium">Reference ID:</Typography>
-                    <Typography variant="body2">{paymentResult.reference_id}</Typography>
-                  </div>
-                  <div className="flex justify-between">
-                    <Typography variant="body2" className="font-medium">Timestamp:</Typography>
-                    <Typography variant="body2">
-                      {new Date(paymentResult.timestamp).toLocaleString()}
-                    </Typography>
-                  </div>
                 </div>
-              </CardBody>
-              <CardFooter>
-                <Button variant="text" onClick={() => setPaymentResult(null)}>
+              </form>
+            </div>
+          ) : (
+            <div className="glass rounded-2xl p-12 border border-border/50 flex flex-col items-center justify-center text-center">
+              <div className="w-16 h-16 bg-muted/20 rounded-2xl flex items-center justify-center mb-4">
+                <ArrowRightLeft className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-bold text-foreground mb-2">Ready to Start</h3>
+              <p className="text-muted-foreground max-w-xs">
+                Select a payment method above to begin processing your transaction.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Right Column - Status & Info */}
+        <div className="lg:col-span-4 space-y-6">
+          {paymentResult && (
+            <div className="glass rounded-2xl p-6 border-emerald-500/30 bg-emerald-500/5 transition-all duration-300">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                </div>
+                <h2 className="font-semibold text-foreground text-emerald-400">Payment Success</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center pb-3 border-b border-border/50">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">Payment ID</span>
+                  <span className="text-sm font-mono text-foreground">{paymentResult.payment_id.slice(0, 12)}...</span>
+                </div>
+                <div className="flex justify-between items-center pb-3 border-b border-border/50">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">Amount</span>
+                  <span className="text-sm font-bold text-foreground">{formatCurrency(paymentResult.amount)}</span>
+                </div>
+                <div className="flex justify-between items-center pb-3 border-b border-border/50">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">Gateway</span>
+                  <Badge variant="outline" className="text-primary border-primary/30 uppercase">{paymentResult.gateway}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">Time</span>
+                  <span className="text-sm text-foreground">{new Date(paymentResult.timestamp).toLocaleTimeString()}</span>
+                </div>
+
+                <Button variant="outline" className="w-full h-10 rounded-xl mt-4" onClick={() => setPaymentResult(null)}>
                   Clear Result
                 </Button>
-              </CardFooter>
-            </Card>
+              </div>
+            </div>
           )}
 
-          {/* Available Methods Info */}
-          <Card>
-            <CardHeader>
-              <Typography variant="h5">Available Payment Methods</Typography>
-            </CardHeader>
-            <CardBody className="space-y-4">
-              {[
-                {
-                  gateway: 'GCash',
-                  type: 'E-Wallet',
-                  operations: ['Loan Repayment', 'Savings Deposit', 'Transfer'],
-                  features: ['Mobile Number Required'],
-                },
-                {
-                  gateway: 'Maya',
-                  type: 'E-Wallet',
-                  operations: ['Loan Repayment', 'Savings Deposit', 'Transfer'],
-                  features: ['Email Required'],
-                },
-                {
-                  gateway: 'InstaPay',
-                  type: 'Real-Time Bank Transfer',
-                  operations: ['All', 'Instant Settlement'],
-                  features: ['BSP-Regulated', '11-Digit Account Number'],
-                },
-                {
-                  gateway: 'PESONet',
-                  type: 'Batch & Single Transfer',
-                  operations: ['Batch', 'Single', 'Same-Day Settlement'],
-                  features: ['Supports Batch Payments'],
-                },
-              ].map((method) => (
-                <div key={method.gateway} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <Typography variant="h6" className="font-bold">{method.gateway}</Typography>
-                    <Badge color="blue" variant="filled">{method.type}</Badge>
-                  </div>
-                  <Typography variant="body2" className="text-gray-600">
-                    Operations: {method.operations.join(', ')}
-                  </Typography>
-                  <div className="mt-2">
-                    {method.features.map((feature) => (
-                      <Badge key={feature} color="gray" variant="outlined">{feature}</Badge>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </CardBody>
-          </Card>
+          <div className="glass rounded-2xl p-6 border border-border/50">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <Clock className="w-4 h-4 text-blue-400" />
+              </div>
+              <h2 className="font-semibold text-foreground">Service Information</h2>
+            </div>
 
-          {notification && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-xl bg-secondary/30 border border-border/50 space-y-1">
+                <p className="text-sm font-bold text-foreground">InstaPay</p>
+                <p className="text-xs text-muted-foreground">Real-time funds transfer up to ₱50,000.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-secondary/30 border border-border/50 space-y-1">
+                <p className="text-sm font-bold text-foreground">PESONet</p>
+                <p className="text-xs text-muted-foreground">High-value batch transfers. Same-day settlement.</p>
+              </div>
+              <div className="p-3 rounded-xl bg-secondary/30 border border-border/50 space-y-1">
+                <p className="text-sm font-bold text-foreground">E-Wallets</p>
+                <p className="text-xs text-muted-foreground">Direct collection from mobile wallets with instant confirmation.</p>
+              </div>
+            </div>
+          </div>
+
+          {notification && !paymentResult && (
             <Alert
-              color={notification.type === 'success' ? 'green' : 'red'}
-              className="mt-4"
+              variant={notification.type === 'success' ? 'default' : 'destructive'}
+              className={cn(
+                "border backdrop-blur-xl",
+                notification.type === 'success' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+              )}
             >
-              {notification.message}
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                <AlertDescription>{notification.message}</AlertDescription>
+              </div>
             </Alert>
           )}
-        </CardBody>
+        </div>
+      </div>
 
-        <CardFooter>
-          <Button variant="text" onClick={() => navigate('/dashboard')}>
-            Back to Dashboard
-          </Button>
-        </CardFooter>
-      </Card>
+      <div className="flex justify-end">
+        <Button variant="ghost" onClick={() => navigate('/dashboard')} className="text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Cancel and Return
+        </Button>
+      </div>
     </div>
   );
 }

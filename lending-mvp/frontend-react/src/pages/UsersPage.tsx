@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import { Users, Plus, Pencil, UserCheck, UserX, ShieldAlert, Loader2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
-import { GET_USERS, CREATE_USER, UPDATE_USER, DELETE_USER } from '@/api/queries'
+import { GET_USERS, CREATE_USER, UPDATE_USER } from '@/api/queries'
 
 const ROLES = ['admin', 'loan_officer', 'teller', 'branch_manager', 'auditor', 'customer'] as const
 type Role = typeof ROLES[number]
@@ -61,7 +61,6 @@ export default function UsersPage() {
 
     const [createUser, { loading: creating }] = useMutation(CREATE_USER)
     const [updateUser, { loading: updating }] = useMutation(UPDATE_USER)
-    const [deleteUser] = useMutation(DELETE_USER)
 
     const [showModal, setShowModal] = useState(false)
     const [editId, setEditId] = useState<string | null>(null)

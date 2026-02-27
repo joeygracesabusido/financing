@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useNavigate } from 'react-router-dom'
 
 export default function CustomerTransferPage() {
@@ -15,7 +15,7 @@ export default function CustomerTransferPage() {
     const [reference, setReference] = useState('')
     const navigate = useNavigate()
 
-    const [createFundTransfer, { loading, error, data }] = useMutation(CREATE_FUND_TRANSFER)
+    const [createFundTransfer, { data }] = useMutation(CREATE_FUND_TRANSFER)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -30,7 +30,7 @@ export default function CustomerTransferPage() {
                     }
                 }
             })
-            
+
             if (data?.createFundTransfer?.success) {
                 navigate('/customer/dashboard')
             }
@@ -57,14 +57,17 @@ export default function CustomerTransferPage() {
                         <div>
                             <Label htmlFor="fromAccount">From Account</Label>
                             <Select
-                                id="fromAccount"
                                 value={fromAccount}
-                                onChange={(e) => setFromAccount(e.target.value)}
+                                onValueChange={setFromAccount}
                                 required
                             >
-                                <option value="">Select source account</option>
-                                <option value="savings-001">Regular Savings Account - PHP</option>
-                                <option value="savings-002">High Yield Savings - PHP</option>
+                                <SelectTrigger id="fromAccount">
+                                    <SelectValue placeholder="Select source account" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="savings-001">Regular Savings Account - PHP</SelectItem>
+                                    <SelectItem value="savings-002">High Yield Savings - PHP</SelectItem>
+                                </SelectContent>
                             </Select>
                         </div>
 

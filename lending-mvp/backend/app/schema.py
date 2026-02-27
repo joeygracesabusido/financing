@@ -157,7 +157,7 @@ class UsersResponse:
 
 # Loan Types
 @strawberry.type
-class LoanType:
+class GeneralLoanType:
     borrower_id: str
     amount_requested: Decimal
     status: str
@@ -176,10 +176,10 @@ class LedgerEntryType:
 @strawberry.type
 class Query:
     @strawberry.field
-    async def get_loan_by_id(self, loan_id: str) -> Optional[LoanType]:
+    async def get_loan_by_id(self, loan_id: str) -> Optional[GeneralLoanType]:
         # Placeholder for fetching loan
         # In a real app, you'd call a service function
-        return LoanType(borrower_id="some_user", amount_requested=Decimal("1000"), status="pending")
+        return GeneralLoanType(borrower_id="some_user", amount_requested=Decimal("1000"), status="pending")
 
     @strawberry.field
     async def get_borrower_ledger(self, borrower_id: str) -> List[LedgerEntryType]:
@@ -404,7 +404,7 @@ class PaymentDetailsType:
 
 # Fund Transfer Types
 @strawberry.input
-class FundTransferInput:
+class GeneralFundTransferInput:
     from_account: str = strawberry.field(name="fromAccount")
     to_account: str = strawberry.field(name="toAccount")
     amount: float
@@ -412,7 +412,7 @@ class FundTransferInput:
     transfer_type: Optional[str] = None
 
 @strawberry.type
-class FundTransferResponse:
+class GeneralFundTransferResponse:
     success: bool
     message: str
     transfer: Optional["FundTransferType"] = None
@@ -516,29 +516,37 @@ class Query:
 # --- GraphQL Mutations ---
 
 @strawberry.type
+class ScanQRCodeResponse:
+    success: bool
+    message: str
+    payment_details: Optional[PaymentDetailsType] = strawberry.field(name="paymentDetails", default=None)
+
+@strawberry.type
 class Mutation:
     @strawberry.mutation
-    async def scan_qr_code(self, qr_data: str) -> dict:
+    async def scan_qr_code(self, qr_data: str) -> ScanQRCodeResponse:
         """Scan and process a QR code."""
         # In a real app, this would parse the QR data and validate
         if not qr_data.startswith("PH") and not qr_data.startswith("GCASH"):
-            return {"success": False, "message": "Invalid QR code format"}
+            return ScanQRCodeResponse(success=False, message="Invalid QR code format")
         
         # Parse QR data
         parts = qr_data.split("|")
         if len(parts) < 3:
-            return {"success": False, "message": "Invalid QR code data"}
+            return ScanQRCodeResponse(success=False, message="Invalid QR code data")
         
-        return {
-            "success": True,
-            "message": "QR code scanned successfully",
-            "paymentDetails": {
-                "accountNumber": parts[1],
-                "amount": float(parts[2]) if len(parts) > 2 else 0,
-                "reference": parts[3] if len(parts) > 3 else None,
-                "bankCode": parts[0]
-            }
-        }
+        details = PaymentDetailsType(
+            account_number=parts[1],
+            amount=float(parts[2]) if len(parts) > 2 else 0,
+            reference=parts[3] if len(parts) > 3 else None,
+            bank_code=parts[0]
+        )
+        
+        return ScanQRCodeResponse(
+            success=True,
+            message="QR code scanned successfully",
+            payment_details=details
+        )
     
     @strawberry.mutation
     async def update_notification_preferences(
@@ -565,8 +573,8 @@ class Mutation:
     async def create_fund_transfer(
         self,
         info: Info,
-        input: FundTransferInput
-    ) -> FundTransferResponse:
+        input: GeneralFundTransferInput
+    ) -> GeneralFundTransferResponse:
         """Create a fund transfer request."""
         current_user = info.context.get("current_user")
         if not current_user:
@@ -575,7 +583,7 @@ class Mutation:
         # In a real app, this would process the transfer through the transaction service
         from datetime import datetime
         
-        return FundTransferResponse(
+        return GeneralFundTransferResponse(
             success=True,
             message="Fund transfer request created successfully",
             transfer=FundTransferType(

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useQuery, useMutation, gql } from '@apollo/client'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery, useMutation } from '@apollo/client'
 import { useAuth } from '@/context/AuthContext'
 import {
-    ArrowLeft, User, FileText, Users, Activity,
+    ArrowLeft, User, Users, Activity,
     CheckCircle, XCircle, Clock, Upload, Trash2, Plus,
     ShieldCheck, AlertCircle, Star
 } from 'lucide-react'
@@ -62,7 +62,6 @@ export default function CustomerDetailPage() {
     const { user } = useAuth()
     const [tab, setTab] = useState<Tab>('overview')
 
-    const isAdmin = user?.role === 'admin'
     const canReviewKyc = user?.role === 'admin' || user?.role === 'loan_officer'
 
     // ── Queries ──────────────────────────────────────────────────────

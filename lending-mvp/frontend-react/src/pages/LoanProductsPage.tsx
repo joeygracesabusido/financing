@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
-import { GET_LOAN_PRODUCTS, CREATE_LOAN_PRODUCT, UPDATE_LOAN_PRODUCT } from '@/api/queries'
+import { GET_LOAN_PRODUCTS, CREATE_LOAN_PRODUCT } from '@/api/queries'
 import { Package, Plus, Loader2, X, Check, Activity, Calendar } from 'lucide-react'
 
 interface LoanProduct {
@@ -217,13 +217,13 @@ export default function LoanProductsPage() {
                                         <label className="text-xs text-muted-foreground font-medium">Penalty Rate (%)</label>
                                         <input type="number" step="0.01" name="penaltyRate" value={formData.penaltyRate} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
                                     </div>
-                                     <div className="space-y-1">
-                                         <label className="text-xs text-muted-foreground font-medium">Grace Period (Mo)</label>
-                                         <input type="number" name="gracePeriodMonths" value={formData.gracePeriodMonths} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
-                                     </div>
-                                 </div>
- 
-                                 <div className="border-t border-border/30 pt-4 mt-4">
+                                    <div className="space-y-1">
+                                        <label className="text-xs text-muted-foreground font-medium">Grace Period (Mo)</label>
+                                        <input type="number" name="gracePeriodMonths" value={formData.gracePeriodMonths} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
+                                    </div>
+                                </div>
+
+                                <div className="border-t border-border/30 pt-4 mt-4">
                                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Phase 2 — Enhanced Features</p>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
@@ -248,7 +248,7 @@ export default function LoanProductsPage() {
                                     </div>
                                     <div className="flex items-center gap-3 mt-3">
                                         <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                                            <input type="checkbox" checked={formData.prepaymentAllowed} onChange={e => setFormData(f => ({...f, prepaymentAllowed: e.target.checked}))} className="rounded" />
+                                            <input type="checkbox" checked={formData.prepaymentAllowed} onChange={e => setFormData(f => ({ ...f, prepaymentAllowed: e.target.checked }))} className="rounded" />
                                             Prepayment Allowed
                                         </label>
                                     </div>
@@ -264,7 +264,7 @@ export default function LoanProductsPage() {
                     </div>
                 </div >
             )
-}
+            }
         </div >
     )
 }

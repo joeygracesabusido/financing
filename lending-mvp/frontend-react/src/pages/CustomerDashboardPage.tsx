@@ -1,17 +1,16 @@
 import { useQuery } from '@apollo/client'
-import { GET_CUSTOMER_PORTAL_STATS, GET_CUSTOMER_LOANS, GET_CUSTOMER_SAVINGS } from '@/api/queries'
+import { GET_CUSTOMER_LOANS, GET_CUSTOMER_SAVINGS } from '@/api/queries'
 import { formatCurrency } from '@/lib/utils'
 import {
     CreditCard,
     PiggyBank,
     TrendingUp,
-    DollarSign,
     Clock,
     AlertCircle,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+
 import { Link } from 'react-router-dom'
 
 function StatCard({ title, value, subtitle, icon: Icon, gradient, trend }: any) {
@@ -40,17 +39,17 @@ function StatCard({ title, value, subtitle, icon: Icon, gradient, trend }: any) 
 export default function CustomerDashboardPage() {
     const { data: loansData, loading: loansLoading } = useQuery(GET_CUSTOMER_LOANS)
     const { data: savingsData, loading: savingsLoading } = useQuery(GET_CUSTOMER_SAVINGS)
-    
+
     const totalLoans = loansData?.loans?.loans?.length ?? 0
     const activeLoans = loansData?.loans?.loans?.filter((l: any) => l.status === 'active').length ?? 0
     const overdueLoans = loansData?.loans?.loans?.filter(
         (l: any) => l.status === 'overdue' || l.status === 'defaulted'
     ).length ?? 0
-    
+
     const totalSavings = savingsData?.savingsAccounts?.accounts?.reduce(
         (sum: number, a: any) => sum + (a.balance || 0), 0
     ) ?? 0
-    
+
     const nextDueLoan = loansData?.loans?.loans?.find((l: any) => l.status === 'active')
 
     return (

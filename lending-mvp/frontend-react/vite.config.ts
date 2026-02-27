@@ -8,6 +8,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
+            '@material-tailwind/react': path.resolve(__dirname, './node_modules/@material-tailwind/react'),
         },
     },
     server: {

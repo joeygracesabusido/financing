@@ -1071,6 +1071,7 @@ class CollectionsQuery:
 # ── Phase 2.2 — Credit Scoring Types ───────────────────────────────────────────
 
 @strawberry.type
+@strawberry.type
 class CreditScoreType:
     id: int
     loan_id: int
@@ -1855,21 +1856,21 @@ class ExtendedLoanMutation:
                 message=f"Loan restructured successfully. New term: {new_term_months} months, Rate: {new_rate}%"
             )
 
-    @strawberry.type
-    class LoanRestructureLog:
-        id: strawberry.ID
-        loan_id: int
-        old_term_months: int
-        old_interest_rate: Decimal
-        old_principal: Decimal
-        new_term_months: int
-        new_interest_rate: Decimal
-        new_principal: Decimal
-        capitalize_arrears: bool
-        arrears_amount: Decimal
-        reason: str
-        created_by: str
-        created_at: datetime
+@strawberry.type
+class LoanRestructureLog:
+    id: strawberry.ID
+    loan_id: int
+    old_term_months: int
+    old_interest_rate: Decimal
+    old_principal: Decimal
+    new_term_months: int
+    new_interest_rate: Decimal
+    new_principal: Decimal
+    capitalize_arrears: bool
+    arrears_amount: Decimal
+    reason: str
+    created_by: str
+    created_at: datetime
 
 
 @strawberry.input

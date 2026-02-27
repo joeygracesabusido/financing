@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Select } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function CustomerLoanApplicationPage() {
     const [productId, setProductId] = useState('')
@@ -30,7 +30,7 @@ export default function CustomerLoanApplicationPage() {
                     }
                 }
             })
-            
+
             if (data?.createCustomerLoan?.success) {
                 navigate('/customer/dashboard')
             }
@@ -57,15 +57,18 @@ export default function CustomerLoanApplicationPage() {
                         <div>
                             <Label htmlFor="product">Loan Product</Label>
                             <Select
-                                id="product"
                                 value={productId}
-                                onChange={(e) => setProductId(e.target.value)}
+                                onValueChange={setProductId}
                                 required
                             >
-                                <option value="">Select a loan product</option>
-                                <option value="1">Personal Loan - 6% interest</option>
-                                <option value="2">Business Loan - 8% interest</option>
-                                <option value="3">Education Loan - 5% interest</option>
+                                <SelectTrigger id="product">
+                                    <SelectValue placeholder="Select a loan product" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="1">Personal Loan - 6% interest</SelectItem>
+                                    <SelectItem value="2">Business Loan - 8% interest</SelectItem>
+                                    <SelectItem value="3">Education Loan - 5% interest</SelectItem>
+                                </SelectContent>
                             </Select>
                         </div>
 
@@ -101,14 +104,18 @@ export default function CustomerLoanApplicationPage() {
                         <div>
                             <Label htmlFor="disbursement">Disbursement Method</Label>
                             <Select
-                                id="disbursement"
                                 value={disbursementMethod}
-                                onChange={(e) => setDisbursementMethod(e.target.value)}
+                                onValueChange={setDisbursementMethod}
                             >
-                                <option value="savings_transfer">Transfer to Savings Account</option>
-                                <option value="cash">Cash</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="cheque">Check</option>
+                                <SelectTrigger id="disbursement">
+                                    <SelectValue placeholder="Select disbursement method" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="savings_transfer">Transfer to Savings Account</SelectItem>
+                                    <SelectItem value="cash">Cash</SelectItem>
+                                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                                    <SelectItem value="cheque">Check</SelectItem>
+                                </SelectContent>
                             </Select>
                         </div>
 

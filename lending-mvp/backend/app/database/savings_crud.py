@@ -67,33 +67,47 @@ class SavingsCRUD:
         # Deserialize each dict back into a Pydantic model
         return [SavingsAccountBase(**acc_data) for acc_data in processed_accounts_list]
     
-    async def get_all_savings_accounts(self, search_term: Optional[str] = None) -> List[SavingsAccountBase]:
+    async def get_all_savings_accounts(self, search_term: Optional[str] = None, customer_id: Optional[str] = None) -> List[SavingsAccountBase]:
         pipeline = []
 
-        if search_term:
-            # Add import for ObjectId from bson at the top if not already there
-            # Assuming 'db' instance is available globally or passed around, 
-            # and 'customers' collection is part of it.
-            # This aggregation is run on the 'savings' collection (self.collection).
-
-            # First, lookup customer details
+        # Filter by customer_id if provided (user_id is stored as string in savings)
+        if customer_id:
             pipeline.append({
-                "$lookup": {
-                    "from": "customers",  # The collection to join with (assuming 'customers' is the collection name)
-                    "localField": "user_id",  # Field from the input documents (savings)
-                    "foreignField": "_id",  # Field from the "from" documents (customers)
-                    "as": "customer_info"  # Output array field
+                "$match": {"user_id": customer_id}
+            })
+
+        if search_term:
+            # First, prepare user_id for lookup (convert string user_id to ObjectId)
+            pipeline.append({
+                "$addFields": {
+                    "user_id_obj": {
+                        "$cond": [
+                            {"$eq": [{"$type": "$user_id"}, "string"]},
+                            {"$toObjectId": "$user_id"},
+                            "$user_id"
+                        ]
+                    }
                 }
             })
-            # Unwind the customer_info array. Since user_id is a single value, this will be at most one element.
+
+            # Lookup customer details
+            pipeline.append({
+                "$lookup": {
+                    "from": "customers",
+                    "localField": "user_id_obj",
+                    "foreignField": "_id",
+                    "as": "customer_info"
+                }
+            })
+            # Unwind the customer_info array
             pipeline.append({
                 "$unwind": {
                     "path": "$customer_info",
-                    "preserveNullAndEmptyArrays": True  # Keep accounts even if no matching customer
+                    "preserveNullAndEmptyArrays": True
                 }
             })
 
-            # Then, apply the search filter
+            # Apply the search filter
             pipeline.append({
                 "$match": {
                     "$or": [
@@ -103,24 +117,19 @@ class SavingsCRUD:
                 }
             })
         
-        # Add a projection stage to reshape the documents back to SavingsAccountBase structure
-        # (or as close as possible for Pydantic parsing)
-        # We need to make sure the _id is an ObjectId again if it was converted to string during lookup,
-        # and remove the temporary 'customer_info' if it's not part of SavingsAccountBase
+        # Projection stage
         pipeline.append({
             "$project": {
-                "_id": "$_id",
-                "account_number": "$account_number",
-                "user_id": "$user_id",
-                "type": "$type",
-                "balance": "$balance",
-                "currency": "$currency",
-                "opened_at": "$opened_at",
-                "created_at": "$created_at",
-                "updated_at": "$updated_at",
-                "status": "$status",
-                # Do not project customer_info into the SavingsAccountBase directly
-                # It's only used for matching. The customer will be resolved by the GraphQL resolver.
+                "_id": 1,
+                "account_number": 1,
+                "user_id": 1,
+                "type": 1,
+                "balance": 1,
+                "currency": 1,
+                "opened_at": 1,
+                "created_at": 1,
+                "updated_at": 1,
+                "status": 1,
             }
         })
 

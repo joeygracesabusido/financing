@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
@@ -48,7 +48,12 @@
     padding: 0;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold tracking-tight;
   }
 }
@@ -78,9 +83,7 @@
   }
 
   .sidebar-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-           text-muted-foreground hover:text-foreground hover:bg-secondary
-           transition-all duration-200 cursor-pointer;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200 cursor-pointer;
   }
 
   .sidebar-item.active {
@@ -88,8 +91,7 @@
   }
 
   .stat-card {
-    @apply glass rounded-xl p-5 flex flex-col gap-3 hover:border-primary/30
-           transition-all duration-300 hover:shadow-lg hover:shadow-primary/5;
+    @apply glass rounded-xl p-5 flex flex-col gap-3 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5;
   }
 
   .data-table-row {

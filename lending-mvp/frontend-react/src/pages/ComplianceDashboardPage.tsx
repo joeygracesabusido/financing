@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@apollo/client';
-import { 
-    GET_AML_ALERTS, 
+import {
+    GET_AML_ALERTS,
     GET_PAR_METRICS,
     GET_NPL_METRICS,
     GET_LLR_METRICS,
@@ -12,7 +12,7 @@ import {
     RUN_COMPLIANCE_REPORTS
 } from '@/api/queries';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { ShieldAlert, AlertTriangle, CheckCircle, Clock, TrendingUp, TrendingDown, FileText, Download, RefreshCw, ArrowRight, AlertCircle, Activity, BarChart3 } from 'lucide-react';
+import { ShieldAlert, AlertTriangle, CheckCircle, Clock, TrendingUp, FileText, RefreshCw, ArrowRight, AlertCircle, Activity, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 
 interface Alert {
@@ -25,22 +25,9 @@ interface Alert {
     status: string;
 }
 
-interface ParMetrics {
-    total_outstanding: number;
-    par1: { amount: number; loan_count: number; percentage: number };
-    par7: { amount: number; loan_count: number; percentage: number };
-    par30: { amount: number; loan_count: number; percentage: number };
-    par90: { amount: number; loan_count: number; percentage: number };
-    current: { amount: number; loan_count: number; percentage: number };
-}
 
-interface NplMetrics {
-    total_loans: number;
-    npl_count: number;
-    npl_amount: number;
-    npl_ratio: number;
-    npl_by_category: any;
-}
+
+
 
 export default function ComplianceDashboard() {
     const [activeTab, setActiveTab] = useState<'alerts' | 'reports' | 'metrics'>('alerts');
@@ -48,16 +35,16 @@ export default function ComplianceDashboard() {
     const [reportType, setReportType] = useState<string>('daily');
 
     // Queries
-    const { data: alertsData, loading: alertsLoading, refetch: refetchAlerts } = useQuery(GET_AML_ALERTS, {
+    const { data: alertsData, refetch: refetchAlerts } = useQuery(GET_AML_ALERTS, {
         variables: { skip: 0, limit: 50 }
     });
-    
+
     const { data: parData } = useQuery(GET_PAR_METRICS);
     const { data: nplData } = useQuery(GET_NPL_METRICS);
     const { data: llrData } = useQuery(GET_LLR_METRICS);
-    
+
     const { data: incomeData, refetch: refetchIncome } = useQuery(GET_INCOME_STATEMENT, {
-        variables: { 
+        variables: {
             period_start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString(),
             period_end: new Date().toISOString()
         }
@@ -67,25 +54,21 @@ export default function ComplianceDashboard() {
         variables: { as_of_date: new Date().toISOString() }
     });
 
-    const { data: unresolvedData, refetch: refetchUnresolved } = useQuery(GET_UNRESOLVED_ALERTS);
-
-    // Mutations
-    const [resolveAlert] = useMutation(RESOLVE_ALERT);
-    const [escalateAlert] = useMutation(ESCALATE_ALERT);
+    const { data: unresolvedData } = useQuery(GET_UNRESOLVED_ALERTS);
     const [runReports] = useMutation(RUN_COMPLIANCE_REPORTS);
 
     const alerts = alertsData?.getAmlAlerts?.alerts || [];
     const unresolvedAlerts = unresolvedData?.getUnresolvedAlerts?.alerts || [];
 
     // Filter alerts
-    const filteredAlerts = severityFilter === 'all' 
-        ? alerts 
-        : alerts.filter(a => a.severity === severityFilter);
+    const filteredAlerts = severityFilter === 'all'
+        ? alerts
+        : alerts.filter((a: Alert) => a.severity === severityFilter);
 
     // Calculate summary stats
     const unresolvedCount = unresolvedAlerts.length;
-    const highSeverityCount = alerts.filter(a => a.severity === 'high').length;
-    const pendingReviewCount = alerts.filter(a => a.status === 'pending_review').length;
+    const highSeverityCount = alerts.filter((a: Alert) => a.severity === 'high').length;
+    const pendingReviewCount = alerts.filter((a: Alert) => a.status === 'pending_review').length;
 
     const handleGenerateReport = async () => {
         try {
@@ -96,34 +79,12 @@ export default function ComplianceDashboard() {
                 await refetchBalance();
             }
             alert('Report generated successfully');
-        } catch (error) {
+        } catch (error: any) {
             alert('Failed to generate report: ' + error.message);
         }
     };
 
-    const handleResolveAlert = async (alertId: number, status: string, notes: string) => {
-        try {
-            await resolveAlert({ 
-                variables: { alert_id: alertId, status, resolution_notes: notes } 
-            });
-            await refetchAlerts();
-            await refetchUnresolved();
-        } catch (error) {
-            alert('Failed to resolve alert: ' + error.message);
-        }
-    };
 
-    const handleEscalateAlert = async (alertId: number, escalatedTo: string, reason: string) => {
-        try {
-            await escalateAlert({ 
-                variables: { alert_id: alertId, escalated_to: escalatedTo, reason } 
-            });
-            await refetchAlerts();
-            await refetchUnresolved();
-        } catch (error) {
-            alert('Failed to escalate alert: ' + error.message);
-        }
-    };
 
     // PAR Metric Cards
     const ParCard = ({ title, data, color }: { title: string, data: any, color: string }) => (
@@ -204,31 +165,28 @@ export default function ComplianceDashboard() {
             <div className="flex border-b border-border">
                 <button
                     onClick={() => setActiveTab('alerts')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors ${
-                        activeTab === 'alerts' 
-                            ? 'border-b-2 border-primary text-primary' 
-                            : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors ${activeTab === 'alerts'
+                        ? 'border-b-2 border-primary text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
                 >
                     AML Alerts
                 </button>
                 <button
                     onClick={() => setActiveTab('reports')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors ${
-                        activeTab === 'reports' 
-                            ? 'border-b-2 border-primary text-primary' 
-                            : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors ${activeTab === 'reports'
+                        ? 'border-b-2 border-primary text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
                 >
                     Reports & Statements
                 </button>
                 <button
                     onClick={() => setActiveTab('metrics')}
-                    className={`px-6 py-3 font-medium text-sm transition-colors ${
-                        activeTab === 'metrics' 
-                            ? 'border-b-2 border-primary text-primary' 
-                            : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors ${activeTab === 'metrics'
+                        ? 'border-b-2 border-primary text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
+                        }`}
                 >
                     Portfolio Metrics
                 </button>
@@ -276,11 +234,10 @@ export default function ComplianceDashboard() {
                                         <td className="px-4 py-3 text-sm font-medium text-foreground">{alert.customer_id}</td>
                                         <td className="px-4 py-3 capitalize">{alert.alert_type}</td>
                                         <td className="px-4 py-3">
-                                            <span className={`px-2 py-0.5 text-xs font-bold rounded ${
-                                                alert.severity === 'high' ? 'bg-red-500/10 text-red-500' :
+                                            <span className={`px-2 py-0.5 text-xs font-bold rounded ${alert.severity === 'high' ? 'bg-red-500/10 text-red-500' :
                                                 alert.severity === 'medium' ? 'bg-yellow-500/10 text-yellow-500' :
-                                                'bg-blue-500/10 text-blue-500'
-                                            }`}>
+                                                    'bg-blue-500/10 text-blue-500'
+                                                }`}>
                                                 {alert.severity.toUpperCase()}
                                             </span>
                                         </td>
@@ -323,15 +280,14 @@ export default function ComplianceDashboard() {
                                 <p className="text-sm text-muted-foreground">Select report type to generate</p>
                             </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <button
                                 onClick={() => setReportType('daily')}
-                                className={`p-4 rounded-xl border-2 transition-all ${
-                                    reportType === 'daily'
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-border hover:border-primary/50'
-                                }`}
+                                className={`p-4 rounded-xl border-2 transition-all ${reportType === 'daily'
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border hover:border-primary/50'
+                                    }`}
                             >
                                 <div className="flex items-center gap-3 mb-2">
                                     <RefreshCw className="w-5 h-5 text-primary" />
@@ -339,14 +295,13 @@ export default function ComplianceDashboard() {
                                 </div>
                                 <p className="text-sm text-muted-foreground">Daily AML metrics and alerts summary</p>
                             </button>
-                            
+
                             <button
                                 onClick={() => setReportType('weekly')}
-                                className={`p-4 rounded-xl border-2 transition-all ${
-                                    reportType === 'weekly'
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-border hover:border-primary/50'
-                                }`}
+                                className={`p-4 rounded-xl border-2 transition-all ${reportType === 'weekly'
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border hover:border-primary/50'
+                                    }`}
                             >
                                 <div className="flex items-center gap-3 mb-2">
                                     <Activity className="w-5 h-5 text-primary" />
@@ -354,14 +309,13 @@ export default function ComplianceDashboard() {
                                 </div>
                                 <p className="text-sm text-muted-foreground">Weekly portfolio analysis and income statement</p>
                             </button>
-                            
+
                             <button
                                 onClick={() => setReportType('monthly')}
-                                className={`p-4 rounded-xl border-2 transition-all ${
-                                    reportType === 'monthly'
-                                        ? 'border-primary bg-primary/5'
-                                        : 'border-border hover:border-primary/50'
-                                }`}
+                                className={`p-4 rounded-xl border-2 transition-all ${reportType === 'monthly'
+                                    ? 'border-primary bg-primary/5'
+                                    : 'border-border hover:border-primary/50'
+                                    }`}
                             >
                                 <div className="flex items-center gap-3 mb-2">
                                     <BarChart3 className="w-5 h-5 text-primary" />
@@ -370,7 +324,7 @@ export default function ComplianceDashboard() {
                                 <p className="text-sm text-muted-foreground">Monthly financial statements and period closing</p>
                             </button>
                         </div>
-                        
+
                         <button
                             onClick={handleGenerateReport}
                             className="w-full py-3 gradient-primary text-white font-semibold rounded-lg shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
@@ -389,7 +343,7 @@ export default function ComplianceDashboard() {
                                     <TrendingUp className="w-6 h-6 text-emerald-500" />
                                     <h3 className="text-lg font-semibold">Income Statement (P&L)</h3>
                                 </div>
-                                
+
                                 {incomeData?.getIncomeStatement && (
                                     <div className="space-y-4">
                                         <div className="border-b border-border/50 pb-4">
@@ -411,7 +365,7 @@ export default function ComplianceDashboard() {
                                                 <span className="font-bold">{formatCurrency(incomeData.getIncomeStatement.revenues.total_revenues)}</span>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="border-b border-border/50 pb-4">
                                             <p className="text-sm text-muted-foreground uppercase tracking-wider">Expenses</p>
                                             <div className="flex justify-between mt-2">
@@ -431,7 +385,7 @@ export default function ComplianceDashboard() {
                                                 <span className="font-medium">{formatCurrency(incomeData.getIncomeStatement.expenses.total_expenses)}</span>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex justify-between mt-4 border-t-2 border-border/50 pt-4">
                                             <span className="text-lg font-semibold">Net Income</span>
                                             <span className="text-lg font-bold text-emerald-500">{formatCurrency(incomeData.getIncomeStatement.net_income)}</span>
@@ -446,7 +400,7 @@ export default function ComplianceDashboard() {
                                     <Activity className="w-6 h-6 text-primary" />
                                     <h3 className="text-lg font-semibold">Balance Sheet</h3>
                                 </div>
-                                
+
                                 {balanceData?.getBalanceSheet && (
                                     <div className="space-y-4">
                                         <div className="border-b border-border/50 pb-4">
@@ -464,7 +418,7 @@ export default function ComplianceDashboard() {
                                                 <span className="font-bold">{formatCurrency(balanceData.getBalanceSheet.assets.non_current_assets.total_assets)}</span>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="border-b border-border/50 pb-4">
                                             <p className="text-sm text-muted-foreground uppercase tracking-wider">Liabilities</p>
                                             <div className="flex justify-between mt-2">
@@ -476,7 +430,7 @@ export default function ComplianceDashboard() {
                                                 <span className="font-medium">{formatCurrency(balanceData.getBalanceSheet.liabilities.total_liabilities)}</span>
                                             </div>
                                         </div>
-                                        
+
                                         <div>
                                             <p className="text-sm text-muted-foreground uppercase tracking-wider">Equity</p>
                                             <div className="flex justify-between mt-2">
@@ -524,7 +478,7 @@ export default function ComplianceDashboard() {
                             <ShieldAlert className="w-6 h-6 text-red-500" />
                             <h3 className="text-lg font-semibold">Non-Performing Loans (NPL)</h3>
                         </div>
-                        
+
                         {nplData?.getNplMetrics && (
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <div className="text-center">
@@ -553,7 +507,7 @@ export default function ComplianceDashboard() {
                             <Activity className="w-6 h-6 text-blue-500" />
                             <h3 className="text-lg font-semibold">Loan Loss Reserve (LLR)</h3>
                         </div>
-                        
+
                         {llrData?.getLlrMetrics && (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>

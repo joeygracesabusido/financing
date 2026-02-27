@@ -3,7 +3,7 @@ import { setContext } from '@apollo/client/link/context'
 import { onError } from '@apollo/client/link/error'
 
 const httpLink = createHttpLink({
-    uri: import.meta.env.VITE_GRAPHQL_URL || '/graphql',
+    uri: (import.meta as any).env.VITE_GRAPHQL_URL || '/graphql',
 })
 
 // Attach JWT token to every request
