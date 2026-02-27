@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import {
     ArrowLeft, User, Users, Activity,
     CheckCircle, XCircle, Clock, Upload, Trash2, Plus,
-    ShieldCheck, AlertCircle, Star
+    ShieldCheck, AlertCircle, Star, Pencil
 } from 'lucide-react'
 import {
     GET_CUSTOMER, GET_KYC_DOCUMENTS, GET_BENEFICIARIES,
@@ -103,7 +103,7 @@ export default function CustomerDetailPage() {
     const [beneError, setBeneError] = useState('')
     const [showBeneForm, setShowBeneForm] = useState(false)
 
-    const customer = custData?.customer?.customer
+    const customer = custData?.customerById?.customer
 
     // ── KYC Upload handler ────────────────────────────────────────────
     const handleUpload = async () => {
@@ -186,27 +186,36 @@ export default function CustomerDetailPage() {
     return (
         <div className="space-y-5 animate-fade-in">
             {/* Header */}
-            <div className="flex items-center gap-3">
-                <button onClick={() => navigate('/customers')} className="p-1.5 rounded-lg hover:bg-white/5 text-muted-foreground transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div className="flex-1">
-                    <h1 className="text-2xl font-bold text-foreground">{customer.displayName}</h1>
-                    <div className="flex items-center gap-3 mt-1">
-                        <span className="text-sm text-muted-foreground">{customer.emailAddress}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${kycStatusColor}`}>
-                            KYC: {customer.kycStatus ?? 'pending'}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary border border-primary/20 capitalize">
-                            {customer.customerCategory ?? 'individual'}
-                        </span>
-                        {customer.riskScore != null && (
-                            <span className={`text-xs font-medium ${customer.riskScore <= 25 ? 'text-emerald-400' : customer.riskScore <= 60 ? 'text-amber-400' : 'text-destructive'}`}>
-                                Risk: {customer.riskScore.toFixed(0)}
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    <button onClick={() => navigate('/customers')} className="p-1.5 rounded-lg hover:bg-white/5 text-muted-foreground transition-colors">
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <div className="flex-1">
+                        <h1 className="text-2xl font-bold text-foreground">{customer.displayName}</h1>
+                        <div className="flex items-center gap-3 mt-1">
+                            <span className="text-sm text-muted-foreground">{customer.emailAddress}</span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${kycStatusColor}`}>
+                                KYC: {customer.kycStatus ?? 'pending'}
                             </span>
-                        )}
+                            <span className="px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary border border-primary/20 capitalize">
+                                {customer.customerCategory ?? 'individual'}
+                            </span>
+                            {customer.riskScore != null && (
+                                <span className={`text-xs font-medium ${customer.riskScore <= 25 ? 'text-emerald-400' : customer.riskScore <= 60 ? 'text-amber-400' : 'text-destructive'}`}>
+                                    Risk: {customer.riskScore.toFixed(0)}
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
+                <button
+                    onClick={() => navigate(`/customers/${id}/edit`)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+                >
+                    <Pencil className="w-4 h-4" />
+                    Edit
+                </button>
             </div>
 
             {/* Tabs */}

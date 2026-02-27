@@ -20,6 +20,8 @@ import CustomerDashboardPage from '@/pages/CustomerDashboardPage'
 import CustomerLoanApplicationPage from '@/pages/CustomerLoanApplicationPage'
 import CustomerRepaymentHistoryPage from '@/pages/CustomerRepaymentHistoryPage'
 import CustomerTransferPage from '@/pages/CustomerTransferPage'
+import NewCustomerPage from '@/pages/NewCustomerPage'
+import EditCustomerPage from '@/pages/EditCustomerPage'
 import TellerCashDrawerPage from '@/pages/TellerCashDrawerPage'
 import TellerPaymentGatewayPage from '@/pages/TellerPaymentGatewayPage'
 import TellerTransactionLimitsPage from '@/pages/TellerTransactionLimitsPage'
@@ -49,6 +51,8 @@ function ProtectedLayout() {
                         <Route path="/teller/qrcode" element={<TellerQRCodePage />} />
                         <Route path="/customer/notifications" element={<NotificationPreferencesPage />} />
                         <Route path="/customers" element={<CustomersPage />} />
+                        <Route path="/customers/new" element={<NewCustomerPage />} />
+                        <Route path="/customers/:id/edit" element={<EditCustomerPage />} />
                         <Route path="/customers/:id" element={<CustomerDetailPage />} />
                         <Route path="/savings" element={<SavingsPage />} />
                         <Route path="/loans" element={<LoansPage />} />

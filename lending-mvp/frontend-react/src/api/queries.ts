@@ -110,7 +110,7 @@ export const GET_CUSTOMERS = gql`
 
 export const GET_CUSTOMER = gql`
   query GetCustomer($customerId: ID!) {
-    customer(customerId: $customerId) {
+    customerById(customerId: $customerId) {
       success
       message
       customer {
@@ -128,14 +128,14 @@ export const GET_CUSTOMER = gql`
         sssNo
         customerType
         customerCategory
-        kycStatus
-        riskScore
-        branch
+        employerNameAddress
         jobTitle
         salaryRange
-        employerNameAddress
         companyName
         companyAddress
+        branch
+        kycStatus
+        riskScore
         createdAt
         updatedAt
       }
