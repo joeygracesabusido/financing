@@ -108,6 +108,8 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD:-lending_redis_pass}@redis:6379/0
       # Enable demo data seeding
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      # Increased for E2E parallel testing (each test creates its own session)
+      MAX_CONCURRENT_SESSIONS: 200
 
   # ── Frontend (React + Vite dev server) ────────────────────────────────────
   frontend:

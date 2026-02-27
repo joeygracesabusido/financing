@@ -559,7 +559,7 @@ async def seed_savings_accounts(customers: List[Dict]) -> Dict[str, Any]:
                     "term_days": 365,
                     "maturity_date": now + timedelta(days=365),
                     "interest_rate": float(5.5),
-                    "early_withdrawal_penalty_pct": Decimal("1.0"),
+                    "early_withdrawal_penalty_pct": float(1.0),
                     "auto_renew": True,
                 })
             elif acc_type["type"] == "goal_savings":
@@ -911,6 +911,376 @@ async def seed_customer_risk_scores(customers: List[Dict]) -> Dict[str, Any]:
 
 
 # ============================================================================
+# PHASE 5: INTERCONNECTED DAILY TRANSACTION DATA
+# ============================================================================
+
+
+async def seed_customer_user(customers: List[Dict]) -> Dict[str, Any]:
+    """Seed a customer-role user linked to Juan dela Cruz for Phase 5 portal tests."""
+    logger.info("Seeding customer portal user...")
+    users_collection = get_users_collection()
+    customers_collection = get_customers_collection()
+    created = 0
+
+    # Find Juan dela Cruz customer
+    juan = await customers_collection.find_one({"display_name": "Juan dela Cruz"})
+    if not juan:
+        logger.warning("Juan dela Cruz customer not found, skipping customer user seed")
+        return {"customer_users_created": 0}
+
+    customer_user_data = {
+        "email": "juan.dela.cruz@example.com",
+        "username": "juan.dela.cruz",
+        "full_name": "Juan dela Cruz",
+        "role": "customer",
+        "password": "Customer@123",
+        "linked_customer_id": str(juan["_id"]),
+    }
+
+    existing = await users_collection.find_one({"username": customer_user_data["username"]})
+    if not existing:
+        password = customer_user_data.pop("password")
+        hashed_password = get_password_hash(password[:72])
+        user_doc = {
+            **customer_user_data,
+            "hashed_password": hashed_password,
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+        await users_collection.insert_one(user_doc)
+        created += 1
+        logger.info(f"  ✓ Created customer user: juan.dela.cruz (role: customer)")
+
+    return {"customer_users_created": created}
+
+
+async def seed_savings_transactions(savings_accounts: List[Dict], customers: List[Dict]) -> Dict[str, Any]:
+    """
+    Seed realistic daily savings transactions simulating 90 days of banking activity.
+
+    For each savings account:
+    - 1–3 deposits per week (salary, business income, cash deposits)
+    - 1–2 withdrawals per week (bills payment, personal expenses)
+    - Monthly interest posting (last day of each month)
+
+    This creates an interconnected, realistic passbook history.
+    """
+    logger.info("Seeding savings transactions (90-day history)...")
+    transactions_collection = get_transactions_collection()
+    savings_collection = get_savings_collection()
+    created_txns = 0
+    now = datetime.now(timezone.utc)
+    start_date = now - timedelta(days=90)
+
+    # Build customer name map for realistic notes
+    customer_name_map = {c["id"]: c.get("display_name", "Customer") for c in customers}
+
+    # Realistic transaction templates
+    deposit_templates = [
+        {"note": "Payroll deposit - {month}", "multiplier": 1.0},
+        {"note": "Business income transfer", "multiplier": 0.5},
+        {"note": "Cash deposit at branch", "multiplier": 0.3},
+        {"note": "Online transfer received", "multiplier": 0.4},
+        {"note": "13th month pay", "multiplier": 2.0},
+        {"note": "Bonus deposit", "multiplier": 1.5},
+    ]
+    withdrawal_templates = [
+        {"note": "Meralco electricity bill payment", "multiplier": 0.05},
+        {"note": "Globe Telecom - mobile plan", "multiplier": 0.02},
+        {"note": "Grocery / personal expense ATM withdrawal", "multiplier": 0.10},
+        {"note": "Monthly condo rent payment", "multiplier": 0.15},
+        {"note": "Insurance premium payment", "multiplier": 0.03},
+        {"note": "Medical / doctor fees", "multiplier": 0.04},
+    ]
+
+    for acc in savings_accounts:
+        acc_id = acc["id"]
+        acc_type = acc["type"]
+        account_number = acc["account_number"]
+        customer_id = None
+        # fetch account to get user_id
+        acc_doc = await savings_collection.find_one({"account_number": account_number})
+        if acc_doc:
+            customer_id = str(acc_doc.get("user_id", ""))
+
+        display_name = customer_name_map.get(customer_id, "Member")
+
+        # Skip share capital and time deposit (they have fixed schedules)
+        if acc_type in ("time_deposit", "share_capital"):
+            continue
+
+        running_balance = float(acc_doc.get("balance", 50000)) if acc_doc else 50000
+        # Start from lower balance to show history
+        running_balance = max(10000, running_balance - 30000)
+
+        for day_offset in range(90):
+            current_date = start_date + timedelta(days=day_offset)
+            weekday = current_date.weekday()  # 0=Monday, 6=Sunday
+
+            # 2 deposits per month on payroll days (15th and last business day)
+            day_of_month = current_date.day
+            month_name = current_date.strftime("%B %Y")
+
+            if day_of_month == 15 and weekday < 5:
+                template = deposit_templates[0]
+                amount = round(running_balance * 0.25 + 5000, 2)
+                txn = {
+                    "account_id": ObjectId(acc_id),
+                    "account_number": account_number,
+                    "type": "deposit",
+                    "amount": amount,
+                    "balance_after": running_balance + amount,
+                    "note": template["note"].format(month=month_name),
+                    "created_at": current_date.replace(hour=9, minute=30, second=0),
+                    "processed_by": "system",
+                    "reference_number": f"TXN-DEP-{acc_id[:6]}-{day_offset:04d}",
+                }
+                await transactions_collection.insert_one(txn)
+                running_balance += amount
+                created_txns += 1
+
+            # Weekly grocery withdrawal (every Wednesday)
+            if weekday == 2 and day_offset % 7 == 2:
+                template = withdrawal_templates[2]
+                amount = min(round(running_balance * 0.08, 2), 5000)
+                if running_balance - amount >= 500:
+                    txn = {
+                        "account_id": ObjectId(acc_id),
+                        "account_number": account_number,
+                        "type": "withdrawal",
+                        "amount": amount,
+                        "balance_after": running_balance - amount,
+                        "note": template["note"],
+                        "created_at": current_date.replace(hour=14, minute=0, second=0),
+                        "processed_by": "teller_1",
+                        "reference_number": f"TXN-WD-{acc_id[:6]}-{day_offset:04d}",
+                    }
+                    await transactions_collection.insert_one(txn)
+                    running_balance -= amount
+                    created_txns += 1
+
+            # Monthly utility bill payment (1st of each month)
+            if day_of_month == 1 and weekday < 5:
+                template = withdrawal_templates[0]
+                amount = round(1500 + (day_offset * 5), 2)
+                if running_balance - amount >= 500:
+                    txn = {
+                        "account_id": ObjectId(acc_id),
+                        "account_number": account_number,
+                        "type": "withdrawal",
+                        "amount": amount,
+                        "balance_after": running_balance - amount,
+                        "note": template["note"],
+                        "created_at": current_date.replace(hour=10, minute=15, second=0),
+                        "processed_by": "teller_1",
+                        "reference_number": f"TXN-BILL-{acc_id[:6]}-{day_offset:04d}",
+                    }
+                    await transactions_collection.insert_one(txn)
+                    running_balance -= amount
+                    created_txns += 1
+
+            # Monthly interest posting (last day of each month — approximate)
+            if day_of_month == 28:
+                interest_rate = float(acc_doc.get("interest_rate", 0.25)) if acc_doc else 0.25
+                monthly_interest = round(running_balance * (interest_rate / 100) / 12, 2)
+                wht = round(monthly_interest * 0.20, 2)  # 20% withholding tax
+                net_interest = monthly_interest - wht
+                if net_interest > 0:
+                    txn = {
+                        "account_id": ObjectId(acc_id),
+                        "account_number": account_number,
+                        "type": "interest_posting",
+                        "amount": net_interest,
+                        "balance_after": running_balance + net_interest,
+                        "note": f"Interest posting - {month_name} (Gross: {monthly_interest:.2f}, WHT: {wht:.2f})",
+                        "created_at": current_date.replace(hour=23, minute=59, second=0),
+                        "processed_by": "system",
+                        "reference_number": f"INT-POST-{acc_id[:6]}-{day_offset:04d}",
+                    }
+                    await transactions_collection.insert_one(txn)
+                    running_balance += net_interest
+                    created_txns += 1
+
+        # Update savings account final balance
+        await savings_collection.update_one(
+            {"account_number": account_number},
+            {"$set": {"balance": running_balance, "updated_at": now}},
+        )
+
+    logger.info(f"Savings transactions seeded: {created_txns} transaction records")
+    return {"savings_transactions_created": created_txns}
+
+
+async def seed_loan_repayments(loans: List[Dict]) -> Dict[str, Any]:
+    """
+    Seed 3-6 months of actual amortization payment transactions for active loans.
+
+    Each payment follows the waterfall logic: principal → interest → penalty.
+    Loans have statuses: pending, approved, active.
+    Only 'active' loans get repayment history.
+    """
+    logger.info("Seeding loan repayment history...")
+    loans_collection = get_loans_collection()
+    transactions_collection = get_transactions_collection()
+    created_payments = 0
+    now = datetime.now(timezone.utc)
+
+    # Fetch all active loans from MongoDB
+    active_loans_cursor = loans_collection.find({"status": "active"})
+    active_loans = await active_loans_cursor.to_list(length=100)
+
+    for loan in active_loans:
+        loan_id = str(loan["_id"])
+        loan_ref = loan.get("loan_id", loan_id)
+        principal = float(loan.get("amount_requested", 300000))
+        interest_rate = float(loan.get("interest_rate", 14.0))
+        term_months = int(loan.get("term_months", 36))
+
+        # Compute monthly amortization (declining balance)
+        monthly_rate = interest_rate / 100 / 12
+        if monthly_rate > 0:
+            monthly_payment = principal * (monthly_rate * (1 + monthly_rate) ** term_months) / \
+                              ((1 + monthly_rate) ** term_months - 1)
+        else:
+            monthly_payment = principal / term_months
+
+        monthly_payment = round(monthly_payment, 2)
+
+        # Determine how many months back the loan started (3–6 months ago)
+        months_paid = 3 + (int(loan_ref[-1]) % 3)  # 3 to 5 months
+        loan_start = now - timedelta(days=months_paid * 30)
+
+        remaining_principal = principal
+        payment_number = 1
+
+        for month in range(months_paid):
+            payment_date = loan_start + timedelta(days=30 * month + 1)
+            monthly_interest = round(remaining_principal * monthly_rate, 2)
+            principal_component = round(monthly_payment - monthly_interest, 2)
+            if principal_component > remaining_principal:
+                principal_component = remaining_principal
+
+            remaining_principal -= principal_component
+
+            payment_doc = {
+                "loan_id": loan_id,
+                "loan_ref": loan_ref,
+                "type": "loan_repayment",
+                "amount": monthly_payment,
+                "principal_paid": principal_component,
+                "interest_paid": monthly_interest,
+                "penalty_paid": 0.0,
+                "balance_after": round(remaining_principal, 2),
+                "payment_number": payment_number,
+                "due_date": payment_date,
+                "paid_at": payment_date.replace(hour=10, minute=0, second=0),
+                "created_at": payment_date.replace(hour=10, minute=0, second=0),
+                "processed_by": "teller_1",
+                "note": f"Monthly amortization payment #{payment_number} — {payment_date.strftime('%B %Y')}",
+                "reference_number": f"OR-{loan_ref}-{payment_number:04d}",
+                "status": "posted",
+            }
+            await transactions_collection.insert_one(payment_doc)
+            payment_number += 1
+            created_payments += 1
+
+        # Update loan remaining balance
+        await loans_collection.update_one(
+            {"_id": loan["_id"]},
+            {"$set": {
+                "outstanding_balance": round(remaining_principal, 2),
+                "months_paid": months_paid,
+                "next_due_date": now + timedelta(days=30),
+                "updated_at": now,
+            }},
+        )
+        logger.info(f"  ✓ Loan {loan_ref}: {months_paid} payments seeded, balance: PHP {remaining_principal:,.2f}")
+
+    logger.info(f"Loan repayments seeded: {created_payments} payment records")
+    return {"loan_repayments_created": created_payments}
+
+
+async def seed_fund_transfers(savings_accounts: List[Dict]) -> Dict[str, Any]:
+    """Seed fund transfer records between savings accounts to show interconnected activity."""
+    logger.info("Seeding fund transfer history...")
+    transactions_collection = get_transactions_collection()
+    created_transfers = 0
+    now = datetime.now(timezone.utc)
+
+    # Only regular savings accounts can do transfers
+    regular_accounts = [acc for acc in savings_accounts if acc["type"] == "regular"]
+    if len(regular_accounts) < 2:
+        logger.warning("Not enough regular savings accounts for fund transfers")
+        return {"fund_transfers_created": 0}
+
+    transfer_scenarios = [
+        {
+            "from_idx": 0,
+            "to_idx": 1,
+            "amount": 10000.0,
+            "note": "Monthly support transfer to spouse",
+            "days_ago": 5,
+        },
+        {
+            "from_idx": 1,
+            "to_idx": 2 % len(regular_accounts),
+            "amount": 5000.0,
+            "note": "Savings allocation to joint account",
+            "days_ago": 10,
+        },
+        {
+            "from_idx": 2 % len(regular_accounts),
+            "to_idx": 0,
+            "amount": 3500.0,
+            "note": "Loan payment assistance transfer",
+            "days_ago": 15,
+        },
+    ]
+
+    for scenario in transfer_scenarios:
+        from_acc = regular_accounts[scenario["from_idx"]]
+        to_acc = regular_accounts[scenario["to_idx"]]
+        amount = scenario["amount"]
+        transfer_date = now - timedelta(days=scenario["days_ago"])
+        ref_num = f"XFER-{from_acc['account_number']}-{scenario['days_ago']:04d}"
+
+        # Debit entry
+        debit_doc = {
+            "account_id": ObjectId(from_acc["id"]),
+            "account_number": from_acc["account_number"],
+            "type": "fund_transfer_out",
+            "amount": amount,
+            "note": scenario["note"],
+            "destination_account": to_acc["account_number"],
+            "reference_number": ref_num,
+            "created_at": transfer_date,
+            "processed_by": "teller_1",
+            "status": "completed",
+        }
+        await transactions_collection.insert_one(debit_doc)
+
+        # Credit entry
+        credit_doc = {
+            "account_id": ObjectId(to_acc["id"]),
+            "account_number": to_acc["account_number"],
+            "type": "fund_transfer_in",
+            "amount": amount,
+            "note": f"Transfer received from {from_acc['account_number']}: {scenario['note']}",
+            "source_account": from_acc["account_number"],
+            "reference_number": ref_num,
+            "created_at": transfer_date,
+            "processed_by": "system",
+            "status": "completed",
+        }
+        await transactions_collection.insert_one(credit_doc)
+        created_transfers += 2
+        logger.info(f"  ✓ Transfer: {from_acc['account_number']} → {to_acc['account_number']} (PHP {amount:,.0f})")
+
+    return {"fund_transfers_created": created_transfers}
+
+
+# ============================================================================
 # MAIN SEEDER ORCHESTRATION
 # ============================================================================
 
@@ -939,10 +1309,31 @@ async def seed_demo_data() -> Dict[str, Any]:
         # Phase 3: Loan Products & Loans
         results["loan_products"] = await seed_loan_products()
 
-        # Extract created items for linking
+        # ── Resolve linked entities from DB (handles both fresh and restart) ──
+        customers_collection = get_customers_collection()
+        users_collection = get_users_collection()
+        savings_collection = get_savings_collection()
+        loans_collection = get_loans_collection()
+
+        # If seed returned empty lists, fetch existing records from DB
         users_list = results["users"].get("users", [])
+        if not users_list:
+            cursor = users_collection.find({})
+            raw_users = await cursor.to_list(length=200)
+            users_list = [{"id": str(u["_id"]), "username": u.get("username", "")} for u in raw_users]
+
         customers_list = results["customers"].get("customers", [])
+        if not customers_list:
+            cursor = customers_collection.find({})
+            raw_custs = await cursor.to_list(length=200)
+            customers_list = [{"id": str(c["_id"]), "display_name": c.get("display_name", "")} for c in raw_custs]
+
         products_list = results["loan_products"].get("products", [])
+        if not products_list:
+            loan_products_collection = get_loan_products_collection()
+            cursor = loan_products_collection.find({})
+            raw_products = await cursor.to_list(length=50)
+            products_list = [{"id": str(p["_id"]), "product_name": p.get("product_name", "")} for p in raw_products]
 
         results["loans"] = await seed_loans(users_list, customers_list, products_list)
 
@@ -959,15 +1350,34 @@ async def seed_demo_data() -> Dict[str, Any]:
         results["customer_activities"] = await seed_customer_activities(customers_list)
         results["audit_logs"] = await seed_audit_logs(users_list)
 
+        # Phase 5: Interconnected Daily Transaction Data
+        logger.info("Seeding Phase 5 interconnected daily activity...")
+
+        # Resolve savings accounts — prefer freshly-seeded, fall back to existing
+        savings_list = results["savings"].get("accounts", [])
+        if not savings_list:
+            cursor = savings_collection.find({})
+            raw_savings = await cursor.to_list(length=500)
+            savings_list = [
+                {"id": str(s["_id"]), "account_number": s.get("account_number", ""), "type": s.get("type", "regular")}
+                for s in raw_savings
+            ]
+
+        results["customer_user"] = await seed_customer_user(customers_list)
+        results["savings_transactions"] = await seed_savings_transactions(savings_list, customers_list)
+        results["loan_repayments"] = await seed_loan_repayments(savings_list)  # fetches active loans internally
+        results["fund_transfers"] = await seed_fund_transfers(savings_list)
+
         # Summary
         logger.info("=" * 70)
         logger.info("DEMO DATA SEEDING COMPLETE ✅")
         logger.info("=" * 70)
-        logger.info("\nSummary:")
+        logger.info("Summary:")
         for key, value in results.items():
-            if isinstance(value, dict) and any(k.endswith("_created") for k in value):
-                count = next(v for k, v in value.items() if k.endswith("_created"))
-                logger.info(f"  {key}: {count} records")
+            if isinstance(value, dict):
+                count_key = next((k for k in value if k.endswith("_created") or k.endswith("_updated")), None)
+                if count_key:
+                    logger.info(f"  {key}: {value[count_key]} records")
 
         return results
 
@@ -979,3 +1389,4 @@ async def seed_demo_data() -> Dict[str, Any]:
 if __name__ == "__main__":
     # For direct execution
     asyncio.run(seed_demo_data())
+
