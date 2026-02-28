@@ -16,12 +16,19 @@ export default defineConfig({
         port: 3000,
         proxy: {
             '/graphql': {
-                target: process.env.VITE_API_URL || 'http://backend:8000',
+                target: 'http://backend:8000',
                 changeOrigin: true,
+                secure: false,
             },
-            '/api-login': {
-                target: process.env.VITE_API_URL || 'http://backend:8000',
+            '/api-login/': {
+                target: 'http://backend:8000',
                 changeOrigin: true,
+                secure: false,
+            },
+            '/api': {
+                target: 'http://backend:8000',
+                changeOrigin: true,
+                secure: false,
             },
         },
     },

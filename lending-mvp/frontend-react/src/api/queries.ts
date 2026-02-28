@@ -327,8 +327,8 @@ export const GET_AUDIT_LOGS = gql`
 
 // ── Savings ───────────────────────────────────────────────────────────────────
 export const GET_SAVINGS = gql`
-  query GetSavingsAccounts {
-    savingsAccounts {
+  query GetSavingsAccounts($searchTerm: String, $customerId: String) {
+    savingsAccounts(searchTerm: $searchTerm, customerId: $customerId) {
       success
       message
       accounts {
@@ -342,6 +342,10 @@ export const GET_SAVINGS = gql`
         status
         createdAt
         updatedAt
+        customer {
+          id
+          displayName
+        }
       }
       total
     }
@@ -370,39 +374,67 @@ export const GET_SAVINGS_ACCOUNT = gql`
 `
 
 export const CREATE_SAVINGS = gql`
-  mutation CreateSavingsAccount($input: SavingsAccountInput!) {
+  mutation CreateSavingsAccount($input: SavingsAccountCreateInput!) {
     createSavingsAccount(input: $input) {
-      id
-      accountNumber
-      accountType
-      balance
+      success
+      message
+      account {
+        id
+        accountNumber
+        type
+        balance
+      }
     }
   }
 `
 
 // ── Transactions ──────────────────────────────────────────────────────────────
+export const GET_SAVINGS_TRANSACTIONS = gql`
+  query GetSavingsTransactions($accountId: ID!) {
+    getTransactions(accountId: $accountId) {
+      success
+      message
+      transactions {
+        id
+        accountId
+        transactionType
+        amount
+        timestamp
+        notes
+      }
+      total
+    }
+  }
+`
+
 export const DEPOSIT = gql`
-  mutation Deposit($input: TransactionInput!) {
-    deposit(input: $input) {
-      id
-      transactionType
-      amount
-      balanceAfter
-      description
-      createdAt
+  mutation CreateDeposit($input: TransactionCreateInput!) {
+    createDeposit(input: $input) {
+      success
+      message
+      transaction {
+        id
+        transactionType
+        amount
+        timestamp
+        notes
+      }
     }
   }
 `
 
 export const WITHDRAW = gql`
-  mutation Withdraw($input: TransactionInput!) {
-    withdraw(input: $input) {
-      id
-      transactionType
-      amount
-      balanceAfter
-      description
-      createdAt
+  mutation CreateWithdrawal($input: TransactionCreateInput!) {
+    createWithdrawal(input: $input) {
+      success
+      message
+      transaction {
+        id
+        transactionType
+        amount
+        timestamp
+        notes
+      }
     }
   }
 `
@@ -426,6 +458,11 @@ export const GET_LOANS = gql`
         createdAt
         updatedAt
         disbursedAt
+        borrowerName
+        productName
+        outstandingBalance
+        nextDueDate
+        monthsPaid
       }
     }
   }
@@ -448,6 +485,8 @@ export const GET_LOAN = gql`
         createdAt
         updatedAt
         disbursedAt
+        borrowerName
+        productName
       }
     }
   }
@@ -685,7 +724,7 @@ export const GET_LOAN_AMORTIZATION = gql`
 export const GET_GL_ACCOUNTS = gql`
   query GetGLAccounts {
     glAccounts {
-      id code name type description createdAt updatedAt
+      id code name type description balance createdAt updatedAt
     }
   }
 `
@@ -708,13 +747,56 @@ export const UPDATE_GL_ACCOUNT = gql`
   }
 `
 
+export const CREATE_MANUAL_JOURNAL_ENTRY = gql`
+  mutation CreateManualJournalEntry($input: JournalEntryCreateInput!) {
+    createManualJournalEntry(input: $input) {
+      success
+      message
+      entry {
+        id
+        referenceNo
+        description
+        timestamp
+        lines {
+          id
+          accountCode
+          accountName
+          debit
+          credit
+          description
+        }
+      }
+    }
+  }
+`
+
 export const GET_JOURNAL_ENTRIES = gql`
   query GetJournalEntries($skip: Int, $limit: Int) {
     journalEntries(skip: $skip, limit: $limit) {
       success message total
       entries {
         id referenceNo description timestamp createdBy
-        lines { id accountCode debit credit description }
+        lines { id accountCode accountName debit credit description }
+      }
+    }
+  }
+`
+
+export const GET_JOURNAL_ENTRY_BY_REFERENCE = gql`
+  query GetJournalEntryByReference($referenceNo: String!) {
+    journalEntryByReference(referenceNo: $referenceNo) {
+      id
+      referenceNo
+      description
+      timestamp
+      createdBy
+      lines {
+        id
+        accountCode
+        accountName
+        debit
+        credit
+        description
       }
     }
   }

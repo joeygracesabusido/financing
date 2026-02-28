@@ -58,44 +58,44 @@ class LoanProductType:
 
 @strawberry.input
 class LoanProductCreateInput:
-    product_code: str
+    product_code: str = strawberry.field(name="productCode")
     name: str
-    amortization_type: str      # flat_rate | declining_balance | balloon_payment | interest_only
-    repayment_frequency: str    # daily | weekly | bi_weekly | monthly | quarterly | bullet
-    interest_rate: Decimal
+    amortization_type: str = strawberry.field(name="amortizationType")      # flat_rate | declining_balance | balloon_payment | interest_only
+    repayment_frequency: str = strawberry.field(name="repaymentFrequency")    # daily | weekly | bi_weekly | monthly | quarterly | bullet
+    interest_rate: Decimal = strawberry.field(name="interestRate")
     description: Optional[str] = None
-    penalty_rate: Decimal = Decimal("0.0")
-    grace_period_months: int = 0
-    is_active: bool = True
+    penalty_rate: Decimal = strawberry.field(name="penaltyRate", default=Decimal("0.0"))
+    grace_period_months: int = strawberry.field(name="gracePeriodMonths", default=0)
+    is_active: bool = strawberry.field(name="isActive", default=True)
     # Phase 2.1
-    principal_only_grace: bool = False
-    full_grace: bool = False
-    origination_fee_rate: Optional[Decimal] = None
-    origination_fee_type: Optional[str] = None
-    prepayment_allowed: bool = True
-    prepayment_penalty_rate: Optional[Decimal] = None
-    customer_loan_limit: Optional[Decimal] = None
+    principal_only_grace: bool = strawberry.field(name="principalOnlyGrace", default=False)
+    full_grace: bool = strawberry.field(name="fullGrace", default=False)
+    origination_fee_rate: Optional[Decimal] = strawberry.field(name="originationFeeRate", default=None)
+    origination_fee_type: Optional[str] = strawberry.field(name="originationFeeType", default=None)
+    prepayment_allowed: bool = strawberry.field(name="prepaymentAllowed", default=True)
+    prepayment_penalty_rate: Optional[Decimal] = strawberry.field(name="prepaymentPenaltyRate", default=None)
+    customer_loan_limit: Optional[Decimal] = strawberry.field(name="customerLoanLimit", default=None)
 
 
 @strawberry.input
 class LoanProductUpdateInput:
-    product_code: Optional[str] = None
+    product_code: Optional[str] = strawberry.field(name="productCode", default=None)
     name: Optional[str] = None
     description: Optional[str] = None
-    amortization_type: Optional[str] = None
-    repayment_frequency: Optional[str] = None
-    interest_rate: Optional[Decimal] = None
-    penalty_rate: Optional[Decimal] = None
-    grace_period_months: Optional[int] = None
-    is_active: Optional[bool] = None
+    amortization_type: Optional[str] = strawberry.field(name="amortizationType", default=None)
+    repayment_frequency: Optional[str] = strawberry.field(name="repaymentFrequency", default=None)
+    interest_rate: Optional[Decimal] = strawberry.field(name="interestRate", default=None)
+    penalty_rate: Optional[Decimal] = strawberry.field(name="penaltyRate", default=None)
+    grace_period_months: Optional[int] = strawberry.field(name="gracePeriodMonths", default=None)
+    is_active: Optional[bool] = strawberry.field(name="isActive", default=None)
     # Phase 2.1
-    principal_only_grace: Optional[bool] = None
-    full_grace: Optional[bool] = None
-    origination_fee_rate: Optional[Decimal] = None
-    origination_fee_type: Optional[str] = None
-    prepayment_allowed: Optional[bool] = None
-    prepayment_penalty_rate: Optional[Decimal] = None
-    customer_loan_limit: Optional[Decimal] = None
+    principal_only_grace: Optional[bool] = strawberry.field(name="principalOnlyGrace", default=None)
+    full_grace: Optional[bool] = strawberry.field(name="fullGrace", default=None)
+    origination_fee_rate: Optional[Decimal] = strawberry.field(name="originationFeeRate", default=None)
+    origination_fee_type: Optional[str] = strawberry.field(name="originationFeeType", default=None)
+    prepayment_allowed: Optional[bool] = strawberry.field(name="prepaymentAllowed", default=None)
+    prepayment_penalty_rate: Optional[Decimal] = strawberry.field(name="prepaymentPenaltyRate", default=None)
+    customer_loan_limit: Optional[Decimal] = strawberry.field(name="customerLoanLimit", default=None)
 
 
 @strawberry.type
@@ -141,7 +141,7 @@ class LoanProductMutation:
                 customer_loan_limit=input.customer_loan_limit,
             )
             session.add(new_prod)
-            await session.flush()
+            await session.commit()
             await session.refresh(new_prod)
             return _db_to_type(new_prod)
 
@@ -157,7 +157,7 @@ class LoanProductMutation:
             for key, value in update_data.items():
                 setattr(obj, key, value)
 
-            await session.flush()
+            await session.commit()
             await session.refresh(obj)
             return _db_to_type(obj)
 
@@ -168,5 +168,6 @@ class LoanProductMutation:
             obj = result.scalar_one_or_none()
             if obj:
                 await session.delete(obj)
+                await session.commit()
                 return True
             return False

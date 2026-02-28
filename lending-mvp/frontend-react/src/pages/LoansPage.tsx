@@ -18,6 +18,9 @@ interface Loan {
     createdAt: string
     updatedAt: string
     disbursedAt?: string
+    outstandingBalance?: number
+    nextDueDate?: string
+    monthsPaid?: number
 }
 
 const PIPELINE_STAGES = [
@@ -32,7 +35,9 @@ const PIPELINE_STAGES = [
 export default function LoansPage() {
     const [search, setSearch] = useState('')
     const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban')
-    const { data, loading, error } = useQuery(GET_LOANS)
+    const { data, loading, error } = useQuery(GET_LOANS, {
+        variables: { skip: 0, limit: 100 }
+    })
 
     const loans: Loan[] = data?.loans?.loans ?? []
     const filtered = loans.filter((l) => {
@@ -45,7 +50,7 @@ export default function LoansPage() {
         )
     })
 
-    const totalOutstanding = loans.reduce((s, l) => s + (l.status === 'active' ? (l.approvedPrincipal || l.principal) : 0), 0)
+    const totalOutstanding = loans.reduce((s, l) => s + (l.status === 'active' ? (l.outstandingBalance || l.approvedPrincipal || l.principal) : 0), 0)
 
     const renderKanbanCard = (l: Loan) => (
         <div key={l.id} className="glass rounded-xl p-4 space-y-3 hover:border-purple-500/30 transition-colors cursor-pointer group">

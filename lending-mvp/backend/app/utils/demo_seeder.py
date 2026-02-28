@@ -30,7 +30,7 @@ Phase 4 Features:
 
 Usage:
     python -m app.utils.demo_seeder
-    
+
     # Or within async context:
     from app.utils.demo_seeder import seed_demo_data
     await seed_demo_data()
@@ -58,6 +58,7 @@ from ..database import (
     get_chart_of_accounts_collection,
 )
 from ..database.postgres import AsyncSessionLocal
+from ..database.pg_loan_models import LoanApplication, PGLoanProduct
 from ..database.pg_models import (
     Branch,
     AuditLog,
@@ -150,7 +151,7 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "last_name": "la Cruz",
         "display_name": "Juan dela Cruz",
         "email_address": "juan.sample@example.com",
-        "mobile_number": "+63 900 SAMPLE 1",
+        "mobile_number": "+63 900 123 4001",
         "permanent_address": "123 Makati Avenue, Makati City",
         "birth_date": "1985-05-15",
         "birth_place": "Manila",
@@ -166,7 +167,7 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "last_name": "Santos",
         "display_name": "Maria Cruz Santos",
         "email_address": "maria.sample@example.com",
-        "mobile_number": "+63 900 SAMPLE 2",
+        "mobile_number": "+63 900 123 4002",
         "permanent_address": "456 Quezon Avenue, Quezon City",
         "birth_date": "1990-03-22",
         "birth_place": "Quezon City",
@@ -182,7 +183,7 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "last_name": "Garcia",
         "display_name": "Pedro Lopez Garcia",
         "email_address": "pedro.sample@example.com",
-        "mobile_number": "+63 900 SAMPLE 3",
+        "mobile_number": "+63 900 123 4003",
         "permanent_address": "789 Espana Boulevard, Manila",
         "birth_date": "1978-08-10",
         "birth_place": "Cebu",
@@ -198,13 +199,77 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "last_name": "Villanueva",
         "display_name": "Rosa Magdalo Villanueva",
         "email_address": "rosa.sample@example.com",
-        "mobile_number": "+63 900 SAMPLE 4",
+        "mobile_number": "+63 900 123 4004",
         "permanent_address": "321 San Pedro Street, Muntinlupa",
         "birth_date": "1988-11-30",
         "birth_place": "Antipolo",
         "tin_no": "789-123-456-000",
         "job_title": "Freelance Consultant",
         "salary_range": "50,000-100,000",
+    },
+    {
+        "customer_type": "individual",
+        "first_name": "Ana",
+        "middle_name": "Reyes",
+        "last_name": "Mendoza",
+        "display_name": "Ana Reyes Mendoza",
+        "email_address": "ana.sample@example.com",
+        "mobile_number": "+63 900 123 4005",
+        "permanent_address": "555 EDSA, Caloocan City",
+        "birth_date": "1992-07-18",
+        "birth_place": "Manila",
+        "tin_no": "321-654-987-000",
+        "employer_name_address": "Retail Solutions Inc.",
+        "job_title": "Store Manager",
+        "salary_range": "60,000-80,000",
+    },
+    {
+        "customer_type": "individual",
+        "first_name": "Carlos",
+        "middle_name": "Miguel",
+        "last_name": " Bautista",
+        "display_name": "Carlos Miguel Bautista",
+        "email_address": "carlos.sample@example.com",
+        "mobile_number": "+63 900 123 4006",
+        "permanent_address": "888 Taft Avenue, Manila",
+        "birth_date": "1980-01-25",
+        "birth_place": "Manila",
+        "tin_no": "654-321-098-000",
+        "employer_name_address": "Transport Corp.",
+        "job_title": "Fleet Supervisor",
+        "salary_range": "70,000-90,000",
+    },
+    {
+        "customer_type": "individual",
+        "first_name": "Elena",
+        "middle_name": "Diaz",
+        "last_name": "Cruz",
+        "display_name": "Elena Diaz Cruz",
+        "email_address": "elena.sample@example.com",
+        "mobile_number": "+63 900 123 4007",
+        "permanent_address": "222 Bonifacio Street, Makati",
+        "birth_date": "1995-09-12",
+        "birth_place": "Pasay",
+        "tin_no": "111-222-333-000",
+        "employer_name_address": "Marketing Pro Agency",
+        "job_title": "Marketing Specialist",
+        "salary_range": "55,000-75,000",
+    },
+    {
+        "customer_type": "individual",
+        "first_name": "Roberto",
+        "middle_name": "Torres",
+        "last_name": "Flores",
+        "display_name": "Roberto Torres Flores",
+        "email_address": "roberto.sample@example.com",
+        "mobile_number": "+63 900 123 4008",
+        "permanent_address": "777 Aurora Boulevard, Quezon City",
+        "birth_date": "1975-04-08",
+        "birth_place": "Manila",
+        "tin_no": "444-555-666-000",
+        "employer_name_address": "Agri Ventures Corp.",
+        "job_title": "Farm Owner",
+        "salary_range": "150,000-200,000",
     },
 ]
 
@@ -329,6 +394,7 @@ async def seed_branches() -> Dict[str, int]:
         for branch_data in SAMPLE_BRANCHES:
             # Check if already exists
             from sqlalchemy import select
+
             result = await session.execute(
                 select(Branch).where(Branch.code == branch_data["code"])
             )
@@ -355,7 +421,9 @@ async def seed_users() -> Dict[str, Any]:
         existing = await users_collection.find_one({"username": user_data["username"]})
         if not existing:
             password = user_data.pop("password")
-            hashed_password = get_password_hash(password[:72])  # Ensure password is <= 72 bytes
+            hashed_password = get_password_hash(
+                password[:72]
+            )  # Ensure password is <= 72 bytes
             user_doc = {
                 "email": user_data["email"],
                 "username": user_data["username"],
@@ -367,8 +435,12 @@ async def seed_users() -> Dict[str, Any]:
                 "updated_at": datetime.now(timezone.utc),
             }
             result = await users_collection.insert_one(user_doc)
-            created_users.append({"id": str(result.inserted_id), "username": user_data["username"]})
-            logger.info(f"  ✓ Created user: {user_data['username']} ({user_data['role']})")
+            created_users.append(
+                {"id": str(result.inserted_id), "username": user_data["username"]}
+            )
+            logger.info(
+                f"  ✓ Created user: {user_data['username']} ({user_data['role']})"
+            )
 
     logger.info(f"Users seeded: {len(created_users)} new records")
     return {"users_created": len(created_users), "users": created_users}
@@ -390,7 +462,9 @@ async def seed_customers() -> Dict[str, Any]:
 
     for cust_data in all_customers:
         # Check if already exists
-        existing = await customers_collection.find_one({"display_name": cust_data["display_name"]})
+        existing = await customers_collection.find_one(
+            {"display_name": cust_data["display_name"]}
+        )
         if not existing:
             customer_doc = {
                 **cust_data,
@@ -401,7 +475,10 @@ async def seed_customers() -> Dict[str, Any]:
             }
             result = await customers_collection.insert_one(customer_doc)
             created_customers.append(
-                {"id": str(result.inserted_id), "display_name": cust_data["display_name"]}
+                {
+                    "id": str(result.inserted_id),
+                    "display_name": cust_data["display_name"],
+                }
             )
             logger.info(f"  ✓ Created customer: {cust_data['display_name']}")
 
@@ -430,16 +507,24 @@ async def seed_loan_products() -> Dict[str, Any]:
             }
             result = await loan_products_collection.insert_one(product_doc)
             created_products.append(
-                {"id": str(result.inserted_id), "product_name": product_data["product_name"]}
+                {
+                    "id": str(result.inserted_id),
+                    "product_name": product_data["product_name"],
+                }
             )
             logger.info(f"  ✓ Created product: {product_data['product_name']}")
 
     logger.info(f"Loan products seeded: {len(created_products)} new records")
-    return {"loan_products_created": len(created_products), "products": created_products}
+    return {
+        "loan_products_created": len(created_products),
+        "products": created_products,
+    }
 
 
-async def seed_loans(users: List[Dict], customers: List[Dict], products: List[Dict]) -> Dict[str, Any]:
-    """Seed loan data into MongoDB with various states."""
+async def seed_loans(
+    users: List[Dict], customers: List[Dict], products: List[Dict]
+) -> Dict[str, Any]:
+    """Seed loan data into MongoDB with various states and realistic amortization."""
     logger.info("Seeding loans...")
     loans_collection = get_loans_collection()
     created_loans = []
@@ -452,39 +537,176 @@ async def seed_loans(users: List[Dict], customers: List[Dict], products: List[Di
         logger.warning("Skipping loan seeding: insufficient users/customers/products")
         return {"loans_created": 0}
 
-    # Define loan scenarios
+    # Define comprehensive loan scenarios with various statuses
     scenarios = [
+        # Pending applications
         {
             "state": "pending",
             "amount_requested": 150000,
+            "approved_amount": None,
             "term_months": 24,
             "interest_rate": 14.0,
             "product_idx": 0,  # Personal
             "customer_idx": 0,
+            "days_ago": 5,
+            "notes": "Awaiting review",
         },
+        {
+            "state": "pending",
+            "amount_requested": 75000,
+            "approved_amount": None,
+            "term_months": 12,
+            "interest_rate": 15.0,
+            "product_idx": 0,  # Personal
+            "customer_idx": 1,
+            "days_ago": 3,
+            "notes": "Documents under verification",
+        },
+        # Under review
+        {
+            "state": "reviewing",
+            "amount_requested": 200000,
+            "approved_amount": None,
+            "term_months": 36,
+            "interest_rate": 13.5,
+            "product_idx": 0,  # Personal
+            "customer_idx": 2,
+            "days_ago": 7,
+            "notes": "Credit investigation ongoing",
+        },
+        # Approved (not yet disbursed)
         {
             "state": "approved",
             "amount_requested": 1500000,
+            "approved_amount": 1400000,
             "term_months": 120,
-            "interest_rate": 7.5,
+            "approved_rate": 7.5,
             "product_idx": 1,  # Home
             "customer_idx": 1,
+            "days_ago": 10,
+            "notes": "Awaiting document signing",
         },
+        {
+            "state": "approved",
+            "amount_requested": 500000,
+            "approved_amount": 480000,
+            "term_months": 36,
+            "approved_rate": 14.0,
+            "product_idx": 3,  # Business
+            "customer_idx": 3,
+            "days_ago": 5,
+            "notes": "Pending disbursement",
+        },
+        # Active loans (with repayment history)
         {
             "state": "active",
             "amount_requested": 500000,
+            "approved_amount": 480000,
             "term_months": 48,
-            "interest_rate": 14.0,
+            "approved_rate": 14.0,
             "product_idx": 3,  # Business
             "customer_idx": 2,
+            "disbursed_days_ago": 150,
+            "months_paid": 5,
+            "notes": "Regular payments",
         },
         {
             "state": "active",
             "amount_requested": 300000,
+            "approved_amount": 280000,
             "term_months": 36,
-            "interest_rate": 12.0,
+            "approved_rate": 12.0,
             "product_idx": 0,  # Personal
             "customer_idx": 0,
+            "disbursed_days_ago": 200,
+            "months_paid": 6,
+            "notes": "On-time payments",
+        },
+        {
+            "state": "active",
+            "amount_requested": 250000,
+            "approved_amount": 250000,
+            "term_months": 24,
+            "approved_rate": 16.0,
+            "product_idx": 0,  # Personal
+            "customer_idx": 1,
+            "disbursed_days_ago": 90,
+            "months_paid": 3,
+            "notes": "Early payments",
+        },
+        {
+            "state": "active",
+            "amount_requested": 800000,
+            "approved_amount": 750000,
+            "term_months": 60,
+            "approved_rate": 8.5,
+            "product_idx": 1,  # Home
+            "customer_idx": 2,
+            "disbursed_days_ago": 365,
+            "months_paid": 12,
+            "notes": "Mortgage - regular",
+        },
+        {
+            "state": "active",
+            "amount_requested": 180000,
+            "approved_amount": 180000,
+            "term_months": 12,
+            "approved_rate": 10.0,
+            "product_idx": 2,  # Agricultural
+            "customer_idx": 3,
+            "disbursed_days_ago": 180,
+            "months_paid": 6,
+            "notes": "Seasonal loan",
+        },
+        # Paid off loans
+        {
+            "state": "paid",
+            "amount_requested": 100000,
+            "approved_amount": 95000,
+            "term_months": 24,
+            "approved_rate": 14.0,
+            "product_idx": 0,  # Personal
+            "customer_idx": 0,
+            "disbursed_days_ago": 800,
+            "months_paid": 24,
+            "notes": "Fully paid",
+        },
+        {
+            "state": "paid",
+            "amount_requested": 350000,
+            "approved_amount": 320000,
+            "term_months": 36,
+            "approved_rate": 12.5,
+            "product_idx": 3,  # Business
+            "customer_idx": 2,
+            "disbursed_days_ago": 600,
+            "months_paid": 36,
+            "notes": "Business loan paid",
+        },
+        # Rejected
+        {
+            "state": "rejected",
+            "amount_requested": 2000000,
+            "approved_amount": None,
+            "term_months": 60,
+            "interest_rate": 11.0,
+            "product_idx": 1,  # Home
+            "customer_idx": 3,
+            "days_ago": 15,
+            "notes": "Credit score below threshold",
+            "rejection_reason": "Insufficient credit history",
+        },
+        # Draft
+        {
+            "state": "draft",
+            "amount_requested": 200000,
+            "approved_amount": None,
+            "term_months": 30,
+            "interest_rate": 13.0,
+            "product_idx": 0,  # Personal
+            "customer_idx": 1,
+            "days_ago": 1,
+            "notes": "Application started but not submitted",
         },
     ]
 
@@ -493,17 +715,70 @@ async def seed_loans(users: List[Dict], customers: List[Dict], products: List[Di
         customer_idx = scenario["customer_idx"] % len(customers)
         product_idx = scenario["product_idx"] % len(products)
 
+        # Determine created_at based on scenario
+        if "disbursed_days_ago" in scenario:
+            created_at = now - timedelta(days=scenario["disbursed_days_ago"])
+            disbursed_at = created_at + timedelta(days=2)
+        else:
+            created_at = now - timedelta(days=scenario.get("days_ago", 10))
+            disbursed_at = None
+
+        # Calculate outstanding balance for active/paid loans
+        outstanding_balance = None
+        next_due_date = None
+
+        if scenario["state"] in ["active", "paid"]:
+            principal = scenario.get("approved_amount", scenario["amount_requested"])
+            rate = (
+                (scenario.get("interest_rate") or scenario.get("approved_rate", 0))
+                / 100
+                / 12
+            )
+            term = scenario["term_months"]
+
+            if rate > 0:
+                monthly_payment = (
+                    principal * (rate * (1 + rate) ** term) / ((1 + rate) ** term - 1)
+                )
+            else:
+                monthly_payment = principal / term
+
+            months_paid = scenario.get("months_paid", 0)
+            outstanding_balance = principal - (monthly_payment * months_paid)
+            if scenario["state"] == "paid":
+                outstanding_balance = 0
+
+            next_due_date = created_at + timedelta(days=30 * (months_paid + 1))
+
         loan_doc = {
             "loan_id": loan_id,
             "borrower_id": ObjectId(customers[customer_idx]["id"]),
             "loan_product": products[product_idx]["product_name"],
             "amount_requested": float(scenario["amount_requested"]),
+            "approved_amount": float(scenario["approved_amount"])
+            if scenario.get("approved_amount")
+            else None,
             "term_months": scenario["term_months"],
-            "interest_rate": float(scenario["interest_rate"]),
+            "interest_rate": float(
+                scenario.get("interest_rate") or scenario.get("approved_rate", 0)
+            ),
             "status": scenario["state"],
-            "created_at": now - timedelta(days=idx * 10),
+            "created_at": created_at,
             "updated_at": now,
+            "disbursed_at": disbursed_at,
+            "outstanding_balance": round(outstanding_balance, 2)
+            if outstanding_balance is not None
+            else None,
+            "next_due_date": next_due_date,
+            "months_paid": scenario.get("months_paid", 0),
+            "notes": scenario.get("notes", ""),
+            "rejection_reason": scenario.get("rejection_reason", ""),
+            "repayment_frequency": "monthly",
+            "grace_period_months": 0,
+            "collateral": None,
+            "guarantor": None,
         }
+
         result = await loans_collection.insert_one(loan_doc)
         created_loans.append(
             {
@@ -512,10 +787,231 @@ async def seed_loans(users: List[Dict], customers: List[Dict], products: List[Di
                 "status": scenario["state"],
             }
         )
-        logger.info(f"  ✓ Created loan: {loan_id} ({scenario['state']})")
+        logger.info(
+            f"  ✓ Created loan: {loan_id} ({scenario['state']}) - PHP {scenario['amount_requested']:,}"
+        )
 
     logger.info(f"Loans seeded: {len(created_loans)} new records")
     return {"loans_created": len(created_loans), "loans": created_loans}
+
+
+async def seed_loans_postgres(customers: List[Dict]) -> Dict[str, Any]:
+    """Seed loan applications into PostgreSQL."""
+    logger.info("Seeding loans to PostgreSQL...")
+    from sqlalchemy import select
+
+    async with AsyncSessionLocal() as session:
+        created_loans = 0
+        now = datetime.now(timezone.utc)
+
+        # Get loan products from PostgreSQL
+        result = await session.execute(select(PGLoanProduct))
+        products = result.scalars().all()
+
+        if not products:
+            logger.warning(
+                "No loan products found in PostgreSQL, skipping loan seeding"
+            )
+            return {"loans_created": 0}
+
+        # Define loan scenarios matching MongoDB seeds
+        scenarios = [
+            {
+                "state": "pending",
+                "principal": 150000,
+                "term": 24,
+                "rate": 14.0,
+                "product_idx": 0,
+                "cust_idx": 0,
+                "days_ago": 5,
+            },
+            {
+                "state": "pending",
+                "principal": 75000,
+                "term": 12,
+                "rate": 15.0,
+                "product_idx": 0,
+                "cust_idx": 1,
+                "days_ago": 3,
+            },
+            {
+                "state": "reviewing",
+                "principal": 200000,
+                "term": 36,
+                "rate": 13.5,
+                "product_idx": 0,
+                "cust_idx": 2,
+                "days_ago": 7,
+            },
+            {
+                "state": "approved",
+                "principal": 1400000,
+                "term": 120,
+                "rate": 7.5,
+                "product_idx": 1,
+                "cust_idx": 1,
+                "days_ago": 10,
+            },
+            {
+                "state": "approved",
+                "principal": 480000,
+                "term": 36,
+                "rate": 14.0,
+                "product_idx": 3,
+                "cust_idx": 3,
+                "days_ago": 5,
+            },
+            {
+                "state": "active",
+                "principal": 480000,
+                "term": 48,
+                "rate": 14.0,
+                "product_idx": 3,
+                "cust_idx": 2,
+                "disbursed_days": 150,
+                "months_paid": 5,
+            },
+            {
+                "state": "active",
+                "principal": 280000,
+                "term": 36,
+                "rate": 12.0,
+                "product_idx": 0,
+                "cust_idx": 0,
+                "disbursed_days": 200,
+                "months_paid": 6,
+            },
+            {
+                "state": "active",
+                "principal": 250000,
+                "term": 24,
+                "rate": 16.0,
+                "product_idx": 0,
+                "cust_idx": 1,
+                "disbursed_days": 90,
+                "months_paid": 3,
+            },
+            {
+                "state": "active",
+                "principal": 750000,
+                "term": 60,
+                "rate": 8.5,
+                "product_idx": 1,
+                "cust_idx": 2,
+                "disbursed_days": 365,
+                "months_paid": 12,
+            },
+            {
+                "state": "active",
+                "principal": 180000,
+                "term": 12,
+                "rate": 10.0,
+                "product_idx": 2,
+                "cust_idx": 3,
+                "disbursed_days": 180,
+                "months_paid": 6,
+            },
+            {
+                "state": "paid",
+                "principal": 95000,
+                "term": 24,
+                "rate": 14.0,
+                "product_idx": 0,
+                "cust_idx": 0,
+                "disbursed_days": 800,
+                "months_paid": 24,
+            },
+            {
+                "state": "paid",
+                "principal": 320000,
+                "term": 36,
+                "rate": 12.5,
+                "product_idx": 3,
+                "cust_idx": 2,
+                "disbursed_days": 600,
+                "months_paid": 36,
+            },
+            {
+                "state": "rejected",
+                "principal": 2000000,
+                "term": 60,
+                "rate": 11.0,
+                "product_idx": 1,
+                "cust_idx": 3,
+                "days_ago": 15,
+                "rejected_reason": "Insufficient credit history",
+            },
+            {
+                "state": "draft",
+                "principal": 200000,
+                "term": 30,
+                "rate": 13.0,
+                "product_idx": 0,
+                "cust_idx": 1,
+                "days_ago": 1,
+            },
+        ]
+
+        for idx, scenario in enumerate(scenarios):
+            product = products[scenario["product_idx"] % len(products)]
+            customer = customers[scenario["cust_idx"] % len(customers)]
+
+            created_at = now - timedelta(
+                days=scenario.get("days_ago", scenario.get("disbursed_days", 30))
+            )
+            disbursed_at = None
+            outstanding_balance = None
+            next_due_date = None
+            months_paid = scenario.get("months_paid", 0)
+
+            if scenario["state"] in ["active", "paid"]:
+                disbursed_at = created_at + timedelta(days=2)
+                rate = scenario["rate"] / 100 / 12
+                if rate > 0:
+                    monthly_payment = (
+                        scenario["principal"]
+                        * (rate * (1 + rate) ** scenario["term"])
+                        / ((1 + rate) ** scenario["term"] - 1)
+                    )
+                else:
+                    monthly_payment = scenario["principal"] / scenario["term"]
+
+                outstanding_balance = scenario["principal"] - (
+                    monthly_payment * months_paid
+                )
+                if scenario["state"] == "paid":
+                    outstanding_balance = 0
+                next_due_date = disbursed_at + timedelta(days=30 * (months_paid + 1))
+
+            loan_app = LoanApplication(
+                customer_id=customer["id"],
+                product_id=product.id,
+                principal=scenario["principal"],
+                term_months=scenario["term"],
+                approved_principal=scenario["principal"]
+                if scenario["state"] in ["active", "paid", "approved"]
+                else None,
+                approved_rate=scenario["rate"]
+                if scenario["state"] in ["active", "paid", "approved"]
+                else None,
+                status=scenario["state"],
+                created_at=created_at,
+                updated_at=now,
+                disbursed_at=disbursed_at,
+                outstanding_balance=outstanding_balance,
+                next_due_date=next_due_date,
+                months_paid=months_paid,
+                rejected_reason=scenario.get("rejected_reason", ""),
+            )
+            session.add(loan_app)
+            created_loans += 1
+            logger.info(
+                f"  ✓ Created loan: {scenario['state']} - PHP {scenario['principal']:,}"
+            )
+
+        await session.commit()
+        logger.info(f"Loans seeded to PostgreSQL: {created_loans} records")
+        return {"loans_created": created_loans}
 
 
 async def seed_savings_accounts(customers: List[Dict]) -> Dict[str, Any]:
@@ -554,36 +1050,44 @@ async def seed_savings_accounts(customers: List[Dict]) -> Dict[str, Any]:
 
             # Add type-specific fields
             if acc_type["type"] == "time_deposit":
-                account_doc.update({
-                    "principal": float(100000),
-                    "term_days": 365,
-                    "maturity_date": now + timedelta(days=365),
-                    "interest_rate": float(5.5),
-                    "early_withdrawal_penalty_pct": float(1.0),
-                    "auto_renew": True,
-                })
+                account_doc.update(
+                    {
+                        "principal": float(100000),
+                        "term_days": 365,
+                        "maturity_date": now + timedelta(days=365),
+                        "interest_rate": float(5.5),
+                        "early_withdrawal_penalty_pct": float(1.0),
+                        "auto_renew": True,
+                    }
+                )
             elif acc_type["type"] == "goal_savings":
-                account_doc.update({
-                    "target_amount": float(500000),
-                    "target_date": now + timedelta(days=365),
-                    "goal_name": f"Sample Goal {cust_idx}",
-                    "current_savings": float(200000),
-                    "interest_rate": float(1.5),
-                    "auto_deposit_amount": float(20000),
-                    "auto_deposit_frequency": "monthly",
-                })
+                account_doc.update(
+                    {
+                        "target_amount": float(500000),
+                        "target_date": now + timedelta(days=365),
+                        "goal_name": f"Sample Goal {cust_idx}",
+                        "current_savings": float(200000),
+                        "interest_rate": float(1.5),
+                        "auto_deposit_amount": float(20000),
+                        "auto_deposit_frequency": "monthly",
+                    }
+                )
             elif acc_type["type"] == "share_capital":
-                account_doc.update({
-                    "minimum_share": float(100),
-                    "share_value": float(100),
-                    "total_shares": 100,
-                    "membership_date": now - timedelta(days=365),
-                })
+                account_doc.update(
+                    {
+                        "minimum_share": float(100),
+                        "share_value": float(100),
+                        "total_shares": 100,
+                        "membership_date": now - timedelta(days=365),
+                    }
+                )
             else:  # regular
-                account_doc.update({
-                    "min_balance": float(500),
-                    "interest_rate": float(0.25),
-                })
+                account_doc.update(
+                    {
+                        "min_balance": float(500),
+                        "interest_rate": float(0.25),
+                    }
+                )
 
             result = await savings_collection.insert_one(account_doc)
             created_accounts.append(
@@ -656,7 +1160,10 @@ async def seed_beneficiaries(customers: List[Dict]) -> Dict[str, Any]:
                     customer_id=customer["id"],
                     full_name=f"{ben_template['full_name']} of {customer['display_name']}",
                     relationship=ben_template["relationship"],
-                    birth_date=(datetime.now(timezone.utc) - timedelta(days=365 * (25 + ben_idx))).date(),
+                    birth_date=(
+                        datetime.now(timezone.utc)
+                        - timedelta(days=365 * (25 + ben_idx))
+                    ).date(),
                     contact_number=f"+63 900 BEN {cust_idx}{ben_idx}",
                     email=f"beneficiary{ben_idx}@example.com",
                     address=f"Same as primary customer {cust_idx}",
@@ -694,7 +1201,8 @@ async def seed_customer_activities(customers: List[Dict]) -> Dict[str, Any]:
                     actor_username="system",
                     action=activity,
                     detail=f"Sample activity: {activity}",
-                    created_at=datetime.now(timezone.utc) - timedelta(days=30 - act_idx),
+                    created_at=datetime.now(timezone.utc)
+                    - timedelta(days=30 - act_idx),
                 )
                 session.add(activity_log)
                 created_activities += 1
@@ -766,11 +1274,11 @@ async def seed_kyc_documents_phase4(customers: List[Dict]) -> Dict[str, Any]:
             for doc_template in doc_types:
                 # Alternate statuses to have variety
                 status = ["verified", "pending", "rejected"][created_docs % 3]
-                
+
                 expires_at = None
                 if doc_template["type"] == "government_id":
                     expires_at = now + timedelta(days=365 + (created_docs % 365))
-                
+
                 kyc_doc = KYCDocument(
                     customer_id=customer["id"],
                     doc_type=doc_template["type"],
@@ -780,8 +1288,12 @@ async def seed_kyc_documents_phase4(customers: List[Dict]) -> Dict[str, Any]:
                     mime_type="application/pdf",
                     status=status,
                     reviewed_by="admin" if status == "verified" else None,
-                    reviewed_at=now - timedelta(days=1) if status == "verified" else None,
-                    rejection_reason="Document expired" if status == "rejected" else None,
+                    reviewed_at=now - timedelta(days=1)
+                    if status == "verified"
+                    else None,
+                    rejection_reason="Document expired"
+                    if status == "rejected"
+                    else None,
                     expires_at=expires_at,
                     uploaded_at=now - timedelta(days=7 + created_docs),
                     updated_at=now,
@@ -799,7 +1311,7 @@ async def seed_aml_alerts(customers: List[Dict], users: List[Dict]) -> Dict[str,
     logger.info("Seeding AML alerts (Phase 4)...")
     async with AsyncSessionLocal() as session:
         created_alerts = 0
-        
+
         alert_templates = [
             {
                 "alert_type": "suspicious_activity",
@@ -870,13 +1382,13 @@ async def seed_aml_alerts(customers: List[Dict], users: List[Dict]) -> Dict[str,
 
         # Use first 5 customers for alerts
         alert_customers = customers[:5]
-        
+
         # Use first user as reporter
         reporter = users[0] if users else {"username": "system"}
 
         for idx, alert_template in enumerate(alert_templates):
             customer = alert_customers[idx % len(alert_customers)]
-            
+
             alert = AMLAlert(
                 customer_id=customer["id"],
                 transaction_id=f"TXN-{idx + 1000:06d}",
@@ -889,7 +1401,9 @@ async def seed_aml_alerts(customers: List[Dict], users: List[Dict]) -> Dict[str,
                 requires_filing=alert_template["requires_filing"],
                 ctr_amount=alert_template["ctr_amount"],
                 resolved_at=now - timedelta(days=idx - 1) if idx % 3 == 2 else None,
-                resolution_notes="Investigation completed - no suspicious activity confirmed" if idx % 3 == 2 else None,
+                resolution_notes="Investigation completed - no suspicious activity confirmed"
+                if idx % 3 == 2
+                else None,
                 resolved_by=reporter.get("username") if idx % 3 == 2 else None,
             )
             session.add(alert)
@@ -906,7 +1420,9 @@ async def seed_customer_risk_scores(customers: List[Dict]) -> Dict[str, Any]:
     async with AsyncSessionLocal() as session:
         # Risk scores are stored in MongoDB customer documents, not PostgreSQL
         # This function logs the seeding for documentation
-        logger.info(f"Customer risk scores: {len(customers)} customers with risk profiles")
+        logger.info(
+            f"Customer risk scores: {len(customers)} customers with risk profiles"
+        )
         return {"customer_risk_scores_updated": len(customers)}
 
 
@@ -937,7 +1453,9 @@ async def seed_customer_user(customers: List[Dict]) -> Dict[str, Any]:
         "linked_customer_id": str(juan["_id"]),
     }
 
-    existing = await users_collection.find_one({"username": customer_user_data["username"]})
+    existing = await users_collection.find_one(
+        {"username": customer_user_data["username"]}
+    )
     if not existing:
         password = customer_user_data.pop("password")
         hashed_password = get_password_hash(password[:72])
@@ -955,7 +1473,9 @@ async def seed_customer_user(customers: List[Dict]) -> Dict[str, Any]:
     return {"customer_users_created": created}
 
 
-async def seed_savings_transactions(savings_accounts: List[Dict], customers: List[Dict]) -> Dict[str, Any]:
+async def seed_savings_transactions(
+    savings_accounts: List[Dict], customers: List[Dict]
+) -> Dict[str, Any]:
     """
     Seed realistic daily savings transactions simulating 90 days of banking activity.
 
@@ -1072,7 +1592,9 @@ async def seed_savings_transactions(savings_accounts: List[Dict], customers: Lis
                         "amount": amount,
                         "balance_after": running_balance - amount,
                         "note": template["note"],
-                        "created_at": current_date.replace(hour=10, minute=15, second=0),
+                        "created_at": current_date.replace(
+                            hour=10, minute=15, second=0
+                        ),
                         "processed_by": "teller_1",
                         "reference_number": f"TXN-BILL-{acc_id[:6]}-{day_offset:04d}",
                     }
@@ -1082,8 +1604,12 @@ async def seed_savings_transactions(savings_accounts: List[Dict], customers: Lis
 
             # Monthly interest posting (last day of each month — approximate)
             if day_of_month == 28:
-                interest_rate = float(acc_doc.get("interest_rate", 0.25)) if acc_doc else 0.25
-                monthly_interest = round(running_balance * (interest_rate / 100) / 12, 2)
+                interest_rate = (
+                    float(acc_doc.get("interest_rate", 0.25)) if acc_doc else 0.25
+                )
+                monthly_interest = round(
+                    running_balance * (interest_rate / 100) / 12, 2
+                )
                 wht = round(monthly_interest * 0.20, 2)  # 20% withholding tax
                 net_interest = monthly_interest - wht
                 if net_interest > 0:
@@ -1094,7 +1620,9 @@ async def seed_savings_transactions(savings_accounts: List[Dict], customers: Lis
                         "amount": net_interest,
                         "balance_after": running_balance + net_interest,
                         "note": f"Interest posting - {month_name} (Gross: {monthly_interest:.2f}, WHT: {wht:.2f})",
-                        "created_at": current_date.replace(hour=23, minute=59, second=0),
+                        "created_at": current_date.replace(
+                            hour=23, minute=59, second=0
+                        ),
                         "processed_by": "system",
                         "reference_number": f"INT-POST-{acc_id[:6]}-{day_offset:04d}",
                     }
@@ -1140,8 +1668,11 @@ async def seed_loan_repayments(loans: List[Dict]) -> Dict[str, Any]:
         # Compute monthly amortization (declining balance)
         monthly_rate = interest_rate / 100 / 12
         if monthly_rate > 0:
-            monthly_payment = principal * (monthly_rate * (1 + monthly_rate) ** term_months) / \
-                              ((1 + monthly_rate) ** term_months - 1)
+            monthly_payment = (
+                principal
+                * (monthly_rate * (1 + monthly_rate) ** term_months)
+                / ((1 + monthly_rate) ** term_months - 1)
+            )
         else:
             monthly_payment = principal / term_months
 
@@ -1188,14 +1719,18 @@ async def seed_loan_repayments(loans: List[Dict]) -> Dict[str, Any]:
         # Update loan remaining balance
         await loans_collection.update_one(
             {"_id": loan["_id"]},
-            {"$set": {
-                "outstanding_balance": round(remaining_principal, 2),
-                "months_paid": months_paid,
-                "next_due_date": now + timedelta(days=30),
-                "updated_at": now,
-            }},
+            {
+                "$set": {
+                    "outstanding_balance": round(remaining_principal, 2),
+                    "months_paid": months_paid,
+                    "next_due_date": now + timedelta(days=30),
+                    "updated_at": now,
+                }
+            },
         )
-        logger.info(f"  ✓ Loan {loan_ref}: {months_paid} payments seeded, balance: PHP {remaining_principal:,.2f}")
+        logger.info(
+            f"  ✓ Loan {loan_ref}: {months_paid} payments seeded, balance: PHP {remaining_principal:,.2f}"
+        )
 
     logger.info(f"Loan repayments seeded: {created_payments} payment records")
     return {"loan_repayments_created": created_payments}
@@ -1275,7 +1810,9 @@ async def seed_fund_transfers(savings_accounts: List[Dict]) -> Dict[str, Any]:
         }
         await transactions_collection.insert_one(credit_doc)
         created_transfers += 2
-        logger.info(f"  ✓ Transfer: {from_acc['account_number']} → {to_acc['account_number']} (PHP {amount:,.0f})")
+        logger.info(
+            f"  ✓ Transfer: {from_acc['account_number']} → {to_acc['account_number']} (PHP {amount:,.0f})"
+        )
 
     return {"fund_transfers_created": created_transfers}
 
@@ -1288,7 +1825,7 @@ async def seed_fund_transfers(savings_accounts: List[Dict]) -> Dict[str, Any]:
 async def seed_demo_data() -> Dict[str, Any]:
     """
     Main orchestration function to seed all demo data.
-    
+
     Returns:
         Dictionary summarizing all seeded data.
     """
@@ -1320,30 +1857,46 @@ async def seed_demo_data() -> Dict[str, Any]:
         if not users_list:
             cursor = users_collection.find({})
             raw_users = await cursor.to_list(length=200)
-            users_list = [{"id": str(u["_id"]), "username": u.get("username", "")} for u in raw_users]
+            users_list = [
+                {"id": str(u["_id"]), "username": u.get("username", "")}
+                for u in raw_users
+            ]
 
         customers_list = results["customers"].get("customers", [])
         if not customers_list:
             cursor = customers_collection.find({})
             raw_custs = await cursor.to_list(length=200)
-            customers_list = [{"id": str(c["_id"]), "display_name": c.get("display_name", "")} for c in raw_custs]
+            customers_list = [
+                {"id": str(c["_id"]), "display_name": c.get("display_name", "")}
+                for c in raw_custs
+            ]
 
         products_list = results["loan_products"].get("products", [])
         if not products_list:
             loan_products_collection = get_loan_products_collection()
             cursor = loan_products_collection.find({})
             raw_products = await cursor.to_list(length=50)
-            products_list = [{"id": str(p["_id"]), "product_name": p.get("product_name", "")} for p in raw_products]
+            products_list = [
+                {"id": str(p["_id"]), "product_name": p.get("product_name", "")}
+                for p in raw_products
+            ]
 
         results["loans"] = await seed_loans(users_list, customers_list, products_list)
+
+        # Also seed loans to PostgreSQL for the API
+        results["loans_postgres"] = await seed_loans_postgres(customers_list)
 
         # Phase 4: Savings
         results["savings"] = await seed_savings_accounts(customers_list)
 
         # Phase 4: AML Compliance & KYC (PostgreSQL Relations)
-        results["kyc_documents_phase4"] = await seed_kyc_documents_phase4(customers_list)
+        results["kyc_documents_phase4"] = await seed_kyc_documents_phase4(
+            customers_list
+        )
         results["aml_alerts"] = await seed_aml_alerts(customers_list, users_list)
-        results["customer_risk_scores"] = await seed_customer_risk_scores(customers_list)
+        results["customer_risk_scores"] = await seed_customer_risk_scores(
+            customers_list
+        )
 
         # Phase 5: Legacy PostgreSQL Relations (Beneficiaries, Activities, Audit)
         results["beneficiaries"] = await seed_beneficiaries(customers_list)
@@ -1359,13 +1912,21 @@ async def seed_demo_data() -> Dict[str, Any]:
             cursor = savings_collection.find({})
             raw_savings = await cursor.to_list(length=500)
             savings_list = [
-                {"id": str(s["_id"]), "account_number": s.get("account_number", ""), "type": s.get("type", "regular")}
+                {
+                    "id": str(s["_id"]),
+                    "account_number": s.get("account_number", ""),
+                    "type": s.get("type", "regular"),
+                }
                 for s in raw_savings
             ]
 
         results["customer_user"] = await seed_customer_user(customers_list)
-        results["savings_transactions"] = await seed_savings_transactions(savings_list, customers_list)
-        results["loan_repayments"] = await seed_loan_repayments(savings_list)  # fetches active loans internally
+        results["savings_transactions"] = await seed_savings_transactions(
+            savings_list, customers_list
+        )
+        results["loan_repayments"] = await seed_loan_repayments(
+            savings_list
+        )  # fetches active loans internally
         results["fund_transfers"] = await seed_fund_transfers(savings_list)
 
         # Summary
@@ -1375,7 +1936,14 @@ async def seed_demo_data() -> Dict[str, Any]:
         logger.info("Summary:")
         for key, value in results.items():
             if isinstance(value, dict):
-                count_key = next((k for k in value if k.endswith("_created") or k.endswith("_updated")), None)
+                count_key = next(
+                    (
+                        k
+                        for k in value
+                        if k.endswith("_created") or k.endswith("_updated")
+                    ),
+                    None,
+                )
                 if count_key:
                     logger.info(f"  {key}: {value[count_key]} records")
 
@@ -1389,4 +1957,3 @@ async def seed_demo_data() -> Dict[str, Any]:
 if __name__ == "__main__":
     # For direct execution
     asyncio.run(seed_demo_data())
-

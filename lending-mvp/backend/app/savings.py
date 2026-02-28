@@ -58,6 +58,15 @@ class SavingsAccountType:
 
     @strawberry.field
     async def customer(self, info: Info) -> Optional[CustomerType]:
+        # Check if customer_info was already joined via aggregate lookup
+        customer_info = getattr(self, "customer_info", None)
+        if customer_info:
+            # If it's a dict from MongoDB, convert it
+            if isinstance(customer_info, dict):
+                return convert_customer_db_to_customer_type(customer_info)
+            return customer_info
+
+        # Fallback to separate query if not pre-fetched
         db = get_db()
         customer_crud = CustomerCRUD(db.customers)
         
@@ -192,7 +201,8 @@ class SavingsQuery:
 
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
-        accounts_data = await savings_crud.get_all_savings_accounts(search_term=searchTerm, customer_id=customerId or (str(current_user.id) if current_user.role == "customer" else None)) # Pass search_term to CRUD
+        # Use searchTerm for server-side filtering
+        accounts_data = await savings_crud.get_all_savings_accounts(search_term=searchTerm, customer_id=customerId or (str(current_user.id) if current_user.role == "customer" else None))
         accounts = [map_db_account_to_strawberry_type(acc) for acc in accounts_data]
         return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts, total=len(accounts))
 

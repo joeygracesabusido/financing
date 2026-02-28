@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const populateTable = (accounts) => {
         if (!accounts || accounts.length === 0) {
-            savingsTableBody.innerHTML = '<tr><td colspan="6" class="p-3 text-center">No savings accounts found.</td></tr>';
+            savingsTableBody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-gray-400">No savings accounts found.</td></tr>';
             return;
         }
 
@@ -82,17 +82,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         accounts.forEach(account => {
             const row = document.createElement('tr');
-            row.className = 'border-b hover:bg-gray-50';
+            row.className = 'hover:bg-gray-50/50 transition-colors';
 
             row.innerHTML = `
-                <td class="p-3">${account.accountNumber}</td>
-                <td class="p-3">${account.customer ? account.customer.displayName : 'N/A'}</td>
-                <td class="p-3">${account.type}</td>
-                <td class="p-3">₱${parseFloat(account.balance).toFixed(2)}</td>
-                <td class="p-3">${account.status}</td>
-                <td class="p-3">${new Date(account.openedAt).toLocaleDateString()}</td>
-                <td class="p-3">
-                    <a href="savings_details.html?id=${account.id}" class="text-blue-500 hover:text-blue-700 mr-2">View</a>
+                <td class="p-4">
+                    <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md font-mono text-xs font-bold border border-blue-100">
+                        ${account.accountNumber}
+                    </span>
+                </td>
+                <td class="p-4 font-medium text-gray-700">${account.customer ? account.customer.displayName : '<span class="text-gray-400 italic text-xs">Unassigned</span>'}</td>
+                <td class="p-4">
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 capitalize">
+                        ${account.type.replace('_', ' ')}
+                    </span>
+                </td>
+                <td class="p-4 font-bold text-gray-900">₱${parseFloat(account.balance).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td class="p-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${account.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        <span class="w-1.5 h-1.5 mr-1.5 rounded-full ${account.status === 'active' ? 'bg-green-500' : 'bg-red-500'}"></span>
+                        ${account.status}
+                    </span>
+                </td>
+                <td class="p-4 text-gray-500 text-xs">${new Date(account.openedAt).toLocaleDateString(undefined, {year: 'numeric', month: 'short', day: 'numeric'})}</td>
+                <td class="p-4 text-center">
+                    <a href="savings_details.html?id=${account.id}" 
+                       class="inline-flex items-center px-3 py-1 bg-white border border-gray-200 rounded-md text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm">
+                        <i class="fas fa-external-link-alt mr-1.5 text-gray-400"></i> View
+                    </a>
                 </td>
             `;
             

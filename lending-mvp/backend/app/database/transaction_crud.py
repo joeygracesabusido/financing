@@ -23,17 +23,15 @@ class TransactionCRUD:
             if not account:
                 return None # Account not found
 
-            # Convert Decimal transaction amount to float for comparison with account.balance (which is float)
-            transaction_amount_float = float(transaction.amount)
-
-            # Check for general insufficient funds first
-            if account.balance < transaction_amount_float:
+            # Check for general insufficient funds first using Decimal
+            if account.balance < transaction.amount:
                 return None # Insufficient funds
 
-            # Specific check for regular savings minimum balance
+            # Specific check for regular savings minimum balance using Decimal
             if account.type == "regular":
-                regular_account_model = RegularSavings(**account.model_dump()) # Re-instantiate as RegularSavings
-                prospective_balance = account.balance - transaction_amount_float
+                # RegularSavings already uses Decimal for min_balance in savings_model.py
+                regular_account_model = RegularSavings(**account.model_dump())
+                prospective_balance = account.balance - transaction.amount
                 if prospective_balance < regular_account_model.min_balance:
                     return None # Withdrawal would violate minimum balance for regular account
             

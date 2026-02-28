@@ -27,6 +27,8 @@ import TellerPaymentGatewayPage from '@/pages/TellerPaymentGatewayPage'
 import TellerTransactionLimitsPage from '@/pages/TellerTransactionLimitsPage'
 import TellerQRCodePage from '@/pages/TellerQRCodePage'
 import NotificationPreferencesPage from '@/pages/NotificationPreferencesPage'
+import CollectionDuePage from '@/pages/CollectionDuePage'
+import AmortizationSchedulePage from '@/pages/AmortizationSchedulePage'
 
 function ProtectedLayout() {
     const { isAuthenticated } = useAuth()
@@ -63,6 +65,8 @@ function ProtectedLayout() {
                         <Route path="/audit-logs" element={<AuditLogPage />} />
                         <Route path="/users" element={<UsersPage />} />
                         <Route path="/collections" element={<CollectionsPage />} />
+                        <Route path="/collection-due" element={<CollectionDuePage />} />
+                        <Route path="/loans/:id/amortization" element={<AmortizationSchedulePage />} />
                         <Route path="/chart-of-accounts" element={<ChartOfAccountsPage />} />
                         <Route path="/savings/:id" element={<SavingsDetailPage />} />
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />

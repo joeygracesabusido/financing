@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection Due</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center mb-10">
+                    <div class="w-10 h-10 bg-green-500 rounded-lg mr-3"></div>
+                    <span class="text-2xl font-bold">IJE Software</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-4"><a href="dashboard.html" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-pie mr-3"></i> Dashboard</a></li>
+                        <li class="mb-4">
+                            <button id="customer-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-users mr-3"></i>Customer <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="customer-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="customer.html" class="block text-gray-600 hover:text-gray-800">All Customers</a>
+                                <a href="add_customer.html" class="block text-gray-600 hover:text-gray-800">Add New Customer</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="savings-dropdown-btn" class="flex items-center text-gray-500 hover:text-gray-700 w-full text-left">
+                                <i class="fas fa-piggy-bank mr-3"></i>Saving<i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="savings-dropdown-menu" class="hidden pl-8 mt-2 space-y-2">
+                                <a href="savings.html" class="block text-gray-600 hover:text-gray-800">All Savings</a>
+                                <a href="create_savings.html" class="block text-gray-600 hover:text-gray-800">Create New Savings</a>
+                            </div>
+                        </li>
+                        <li class="mb-4">
+                            <button id="loan-dropdown-btn" class="flex items-center text-gray-700 font-bold bg-green-100 p-2 rounded-lg w-full text-left">
+                                <i class="fas fa-hand-holding-usd mr-3"></i>Loans <i class="fas fa-chevron-down ml-auto"></i>
+                            </button>
+                            <div id="loan-dropdown-menu" class="pl-8 mt-2 space-y-2">
+                                <a href="loan_product.html" class="block text-gray-600 hover:text-gray-800">All Loan Products</a>
+                                <a href="create_loan.html" class="block text-gray-600 hover:text-gray-800">Create New Loan Product</a>
+                                <a href="loan_transaction.html" class="block text-gray-600 hover:text-gray-800">Loan Transactions</a>
+                                <a href="payment_transaction.html" class="block text-gray-600 hover:text-gray-800">Payment Transactions</a>
+                                <a href="collection_due.html" class="block text-gray-700 font-bold bg-green-100 p-2 rounded-lg">Collection Due</a>
+                            </div>
+                        </li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-chart-line mr-3"></i> Statistics</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-bullseye mr-3"></i> Goals</a></li>
+                        <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-cog mr-3"></i> Settings</a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                <ul>
+                    <li class="mb-4"><a href="#" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-question-circle mr-3"></i> Help</a></li>
+                    <li><a href="#" id="logout-btn" class="flex items-center text-gray-500 hover:text-gray-700"><i class="fas fa-sign-out-alt mr-3"></i> Log out</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-8">
+            <h1 class="text-3xl font-bold mb-8">Collection Due</h1>
+
+            <!-- Filter Section -->
+            <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-filter text-gray-500 mr-2"></i>
+                    <h2 class="text-xl font-bold mr-4">Filter by Due Date</h2>
+                    <select id="filter-select" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="all">All Loans</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly" selected>Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                    <div id="date-range-display" class="ml-4 text-gray-600 text-sm">
+                        Showing loans due this week
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loans Table -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Loans Due</h2>
+                    <div id="loan-count" class="text-sm text-gray-500">
+                        <!-- Loan count will be inserted here -->
+                    </div>
+                </div>
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-200 text-left text-sm font-bold">
+                            <th class="p-3">Loan ID</th>
+                            <th class="p-3">Borrower</th>
+                            <th class="p-3">Loan Product</th>
+                            <th class="p-3">Amount</th>
+                            <th class="p-3">Term</th>
+                            <th class="p-3">Interest Rate</th>
+                            <th class="p-3">Due Date</th>
+                            <th class="p-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="collection-due-table-body">
+                        <!-- Collection due loans will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/collection_due.js"></script>
+    <script>
+        // Basic logout functionality
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('accessToken');
+            alert('Logged out!');
+            window.location.href = 'login.html';
+        });
+
+        // Sidebar dropdown toggles
+        const customerDropdownBtn = document.getElementById('customer-dropdown-btn');
+        const customerDropdownMenu = document.getElementById('customer-dropdown-menu');
+        if (customerDropdownBtn && customerDropdownMenu) {
+            customerDropdownBtn.addEventListener('click', () => {
+                customerDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        const savingsDropdownBtn = document.getElementById('savings-dropdown-btn');
+        const savingsDropdownMenu = document.getElementById('savings-dropdown-menu');
+        if (savingsDropdownBtn && savingsDropdownMenu) {
+            savingsDropdownBtn.addEventListener('click', () => {
+                savingsDropdownMenu.classList.toggle('hidden');
+            });
+        }
+
+        const loanDropdownBtn = document.getElementById('loan-dropdown-btn');
+        const loanDropdownMenu = document.getElementById('loan-dropdown-menu');
+        if (loanDropdownBtn && loanDropdownMenu) {
+            loanDropdownBtn.addEventListener('click', () => {
+                loanDropdownMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

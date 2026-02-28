@@ -202,36 +202,37 @@ async def health():
 # REST login bridge (unchanged — keeps HTML frontend compatible)
 @app.post("/api-login/")
 async def api_login(login_request: LoginRequest):
-    schema = strawberry.Schema(query=Query, mutation=Mutation)
-    query = """
-        mutation Login($username: String!, $password: String!) {
-            login(input: {username: $username, password: $password}) {
-                accessToken
-                tokenType
-                refreshToken
-                user {
-                    id
-                    username
-                    email
-                    fullName
-                    isActive
-                    role
-                }
-            }
+    try:
+        from .user import Mutation as UserMutation
+        from .schema import LoginInput
+        
+        mutation = UserMutation()
+        login_input = LoginInput(
+            username=login_request.username,
+            password=login_request.password
+        )
+        
+        result = await mutation.login(input=login_input)
+        
+        # Convert Strawberry object to dict for JSON response
+        return {
+            "accessToken": result.access_token,
+            "tokenType": result.token_type,
+            "refreshToken": result.refresh_token,
+            "user": {
+                "id": str(result.user.id),
+                "username": result.user.username,
+                "email": result.user.email,
+                "fullName": result.user.full_name,
+                "isActive": result.user.is_active,
+                "role": result.user.role
+            } if result.user else None
         }
-    """
-    result = await schema.execute(
-        query,
-        variable_values={"username": login_request.username, "password": login_request.password},
-    )
-    if result.errors:
-        error = result.errors[0]
-        original_error = getattr(error, "original_error", None)
-        if isinstance(original_error, HTTPException):
-            raise original_error
-        if "Incorrect username or password" in error.message:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username or password")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Login error")
-    if result.data and result.data.get("login"):
-        return result.data["login"]
-    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Login failed")
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        logger.error(f"Login error: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Login error: {str(e)}"
+        )

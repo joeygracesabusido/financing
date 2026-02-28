@@ -76,38 +76,40 @@ class SavingsCRUD:
                 "$match": {"user_id": customer_id}
             })
 
+        # ALWAYS prepare user_id for lookup (convert string user_id to ObjectId)
+        # We need this to join with the 'customers' collection
+        pipeline.append({
+            "$addFields": {
+                "user_id_obj": {
+                    "$cond": [
+                        {"$eq": [{"$type": "$user_id"}, "string"]},
+                        {"$toObjectId": "$user_id"},
+                        "$user_id"
+                    ]
+                }
+            }
+        })
+
+        # ALWAYS lookup customer details so they are available for display
+        pipeline.append({
+            "$lookup": {
+                "from": "customers",
+                "localField": "user_id_obj",
+                "foreignField": "_id",
+                "as": "customer_info"
+            }
+        })
+        
+        # Unwind the customer_info array
+        pipeline.append({
+            "$unwind": {
+                "path": "$customer_info",
+                "preserveNullAndEmptyArrays": True
+            }
+        })
+
         if search_term:
-            # First, prepare user_id for lookup (convert string user_id to ObjectId)
-            pipeline.append({
-                "$addFields": {
-                    "user_id_obj": {
-                        "$cond": [
-                            {"$eq": [{"$type": "$user_id"}, "string"]},
-                            {"$toObjectId": "$user_id"},
-                            "$user_id"
-                        ]
-                    }
-                }
-            })
-
-            # Lookup customer details
-            pipeline.append({
-                "$lookup": {
-                    "from": "customers",
-                    "localField": "user_id_obj",
-                    "foreignField": "_id",
-                    "as": "customer_info"
-                }
-            })
-            # Unwind the customer_info array
-            pipeline.append({
-                "$unwind": {
-                    "path": "$customer_info",
-                    "preserveNullAndEmptyArrays": True
-                }
-            })
-
-            # Apply the search filter
+            # Apply the search filter if provided
             pipeline.append({
                 "$match": {
                     "$or": [
@@ -130,10 +132,12 @@ class SavingsCRUD:
                 "created_at": 1,
                 "updated_at": 1,
                 "status": 1,
+                "customer_info": 1,
             }
         })
 
-        accounts_data_list = await self.collection.aggregate(pipeline).to_list(length=100)
+        # Use a very high length to effectively remove the limit for the current scale
+        accounts_data_list = await self.collection.aggregate(pipeline).to_list(length=100000)
         
         processed_accounts_list = [_convert_str_to_decimal(acc_data) for acc_data in accounts_data_list]
         

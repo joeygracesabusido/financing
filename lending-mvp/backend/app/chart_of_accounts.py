@@ -79,6 +79,29 @@ class GLAccountType:
     created_at: datetime = strawberry.field(name="createdAt")
     updated_at: datetime = strawberry.field(name="updatedAt")
 
+    @strawberry.field
+    async def balance(self, info: Info) -> Decimal:
+        from sqlalchemy import func
+        async for session in get_db_session():
+            result = await session.execute(
+                select(
+                    func.sum(JournalLine.debit).label("total_debit"),
+                    func.sum(JournalLine.credit).label("total_credit")
+                ).filter(JournalLine.account_code == self.code)
+            )
+            stats = result.one()
+            debit = stats.total_debit or Decimal("0.00")
+            credit = stats.total_credit or Decimal("0.00")
+
+            # Normal Balance rules:
+            # Asset & Expense: Debit (+) - Credit (-)
+            # Liability, Equity, Income: Credit (+) - Debit (-)
+            if self.type in ["asset", "expense"]:
+                return debit - credit
+            else:
+                return credit - debit
+        return Decimal("0.00")
+
 
 @strawberry.input
 class GLAccountCreateInput:
@@ -95,17 +118,26 @@ class GLAccountUpdateInput:
     description: Optional[str] = None
 
 
-@strawberry.type
-class GLAccountResponse:
-    success: bool
-    message: str
-    account: Optional[GLAccountType] = None
+@strawberry.input
+class JournalLineInput:
+    account_code: str = strawberry.field(name="accountCode")
+    debit: Decimal
+    credit: Decimal
+    description: Optional[str] = None
+
+
+@strawberry.input
+class JournalEntryCreateInput:
+    reference_no: str = strawberry.field(name="referenceNo")
+    description: str
+    lines: List[JournalLineInput]
 
 
 @strawberry.type
 class JournalLineType:
     id: strawberry.ID
     account_code: str = strawberry.field(name="accountCode")
+    account_name: Optional[str] = strawberry.field(name="accountName")
     debit: Decimal
     credit: Decimal
     description: Optional[str]
@@ -119,6 +151,20 @@ class JournalEntryType:
     timestamp: datetime
     created_by: Optional[str] = strawberry.field(name="createdBy")
     lines: List[JournalLineType]
+
+
+@strawberry.type
+class JournalEntryResponse:
+    success: bool
+    message: str
+    entry: Optional[JournalEntryType] = None
+
+
+@strawberry.type
+class GLAccountResponse:
+    success: bool
+    message: str
+    account: Optional[GLAccountType] = None
 
 
 @strawberry.type
@@ -167,30 +213,40 @@ class ChartOfAccountsQuery:
             return _gl_db_to_type(acct) if acct else None
 
     @strawberry.field
-    async def journal_entries(self, info: Info, skip: int = 0, limit: int = 50) -> JournalEntriesResponse:
+    async def journal_entries(self, info: Info, skip: int = 0, limit: int = 50, referenceNo: Optional[str] = None) -> JournalEntriesResponse:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role in ["customer"]:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
 
         async for session in get_db_session():
-            count_result = await session.execute(select(JournalEntry))
-            total = len(count_result.scalars().all())
+            query = select(JournalEntry)
+            if referenceNo:
+                query = query.filter(JournalEntry.reference_no == referenceNo)
+            
+            count_result = await session.execute(query)
+            # This is inefficient for large tables but okay for MVP/POC
+            all_entries = count_result.scalars().all()
+            total = len(all_entries)
 
             result = await session.execute(
-                select(JournalEntry)
+                query
                 .order_by(JournalEntry.timestamp.desc())
                 .offset(skip)
                 .limit(limit)
             )
             entries = []
+            from sqlalchemy.orm import joinedload
             for entry in result.scalars().all():
                 lines_result = await session.execute(
-                    select(JournalLine).filter(JournalLine.entry_id == entry.id)
+                    select(JournalLine)
+                    .options(joinedload(JournalLine.account))
+                    .filter(JournalLine.entry_id == entry.id)
                 )
                 lines = [
                     JournalLineType(
                         id=strawberry.ID(str(l.id)),
                         account_code=l.account_code,
+                        account_name=l.account.name if l.account else None,
                         debit=l.debit,
                         credit=l.credit,
                         description=l.description,
@@ -207,6 +263,46 @@ class ChartOfAccountsQuery:
                 ))
 
             return JournalEntriesResponse(success=True, message="OK", entries=entries, total=total)
+
+    @strawberry.field
+    async def journal_entry_by_reference(self, info: Info, referenceNo: str) -> Optional[JournalEntryType]:
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role in ["customer"]:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+        async for session in get_db_session():
+            result = await session.execute(
+                select(JournalEntry).filter(JournalEntry.reference_no == referenceNo)
+            )
+            entry = result.scalar_one_or_none()
+            if not entry:
+                return None
+
+            from sqlalchemy.orm import joinedload
+            lines_result = await session.execute(
+                select(JournalLine)
+                .options(joinedload(JournalLine.account))
+                .filter(JournalLine.entry_id == entry.id)
+            )
+            lines = [
+                JournalLineType(
+                    id=strawberry.ID(str(l.id)),
+                    account_code=l.account_code,
+                    account_name=l.account.name if l.account else None,
+                    debit=l.debit,
+                    credit=l.credit,
+                    description=l.description,
+                )
+                for l in lines_result.scalars().all()
+            ]
+            return JournalEntryType(
+                id=strawberry.ID(str(entry.id)),
+                reference_no=entry.reference_no,
+                description=entry.description,
+                timestamp=entry.timestamp,
+                created_by=entry.created_by,
+                lines=lines,
+            )
 
 
 # ── Mutations ────────────────────────────────────────────────────────────
@@ -257,3 +353,84 @@ class ChartOfAccountsMutation:
             await session.flush()
             await session.refresh(acct)
             return GLAccountResponse(success=True, message="GL account updated", account=_gl_db_to_type(acct))
+
+    @strawberry.mutation
+    async def create_manual_journal_entry(self, info: Info, input: JournalEntryCreateInput) -> JournalEntryResponse:
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            return JournalEntryResponse(success=False, message="Only admin can post manual journal entries")
+
+        # 1. Balance Validation
+        total_debit = sum(line.debit for line in input.lines)
+        total_credit = sum(line.credit for line in input.lines)
+
+        if total_debit != total_credit:
+            return JournalEntryResponse(
+                success=False, 
+                message=f"Journal entry is not balanced. Total Debit ({total_debit}) must equal Total Credit ({total_credit})."
+            )
+
+        if len(input.lines) < 2:
+            return JournalEntryResponse(success=False, message="Journal entry must have at least two lines.")
+
+        from .accounting import create_journal_entry
+        from sqlalchemy.orm import selectinload
+        
+        async for session in get_db_session():
+            try:
+                # Convert strawberry input to dict format expected by create_journal_entry
+                lines_data = [
+                    {
+                        "account_code": l.account_code,
+                        "debit": l.debit,
+                        "credit": l.credit,
+                        "description": l.description
+                    } for l in input.lines
+                ]
+
+                entry_db_id = (await create_journal_entry(
+                    session=session,
+                    reference_no=input.reference_no,
+                    description=input.description,
+                    lines=lines_data,
+                    created_by=str(current_user.id)
+                )).id
+                await session.commit()
+
+                # Re-fetch with selectinload to avoid "greenlet_spawn" error
+                result = await session.execute(
+                    select(JournalEntry)
+                    .options(
+                        selectinload(JournalEntry.lines).selectinload(JournalLine.account)
+                    )
+                    .filter(JournalEntry.id == entry_db_id)
+                )
+                entry_db = result.scalar_one()
+
+                # Convert DB model back to GraphQL type
+                lines_type = [
+                    JournalLineType(
+                        id=strawberry.ID(str(l.id)),
+                        account_code=l.account_code,
+                        account_name=l.account.name if l.account else None,
+                        debit=l.debit,
+                        credit=l.credit,
+                        description=l.description
+                    ) for l in entry_db.lines
+                ]
+
+                return JournalEntryResponse(
+                    success=True,
+                    message="Manual journal entry posted successfully",
+                    entry=JournalEntryType(
+                        id=strawberry.ID(str(entry_db.id)),
+                        reference_no=entry_db.reference_no,
+                        description=entry_db.description,
+                        timestamp=entry_db.timestamp,
+                        created_by=entry_db.created_by,
+                        lines=lines_type
+                    )
+                )
+            except Exception as e:
+                await session.rollback()
+                return JournalEntryResponse(success=False, message=f"Error posting journal entry: {str(e)}")

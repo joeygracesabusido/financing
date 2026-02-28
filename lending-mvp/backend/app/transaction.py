@@ -17,12 +17,15 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 
 
+from .database.postgres import AsyncSessionLocal
+from .utils.savings_accounting_utils import post_savings_transaction_accounting
+
 def map_db_transaction_to_strawberry_type(trans_data: TransactionInDB) -> TransactionType:
     return TransactionType(
         id=strawberry.ID(str(trans_data.id)),
         account_id=strawberry.ID(str(trans_data.account_id)),
         transaction_type=trans_data.transaction_type,
-        amount=trans_data.amount,
+        amount=float(trans_data.amount),
         timestamp=trans_data.timestamp,
         notes=trans_data.notes
     )
@@ -59,9 +62,13 @@ class TransactionMutation:
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
         
+        # 1. Fetch account to check type and existence (needed for accounting GL determination)
+        account = await savings_crud.get_savings_account_by_id(str(input.account_id))
+        if not account:
+            return TransactionResponse(success=False, message="Account not found")
+
         # Authorization check
-        # account = await savings_crud.get_savings_account_by_id(str(input.account_id))
-        # if not account or str(account.user_id) != str(current_user.id): # Corrected to account.user_id
+        # if str(account.user_id) != str(current_user.id):
         #     return TransactionResponse(success=False, message="Not authorized for this account")
 
         transaction_crud = TransactionCRUD(db.transactions, savings_crud)
@@ -69,14 +76,32 @@ class TransactionMutation:
         transaction_to_create = TransactionBase(
             account_id=input.account_id,
             transaction_type=trans_type,
-            amount=input.amount,
+            amount=Decimal(str(input.amount)),
             notes=input.notes
         )
 
+        # 2. Update balance and create transaction record in MongoDB
         created_transaction = await transaction_crud.create_transaction(transaction_to_create)
 
         if not created_transaction:
             return TransactionResponse(success=False, message=f"Failed to create {trans_type}. Insufficient funds or error.")
+
+        # 3. Double-entry accounting: Post to GL (PostgreSQL)
+        try:
+            async with AsyncSessionLocal() as pg_session:
+                await post_savings_transaction_accounting(
+                    session=pg_session,
+                    account_type=account.type,
+                    transaction_type=trans_type,
+                    amount=Decimal(str(input.amount)),
+                    reference_no=f"TXN-{str(created_transaction.id).upper()}",
+                    created_by=str(current_user.id)
+                )
+                await pg_session.commit()
+        except Exception as e:
+            # We log but don't necessarily fail the balance update if accounting fails 
+            # (though in a production system, you'd want atomicity between MongoDB and PG)
+            print(f"Accounting error: {e}")
 
         transaction = map_db_transaction_to_strawberry_type(created_transaction)
         
