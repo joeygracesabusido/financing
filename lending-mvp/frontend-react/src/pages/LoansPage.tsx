@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client'
+import { useNavigate } from 'react-router-dom'
 import { GET_LOANS } from '@/api/queries'
 import { formatCurrency, formatDate, getLoanStatusColor } from '@/lib/utils'
 import { CreditCard, Search, Plus, Loader2, ArrowRight } from 'lucide-react'
@@ -33,11 +34,17 @@ const PIPELINE_STAGES = [
 ]
 
 export default function LoansPage() {
+    const navigate = useNavigate()
     const [search, setSearch] = useState('')
     const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban')
     const { data, loading, error } = useQuery(GET_LOANS, {
-        variables: { skip: 0, limit: 100 }
+        variables: { skip: 0, limit: 300 },
+        fetchPolicy: 'network-only'
     })
+
+    console.log('Loans data:', data)
+    console.log('Loans loading:', loading)
+    console.log('Loans error:', error)
 
     const loans: Loan[] = data?.loans?.loans ?? []
     const filtered = loans.filter((l) => {
@@ -50,13 +57,20 @@ export default function LoansPage() {
         )
     })
 
-    const totalOutstanding = loans.reduce((s, l) => s + (l.status === 'active' ? (l.outstandingBalance || l.approvedPrincipal || l.principal) : 0), 0)
+    const totalOutstanding = loans.reduce((s, l) => {
+        if (l.status !== 'active') return s
+        const val = Number(l.outstandingBalance || l.approvedPrincipal || l.principal || 0)
+        return s + (isNaN(val) ? 0 : val)
+    }, 0)
 
     const renderKanbanCard = (l: Loan) => (
-        <div key={l.id} className="glass rounded-xl p-4 space-y-3 hover:border-purple-500/30 transition-colors cursor-pointer group">
-            <div className="flex justify-between items-start">
+        <div 
+            key={l.id} 
+            onClick={() => navigate(`/loans/${l.id}`)}
+            className="glass rounded-xl p-4 space-y-3 hover:border-purple-500/30 transition-colors cursor-pointer group"
+        >            <div className="flex justify-between items-start">
                 <div>
-                    <h4 className="font-semibold text-sm group-hover:text-purple-400 transition-colors">{l.borrowerName}</h4>
+                    <h4 className="font-semibold text-sm group-hover:text-purple-400 transition-colors">{l.borrowerName || 'Unknown Customer'}</h4>
                     <p className="text-xs text-muted-foreground">{l.productName}</p>
                 </div>
                 <span className={`px-2 py-0.5 rounded-md border text-[10px] uppercase font-bold tracking-wider ${getLoanStatusColor(l.status)}`}>
@@ -106,7 +120,10 @@ export default function LoansPage() {
                             List
                         </button>
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2.5 bg-yellow-400/10 border border-yellow-400/20 text-yellow-500 text-sm font-semibold rounded-lg hover:bg-yellow-400/20 transition-all duration-200">
+                    <button 
+                        onClick={() => navigate('/customer/loans/new')}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-yellow-400/10 border border-yellow-400/20 text-yellow-500 text-sm font-semibold rounded-lg hover:bg-yellow-400/20 transition-all duration-200"
+                    >
                         <Plus className="w-4 h-4" /> New Application
                     </button>
                 </div>
@@ -171,9 +188,12 @@ export default function LoansPage() {
                                 <tr><td colSpan={7} className="py-16 text-center text-muted-foreground text-sm">No applications found</td></tr>
                             ) : (
                                 filtered.map((l) => (
-                                    <tr key={l.id} className="data-table-row cursor-pointer hover:bg-secondary/30">
-                                        <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">...{l.id.slice(-6)}</td>
-                                        <td className="px-4 py-3.5 text-sm font-medium text-foreground">{l.borrowerName}</td>
+                                    <tr 
+                                        key={l.id} 
+                                        onClick={() => navigate(`/loans/${l.id}`)}
+                                        className="data-table-row cursor-pointer hover:bg-secondary/30"
+                                    >                                        <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">...{l.id.slice(-6)}</td>
+                                        <td className="px-4 py-3.5 text-sm font-medium text-foreground">{l.borrowerName || 'Unknown Customer'}</td>
                                         <td className="px-4 py-3.5 text-sm text-muted-foreground">{l.productName}</td>
                                         <td className="px-4 py-3.5 text-sm text-foreground font-semibold">{formatCurrency(l.approvedPrincipal || l.principal)}</td>
                                         <td className="px-4 py-3.5 text-sm text-muted-foreground">{l.termMonths} mo</td>

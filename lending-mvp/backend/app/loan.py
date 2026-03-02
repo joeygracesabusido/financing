@@ -79,7 +79,7 @@ class LoanType:
             prod = result.scalar_one_or_none()
             return prod.name if prod else "Unknown Product"
 
-    @strawberry.field
+    @strawberry.field(name="borrowerName")
     async def borrower_name(self) -> Optional[str]:
         try:
             customers_collection = get_customers_collection()
@@ -455,6 +455,7 @@ class LoanMutation:
             )
             session.add(new_loan)
             await session.flush()
+            await session.commit()
             await session.refresh(new_loan)
 
             return LoanResponse(
@@ -754,12 +755,25 @@ class LoanMutation:
 
     @strawberry.mutation
     async def repay_loan(
-        self, info: Info, id: strawberry.ID, amount: Decimal
+        self,
+        info: Info,
+        id: strawberry.ID,
+        amount: Decimal,
+        paymentDate: Optional[str] = None,
     ) -> LoanResponse:
         """Process loan repayment with waterfall logic (Penalty -> Interest -> Principal).
         Enforces prepayment rules from the linked product.
         Handles overpayment by crediting remaining funds to next period.
         """
+        # Parse payment date if provided
+        from datetime import datetime
+
+        transaction_date = datetime.now()
+        if paymentDate:
+            try:
+                transaction_date = datetime.strptime(paymentDate, "%Y-%m-%d")
+            except ValueError:
+                pass  # Use current date if invalid
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
             raise HTTPException(
@@ -910,8 +924,11 @@ class LoanMutation:
                     and sched.penalty_due == sched.penalty_paid
                 ):
                     sched.status = "paid"
+                    sched.payment_date = transaction_date
                 else:
                     sched.status = "partial"
+                    if sched.principal_paid > 0 or sched.interest_paid > 0:
+                        sched.payment_date = transaction_date
 
             # Check if entire loan is paid off
             check_unpaid = await session.execute(
@@ -1282,6 +1299,7 @@ class AmortizationRow:
     status: str
     total_due: Decimal
     total_paid: Decimal
+    payment_date: Optional[datetime] = None
 
 
 @strawberry.type
@@ -1289,6 +1307,12 @@ class LoanAmortizationResponse:
     success: bool
     message: str
     rows: List[AmortizationRow]
+
+
+@strawberry.type
+class AmortizationUpdateResponse:
+    success: bool
+    message: str
 
 
 @strawberry.type
@@ -1450,6 +1474,7 @@ class CollectionsQuery:
                         status=s.status,
                         total_due=total_due,
                         total_paid=total_paid,
+                        payment_date=s.payment_date,
                     )
                 )
             return LoanAmortizationResponse(success=True, message="OK", rows=rows)
@@ -1639,11 +1664,194 @@ class PromiseToPayInput:
     contact_result: Optional[str] = None
 
 
+@strawberry.input
+class AmortizationRowUpdateInput:
+    loan_id: int
+    installment_number: int
+    due_date: Optional[str] = None
+    principal_due: Optional[Decimal] = None
+    interest_due: Optional[Decimal] = None
+    penalty_due: Optional[Decimal] = None
+    principal_paid: Optional[Decimal] = None
+    interest_paid: Optional[Decimal] = None
+    penalty_paid: Optional[Decimal] = None
+    status: Optional[str] = None
+    payment_date: Optional[str] = None
+
+
 # ── Extended Mutation for new Phase 2 features ───────────────────────────────
 
 
 @strawberry.type
 class ExtendedLoanMutation:
+    @strawberry.mutation
+    async def update_amortization_row(
+        self, info: Info, input: AmortizationRowUpdateInput
+    ) -> AmortizationUpdateResponse:
+        """Update any field in a specific amortization schedule installment.
+        Only admin users can modify amortization rows.
+        Records journal entries if payment amounts are changed.
+        """
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only admins can update amortization rows",
+            )
+
+        async for session in get_db_session():
+            result = await session.execute(
+                select(AmortizationSchedule)
+                .filter(AmortizationSchedule.loan_id == input.loan_id)
+                .filter(AmortizationSchedule.installment_number == input.installment_number)
+            )
+            sched = result.scalar_one_or_none()
+
+            if not sched:
+                return AmortizationUpdateResponse(
+                    success=False, message="Amortization schedule row not found"
+                )
+
+            # Store old values for accounting adjustments
+            old_principal_paid = sched.principal_paid or Decimal("0")
+            old_interest_paid = sched.interest_paid or Decimal("0")
+            old_penalty_paid = sched.penalty_paid or Decimal("0")
+
+            if input.due_date:
+                try:
+                    sched.due_date = datetime.strptime(input.due_date, "%Y-%m-%d").date()
+                except ValueError:
+                    return AmortizationUpdateResponse(
+                        success=False, message="Invalid due_date format. Use YYYY-MM-DD"
+                    )
+
+            if input.payment_date:
+                try:
+                    sched.payment_date = datetime.strptime(input.payment_date, "%Y-%m-%d")
+                except ValueError:
+                    return AmortizationUpdateResponse(
+                        success=False, message="Invalid payment_date format. Use YYYY-MM-DD"
+                    )
+
+            if input.principal_due is not None:
+                sched.principal_due = input.principal_due
+            if input.interest_due is not None:
+                sched.interest_due = input.interest_due
+            if input.penalty_due is not None:
+                sched.penalty_due = input.penalty_due
+            if input.principal_paid is not None:
+                sched.principal_paid = input.principal_paid
+            if input.interest_paid is not None:
+                sched.interest_paid = input.interest_paid
+            if input.penalty_paid is not None:
+                sched.penalty_paid = input.penalty_paid
+            if input.status is not None:
+                sched.status = input.status
+
+            # Calculate differences for accounting
+            diff_principal = (sched.principal_paid or Decimal("0")) - old_principal_paid
+            diff_interest = (sched.interest_paid or Decimal("0")) - old_interest_paid
+            diff_penalty = (sched.penalty_paid or Decimal("0")) - old_penalty_paid
+            total_diff = diff_principal + diff_interest + diff_penalty
+
+            if total_diff != 0:
+                # Record as an adjustment transaction
+                txn = LoanTransaction(
+                    loan_id=sched.loan_id,
+                    type="repayment",  # Admin adjustment is still a repayment correction
+                    amount=total_diff,
+                    receipt_number=f"ADJ-{uuid.uuid4().hex[:6].upper()}",
+                    description=f"Admin Adjustment for installment {sched.installment_number}. Principal: {diff_principal}, Interest: {diff_interest}, Penalty: {diff_penalty}",
+                    processed_by=str(current_user.id),
+                )
+                session.add(txn)
+
+                # GL entries
+                gl_lines = []
+                
+                # Cash Adjustment (1010)
+                if total_diff > 0:
+                    gl_lines.append({
+                        "account_code": "1010",
+                        "debit": total_diff,
+                        "credit": Decimal("0"),
+                        "description": f"Cash Adjustment (Increase) - Loan {sched.loan_id} Inst {sched.installment_number}",
+                    })
+                else:
+                    gl_lines.append({
+                        "account_code": "1010",
+                        "debit": Decimal("0"),
+                        "credit": abs(total_diff),
+                        "description": f"Cash Adjustment (Decrease) - Loan {sched.loan_id} Inst {sched.installment_number}",
+                    })
+
+                # Loans Receivable Adjustment (1300) - Normal balance is Debit. Credit increases (repayment), Debit decreases.
+                # Wait, if principal_paid increases, diff_principal > 0, we should Credit 1300.
+                if diff_principal > 0:
+                    gl_lines.append({
+                        "account_code": "1300",
+                        "debit": Decimal("0"),
+                        "credit": diff_principal,
+                        "description": "Loans Receivable Adjustment (Credit)",
+                    })
+                elif diff_principal < 0:
+                    gl_lines.append({
+                        "account_code": "1300",
+                        "debit": abs(diff_principal),
+                        "credit": Decimal("0"),
+                        "description": "Loans Receivable Adjustment (Debit)",
+                    })
+
+                # Interest Income Adjustment (4100) - Normal balance is Credit.
+                if diff_interest > 0:
+                    gl_lines.append({
+                        "account_code": "4100",
+                        "debit": Decimal("0"),
+                        "credit": diff_interest,
+                        "description": "Interest Income Adjustment (Credit)",
+                    })
+                elif diff_interest < 0:
+                    gl_lines.append({
+                        "account_code": "4100",
+                        "debit": abs(diff_interest),
+                        "credit": Decimal("0"),
+                        "description": "Interest Income Adjustment (Debit)",
+                    })
+
+                # Penalty Income Adjustment (4300) - Normal balance is Credit.
+                if diff_penalty > 0:
+                    gl_lines.append({
+                        "account_code": "4300",
+                        "debit": Decimal("0"),
+                        "credit": diff_penalty,
+                        "description": "Penalty Income Adjustment (Credit)",
+                    })
+                elif diff_penalty < 0:
+                    gl_lines.append({
+                        "account_code": "4300",
+                        "debit": abs(diff_penalty),
+                        "credit": Decimal("0"),
+                        "description": "Penalty Income Adjustment (Debit)",
+                    })
+
+                await create_journal_entry(
+                    session=session,
+                    reference_no=f"JNL-{txn.receipt_number}",
+                    description=f"Manual Payment Adjustment - Loan {sched.loan_id}",
+                    created_by=str(current_user.id),
+                    lines=gl_lines,
+                )
+
+            await session.commit()
+
+            return AmortizationUpdateResponse(
+                success=True, message="Amortization row and accounting records updated successfully"
+            )
+
+        return AmortizationUpdateResponse(
+            success=False, message="Failed to update amortization row"
+        )
+
     # ── Credit Scoring ────────────────────────────────────────────────────────
     @strawberry.mutation
     async def assess_credit_score(
@@ -2446,6 +2654,48 @@ class ExtendedLoanMutation:
                 success=True,
                 message=f"Loan restructured successfully. New term: {new_term_months} months, Rate: {new_rate}%",
             )
+
+    @strawberry.mutation
+    async def update_amortization_payment_date(
+        self, info: Info, loanId: int, installmentNumber: int, paymentDate: str
+    ) -> "AmortizationUpdateResponse":
+        """Update the payment date for a specific amortization schedule installment.
+        Only admin users can modify payment dates.
+        """
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Only admins can update payment dates"
+            )
+
+        try:
+            payment_date_parsed = datetime.strptime(paymentDate, "%Y-%m-%d")
+        except ValueError:
+            return AmortizationUpdateResponse(
+                success=False, message="Invalid date format. Use YYYY-MM-DD"
+            )
+
+        async for session in get_db_session():
+            result = await session.execute(
+                select(AmortizationSchedule)
+                .filter(AmortizationSchedule.loan_id == loanId)
+                .filter(AmortizationSchedule.installment_number == installmentNumber)
+            )
+            sched = result.scalar_one_or_none()
+
+            if not sched:
+                return AmortizationUpdateResponse(
+                    success=False, message="Amortization schedule not found"
+                )
+
+            sched.payment_date = payment_date_parsed
+            await session.commit()
+
+            return AmortizationUpdateResponse(
+                success=True, message="Payment date updated successfully"
+            )
+
+        return AmortizationUpdateResponse(success=False, message="Failed to update payment date")
 
 
 @strawberry.type

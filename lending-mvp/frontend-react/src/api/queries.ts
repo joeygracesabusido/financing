@@ -530,8 +530,8 @@ export const DISBURSE_LOAN = gql`
 `
 
 export const REPAY_LOAN = gql`
-  mutation RepayLoan($id: ID!, $amount: Decimal!) {
-    repayLoan(id: $id, amount: $amount) {
+  mutation RepayLoan($id: ID!, $amount: Decimal!, $paymentDate: String) {
+    repayLoan(id: $id, amount: $amount, paymentDate: $paymentDate) {
       success
       message
     }
@@ -715,7 +715,26 @@ export const GET_LOAN_AMORTIZATION = gql`
         principalDue interestDue penaltyDue
         principalPaid interestPaid penaltyPaid
         status totalDue totalPaid
+        paymentDate
       }
+    }
+  }
+`
+
+export const UPDATE_AMORTIZATION_PAYMENT_DATE = gql`
+  mutation UpdateAmortizationPaymentDate($loanId: Int!, $installmentNumber: Int!, $paymentDate: String!) {
+    updateAmortizationPaymentDate(loanId: $loanId, installmentNumber: $installmentNumber, paymentDate: $paymentDate) {
+      success
+      message
+    }
+  }
+`
+
+export const UPDATE_AMORTIZATION_ROW = gql`
+  mutation UpdateAmortizationRow($input: AmortizationRowUpdateInput!) {
+    updateAmortizationRow(input: $input) {
+      success
+      message
     }
   }
 `
@@ -725,6 +744,24 @@ export const GET_GL_ACCOUNTS = gql`
   query GetGLAccounts {
     glAccounts {
       id code name type description balance createdAt updatedAt
+    }
+  }
+`
+
+export const GET_GL_ACCOUNT_TRANSACTIONS = gql`
+  query GetGLAccountTransactions($accountCode: String!) {
+    glAccountTransactions(accountCode: $accountCode) {
+      success
+      message
+      transactions {
+        id
+        accountCode
+        debit
+        credit
+        description
+        timestamp
+        referenceNo
+      }
     }
   }
 `
@@ -905,7 +942,17 @@ export const GET_DASHBOARD_STATS = gql`
       }
       total
     }
-    loans { success total }
+    loans { 
+      success 
+      total 
+      loans {
+        id
+        status
+        principal
+        approvedPrincipal
+        outstandingBalance
+      }
+    }
   }
 `
 
@@ -979,12 +1026,13 @@ export const CREATE_CUSTOMER_LOAN = gql`
             message
             loan {
                 id
-                customer_id
-                product_id
+                customerId
+                productId
+                productName
                 principal
-                term_months
+                termMonths
                 status
-                created_at
+                createdAt
             }
         }
     }

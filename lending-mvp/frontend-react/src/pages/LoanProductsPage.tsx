@@ -49,6 +49,48 @@ export default function LoanProductsPage() {
 
     const products: LoanProduct[] = data?.loanProducts ?? []
 
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
+        setEditingProduct(null)
+        setFormData({
+            productCode: '',
+            name: '',
+            description: '',
+            amortizationType: 'flat_rate',
+            repaymentFrequency: 'monthly',
+            interestRate: 0.0,
+            penaltyRate: 0.0,
+            gracePeriodMonths: 0,
+            isActive: true,
+            originationFeeRate: 0.0,
+            originationFeeType: 'upfront',
+            prepaymentAllowed: true,
+            prepaymentPenaltyRate: 0.0,
+            customerLoanLimit: 0.0,
+        })
+    }
+
+    const handleEditProduct = (product: LoanProduct) => {
+        setEditingProduct(product)
+        setFormData({
+            productCode: product.productCode,
+            name: product.name,
+            description: product.description || '',
+            amortizationType: product.amortizationType,
+            repaymentFrequency: product.repaymentFrequency,
+            interestRate: product.interestRate,
+            penaltyRate: product.penaltyRate,
+            gracePeriodMonths: product.gracePeriodMonths,
+            isActive: product.isActive,
+            originationFeeRate: product.originationFeeRate || 0.0,
+            originationFeeType: product.originationFeeType || 'upfront',
+            prepaymentAllowed: product.prepaymentAllowed,
+            prepaymentPenaltyRate: product.prepaymentPenaltyRate || 0.0,
+            customerLoanLimit: product.customerLoanLimit || 0.0,
+        })
+        setIsModalOpen(true)
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target as any
         setFormData(prev => ({
@@ -60,12 +102,18 @@ export default function LoanProductsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            await createLoanProduct({ variables: { input: formData } })
-            setIsModalOpen(false)
+            if (editingProduct) {
+                await updateLoanProduct({ 
+                    variables: { id: editingProduct.id, input: formData } 
+                })
+            } else {
+                await createLoanProduct({ variables: { input: formData } })
+            }
+            handleCloseModal()
             refetch()
         } catch (err) {
             console.error(err)
-            alert("Failed to create product")
+            alert(editingProduct ? "Failed to update product" : "Failed to create product")
         }
     }
 
@@ -81,7 +129,7 @@ export default function LoanProductsPage() {
                     </p>
                 </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
                     className="flex items-center gap-2 px-4 py-2.5 bg-purple-500/15 border border-purple-500/30 text-purple-400 text-sm font-semibold rounded-lg hover:bg-purple-500/25 transition-all duration-200"
                 >
                     <Plus className="w-4 h-4" /> New Product
@@ -98,22 +146,31 @@ export default function LoanProductsPage() {
                         <div className="col-span-full py-16 text-center text-muted-foreground">No loan products configured</div>
                     ) : (
                         products.map((p) => (
-                            <div key={p.id} className="glass rounded-xl p-5 hover:border-purple-500/30 transition-all duration-300 cursor-pointer group flex flex-col justify-between">
+                            <div key={p.id} className="glass rounded-xl p-5 hover:border-purple-500/30 transition-all duration-300 group flex flex-col justify-between">
                                 <div>
                                     <div className="flex items-start justify-between mb-3">
                                         <div>
                                             <h3 className="font-semibold text-foreground group-hover:text-purple-400 transition-colors">{p.name}</h3>
                                             <p className="text-xs text-muted-foreground uppercase">{p.productCode}</p>
                                         </div>
-                                        <div className="flex flex-col items-end gap-1">
-                                            <span className="px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-md text-xs font-bold whitespace-nowrap">
-                                                {p.interestRate}% p.a.
-                                            </span>
-                                            {p.isActive ?
-                                                <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1"><Check className="w-3 h-3" /> Active</span>
-                                                :
-                                                <span className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1"><X className="w-3 h-3" /> Inactive</span>
-                                            }
+                                        <div className="flex items-center gap-2">
+                                            <button 
+                                                onClick={() => handleEditProduct(p)}
+                                                className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors"
+                                                title="Edit"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                            </button>
+                                            <div className="flex flex-col items-end gap-1">
+                                                <span className="px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-md text-xs font-bold whitespace-nowrap">
+                                                    {p.interestRate}% p.a.
+                                                </span>
+                                                {p.isActive ?
+                                                    <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1"><Check className="w-3 h-3" /> Active</span>
+                                                    :
+                                                    <span className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1"><X className="w-3 h-3" /> Inactive</span>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                     {p.description && (
@@ -168,8 +225,8 @@ export default function LoanProductsPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
                     <div className="glass w-full max-w-lg rounded-xl flex flex-col max-h-[90vh]">
                         <div className="flex items-center justify-between p-5 border-b border-border/50">
-                            <h2 className="text-xl font-semibold">Create Loan Product</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="text-muted-foreground hover:text-foreground">
+                            <h2 className="text-xl font-semibold">{editingProduct ? 'Edit Loan Product' : 'Create Loan Product'}</h2>
+                            <button onClick={handleCloseModal} className="text-muted-foreground hover:text-foreground">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
@@ -258,9 +315,10 @@ export default function LoanProductsPage() {
                             </form>
                         </div>
                         <div className="p-5 border-t border-border/50 flex justify-end gap-3">
-                            <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Cancel</button>
-                            <button form="create-product-form" type="submit" disabled={creating} className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-lg disabled:opacity-50 flex items-center gap-2">
-                                {creating && <Loader2 className="w-4 h-4 animate-spin" />} Save Product
+                            <button onClick={handleCloseModal} className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Cancel</button>
+                            <button form="create-product-form" type="submit" disabled={creating || updating} className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-lg disabled:opacity-50 flex items-center gap-2">
+                                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : creating ? <Loader2 className="w-4 h-4 animate-spin" /> : null} 
+                                {editingProduct ? 'Update Product' : 'Save Product'}
                             </button>
                         </div>
                     </div>

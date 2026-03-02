@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
-import { GET_GL_ACCOUNTS, CREATE_GL_ACCOUNT, GET_JOURNAL_ENTRIES, CREATE_MANUAL_JOURNAL_ENTRY } from '@/api/queries'
+import { GET_GL_ACCOUNTS, CREATE_GL_ACCOUNT, GET_JOURNAL_ENTRIES, CREATE_MANUAL_JOURNAL_ENTRY, GET_GL_ACCOUNT_TRANSACTIONS } from '@/api/queries'
 import { formatCurrency, formatDate } from '@/lib/utils'
-import { BookOpen, Plus, ChevronDown, ChevronRight, X, Trash2, AlertCircle, Save, CheckCircle, Loader2 } from 'lucide-react'
+import { BookOpen, Plus, ChevronDown, ChevronRight, X, Trash2, AlertCircle, Save, CheckCircle, Loader2, ArrowRightLeft } from 'lucide-react'
 
 const typeColors: Record<string, string> = {
     asset: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
@@ -21,11 +21,90 @@ interface JournalLineInput {
     description: string
 }
 
+function TransactionsModal({ account, onClose }: { account: any, onClose: () => void }) {
+    const { data, loading, error } = useQuery(GET_GL_ACCOUNT_TRANSACTIONS, {
+        variables: { accountCode: account.code },
+        fetchPolicy: 'network-only'
+    })
+
+    const transactions = data?.glAccountTransactions?.transactions || []
+
+    return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+            <div className="glass rounded-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col shadow-2xl border border-white/10 animate-in zoom-in-95 duration-200">
+                <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-secondary/30">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <ArrowRightLeft className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-foreground leading-tight">{account.code} - {account.name}</h2>
+                            <p className="text-xs text-muted-foreground mt-0.5 uppercase tracking-wider font-semibold">Transaction History</p>
+                        </div>
+                    </div>
+                    <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-6">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 gap-3">
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                            <p className="text-sm text-muted-foreground">Loading transactions...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="text-center py-10 text-destructive">Error: {error.message}</div>
+                    ) : transactions.length === 0 ? (
+                        <div className="text-center py-20 text-muted-foreground italic">No transactions found for this account.</div>
+                    ) : (
+                        <div className="border border-border rounded-xl overflow-hidden">
+                            <table className="w-full text-sm">
+                                <thead className="bg-secondary/50 border-b border-border">
+                                    <tr className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                                        <th className="px-4 py-3 text-left">Ref No</th>
+                                        <th className="px-4 py-3 text-left">Description</th>
+                                        <th className="px-4 py-3 text-left">Date</th>
+                                        <th className="px-4 py-3 text-right">Debit</th>
+                                        <th className="px-4 py-3 text-right">Credit</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-border/50">
+                                    {transactions.map((tx: any) => (
+                                        <tr key={tx.id} className="hover:bg-secondary/20 transition-colors">
+                                            <td className="px-4 py-3 font-mono text-xs text-primary">{tx.referenceNo}</td>
+                                            <td className="px-4 py-3 text-foreground">{tx.description}</td>
+                                            <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(tx.timestamp)}</td>
+                                            <td className="px-4 py-3 text-right font-mono text-emerald-400">{Number(tx.debit) > 0 ? formatCurrency(Number(tx.debit)) : '—'}</td>
+                                            <td className="px-4 py-3 text-right font-mono text-red-400">{Number(tx.credit) > 0 ? formatCurrency(Number(tx.credit)) : '—'}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+
+                <div className="px-6 py-4 border-t border-border bg-secondary/30 flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground font-medium">Total Balance: <span className={`font-bold ml-1 ${Number(account.balance) < 0 ? 'text-red-400' : 'text-emerald-400'}`}>{formatCurrency(Number(account.balance))}</span></p>
+                    <button
+                        onClick={onClose}
+                        className="px-6 py-2 bg-secondary border border-border rounded-xl text-sm font-medium text-foreground hover:bg-secondary/80 transition-all"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export default function ChartOfAccountsPage() {
     const [tab, setTab] = useState<Tab>('accounts')
     const [showForm, setShowForm] = useState(false)
     const [isJournalModalOpen, setIsJournalModalOpen] = useState(false)
     const [expandedEntry, setExpandedEntry] = useState<string | null>(null)
+    const [selectedAccount, setSelectedAccount] = useState<any | null>(null)
 
     const { data: glData, loading: glLoading, refetch: refetchGL, error: glError } = useQuery(GET_GL_ACCOUNTS)
     const { data: jeData, loading: jeLoading, refetch: refetchJE, error: jeError } = useQuery(GET_JOURNAL_ENTRIES, { variables: { skip: 0, limit: 50 } })
@@ -403,7 +482,11 @@ export default function ChartOfAccountsPage() {
                                         </thead>
                                         <tbody>
                                             {(grouped[type] || []).map((a: any) => (
-                                                <tr key={a.id} className="border-t border-border/30 hover:bg-secondary/20">
+                                                <tr 
+                                                    key={a.id} 
+                                                    className="border-t border-border/30 hover:bg-secondary/20 cursor-pointer transition-colors"
+                                                    onClick={() => setSelectedAccount(a)}
+                                                >
                                                     <td className="px-5 py-3 font-mono text-primary w-24">{a.code}</td>
                                                     <td className="px-5 py-3 font-medium">{a.name}</td>
                                                     <td className="px-5 py-3 text-muted-foreground text-xs">{a.description || '—'}</td>
@@ -471,6 +554,13 @@ export default function ChartOfAccountsPage() {
                         <div className="glass rounded-xl p-16 text-center text-muted-foreground">No journal entries yet — they'll appear after loan disbursements and repayments</div>
                     )}
                 </div>
+            )}
+
+            {selectedAccount && (
+                <TransactionsModal 
+                    account={selectedAccount} 
+                    onClose={() => setSelectedAccount(null)} 
+                />
             )}
         </div>
     )

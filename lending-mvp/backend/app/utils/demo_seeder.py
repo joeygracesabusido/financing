@@ -521,6 +521,111 @@ async def seed_loan_products() -> Dict[str, Any]:
     }
 
 
+async def seed_loan_products_postgres() -> Dict[str, Any]:
+    """Seed loan product data into PostgreSQL."""
+    logger.info("Seeding loan products to PostgreSQL...")
+    from sqlalchemy import select
+
+    SAMPLE_PG_LOAN_PRODUCTS = [
+        {
+            "product_code": "PER-LN-01",
+            "name": "Personal Loan",
+            "description": "General personal loan for any purpose",
+            "amortization_type": "flat_rate",
+            "repayment_frequency": "monthly",
+            "interest_rate": 14.0,
+            "penalty_rate": 2.0,
+            "grace_period_months": 0,
+            "is_active": True,
+            "principal_only_grace": False,
+            "full_grace": False,
+            "origination_fee_rate": 1.0,
+            "origination_fee_type": "upfront",
+            "prepayment_allowed": True,
+            "prepayment_penalty_rate": 0.5,
+            "customer_loan_limit": 500000.0,
+        },
+        {
+            "product_code": "BUS-LN-01",
+            "name": "Business Loan",
+            "description": "Loan for business expansion and working capital",
+            "amortization_type": "declining_balance",
+            "repayment_frequency": "monthly",
+            "interest_rate": 12.0,
+            "penalty_rate": 2.5,
+            "grace_period_months": 1,
+            "is_active": True,
+            "principal_only_grace": True,
+            "full_grace": False,
+            "origination_fee_rate": 1.5,
+            "origination_fee_type": "upfront",
+            "prepayment_allowed": True,
+            "prepayment_penalty_rate": 1.0,
+            "customer_loan_limit": 2000000.0,
+        },
+        {
+            "product_code": "SAL-LN-01",
+            "name": "Salary Loan",
+            "description": "Quick loan for salaried employees",
+            "amortization_type": "flat_rate",
+            "repayment_frequency": "monthly",
+            "interest_rate": 10.0,
+            "penalty_rate": 1.5,
+            "grace_period_months": 0,
+            "is_active": True,
+            "principal_only_grace": False,
+            "full_grace": False,
+            "origination_fee_rate": 0.5,
+            "origination_fee_type": "upfront",
+            "prepayment_allowed": True,
+            "prepayment_penalty_rate": 0.0,
+            "customer_loan_limit": 300000.0,
+        },
+    ]
+
+    created_products = []
+    async with AsyncSessionLocal() as session:
+        for product_data in SAMPLE_PG_LOAN_PRODUCTS:
+            # Check if already exists
+            result = await session.execute(
+                select(PGLoanProduct).filter(
+                    PGLoanProduct.product_code == product_data["product_code"]
+                )
+            )
+            existing = result.scalar_one_or_none()
+            if not existing:
+                new_prod = PGLoanProduct(
+                    product_code=product_data["product_code"],
+                    name=product_data["name"],
+                    description=product_data["description"],
+                    amortization_type=product_data["amortization_type"],
+                    repayment_frequency=product_data["repayment_frequency"],
+                    interest_rate=product_data["interest_rate"],
+                    penalty_rate=product_data["penalty_rate"],
+                    grace_period_months=product_data["grace_period_months"],
+                    is_active=product_data["is_active"],
+                    principal_only_grace=product_data["principal_only_grace"],
+                    full_grace=product_data["full_grace"],
+                    origination_fee_rate=product_data["origination_fee_rate"],
+                    origination_fee_type=product_data["origination_fee_type"],
+                    prepayment_allowed=product_data["prepayment_allowed"],
+                    prepayment_penalty_rate=product_data["prepayment_penalty_rate"],
+                    customer_loan_limit=product_data["customer_loan_limit"],
+                )
+                session.add(new_prod)
+                created_products.append(product_data["name"])
+                logger.info(f"  ✓ Created PostgreSQL product: {product_data['name']}")
+
+        if created_products:
+            await session.commit()
+
+    logger.info(f"PostgreSQL loan products seeded: {len(created_products)} new records")
+    return {
+        "loan_products_postgres_created": len(created_products),
+        "products": created_products,
+    }
+
+
 async def seed_loans(
     users: List[Dict], customers: List[Dict], products: List[Dict]
 ) -> Dict[str, Any]:
@@ -1845,6 +1950,7 @@ async def seed_demo_data() -> Dict[str, Any]:
 
         # Phase 3: Loan Products & Loans
         results["loan_products"] = await seed_loan_products()
+        results["loan_products_postgres"] = await seed_loan_products_postgres()
 
         # ── Resolve linked entities from DB (handles both fresh and restart) ──
         customers_collection = get_customers_collection()

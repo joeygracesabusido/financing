@@ -6,22 +6,56 @@ import {
     SUBMIT_LOAN, REVIEW_LOAN, APPROVE_LOAN, REJECT_LOAN, WRITE_OFF_LOAN,
     GET_LOAN_COLLATERAL, ADD_COLLATERAL, REMOVE_COLLATERAL,
     GET_LOAN_GUARANTORS, ADD_GUARANTOR, REMOVE_GUARANTOR,
-    GET_LOAN_AMORTIZATION,
+    GET_LOAN_AMORTIZATION, UPDATE_AMORTIZATION_PAYMENT_DATE, UPDATE_AMORTIZATION_ROW,
+    GET_GL_ACCOUNTS,
 } from '@/api/queries'
 import { formatCurrency, formatDate, getLoanStatusColor } from '@/lib/utils'
-import { ArrowLeft, CreditCard, Activity, Calendar, FileText, CheckCircle, Clock, Shield, XCircle, PackagePlus, Users, Trash2 } from 'lucide-react'
+import { ArrowLeft, CreditCard, Activity, Calendar, FileText, CheckCircle, Clock, Shield, XCircle, PackagePlus, Users, Trash2, Pencil, Save } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 type Tab = 'overview' | 'schedule' | 'transactions' | 'collateral' | 'guarantors'
+
+interface EditingAmortRow {
+    installmentNumber: number
+    dueDate: string
+    principalDue: string
+    interestDue: string
+    penaltyDue: string
+    principalPaid: string
+    interestPaid: string
+    penaltyPaid: string
+    status: string
+    paymentDate: string
+}
 
 export default function LoanDetailPage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const { isAdmin } = useAuth()
     const [tab, setTab] = useState<Tab>('overview')
     const [repayAmount, setRepayAmount] = useState('')
+    const [repayDate, setRepayDate] = useState(new Date().toISOString().split('T')[0])
+    const [editingAmortRow, setEditingAmortRow] = useState<EditingAmortRow | null>(null)
 
     const { data: loanData, loading: loanLoading, refetch: refetchLoan } = useQuery(GET_LOAN, { variables: { id } })
-    const { data: txData, refetch: refetchTx } = useQuery(GET_LOAN_TRANSACTIONS, { variables: { loanId: id } })
     const loan = loanData?.loan?.loan
+    const { data: txData, refetch: refetchTx } = useQuery(GET_LOAN_TRANSACTIONS, { variables: { loanId: id } })
+    const { data: amortData, refetch: refetchAmortization } = useQuery(GET_LOAN_AMORTIZATION, {
+        variables: { loanId: parseInt(id || '0') },
+        skip: !loan || !['active', 'paid', 'defaulted', 'written_off'].includes(loan?.status)
+    })
+
+    // Update amortization row mutation
+    const [updateAmortRow, { loading: updatingAmortRow }] = useMutation(UPDATE_AMORTIZATION_ROW, {
+        refetchQueries: [{ query: GET_GL_ACCOUNTS }],
+        onCompleted: () => {
+            refetchAmortization()
+            setEditingAmortRow(null)
+        },
+        onError: (err) => {
+            alert('Failed to update amortization row: ' + err.message)
+        }
+    })
 
     // Approval workflow mutations
     const [submitLoan] = useMutation(SUBMIT_LOAN)
@@ -40,12 +74,6 @@ export default function LoanDetailPage() {
     const [removeCollateral] = useMutation(REMOVE_COLLATERAL)
     const [addGuarantor] = useMutation(ADD_GUARANTOR)
     const [removeGuarantor] = useMutation(REMOVE_GUARANTOR)
-
-    // Amortization
-    const { data: amortData } = useQuery(GET_LOAN_AMORTIZATION, {
-        variables: { loanId: parseInt(id || '0') },
-        skip: !loan || !['active', 'paid', 'defaulted', 'written_off'].includes(loan?.status)
-    })
 
     // Schedule preview for pre-disbursement
     const { data: previewData } = useQuery(PREVIEW_LOAN_SCHEDULE, {
@@ -74,13 +102,27 @@ export default function LoanDetailPage() {
 
     const handleRepay = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!repayAmount || isNaN(Number(repayAmount))) return
+        if (!repayAmount || isNaN(Number(repayAmount))) {
+            alert('Please enter a valid amount')
+            return
+        }
         try {
-            const res = await repayLoan({ variables: { id, amount: parseFloat(repayAmount) } })
+            console.log('Processing repayment:', { id, amount: repayAmount, date: repayDate })
+            const res = await repayLoan({ variables: { id, amount: parseFloat(repayAmount), paymentDate: repayDate } })
+            console.log('Repayment response:', res)
             setRepayAmount('')
-            alert(res.data?.repayLoan?.message || 'Repayment processed')
-            refetchLoan(); refetchTx()
-        } catch (e: any) { alert(e.message) }
+            if (res.errors && res.errors.length > 0) {
+                alert('Error: ' + res.errors[0].message)
+            } else if (res.data?.repayLoan) {
+                alert(res.data.repayLoan.message || 'Repayment processed')
+                refetchLoan(); refetchTx()
+            } else {
+                alert('No response from server')
+            }
+        } catch (e: any) { 
+            console.error('Repayment error:', e)
+            alert(e.message || 'Failed to process repayment')
+        }
     }
 
     const handleSubmit = async () => { try { await submitLoan({ variables: { id } }); refetchLoan() } catch (e: any) { alert(e.message) } }
@@ -261,7 +303,27 @@ export default function LoanDetailPage() {
                                 <div className="glass p-6 rounded-xl border-emerald-500/20 bg-emerald-500/5">
                                     <h3 className="text-lg font-semibold mb-2 text-emerald-400">Make Repayment</h3>
                                     <form onSubmit={handleRepay} className="space-y-4 mt-4">
-                                        <input required type="number" step="0.01" value={repayAmount} onChange={e => setRepayAmount(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 focus:border-emerald-500 focus:outline-none" placeholder="Amount" />
+                                        <div>
+                                            <label className="text-sm text-muted-foreground mb-1 block">Payment Date</label>
+                                            <input 
+                                                type="date" 
+                                                value={repayDate} 
+                                                onChange={e => setRepayDate(e.target.value)} 
+                                                className="w-full bg-background border border-border rounded-lg px-3 py-2 focus:border-emerald-500 focus:outline-none"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-muted-foreground mb-1 block">Amount</label>
+                                            <input 
+                                                required 
+                                                type="number" 
+                                                step="0.01" 
+                                                value={repayAmount} 
+                                                onChange={e => setRepayAmount(e.target.value)} 
+                                                className="w-full bg-background border border-border rounded-lg px-3 py-2 focus:border-emerald-500 focus:outline-none" 
+                                                placeholder="Amount" 
+                                            />
+                                        </div>
                                         <button type="submit" disabled={repaying} className="w-full py-2 bg-emerald-500 text-white rounded-lg font-medium hover:bg-emerald-600 disabled:opacity-50">
                                             {repaying ? 'Processing...' : 'Submit Payment'}
                                         </button>
@@ -297,31 +359,232 @@ export default function LoanDetailPage() {
                                     <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Due Date</th>
                                     <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Principal</th>
                                     <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Interest</th>
+                                    <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Penalty</th>
                                     <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Total</th>
                                     {actualSchedule.length > 0 && <th className="px-4 py-3 text-right font-semibold text-muted-foreground">Paid</th>}
+                                    {actualSchedule.length > 0 && <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Payment Date</th>}
                                     {actualSchedule.length > 0 && <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Status</th>}
+                                    {isAdmin && actualSchedule.length > 0 && <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Actions</th>}
                                 </tr>
-                            </thead>
-                            <tbody>
+                                </thead>
+                                <tbody>
                                 {scheduleToShow.map((row: any) => (
                                     <tr key={row.installmentNumber} className="border-t border-border/50 hover:bg-secondary/20 font-mono">
                                         <td className="px-4 py-3">{row.installmentNumber}</td>
-                                        <td className="px-4 py-3">{formatDate(row.dueDate)}</td>
-                                        <td className="px-4 py-3 text-right">{formatCurrency(row.principalDue)}</td>
-                                        <td className="px-4 py-3 text-right">{formatCurrency(row.interestDue)}</td>
-                                        <td className="px-4 py-3 text-right font-semibold text-primary">{formatCurrency(row.totalDue || (parseFloat(row.principalDue) + parseFloat(row.interestDue)))}</td>
-                                        {actualSchedule.length > 0 && <td className="px-4 py-3 text-right text-emerald-400">{formatCurrency(row.totalPaid)}</td>}
-                                        {actualSchedule.length > 0 && (
-                                            <td className="px-4 py-3 text-center">
-                                                <span className={`px-2 py-0.5 text-xs font-bold rounded ${row.status === 'paid' ? 'bg-emerald-500/15 text-emerald-400' : row.status === 'partial' ? 'bg-yellow-500/15 text-yellow-400' : row.status === 'overdue' ? 'bg-red-500/15 text-red-400' : 'bg-secondary/50 text-muted-foreground'}`}>
-                                                    {row.status}
-                                                </span>
-                                            </td>
+                                        <td className="px-4 py-3">
+                                            {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                <input
+                                                    type="date"
+                                                    value={editingAmortRow.dueDate}
+                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, dueDate: e.target.value })}
+                                                    className="bg-background border border-primary rounded px-2 py-1 text-xs w-32"
+                                                />
+                                            ) : (
+                                                formatDate(row.dueDate)
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={editingAmortRow.principalDue}
+                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, principalDue: e.target.value })}
+                                                    className="bg-background border border-primary rounded px-2 py-1 text-xs w-24 text-right"
+                                                />
+                                            ) : (
+                                                formatCurrency(row.principalDue)
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={editingAmortRow.interestDue}
+                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, interestDue: e.target.value })}
+                                                    className="bg-background border border-primary rounded px-2 py-1 text-xs w-24 text-right"
+                                                />
+                                            ) : (
+                                                formatCurrency(row.interestDue)
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 text-right">
+                                            {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={editingAmortRow.penaltyDue}
+                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, penaltyDue: e.target.value })}
+                                                    className="bg-background border border-primary rounded px-2 py-1 text-xs w-24 text-right"
+                                                />
+                                            ) : (
+                                                formatCurrency(row.penaltyDue || 0)
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 text-right font-semibold text-primary">
+                                            {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                formatCurrency(
+                                                    parseFloat(editingAmortRow.principalDue || '0') + 
+                                                    parseFloat(editingAmortRow.interestDue || '0') +
+                                                    parseFloat(editingAmortRow.penaltyDue || '0')
+                                                )
+                                            ) : (
+                                                formatCurrency(
+                                                    row.totalDue || (
+                                                        parseFloat(row.principalDue) + 
+                                                        parseFloat(row.interestDue) + 
+                                                        parseFloat(row.penaltyDue || 0)
+                                                    )
+                                                )
+                                            )}
+                                        </td>
+
+                                            {actualSchedule.length > 0 && (
+                                                <td className="px-4 py-3 text-right text-emerald-400">
+                                                    {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                        <div className="flex flex-col gap-1 items-end">
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-[10px] text-muted-foreground">Pr:</span>
+                                                                <input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    value={editingAmortRow.principalPaid}
+                                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, principalPaid: e.target.value })}
+                                                                    className="bg-background border border-primary rounded px-1 py-0.5 text-[10px] w-16 text-right"
+                                                                />
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-[10px] text-muted-foreground">In:</span>
+                                                                <input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    value={editingAmortRow.interestPaid}
+                                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, interestPaid: e.target.value })}
+                                                                    className="bg-background border border-primary rounded px-1 py-0.5 text-[10px] w-16 text-right"
+                                                                />
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-[10px] text-muted-foreground">Pe:</span>
+                                                                <input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    value={editingAmortRow.penaltyPaid}
+                                                                    onChange={e => setEditingAmortRow({ ...editingAmortRow, penaltyPaid: e.target.value })}
+                                                                    className="bg-background border border-primary rounded px-1 py-0.5 text-[10px] w-16 text-right"
+                                                                />
+                                                            </div>
+                                                            <div className="text-xs font-bold pt-1 border-t border-border mt-1">
+                                                                Σ {formatCurrency(
+                                                                    parseFloat(editingAmortRow.principalPaid || '0') +
+                                                                    parseFloat(editingAmortRow.interestPaid || '0') +
+                                                                    parseFloat(editingAmortRow.penaltyPaid || '0')
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        formatCurrency(row.totalPaid)
+                                                    )}
+                                                </td>
+                                            )}
+                                            {actualSchedule.length > 0 && (
+                                                <td className="px-4 py-3 text-left text-muted-foreground">
+                                                    {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                        <input
+                                                            type="date"
+                                                            value={editingAmortRow.paymentDate}
+                                                            onChange={e => setEditingAmortRow({ ...editingAmortRow, paymentDate: e.target.value })}
+                                                            className="bg-background border border-primary rounded px-2 py-1 text-xs w-32"
+                                                        />
+                                                    ) : (
+                                                        row.paymentDate ? formatDate(row.paymentDate) : '-'
+                                                    )}
+                                                </td>
+                                            )}
+                                            {actualSchedule.length > 0 && (
+                                                <td className="px-4 py-3 text-center">
+                                                    {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                        <select
+                                                            value={editingAmortRow.status}
+                                                            onChange={e => setEditingAmortRow({ ...editingAmortRow, status: e.target.value })}
+                                                            className="bg-background border border-primary rounded px-2 py-1 text-xs"
+                                                        >
+                                                            <option value="pending">pending</option>
+                                                            <option value="partial">partial</option>
+                                                            <option value="paid">paid</option>
+                                                            <option value="overdue">overdue</option>
+                                                        </select>
+                                                    ) : (
+                                                        <span className={`px-2 py-0.5 text-xs font-bold rounded ${row.status === 'paid' ? 'bg-emerald-500/15 text-emerald-400' : row.status === 'partial' ? 'bg-yellow-500/15 text-yellow-400' : row.status === 'overdue' ? 'bg-red-500/15 text-red-400' : 'bg-secondary/50 text-muted-foreground'}`}>
+                                                            {row.status}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                            )}
+                                            {isAdmin && actualSchedule.length > 0 && (
+                                                <td className="px-4 py-3 text-center">
+                                                    {editingAmortRow?.installmentNumber === row.installmentNumber ? (
+                                                        <div className="flex items-center justify-center gap-1">
+                                                            <button
+                                                                onClick={() => {
+                                                                    updateAmortRow({
+                                                                        variables: {
+                                                                            input: {
+                                                                                loanId: parseInt(id || '0'),
+                                                                                installmentNumber: row.installmentNumber,
+                                                                                dueDate: editingAmortRow.dueDate,
+                                                                                principalDue: parseFloat(editingAmortRow.principalDue),
+                                                                                interestDue: parseFloat(editingAmortRow.interestDue),
+                                                                                penaltyDue: parseFloat(editingAmortRow.penaltyDue),
+                                                                                principalPaid: parseFloat(editingAmortRow.principalPaid),
+                                                                                interestPaid: parseFloat(editingAmortRow.interestPaid),
+                                                                                penaltyPaid: parseFloat(editingAmortRow.penaltyPaid),
+                                                                                status: editingAmortRow.status,
+                                                                                paymentDate: editingAmortRow.paymentDate || null
+                                                                            }
+                                                                        }
+                                                                    })
+                                                                }}
+                                                                disabled={updatingAmortRow}
+                                                                className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded disabled:opacity-50"
+                                                                title="Save"
+                                                            >
+                                                                <Save className="w-4 h-4" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setEditingAmortRow(null)}
+                                                                className="p-1 text-red-400 hover:bg-red-500/10 rounded"
+                                                                title="Cancel"
+                                                            >
+                                                                <XCircle className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => setEditingAmortRow({
+                                                                installmentNumber: row.installmentNumber,
+                                                                dueDate: row.dueDate ? row.dueDate.split('T')[0] : '',
+                                                                principalDue: row.principalDue.toString(),
+                                                                interestDue: row.interestDue.toString(),
+                                                                penaltyDue: (row.penaltyDue || 0).toString(),
+                                                                principalPaid: row.principalPaid.toString(),
+                                                                interestPaid: row.interestPaid.toString(),
+                                                                penaltyPaid: row.penaltyPaid.toString(),
+                                                                status: row.status,
+                                                                paymentDate: row.paymentDate ? row.paymentDate.split('T')[0] : ''
+                                                            })}
+                                                            className="p-1 text-muted-foreground hover:text-primary hover:bg-secondary/50 rounded"
+                                                            title="Edit Row"
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                </td>
                                         )}
                                     </tr>
                                 ))}
                                 {scheduleToShow.length === 0 && (
-                                    <tr><td colSpan={7} className="py-20 text-center text-muted-foreground">Schedule will be generated upon disbursement</td></tr>
+                                    <tr><td colSpan={isAdmin && actualSchedule.length > 0 ? 10 : (actualSchedule.length > 0 ? 9 : 6)} className="py-20 text-center text-muted-foreground">Schedule will be generated upon disbursement</td></tr>
                                 )}
                             </tbody>
                         </table>

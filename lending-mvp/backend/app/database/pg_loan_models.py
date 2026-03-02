@@ -200,6 +200,9 @@ class AmortizationSchedule(Base):
     interest_paid = Column(Numeric(14, 2), nullable=False, default=0)
     penalty_paid = Column(Numeric(14, 2), nullable=False, default=0)
 
+    # Payment date (when the installment was paid)
+    payment_date = Column(DateTime(timezone=True), nullable=True)
+
     status = Column(String(50), nullable=False, default="pending")
     # pending, partial, paid, overdue
 

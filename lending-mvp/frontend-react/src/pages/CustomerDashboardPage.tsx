@@ -63,7 +63,7 @@ export default function CustomerDashboardPage() {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" asChild>
-                        <Link to="/loans/new">New Loan Application</Link>
+                        <Link to="/customer/loans/new">New Loan Application</Link>
                     </Button>
                     <Button variant="outline" asChild>
                         <Link to="/transfer">Transfer Funds</Link>

@@ -187,10 +187,63 @@ def _gl_db_to_type(acct: GLAccount) -> GLAccountType:
     )
 
 
+@strawberry.type
+class GLAccountTransactionType:
+    id: strawberry.ID
+    account_code: str = strawberry.field(name="accountCode")
+    debit: Decimal
+    credit: Decimal
+    description: Optional[str]
+    timestamp: datetime
+    reference_no: str = strawberry.field(name="referenceNo")
+
+
+@strawberry.type
+class GLAccountTransactionsResponse:
+    success: bool
+    message: str
+    transactions: List[GLAccountTransactionType]
+
+
 # ── Queries ──────────────────────────────────────────────────────────────
 
 @strawberry.type
 class ChartOfAccountsQuery:
+    @strawberry.field
+    async def gl_account_transactions(self, info: Info, accountCode: str) -> GLAccountTransactionsResponse:
+        current_user: UserInDB = info.context.get("current_user")
+        if not current_user or current_user.role in ["customer"]:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+        async for session in get_db_session():
+            from sqlalchemy.orm import joinedload
+            result = await session.execute(
+                select(JournalLine)
+                .options(joinedload(JournalLine.entry))
+                .filter(JournalLine.account_code == accountCode)
+                .order_by(JournalLine.id.desc())
+            )
+            lines = result.scalars().all()
+            
+            transactions = [
+                GLAccountTransactionType(
+                    id=strawberry.ID(str(l.id)),
+                    account_code=l.account_code,
+                    debit=l.debit,
+                    credit=l.credit,
+                    description=l.description or l.entry.description,
+                    timestamp=l.entry.timestamp,
+                    reference_no=l.entry.reference_no,
+                )
+                for l in lines
+            ]
+            
+            return GLAccountTransactionsResponse(
+                success=True,
+                message="OK",
+                transactions=transactions
+            )
+
     @strawberry.field
     async def gl_accounts(self, info: Info) -> List[GLAccountType]:
         current_user: UserInDB = info.context.get("current_user")

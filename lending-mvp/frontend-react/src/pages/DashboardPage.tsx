@@ -66,15 +66,25 @@ function StatCard({ title, value, subtitle, icon: Icon, gradient, trend }: StatC
 export default function DashboardPage() {
     const { data, loading } = useQuery(GET_DASHBOARD_STATS)
 
-    const totalCustomers = data?.customers?.length ?? 0
+    const totalCustomers = data?.customers?.total ?? 0
     const totalSavings = data?.savingsAccounts?.accounts?.reduce(
-        (sum: number, a: { balance: number }) => sum + (a.balance || 0), 0
+        (sum: number, a: { balance: any }) => {
+            const val = Number(a.balance || 0)
+            return sum + (isNaN(val) ? 0 : val)
+        }, 0
     ) ?? 0
-    const totalLoans = data?.loans?.total ?? 0
-    const activeLoans = data?.loans?.loans?.filter((l: { status: string }) => l.status === 'active').length ?? 0
-    const overdueLoans = data?.loans?.loans?.filter(
+    
+    const loans = data?.loans?.loans || []
+    const activeLoans = loans.filter((l: { status: string }) => l.status === 'active').length
+    const overdueLoans = loans.filter(
         (l: { status: string }) => l.status === 'overdue' || l.status === 'defaulted'
-    ).length ?? 0
+    ).length
+    
+    const totalPortfolio = loans.reduce((s, l: any) => {
+        if (l.status !== 'active') return s
+        const val = Number(l.outstandingBalance || l.approvedPrincipal || l.principal || 0)
+        return s + (isNaN(val) ? 0 : val)
+    }, 0)
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -106,7 +116,7 @@ export default function DashboardPage() {
                 />
                 <StatCard
                     title="Loan Portfolio"
-                    value={loading ? '—' : formatCurrency(totalLoans)}
+                    value={loading ? '—' : formatCurrency(totalPortfolio)}
                     subtitle={`${activeLoans} active loans`}
                     icon={CreditCard}
                     gradient="gradient-warning"
