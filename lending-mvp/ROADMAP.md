@@ -164,32 +164,32 @@
 > **Goal**: Meet regulatory and audit requirements for financial institutions.
 
 ### 4.1 KYC / AML Compliance
-- [ ] **KYC document management** — upload, review, approve/reject, expiry alerts
-- [ ] **AML screening** — watchlist check (OFAC, local blacklists) on customer onboarding
-- [ ] **Suspicious Activity Report (SAR)** flagging
-- [ ] **CTR (Currency Transaction Report)** — auto-flag cash transactions > threshold
-- [ ] **PEP (Politically Exposed Persons)** flagging
+- [x] **KYC document management** — upload, review, approve/reject, expiry alerts
+- [x] **AML screening** — watchlist check (OFAC, local blacklists) on customer onboarding
+- [x] **Suspicious Activity Report (SAR)** flagging
+- [x] **CTR (Currency Transaction Report)** — auto-flag cash transactions > threshold
+- [x] **PEP (Politically Exposed Persons)** flagging
 
 ### 4.2 Regulatory Reporting
-- [ ] **Loan Portfolio Report** — total outstanding, by product, by branch
-- [ ] **Portfolio At Risk (PAR)** — PAR1, PAR7, PAR30, PAR90
-- [ ] **Non-Performing Loans (NPL) Report**
-- [ ] **Repayment Rate / Collection Efficiency**
-- [ ] **Loan Loss Reserve (LLR) Report**
-- [ ] **Savings Mobilization Report** — deposits vs. withdrawals
-- [ ] **BSP/SEC regulatory reports** (Philippines-specific) or equivalent
+- [x] **Loan Portfolio Report** — total outstanding, by product, by branch
+- [x] **Portfolio At Risk (PAR)** — PAR1, PAR7, PAR30, PAR90
+- [x] **Non-Performing Loans (NPL) Report**
+- [x] **Repayment Rate / Collection Efficiency**
+- [x] **Loan Loss Reserve (LLR) Report**
+- [x] **Savings Mobilization Report** — deposits vs. withdrawals
+- [x] **BSP/SEC regulatory reports** (Philippines-specific) or equivalent
 
 ### 4.3 Financial Statements
-- [ ] **Trial Balance** — auto-generated from GL entries
-- [ ] **Income Statement (P&L)** — interest income, fee income, operating expenses
-- [ ] **Balance Sheet** — assets, liabilities, capital
-- [ ] **Cash Flow Statement**
-- [ ] **Period closing** — month-end, quarter-end, year-end close process
+- [x] **Trial Balance** — auto-generated from GL entries
+- [x] **Income Statement (P&L)** — interest income, fee income, operating expenses
+- [x] **Balance Sheet** — assets, liabilities, capital
+- [x] **Cash Flow Statement**
+- [x] **Period closing** — month-end, quarter-end, year-end close process
 
 ### 4.4 Risk Management
-- [ ] **Loan-to-Value (LTV) ratio** for collateral
-- [ ] **Concentration risk report** — exposure by sector, geography
-- [ ] **Liquidity ratio monitoring**
+- [x] **Loan-to-Value (LTV) ratio** for collateral
+- [x] **Concentration risk report** — exposure by sector, geography
+- [x] **Liquidity ratio monitoring**
 
 ---
 
@@ -307,6 +307,32 @@
 - `backend/app/teller.py` - Cash drawer, transaction limits, reconciliation APIs
 - `backend/app/payment_gateway.py` - GCash/Maya/InstaPay/PESONet integration
 - `backend/app/worker.py` - Payment notification framework
+
+---
+
+## Phase 4 Implementation Status
+
+### March 2026 — Phase 4 Complete ✅
+
+| Feature | Status | Details |
+|---|---|---|
+| **KYC Document Management** | ✅ Complete | Upload, review, approve/reject, expiry alerts — `backend/app/kyc.py` |
+| **AML Screening (OFAC/Watchlist)** | ✅ Complete | Full OFAC, PEP, SAR, CTR engine — `backend/app/aml_compliance.py:81-311` |
+| **SAR Flagging** | ✅ Complete | Suspicious activity detection and report filing — `aml_compliance.py:210-260` |
+| **CTR Auto-Flagging** | ✅ Complete | PHP 500K threshold auto-alert — `aml_compliance.py:267-311` |
+| **PEP Detection** | ✅ Complete | PEP database screening with `PEPRecord` PostgreSQL table |
+| **Portfolio At Risk (PAR)** | ✅ Complete | PAR1/7/30/90 buckets — `calculate_par_metrics()` in `aml_compliance.py:377-443` |
+| **NPL Report** | ✅ Complete | Non-performing loan metrics — `calculate_npl_metrics()` |
+| **Loan Loss Reserve (LLR)** | ✅ Complete | Aging-bucket LLR calculation — `calculate_llr()` |
+| **Trial Balance** | ✅ Complete | GL-driven trial balance — `generate_trial_balance()` |
+| **Income Statement (P&L)** | ✅ Complete | Interest income, fee income, expenses — `generate_income_statement()` |
+| **Balance Sheet** | ✅ Complete | Assets, liabilities, equity — `generate_balance_sheet()` |
+| **Period Closing** | ✅ Complete | Month/quarter/year-end close — `execute_period_closing()` |
+| **LTV Ratio** | ✅ Complete | Collateral loan-to-value calculations in collateral module |
+| **Concentration Risk** | ✅ Complete | Sector/geography exposure reports in compliance dashboard |
+| **Liquidity Ratio** | ✅ Complete | Liquidity monitoring via GL balance sheet data |
+| **Compliance Dashboard** | ✅ Complete | Full frontend UI — `ComplianceDashboardPage.tsx` |
+| **Demo Data** | ✅ Complete | Interconnected Phase 4 seed data (KYC docs, AML alerts, PEP records, GL entries, overdue loans) |
 
 ---
 

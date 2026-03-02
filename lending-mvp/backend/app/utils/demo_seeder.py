@@ -66,7 +66,9 @@ from ..database.pg_models import (
     AMLAlert,
     Beneficiary,
     CustomerActivity,
+    PEPRecord,
 )
+from ..database.pg_accounting_models import GLAccount, JournalEntry, JournalLine
 from ..auth.security import get_password_hash
 
 
@@ -903,9 +905,15 @@ async def seed_loans(
 async def seed_loans_postgres(customers: List[Dict]) -> Dict[str, Any]:
     """Seed loan applications into PostgreSQL."""
     logger.info("Seeding loans to PostgreSQL...")
-    from sqlalchemy import select
+    from sqlalchemy import select, func
 
     async with AsyncSessionLocal() as session:
+        # Check if already seeded base loans
+        count_query = await session.execute(select(func.count(LoanApplication.id)))
+        if count_query.scalar() > 0:
+            logger.info("  ⤷ PostgreSQL loans already exist, skipping...")
+            return {"loans_postgres_created": 0}
+
         created_loans = 0
         now = datetime.now(timezone.utc)
 
@@ -1520,15 +1528,417 @@ async def seed_aml_alerts(customers: List[Dict], users: List[Dict]) -> Dict[str,
 
 
 async def seed_customer_risk_scores(customers: List[Dict]) -> Dict[str, Any]:
-    """Seed customer risk scores for AML compliance."""
-    logger.info("Seeding customer risk scores (Phase 4)...")
-    async with AsyncSessionLocal() as session:
-        # Risk scores are stored in MongoDB customer documents, not PostgreSQL
-        # This function logs the seeding for documentation
-        logger.info(
-            f"Customer risk scores: {len(customers)} customers with risk profiles"
+    """
+    Write risk_score and kyc_status fields to MongoDB customer documents so the
+    Compliance Dashboard can display them correctly.
+    """
+    logger.info("Seeding customer risk scores (Phase 4) to MongoDB...")
+    customers_collection = get_customers_collection()
+    updated = 0
+
+    risk_profiles = [
+        # (risk_score, kyc_status, aml_risk_level)
+        (15, "verified", "low"),
+        (35, "verified", "medium"),
+        (60, "pending", "medium"),
+        (80, "pending", "high"),
+        (25, "verified", "low"),
+        (90, "rejected", "high"),
+        (45, "verified", "medium"),
+    ]
+
+    for idx, customer in enumerate(customers):
+        profile_idx = idx % len(risk_profiles)
+        risk_score, kyc_status, aml_risk_level = risk_profiles[profile_idx]
+        from bson import ObjectId as BsonObjectId
+        await customers_collection.update_one(
+            {"_id": BsonObjectId(customer["id"])},
+            {"$set": {
+                "risk_score": risk_score,
+                "kyc_status": kyc_status,
+                "aml_risk_level": aml_risk_level,
+                "updated_at": datetime.now(timezone.utc),
+            }}
         )
-        return {"customer_risk_scores_updated": len(customers)}
+        updated += 1
+
+    logger.info(f"Customer risk scores updated: {updated} records")
+    return {"customer_risk_scores_updated": updated}
+
+
+# ============================================================================
+# PHASE 4: ADDITIONAL INTERCONNECTED COMPLIANCE DATA
+# ============================================================================
+
+
+async def seed_pep_records() -> Dict[str, Any]:
+    """
+    Seed PEP (Politically Exposed Persons) database records.
+    These are fictional demo-only names used to trigger PEP screening alerts.
+    One entry is crafted to match a demo customer's name pattern.
+    """
+    logger.info("Seeding PEP records (Phase 4)...")
+    async with AsyncSessionLocal() as session:
+        from sqlalchemy import select
+        created = 0
+        pep_names = [
+            {"name": "Ernesto G. Villanueva", "position": "Former City Councillor", "country": "Philippines", "pep_type": "domestic_pep"},
+            {"name": "Elena Reyes-Santos", "position": "Regional Director, DOH", "country": "Philippines", "pep_type": "domestic_pep"},
+            {"name": "Bonifacio T. Garcia", "position": "Former Congressman", "country": "Philippines", "pep_type": "domestic_pep"},
+            {"name": "Carmela V. Cruz", "position": "PDEA Regional Chief (Ret.)", "country": "Philippines", "pep_type": "domestic_pep"},
+            {"name": "international_demo_pep", "position": "Foreign State-Owned Enterprise Director", "country": "International", "pep_type": "foreign_pep"},
+        ]
+
+        for pep_data in pep_names:
+            result = await session.execute(
+                select(PEPRecord).where(PEPRecord.name == pep_data["name"])
+            )
+            existing = result.scalar_one_or_none()
+            if not existing:
+                pep = PEPRecord(**pep_data)
+                session.add(pep)
+                created += 1
+
+        await session.commit()
+        logger.info(f"PEP records seeded: {created} new records")
+        return {"pep_records_created": created}
+
+
+async def seed_gl_entries(customers: List[Dict]) -> Dict[str, Any]:
+    """
+    Seed 3 months of GL journal entries for interest income, fee income,
+    and operating expenses so Trial Balance, P&L and Balance Sheet have
+    meaningful data.
+    """
+    logger.info("Seeding GL journal entries (Phase 4)...")
+    async with AsyncSessionLocal() as session:
+        from sqlalchemy import select
+        created_entries = 0
+        now = datetime.now(timezone.utc)
+
+        # ── Ensure required GL accounts exist in PostgreSQL ──────────────────
+        required_accounts = [
+            ("1000", "Cash and Cash Equivalents", "asset"),
+            ("1200", "Loans Receivable", "asset"),
+            ("2000", "Accounts Payable / Accrued Liabilities", "liability"),
+            ("4100", "Interest Income", "income"),
+            ("4200", "Fee Income", "income"),
+            ("5100", "Operating Expenses", "expense"),
+        ]
+        for code, name, acct_type in required_accounts:
+            existing = await session.execute(
+                select(GLAccount).where(GLAccount.code == code)
+            )
+            if not existing.scalar_one_or_none():
+                session.add(GLAccount(code=code, name=name, type=acct_type))
+        await session.flush()
+
+        # 3-month history
+        monthly_scenarios = [
+            {
+                "month_offset": 2,
+                "month_name": "December 2025",
+                "interest_income": 87500.00,
+                "loan_fee_income": 12500.00,
+                "operating_expenses": 45000.00,
+                "interest_expense": 18000.00,
+            },
+            {
+                "month_offset": 1,
+                "month_name": "January 2026",
+                "interest_income": 92000.00,
+                "loan_fee_income": 15200.00,
+                "operating_expenses": 47500.00,
+                "interest_expense": 19500.00,
+            },
+            {
+                "month_offset": 0,
+                "month_name": "February 2026",
+                "interest_income": 96750.00,
+                "loan_fee_income": 14800.00,
+                "operating_expenses": 49200.00,
+                "interest_expense": 21000.00,
+            },
+        ]
+
+        for scenario in monthly_scenarios:
+            period_start = now.replace(day=1) - timedelta(days=scenario["month_offset"] * 30)
+
+            # ---- Interest Income Journal Entry ----
+            ref_no = f"JE-INT-{period_start.strftime('%Y%m')}-001"
+            result = await session.execute(
+                select(JournalEntry).where(JournalEntry.reference_no == ref_no)
+            )
+            if not result.scalar_one_or_none():
+                entry = JournalEntry(
+                    reference_no=ref_no,
+                    description=f"Monthly interest income accrual — {scenario['month_name']}",
+                    timestamp=period_start.replace(day=28) if period_start.day < 28 else period_start,
+                    created_by="system",
+                )
+                session.add(entry)
+                await session.flush()  # get entry.id
+
+                # Dr: Loans Receivable / Interest Receivable
+                session.add(JournalLine(
+                    entry_id=entry.id,
+                    account_code="1200",  # Loans Receivable
+                    debit=Decimal(str(scenario["interest_income"])),
+                    credit=Decimal("0"),
+                    description="Interest receivable on active loans"
+                ))
+                # Cr: Interest Income
+                session.add(JournalLine(
+                    entry_id=entry.id,
+                    account_code="4100",  # Interest Income
+                    debit=Decimal("0"),
+                    credit=Decimal(str(scenario["interest_income"])),
+                    description="Loan interest income recognition"
+                ))
+                created_entries += 1
+                logger.info(f"  ✓ GL Entry: Interest Income {scenario['month_name']} — PHP {scenario['interest_income']:,.2f}")
+
+            # ---- Fee Income Journal Entry ----
+            ref_no2 = f"JE-FEE-{period_start.strftime('%Y%m')}-001"
+            result2 = await session.execute(
+                select(JournalEntry).where(JournalEntry.reference_no == ref_no2)
+            )
+            if not result2.scalar_one_or_none():
+                entry2 = JournalEntry(
+                    reference_no=ref_no2,
+                    description=f"Origination fee income — {scenario['month_name']}",
+                    timestamp=period_start.replace(day=15) if period_start.day < 15 else period_start,
+                    created_by="system",
+                )
+                session.add(entry2)
+                await session.flush()
+
+                session.add(JournalLine(
+                    entry_id=entry2.id,
+                    account_code="1000",  # Cash / Bank
+                    debit=Decimal(str(scenario["loan_fee_income"])),
+                    credit=Decimal("0"),
+                    description="Origination fees collected"
+                ))
+                session.add(JournalLine(
+                    entry_id=entry2.id,
+                    account_code="4200",  # Fee Income
+                    debit=Decimal("0"),
+                    credit=Decimal(str(scenario["loan_fee_income"])),
+                    description="Loan origination fee income"
+                ))
+                created_entries += 1
+
+            # ---- Operating Expenses Journal Entry ----
+            ref_no3 = f"JE-OPX-{period_start.strftime('%Y%m')}-001"
+            result3 = await session.execute(
+                select(JournalEntry).where(JournalEntry.reference_no == ref_no3)
+            )
+            if not result3.scalar_one_or_none():
+                entry3 = JournalEntry(
+                    reference_no=ref_no3,
+                    description=f"Operating expenses — {scenario['month_name']}",
+                    timestamp=period_start.replace(day=30) if period_start.day < 30 else period_start,
+                    created_by="system",
+                )
+                session.add(entry3)
+                await session.flush()
+
+                session.add(JournalLine(
+                    entry_id=entry3.id,
+                    account_code="5100",  # Operating Expenses
+                    debit=Decimal(str(scenario["operating_expenses"])),
+                    credit=Decimal("0"),
+                    description="Salaries, rent, utilities"
+                ))
+                session.add(JournalLine(
+                    entry_id=entry3.id,
+                    account_code="2000",  # Accounts Payable / Accrued
+                    debit=Decimal("0"),
+                    credit=Decimal(str(scenario["operating_expenses"])),
+                    description="Operating expenses accrued"
+                ))
+                created_entries += 1
+
+        await session.commit()
+        logger.info(f"GL journal entries seeded: {created_entries} new entries")
+        return {"gl_entries_created": created_entries}
+
+
+async def seed_overdue_loans(customers: List[Dict], products: List[Dict]) -> Dict[str, Any]:
+    """
+    Seed 3 overdue loans with past_due_days of 35, 65, and 95 days so that
+    PAR30, PAR60, and PAR90 metrics return non-zero values in the compliance dashboard.
+    """
+    logger.info("Seeding overdue loans for PAR metrics (Phase 4)...")
+    loans_collection = get_loans_collection()
+    transactions_collection = get_transactions_collection()
+    created_loans = []
+    now = datetime.now(timezone.utc)
+
+    if len(customers) < 3 or len(products) < 2:
+        logger.warning("Skipping overdue loans: insufficient customers/products")
+        return {"overdue_loans_created": 0}
+
+    overdue_scenarios = [
+        {
+            "loan_id": "LOAN-OD-001",
+            "customer_idx": 3,  # Rosa Villanueva
+            "product_name": "Personal Loan",
+            "amount": 75000.0,
+            "interest_rate": 14.0,
+            "term_months": 12,
+            "past_due_days": 35,   # PAR30 bucket
+            "outstanding": 58500.0,
+            "sector": "retail",
+        },
+        {
+            "loan_id": "LOAN-OD-002",
+            "customer_idx": 1,  # Maria Cruz Santos
+            "product_name": "Business Loan",
+            "amount": 350000.0,
+            "interest_rate": 14.0,
+            "term_months": 36,
+            "past_due_days": 67,   # PAR60 bucket
+            "outstanding": 318000.0,
+            "sector": "msme",
+        },
+        {
+            "loan_id": "LOAN-OD-003",
+            "customer_idx": 2,  # Pedro Garcia
+            "product_name": "Agricultural Loan",
+            "amount": 220000.0,
+            "interest_rate": 12.0,
+            "term_months": 12,
+            "past_due_days": 95,   # PAR90 / NPL bucket
+            "outstanding": 195000.0,
+            "sector": "agriculture",
+        },
+    ]
+
+    for scenario in overdue_scenarios:
+        # Skip if already exists
+        existing = await loans_collection.find_one({"loan_id": scenario["loan_id"]})
+        if existing:
+            logger.info(f"  ⤷ Skipped (exists): {scenario['loan_id']}")
+            continue
+
+        customer_idx = scenario["customer_idx"] % len(customers)
+        past_due_date = now - timedelta(days=scenario["past_due_days"])
+        loan_start = past_due_date - timedelta(days=60)  # loan disbursed ~2 months before due
+
+        loan_doc = {
+            "loan_id": scenario["loan_id"],
+            "borrower_id": ObjectId(customers[customer_idx]["id"]),
+            "loan_product": scenario["product_name"],
+            "amount_requested": scenario["amount"],
+            "term_months": scenario["term_months"],
+            "interest_rate": scenario["interest_rate"],
+            "status": "active",
+            "outstanding_balance": scenario["outstanding"],
+            "next_due_date": past_due_date,  # past due!
+            "days_past_due": scenario["past_due_days"],
+            "sector": scenario["sector"],
+            "is_overdue": True,
+            "months_paid": 2,
+            "created_at": loan_start,
+            "updated_at": now,
+        }
+        result = await loans_collection.insert_one(loan_doc)
+        created_loans.append(scenario["loan_id"])
+
+        # Seed a penalty transaction for the overdue loan
+        penalty_amount = round(scenario["outstanding"] * 0.02, 2)  # 2% penalty
+        penalty_txn = {
+            "loan_id": str(result.inserted_id),
+            "loan_ref": scenario["loan_id"],
+            "type": "penalty",
+            "amount": penalty_amount,
+            "balance_after": scenario["outstanding"] + penalty_amount,
+            "payment_number": 0,
+            "due_date": past_due_date,
+            "created_at": now - timedelta(days=1),
+            "processed_by": "system",
+            "note": f"Late payment penalty — {scenario['past_due_days']} DPD",
+            "reference_number": f"PEN-{scenario['loan_id']}-001",
+            "status": "posted",
+        }
+        await transactions_collection.insert_one(penalty_txn)
+        logger.info(f"  ✓ Overdue loan: {scenario['loan_id']} ({scenario['past_due_days']} DPD, PHP {scenario['outstanding']:,.2f} outstanding)")
+
+    logger.info(f"Overdue loans seeded: {len(created_loans)} new records")
+    return {"overdue_loans_created": len(created_loans)}
+
+
+async def seed_ctr_transactions(savings_accounts: List[Dict], customers: List[Dict]) -> Dict[str, Any]:
+    """
+    Seed 2 large cash deposit transactions that exceed the PHP 500,000 CTR threshold
+    so the AML compliance dashboard can demonstrate CTR auto-flagging.
+    These are cross-referenced in AML alerts.
+    """
+    logger.info("Seeding CTR-threshold transactions (Phase 4)...")
+    transactions_collection = get_transactions_collection()
+    savings_collection = get_savings_collection()
+    created = 0
+    now = datetime.now(timezone.utc)
+
+    # Pick regular savings accounts from first 2 customers
+    regular_accounts = [acc for acc in savings_accounts if acc["type"] == "regular"][:2]
+    if not regular_accounts:
+        logger.warning("No regular savings accounts for CTR transactions")
+        return {"ctr_transactions_created": 0}
+
+    ctr_scenarios = [
+        {
+            "account": regular_accounts[0],
+            "amount": 750000.0,
+            "note": "Business proceeds — large cash deposit",
+            "reference": "CTR-CASH-001-2026",
+            "days_ago": 3,
+        },
+        {
+            "account": regular_accounts[-1],  # could be same if only 1
+            "amount": 580000.0,
+            "note": "Property sale proceeds — cash deposit",
+            "reference": "CTR-CASH-002-2026",
+            "days_ago": 7,
+        },
+    ]
+
+    for scenario in ctr_scenarios:
+        acc = scenario["account"]
+        # Check if already seeded
+        existing = await transactions_collection.find_one({"reference_number": scenario["reference"]})
+        if existing:
+            logger.info(f"  ⤷ Skipped (exists): {scenario['reference']}")
+            continue
+
+        txn_date = now - timedelta(days=scenario["days_ago"])
+        txn = {
+            "account_id": ObjectId(acc["id"]),
+            "account_number": acc["account_number"],
+            "type": "deposit",
+            "amount": scenario["amount"],
+            "ctr_flagged": True,
+            "ctr_threshold": 500000.0,
+            "note": scenario["note"],
+            "created_at": txn_date,
+            "processed_by": "teller_1",
+            "reference_number": scenario["reference"],
+            "status": "posted",
+        }
+        await transactions_collection.insert_one(txn)
+
+        # Also update savings account balance
+        await savings_collection.update_one(
+            {"account_number": acc["account_number"]},
+            {"$inc": {"balance": scenario["amount"]}, "$set": {"updated_at": now}}
+        )
+        created += 1
+        logger.info(f"  ✓ CTR transaction: PHP {scenario['amount']:,.0f} on {acc['account_number']}")
+
+    logger.info(f"CTR transactions seeded: {created} records")
+    return {"ctr_transactions_created": created}
 
 
 # ============================================================================
@@ -1992,27 +2402,10 @@ async def seed_demo_data() -> Dict[str, Any]:
         # Also seed loans to PostgreSQL for the API
         results["loans_postgres"] = await seed_loans_postgres(customers_list)
 
-        # Phase 4: Savings
+        # Phase 3 & 4: Savings
         results["savings"] = await seed_savings_accounts(customers_list)
 
-        # Phase 4: AML Compliance & KYC (PostgreSQL Relations)
-        results["kyc_documents_phase4"] = await seed_kyc_documents_phase4(
-            customers_list
-        )
-        results["aml_alerts"] = await seed_aml_alerts(customers_list, users_list)
-        results["customer_risk_scores"] = await seed_customer_risk_scores(
-            customers_list
-        )
-
-        # Phase 5: Legacy PostgreSQL Relations (Beneficiaries, Activities, Audit)
-        results["beneficiaries"] = await seed_beneficiaries(customers_list)
-        results["customer_activities"] = await seed_customer_activities(customers_list)
-        results["audit_logs"] = await seed_audit_logs(users_list)
-
-        # Phase 5: Interconnected Daily Transaction Data
-        logger.info("Seeding Phase 5 interconnected daily activity...")
-
-        # Resolve savings accounts — prefer freshly-seeded, fall back to existing
+        # Resolve savings accounts early — needed for CTR transactions before AML alerts
         savings_list = results["savings"].get("accounts", [])
         if not savings_list:
             cursor = savings_collection.find({})
@@ -2025,6 +2418,28 @@ async def seed_demo_data() -> Dict[str, Any]:
                 }
                 for s in raw_savings
             ]
+
+        # Phase 4: KYC & AML Compliance (PostgreSQL)
+        results["kyc_documents_phase4"] = await seed_kyc_documents_phase4(customers_list)
+        results["pep_records"] = await seed_pep_records()
+        # CTR transactions must be seeded BEFORE AML alerts so alerts reference real txn IDs
+        results["ctr_transactions"] = await seed_ctr_transactions(savings_list, customers_list)
+        results["aml_alerts"] = await seed_aml_alerts(customers_list, users_list)
+        results["customer_risk_scores"] = await seed_customer_risk_scores(customers_list)
+
+        # Phase 4: Overdue loans for PAR1/PAR30/PAR90 metrics
+        results["overdue_loans"] = await seed_overdue_loans(customers_list, products_list)
+
+        # Phase 4: GL journal entries for Trial Balance / P&L / Balance Sheet
+        results["gl_entries"] = await seed_gl_entries(customers_list)
+
+        # Phase 5: Legacy PostgreSQL Relations (Beneficiaries, Activities, Audit)
+        results["beneficiaries"] = await seed_beneficiaries(customers_list)
+        results["customer_activities"] = await seed_customer_activities(customers_list)
+        results["audit_logs"] = await seed_audit_logs(users_list)
+
+        # Phase 5: Interconnected Daily Transaction Data
+        logger.info("Seeding Phase 5 interconnected daily activity...")
 
         results["customer_user"] = await seed_customer_user(customers_list)
         results["savings_transactions"] = await seed_savings_transactions(
