@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
-import { GET_LOAN_PRODUCTS, CREATE_LOAN_PRODUCT } from '@/api/queries'
-import { Package, Plus, Loader2, X, Check, Activity, Calendar } from 'lucide-react'
+import { GET_LOAN_PRODUCTS, CREATE_LOAN_PRODUCT, UPDATE_LOAN_PRODUCT } from '@/api/queries'
+import { Package, Plus, Loader2, X, Check, Activity, Calendar, Edit2 } from 'lucide-react'
 
 interface LoanProduct {
     id: string
@@ -26,8 +26,10 @@ interface LoanProduct {
 export default function LoanProductsPage() {
     const { data, loading, error, refetch } = useQuery(GET_LOAN_PRODUCTS)
     const [createLoanProduct, { loading: creating }] = useMutation(CREATE_LOAN_PRODUCT)
+    const [updateLoanProduct, { loading: updating }] = useMutation(UPDATE_LOAN_PRODUCT)
 
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [editingProduct, setEditingProduct] = useState<LoanProduct | null>(null)
     const [formData, setFormData] = useState({
         productCode: '',
         name: '',
