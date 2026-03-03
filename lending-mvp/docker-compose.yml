@@ -106,5 +106,5 @@ services:
     depends_on:
       - backend
     environment:
-      VITE_GRAPHQL_URL: /graphql
-      VITE_API_URL: /api
+      VITE_GRAPHQL_URL: /api
+      VITE_API_URL: http://localhost:8001
