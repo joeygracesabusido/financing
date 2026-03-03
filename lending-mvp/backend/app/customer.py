@@ -177,11 +177,20 @@ class Query:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller"):
             raise Exception("Not authorized")
+        
+        branch_filter = None
+        if current_user.role != "admin":
+            branch_filter = current_user.assigned_branch
+            if not branch_filter:
+                 # If staff has no branch, they might be restricted to nothing or everything. 
+                 # Usually, they should have one. Let's assume restricted to nothing for safety.
+                 return CustomersResponse(success=True, message="No branch assigned to user", customers=[], total=0)
+
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
-            customers_db = await customer_crud.get_customers(skip=skip, limit=limit, search_term=search_term)
-            total = await customer_crud.count_customers(search_term=search_term)
+            customers_db = await customer_crud.get_customers(skip=skip, limit=limit, search_term=search_term, branch=branch_filter)
+            total = await customer_crud.count_customers(search_term=search_term, branch=branch_filter)
             customers = [convert_customer_db_to_customer_type(customer_db) for customer_db in customers_db]
             return CustomersResponse(success=True, message="Customers retrieved successfully", customers=customers, total=total)
         except Exception as e:
@@ -277,11 +286,21 @@ def convert_customer_db_to_customer_type(customer_db: CustomerInDB) -> "Customer
 class Mutation:
     @strawberry.field
     async def create_customer(self, info: Info, input: CustomerCreateInput) -> CustomerResponse:
-        current_user = info.context.get("current_user")
+        current_user: UserInDB = info.context.get("current_user")
         if current_user is None:
             raise Exception("Not authenticated")
         if current_user.role not in ("admin", "loan_officer", "branch_manager"):
             raise Exception("Not authorized")
+
+        # ── Branch access control ──────────────────────────────────────────
+        if current_user.role != "admin":
+            if not current_user.assigned_branch:
+                return CustomerResponse(success=False, message="User has no branch assigned")
+            if input.branch != current_user.assigned_branch:
+                return CustomerResponse(
+                    success=False, 
+                    message=f"You can only create customers for your assigned branch: {current_user.assigned_branch}"
+                )
 
         try:
             customers_collection = get_customers_collection()

@@ -63,6 +63,7 @@ def convert_user_db_to_user_type(user_db: UserInDB) -> UserType:
         full_name=user_db.full_name,
         is_active=user_db.is_active,
         role=user_db.role,
+        assigned_branch=user_db.assigned_branch,
         created_at=user_db.created_at,
         updated_at=user_db.updated_at
     )
@@ -399,6 +400,7 @@ class Mutation:
                 full_name=input.full_name,
                 password=input.password,
                 role=input.role,
+                assigned_branch=input.assigned_branch,
             )
             user_db = await user_crud.create_user(user_create)
 
@@ -454,6 +456,7 @@ class Mutation:
                 is_active=input.is_active,
                 role=input.role,
                 password=input.password,
+                assigned_branch=input.assigned_branch,
             )
             user_db = await user_crud.update_user(user_id, user_update)
             if not user_db:

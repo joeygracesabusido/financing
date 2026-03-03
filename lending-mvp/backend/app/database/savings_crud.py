@@ -67,7 +67,7 @@ class SavingsCRUD:
         # Deserialize each dict back into a Pydantic model
         return [SavingsAccountBase(**acc_data) for acc_data in processed_accounts_list]
     
-    async def get_all_savings_accounts(self, search_term: Optional[str] = None, customer_id: Optional[str] = None) -> List[SavingsAccountBase]:
+    async def get_all_savings_accounts(self, search_term: Optional[str] = None, customer_id: Optional[str] = None, branch: Optional[str] = None) -> List[SavingsAccountBase]:
         pipeline = []
 
         # Filter by customer_id if provided (user_id is stored as string in savings)
@@ -107,6 +107,12 @@ class SavingsCRUD:
                 "preserveNullAndEmptyArrays": True
             }
         })
+
+        # Branch filter
+        if branch:
+            pipeline.append({
+                "$match": {"customer_info.branch": branch}
+            })
 
         if search_term:
             # Apply the search filter if provided

@@ -186,6 +186,16 @@ class SavingsQuery:
         if not account_data:
             return SavingsAccountResponse(success=False, message="Account not found")
 
+        # Branch check for staff
+        if current_user.role != "admin" and current_user.role != "customer":
+            customer_crud = CustomerCRUD(db.customers)
+            customer_db = await customer_crud.get_customer_by_id(str(account_data.user_id))
+            if customer_db and customer_db.branch != current_user.assigned_branch:
+                return SavingsAccountResponse(
+                    success=False, 
+                    message=f"Access denied: Account belongs to branch {customer_db.branch}"
+                )
+
         # Basic authorization: check if the account belongs to the current user
         # if str(account_data.user_id) != str(current_user.id):
         #     return SavingsAccountResponse(success=False, message="Not authorized to view this account")
@@ -199,10 +209,20 @@ class SavingsQuery:
         if not current_user:
             return SavingsAccountsResponse(success=False, message="Not authenticated", accounts=[], total=0)
 
+        branch_filter = None
+        if current_user.role != "admin" and current_user.role != "customer":
+            branch_filter = current_user.assigned_branch
+            if not branch_filter:
+                return SavingsAccountsResponse(success=True, message="No branch assigned to user", accounts=[], total=0)
+
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
-        # Use searchTerm for server-side filtering
-        accounts_data = await savings_crud.get_all_savings_accounts(search_term=searchTerm, customer_id=customerId or (str(current_user.id) if current_user.role == "customer" else None))
+        # Use searchTerm and branch_filter for server-side filtering
+        accounts_data = await savings_crud.get_all_savings_accounts(
+            search_term=searchTerm, 
+            customer_id=customerId or (str(current_user.id) if current_user.role == "customer" else None),
+            branch=branch_filter
+        )
         accounts = [map_db_account_to_strawberry_type(acc) for acc in accounts_data]
         return SavingsAccountsResponse(success=True, message="Accounts retrieved", accounts=accounts, total=len(accounts))
 

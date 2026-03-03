@@ -7,6 +7,7 @@ export interface AuthUser {
     fullName: string
     isActive: boolean
     role: string
+    assignedBranch?: string
 }
 
 interface AuthContextType {

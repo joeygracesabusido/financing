@@ -32,6 +32,7 @@ export const GET_USERS = gql`
         fullName
         isActive
         role
+        assignedBranch
         createdAt
         updatedAt
       }
@@ -51,6 +52,7 @@ export const CREATE_USER = gql`
         email
         fullName
         role
+        assignedBranch
         isActive
       }
     }
@@ -68,6 +70,7 @@ export const UPDATE_USER = gql`
         email
         fullName
         role
+        assignedBranch
         isActive
       }
     }
@@ -552,14 +555,18 @@ export const PREVIEW_LOAN_SCHEDULE = gql`
 `
 
 export const GET_LOAN_TRANSACTIONS = gql`
-  query GetLoanTransactions($loanId: String!) {
+  query GetLoanTransactions($loanId: ID!) {
     loanTransactions(loanId: $loanId) {
-      id
-      transactionType
-      amount
-      balanceAfter
-      description
-      createdAt
+      success
+      message
+      transactions {
+        id
+        transactionType
+        amount
+        notes
+        createdAt
+      }
+      total
     }
   }
 `

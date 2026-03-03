@@ -49,29 +49,41 @@ class CustomerCRUD:
             return CustomerInDB.model_validate(customer_data)
         return None
 
-    async def get_customers(self, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> List[CustomerInDB]:
+    async def get_customers(self, skip: int = 0, limit: int = 100, search_term: Optional[str] = None, branch: Optional[str] = None) -> List[CustomerInDB]:
         query: Dict[str, Any] = {}
+        if branch:
+            query["branch"] = branch
         if search_term:
             # Case-insensitive regex search on display_name or email_address
-            query = {
+            search_query = {
                 "$or": [
                     {"display_name": {"$regex": search_term, "$options": "i"}},
                     {"email_address": {"$regex": search_term, "$options": "i"}}
                 ]
             }
+            if branch:
+                query = {"$and": [query, search_query]}
+            else:
+                query = search_query
         
         customers_data = await self.collection.find(query).skip(skip).limit(limit).to_list(length=limit)
         return [CustomerInDB.model_validate(customer_data) for customer_data in customers_data]
 
-    async def count_customers(self, search_term: Optional[str] = None) -> int:
+    async def count_customers(self, search_term: Optional[str] = None, branch: Optional[str] = None) -> int:
         query: Dict[str, Any] = {}
+        if branch:
+            query["branch"] = branch
         if search_term:
-            query = {
+            search_query = {
                 "$or": [
                     {"display_name": {"$regex": search_term, "$options": "i"}},
                     {"email_address": {"$regex": search_term, "$options": "i"}}
                 ]
             }
+            if branch:
+                query = {"$and": [query, search_query]}
+            else:
+                query = search_query
         return await self.collection.count_documents(query)
 
     async def update_customer(self, customer_id: str, customer_update: CustomerUpdate) -> Optional[CustomerInDB]:

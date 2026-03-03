@@ -4,7 +4,10 @@ from decimal import Decimal
 from datetime import datetime
 from strawberry.types import Info
 from fastapi import HTTPException, status
+from sqlalchemy.future import select as sa_select
 
+from .database.postgres import get_db_session
+from .database.pg_loan_models import LoanTransaction as PGLoanTransaction
 from .basemodel.loan_transaction_model import LoanTransaction, LoanTransactionBase
 from .models import UserInDB
 from .database import get_loan_transactions_collection
@@ -27,7 +30,7 @@ class LoanTransactionType:
     commercial_bank: Optional[str] = strawberry.field(name="commercialBank")
     servicing_branch: Optional[str] = strawberry.field(name="servicingBranch")
     region: Optional[str] = strawberry.field(name="region")
-    
+
     # Internal field to store the name from DB
     _borrower_name: strawberry.Private[Optional[str]]
 
@@ -35,26 +38,51 @@ class LoanTransactionType:
     async def borrower_name(self, info: Info) -> Optional[str]:
         if self._borrower_name:
             return self._borrower_name
-        
+
         # If borrower_name is missing, try to resolve it from the loan -> customer
         try:
             from .database import get_loans_collection, get_customers_collection
             from .database.loan_crud import LoanCRUD
             from .database.customer_crud import CustomerCRUD
-            
-            loans_collection = get_loans_collection()
-            loan_crud = LoanCRUD(loans_collection)
-            loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
-            
-            if loan_db:
-                customers_collection = get_customers_collection()
-                customer_crud = CustomerCRUD(customers_collection)
-                customer_db = await customer_crud.get_customer_by_id(str(loan_db.borrower_id))
-                if customer_db:
-                    return customer_db.display_name
+
+            # Check if loan_id is numeric (PostgreSQL)
+            try:
+                numeric_loan_id = int(str(self.loan_id))
+                from .database.postgres import get_db_session
+                from .database.pg_loan_models import LoanApplication
+
+                async for session in get_db_session():
+                    result = await session.execute(
+                        sa_select(LoanApplication).filter(
+                            LoanApplication.id == numeric_loan_id
+                        )
+                    )
+                    loan_db = result.scalar_one_or_none()
+                    if loan_db:
+                        customers_collection = get_customers_collection()
+                        customer_crud = CustomerCRUD(customers_collection)
+                        customer_db = await customer_crud.get_customer_by_id(
+                            str(loan_db.customer_id)
+                        )
+                        if customer_db:
+                            return customer_db.display_name
+            except ValueError:
+                # Fallback to MongoDB
+                loans_collection = get_loans_collection()
+                loan_crud = LoanCRUD(loans_collection)
+                loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
+
+                if loan_db:
+                    customers_collection = get_customers_collection()
+                    customer_crud = CustomerCRUD(customers_collection)
+                    customer_db = await customer_crud.get_customer_by_id(
+                        str(loan_db.borrower_id)
+                    )
+                    if customer_db:
+                        return customer_db.display_name
         except Exception as e:
             print(f"Error resolving borrower name for transaction {self.id}: {e}")
-        
+
         return "N/A"
 
     loan_product: Optional[str] = strawberry.field(name="loanProduct")
@@ -68,6 +96,7 @@ class LoanTransactionType:
     beneficiary_account: Optional[str] = strawberry.field(name="beneficiaryAccount")
     approved_by: Optional[str] = strawberry.field(name="approvedBy")
     processed_by: Optional[str] = strawberry.field(name="processedBy")
+
 
 @strawberry.input
 class LoanTransactionCreateInput:
@@ -92,6 +121,7 @@ class LoanTransactionCreateInput:
     approved_by: Optional[str] = None
     processed_by: Optional[str] = None
 
+
 @strawberry.input
 class LoanTransactionUpdateInput:
     transaction_type: Optional[str] = None
@@ -114,11 +144,13 @@ class LoanTransactionUpdateInput:
     approved_by: Optional[str] = None
     processed_by: Optional[str] = None
 
+
 @strawberry.type
 class LoanTransactionResponse:
     success: bool
     message: str
     transaction: Optional[LoanTransactionType] = None
+
 
 @strawberry.type
 class LoanTransactionsResponse:
@@ -127,7 +159,10 @@ class LoanTransactionsResponse:
     transactions: List[LoanTransactionType]
     total: int
 
-def convert_loan_transaction_db_to_loan_transaction_type(transaction_db: LoanTransaction) -> LoanTransactionType:
+
+def convert_loan_transaction_db_to_loan_transaction_type(
+    transaction_db: LoanTransaction,
+) -> LoanTransactionType:
     """Convert LoanTransaction (from CRUD) to LoanTransactionType (Strawberry schema)"""
     return LoanTransactionType(
         id=strawberry.ID(str(transaction_db.id)),
@@ -152,43 +187,77 @@ def convert_loan_transaction_db_to_loan_transaction_type(transaction_db: LoanTra
         beneficiary_bank=transaction_db.beneficiary_bank,
         beneficiary_account=transaction_db.beneficiary_account,
         approved_by=transaction_db.approved_by,
-        processed_by=transaction_db.processed_by
+        processed_by=transaction_db.processed_by,
     )
+
 
 @strawberry.type
 class LoanTransactionQuery:
     @strawberry.field
-    async def loan_transaction(self, info: Info, transaction_id: strawberry.ID) -> LoanTransactionResponse:
+    async def loan_transaction(
+        self, info: Info, transaction_id: strawberry.ID
+    ) -> LoanTransactionResponse:
         """Get a single loan transaction by ID"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            )
         if current_user.role not in ["admin", "staff"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+            )
 
         try:
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
-            transaction_db = await transaction_crud.get_loan_transaction_by_id(str(transaction_id))
+            transaction_db = await transaction_crud.get_loan_transaction_by_id(
+                str(transaction_id)
+            )
 
             if not transaction_db:
-                return LoanTransactionResponse(success=False, message="Loan transaction not found")
-            
-            if current_user.role == "staff":
-                from .database import get_loans_collection
-                from .database.loan_crud import LoanCRUD
-                loans_collection = get_loans_collection()
-                loan_crud = LoanCRUD(loans_collection)
-                loan_db = await loan_crud.get_loan_by_id(str(transaction_db.loan_id))
-                if loan_db and loan_db.borrower_id != current_user.id:
-                    return LoanTransactionResponse(success=False, message="Not authorized to access this loan transaction")
-            
-            transaction_type = convert_loan_transaction_db_to_loan_transaction_type(transaction_db)
-            return LoanTransactionResponse(success=True, message="Loan transaction retrieved successfully", transaction=transaction_type)
+                return LoanTransactionResponse(
+                    success=False, message="Loan transaction not found"
+                )
+
+            # --- Branch check for staff ---
+            if current_user.role != "admin":
+                from .database.postgres import get_db_session
+                from sqlalchemy.future import select as sa_select
+                from .database.pg_loan_models import LoanApplication
+
+                async for session in get_db_session():
+                    result = await session.execute(
+                        sa_select(LoanApplication).filter(
+                            LoanApplication.id == int(transaction_db.loan_id)
+                        )
+                    )
+                    loan_db = result.scalar_one_or_none()
+                    if not loan_db:
+                        return LoanTransactionResponse(
+                            success=False, message="Associated loan not found"
+                        )
+
+                    if current_user.assigned_branch != loan_db.branch:
+                        return LoanTransactionResponse(
+                            success=False,
+                            message=f"Access denied: Loan belongs to branch {loan_db.branch}",
+                        )
+
+            transaction_type = convert_loan_transaction_db_to_loan_transaction_type(
+                transaction_db
+            )
+            return LoanTransactionResponse(
+                success=True,
+                message="Loan transaction retrieved successfully",
+                transaction=transaction_type,
+            )
         except HTTPException as e:
             raise e
         except Exception as e:
-            return LoanTransactionResponse(success=False, message=f"Error retrieving loan transaction: {str(e)}")
+            return LoanTransactionResponse(
+                success=False, message=f"Error retrieving loan transaction: {str(e)}"
+            )
 
     @strawberry.field
     async def loan_transactions(
@@ -196,56 +265,141 @@ class LoanTransactionQuery:
         info: Info,
         skip: int = 0,
         limit: int = 100,
-        loan_id: Optional[strawberry.ID] = None
+        loan_id: Optional[strawberry.ID] = None,
     ) -> LoanTransactionsResponse:
         """Get a list of loan transactions with optional filtering by loan_id"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            )
         if current_user.role not in ["admin", "staff"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+            )
 
         try:
+            # Check if loan_id is numeric (PostgreSQL)
+            is_pg_id = False
+            if loan_id:
+                try:
+                    int(str(loan_id))
+                    is_pg_id = True
+                except ValueError:
+                    is_pg_id = False
+
+            if is_pg_id:
+                # Query PostgreSQL
+                async for session in get_db_session():
+                    query = (
+                        sa_select(PGLoanTransaction)
+                        .filter(PGLoanTransaction.loan_id == int(str(loan_id)))
+                        .offset(skip)
+                        .limit(limit)
+                    )
+                    result = await session.execute(query)
+                    transactions_db = result.scalars().all()
+
+                    # Map PG to GraphQL
+                    transactions_type = [
+                        LoanTransactionType(
+                            id=strawberry.ID(str(t.id)),
+                            loan_id=strawberry.ID(str(t.loan_id)),
+                            transaction_type=t.type,
+                            amount=t.amount,
+                            transaction_date=t.timestamp,
+                            notes=t.description,
+                            created_at=t.timestamp,
+                            updated_at=t.timestamp,
+                            reference_number=t.receipt_number,
+                            processed_by=t.processed_by,
+                            _borrower_name=None,
+                            commercial_bank=None,
+                            servicing_branch=None,
+                            region=None,
+                            loan_product=None,
+                            debit_account=None,
+                            credit_account=None,
+                            disbursement_method=None,
+                            disbursement_status=None,
+                            cheque_number=None,
+                            beneficiary_bank=None,
+                            beneficiary_account=None,
+                            approved_by=None,
+                        )
+                        for t in transactions_db
+                    ]
+                    return LoanTransactionsResponse(
+                        success=True,
+                        message="PostgreSQL loan transactions retrieved successfully",
+                        transactions=transactions_type,
+                        total=len(transactions_type),
+                    )
+
+            # Fallback to MongoDB
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
-            
-            # TODO: Add authorization check based on loan_id and current_user
-            
-            transactions_db = await transaction_crud.get_loan_transactions(skip=skip, limit=limit, loan_id=str(loan_id) if loan_id else None)
-            total = await transaction_crud.count_loan_transactions(loan_id=str(loan_id) if loan_id else None)
-            
+
+            transactions_db = await transaction_crud.get_loan_transactions(
+                skip=skip, limit=limit, loan_id=str(loan_id) if loan_id else None
+            )
+            total = await transaction_crud.count_loan_transactions(
+                loan_id=str(loan_id) if loan_id else None
+            )
+
             if current_user.role == "staff" and loan_id:
                 from .database import get_loans_collection
                 from .database.loan_crud import LoanCRUD
+
                 loans_collection = get_loans_collection()
                 loan_crud = LoanCRUD(loans_collection)
                 loan_db = await loan_crud.get_loan_by_id(str(loan_id))
                 if loan_db and loan_db.borrower_id != current_user.id:
-                    return LoanTransactionsResponse(success=False, message="Not authorized to access this loan's transactions", transactions=[], total=0)
-            
-            transactions_type = [convert_loan_transaction_db_to_loan_transaction_type(t) for t in transactions_db]
+                    return LoanTransactionsResponse(
+                        success=False,
+                        message="Not authorized to access this loan's transactions",
+                        transactions=[],
+                        total=0,
+                    )
+
+            transactions_type = [
+                convert_loan_transaction_db_to_loan_transaction_type(t)
+                for t in transactions_db
+            ]
             return LoanTransactionsResponse(
                 success=True,
                 message="Loan transactions retrieved successfully",
                 transactions=transactions_type,
-                total=total
+                total=total,
             )
         except HTTPException as e:
             raise e
         except Exception as e:
-            return LoanTransactionsResponse(success=False, message=f"Error retrieving loan transactions: {str(e)}", transactions=[], total=0)
+            return LoanTransactionsResponse(
+                success=False,
+                message=f"Error retrieving loan transactions: {str(e)}",
+                transactions=[],
+                total=0,
+            )
 
 
 @strawberry.type
 class LoanTransactionMutation:
     @strawberry.mutation
-    async def create_loan_transaction(self, info: Info, input: LoanTransactionCreateInput) -> LoanTransactionResponse:
+    async def create_loan_transaction(
+        self, info: Info, input: LoanTransactionCreateInput
+    ) -> LoanTransactionResponse:
         """Create a new loan transaction"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            )
         if current_user.role not in ["admin", "staff"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to create loan transactions")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to create loan transactions",
+            )
 
         try:
             loan_transactions_collection = get_loan_transactions_collection()
@@ -255,7 +409,9 @@ class LoanTransactionMutation:
                 loan_id=str(input.loan_id),
                 transaction_type=input.transaction_type,
                 amount=input.amount,
-                transaction_date=input.transaction_date if input.transaction_date else datetime.utcnow(),
+                transaction_date=input.transaction_date
+                if input.transaction_date
+                else datetime.utcnow(),
                 notes=input.notes,
                 commercial_bank=input.commercial_bank,
                 servicing_branch=input.servicing_branch,
@@ -271,25 +427,45 @@ class LoanTransactionMutation:
                 beneficiary_bank=input.beneficiary_bank,
                 beneficiary_account=input.beneficiary_account,
                 approved_by=input.approved_by,
-                processed_by=input.processed_by
+                processed_by=input.processed_by,
             )
-            
-            transaction_db = await transaction_crud.create_loan_transaction(loan_transaction_base)
-            transaction_type = convert_loan_transaction_db_to_loan_transaction_type(transaction_db)
-            return LoanTransactionResponse(success=True, message="Loan transaction created successfully", transaction=transaction_type)
+
+            transaction_db = await transaction_crud.create_loan_transaction(
+                loan_transaction_base
+            )
+            transaction_type = convert_loan_transaction_db_to_loan_transaction_type(
+                transaction_db
+            )
+            return LoanTransactionResponse(
+                success=True,
+                message="Loan transaction created successfully",
+                transaction=transaction_type,
+            )
         except HTTPException as e:
             raise e
         except Exception as e:
-            return LoanTransactionResponse(success=False, message=f"Error creating loan transaction: {str(e)}")
+            return LoanTransactionResponse(
+                success=False, message=f"Error creating loan transaction: {str(e)}"
+            )
 
     @strawberry.mutation
-    async def update_loan_transaction(self, info: Info, transaction_id: strawberry.ID, input: LoanTransactionUpdateInput) -> LoanTransactionResponse:
+    async def update_loan_transaction(
+        self,
+        info: Info,
+        transaction_id: strawberry.ID,
+        input: LoanTransactionUpdateInput,
+    ) -> LoanTransactionResponse:
         """Update an existing loan transaction"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            )
         if current_user.role not in ["admin", "staff"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update loan transactions")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to update loan transactions",
+            )
 
         try:
             loan_transactions_collection = get_loan_transactions_collection()
@@ -297,39 +473,70 @@ class LoanTransactionMutation:
 
             # Convert Strawberry input object to dictionary and remove None values
             # Also convert Decimal to float for MongoDB compatibility
-            update_data = {k: (float(v) if isinstance(v, Decimal) else v) 
-                           for k, v in strawberry.asdict(input).items() if v is not None}
-            
-            transaction_db = await transaction_crud.update_loan_transaction(str(transaction_id), update_data)
+            update_data = {
+                k: (float(v) if isinstance(v, Decimal) else v)
+                for k, v in strawberry.asdict(input).items()
+                if v is not None
+            }
+
+            transaction_db = await transaction_crud.update_loan_transaction(
+                str(transaction_id), update_data
+            )
             if not transaction_db:
-                return LoanTransactionResponse(success=False, message="Loan transaction not found")
-            
-            transaction_type = convert_loan_transaction_db_to_loan_transaction_type(transaction_db)
-            return LoanTransactionResponse(success=True, message="Loan transaction updated successfully", transaction=transaction_type)
+                return LoanTransactionResponse(
+                    success=False, message="Loan transaction not found"
+                )
+
+            transaction_type = convert_loan_transaction_db_to_loan_transaction_type(
+                transaction_db
+            )
+            return LoanTransactionResponse(
+                success=True,
+                message="Loan transaction updated successfully",
+                transaction=transaction_type,
+            )
         except HTTPException as e:
             raise e
         except Exception as e:
-            return LoanTransactionResponse(success=False, message=f"Error updating loan transaction: {str(e)}")
+            return LoanTransactionResponse(
+                success=False, message=f"Error updating loan transaction: {str(e)}"
+            )
 
     @strawberry.mutation
-    async def delete_loan_transaction(self, info: Info, transaction_id: strawberry.ID) -> LoanTransactionResponse:
+    async def delete_loan_transaction(
+        self, info: Info, transaction_id: strawberry.ID
+    ) -> LoanTransactionResponse:
         """Delete a loan transaction"""
         current_user: UserInDB = info.context.get("current_user")
         if not current_user:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
+            )
         if current_user.role not in ["admin", "staff"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete loan transactions")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to delete loan transactions",
+            )
 
         try:
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
-            
-            success = await transaction_crud.delete_loan_transaction(str(transaction_id))
+
+            success = await transaction_crud.delete_loan_transaction(
+                str(transaction_id)
+            )
             if not success:
-                return LoanTransactionResponse(success=False, message="Loan transaction not found or could not be deleted")
-            
-            return LoanTransactionResponse(success=True, message="Loan transaction deleted successfully")
+                return LoanTransactionResponse(
+                    success=False,
+                    message="Loan transaction not found or could not be deleted",
+                )
+
+            return LoanTransactionResponse(
+                success=True, message="Loan transaction deleted successfully"
+            )
         except HTTPException as e:
             raise e
         except Exception as e:
-            return LoanTransactionResponse(success=False, message=f"Error deleting loan transaction: {str(e)}")
+            return LoanTransactionResponse(
+                success=False, message=f"Error deleting loan transaction: {str(e)}"
+            )

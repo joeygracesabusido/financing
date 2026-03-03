@@ -63,6 +63,7 @@ class UserBase(BaseModel):
     username: str
     full_name: str
     role: str
+    assigned_branch: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
@@ -81,6 +82,7 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
     password: Optional[str] = None
+    assigned_branch: Optional[str] = None
 
 class UserInDB(UserBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
@@ -88,6 +90,13 @@ class UserInDB(UserBase):
     is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    @field_validator("is_active", mode="before")
+    @classmethod
+    def validate_is_active(cls, v: Any) -> bool:
+        if v is None:
+            return True
+        return bool(v)
 
     model_config = ConfigDict(
         populate_by_name=True,

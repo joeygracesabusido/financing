@@ -69,6 +69,7 @@ class LoanType:
         name="nextDueDate", default=None
     )
     months_paid: Optional[int] = strawberry.field(name="monthsPaid", default=None)
+    branch: Optional[str] = None
 
     @strawberry.field
     async def product_name(self) -> Optional[str]:
@@ -98,6 +99,7 @@ class LoanCreateInput:
     product_id: int
     principal: Decimal
     term_months: int
+    branch: Optional[str] = None
     disbursement_method: Optional[str] = (
         None  # cash | bank_transfer | cheque | savings_transfer
     )
@@ -150,6 +152,14 @@ class LoanQuery:
                     status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
                 )
 
+            # --- Branch check for staff ---
+            if current_user.role != "admin" and current_user.role != "customer":
+                if current_user.assigned_branch != loan_db.branch:
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN, 
+                        detail=f"Access denied: Loan belongs to branch {loan_db.branch}"
+                    )
+
             return LoanResponse(
                 success=True,
                 message="OK",
@@ -165,6 +175,7 @@ class LoanQuery:
                     created_at=loan_db.created_at,
                     updated_at=loan_db.updated_at,
                     disbursed_at=loan_db.disbursed_at,
+                    branch=loan_db.branch,
                 ),
             )
 
@@ -199,6 +210,15 @@ class LoanQuery:
                 count_query = count_query.filter(
                     LoanApplication.customer_id == customer_id
                 )
+            
+            # --- Branch filtering for staff ---
+            if current_user.role != "admin" and current_user.role != "customer":
+                branch = current_user.assigned_branch
+                if not branch:
+                    # Restricted to no loans if no branch assigned
+                    return LoansResponse(success=True, message="No branch assigned to user", loans=[], total=0)
+                query = query.filter(LoanApplication.branch == branch)
+                count_query = count_query.filter(LoanApplication.branch == branch)
 
             result = await session.execute(query)
             loans_db = result.scalars().all()
@@ -221,6 +241,7 @@ class LoanQuery:
                     outstanding_balance=l.outstanding_balance,
                     next_due_date=l.next_due_date,
                     months_paid=l.months_paid,
+                    branch=l.branch,
                 )
                 for l in loans_db
             ]
@@ -418,6 +439,25 @@ class LoanMutation:
             )
 
         async for session in get_db_session():
+            # --- Fetch Customer Branch ---
+            customers_collection = get_customers_collection()
+            customer_crud = CustomerCRUD(customers_collection)
+            customer_data = await customer_crud.get_customer_by_id(input.customer_id)
+            if not customer_data:
+                return LoanResponse(success=False, message="Customer not found")
+            
+            customer_branch = customer_data.branch
+
+            # --- Branch check for non-admins ---
+            if current_user.role != "admin" and current_user.role != "customer":
+                if not current_user.assigned_branch:
+                    return LoanResponse(success=False, message="User has no branch assigned")
+                if customer_branch != current_user.assigned_branch:
+                    return LoanResponse(
+                        success=False, 
+                        message=f"You can only create loans for customers in your branch: {current_user.assigned_branch}"
+                    )
+
             # --- Enforce customer_loan_limit ---
             prod_result = await session.execute(
                 select(PGLoanProduct).filter(PGLoanProduct.id == input.product_id)
@@ -452,6 +492,7 @@ class LoanMutation:
                 term_months=input.term_months,
                 disbursement_method=input.disbursement_method,
                 status="draft",
+                branch=customer_branch,
             )
             session.add(new_loan)
             await session.flush()
@@ -473,6 +514,7 @@ class LoanMutation:
                     created_at=new_loan.created_at,
                     updated_at=new_loan.updated_at,
                     disbursed_at=new_loan.disbursed_at,
+                    branch=new_loan.branch,
                 ),
             )
 
@@ -517,6 +559,14 @@ class LoanMutation:
             if not loan:
                 return LoanResponse(success=False, message="Loan not found")
 
+            # --- Branch check for staff ---
+            if current_user.role != "admin":
+                if current_user.assigned_branch != loan.branch:
+                    return LoanResponse(
+                        success=False, 
+                        message=f"Access denied: Loan belongs to branch {loan.branch}"
+                    )
+
             if input.status:
                 loan.status = input.status
             if input.approved_principal:
@@ -542,6 +592,7 @@ class LoanMutation:
                     created_at=loan.created_at,
                     updated_at=loan.updated_at,
                     disbursed_at=loan.disbursed_at,
+                    branch=loan.branch,
                 ),
             )
 
@@ -591,6 +642,14 @@ class LoanMutation:
                 return LoanResponse(
                     success=False, message="Loan not found or already disbursed"
                 )
+
+            # --- Branch check for staff ---
+            if current_user.role != "admin":
+                if current_user.assigned_branch != loan.branch:
+                    return LoanResponse(
+                        success=False, 
+                        message=f"Access denied: Loan belongs to branch {loan.branch}"
+                    )
 
             loan.status = "active"
             loan.disbursed_at = datetime.now()
@@ -789,6 +848,14 @@ class LoanMutation:
                 return LoanResponse(
                     success=False, message="Loan not found or not active"
                 )
+
+            # --- Branch check for staff ---
+            if current_user.role != "admin":
+                if current_user.assigned_branch != loan.branch:
+                    return LoanResponse(
+                        success=False, 
+                        message=f"Access denied: Loan belongs to branch {loan.branch}"
+                    )
 
             # --- Enforce prepayment rules ---
             product_result = await session.execute(

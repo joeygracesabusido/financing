@@ -69,7 +69,7 @@ class UserCRUD:
         if not ObjectId.is_valid(user_id):
             return None
 
-        update_data = user_update.model_dump(exclude_unset=True)
+        update_data = user_update.model_dump(exclude_none=True)
         if "password" in update_data:
             update_data["hashed_password"] = get_password_hash(user_update.password)
             del update_data["password"]

@@ -25,6 +25,7 @@ class UserType:
     full_name: str = strawberry.field(name="fullName")
     is_active: bool = strawberry.field(name="isActive")
     role: str
+    assigned_branch: Optional[str] = strawberry.field(name="assignedBranch", default=None)
     created_at: datetime = strawberry.field(name="createdAt")
     updated_at: datetime = strawberry.field(name="updatedAt")
 
@@ -35,6 +36,7 @@ class UserCreateInput:
     full_name: str
     password: str
     role: Optional[str] = "customer"
+    assigned_branch: Optional[str] = strawberry.field(name="assignedBranch", default=None)
 
 @strawberry.input
 class UserUpdateInput:
@@ -44,6 +46,7 @@ class UserUpdateInput:
     is_active: Optional[bool] = None
     role: Optional[str] = None
     password: Optional[str] = None
+    assigned_branch: Optional[str] = strawberry.field(name="assignedBranch", default=None)
 
 @strawberry.input
 class LoginInput:
