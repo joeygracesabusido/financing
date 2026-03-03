@@ -1,10 +1,10 @@
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core'
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core'
 import { onError } from '@apollo/client/link/error'
 import { setContext } from '@apollo/client/link/context'
 
-// Use REST API with HTTP link
-const httpLink = new HttpLink({
-    uri: '/api',
+// Use Apollo Client's createHttpLink for REST API
+const httpLink = createHttpLink({
+    uri: '/graphql',
 })
 
 const authLink = setContext((_, { headers }) => {
