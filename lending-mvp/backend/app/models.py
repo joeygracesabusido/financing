@@ -16,6 +16,25 @@ def generate_uuid() -> UUID:
     return uuid4()
 
 
+# --- MongoDB Compatibility ---
+class PyObjectId(UUID):
+    """MongoDB ObjectId compatibility wrapper using UUID."""
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+    
+    @classmethod
+    def validate(cls, v):
+        if isinstance(v, UUID):
+            return v
+        if isinstance(v, str):
+            try:
+                return UUID(v)
+            except ValueError:
+                raise ValueError("Invalid ObjectId")
+        raise ValueError("Invalid ObjectId")
+
+
 # --- User Models ---
 class UserBase(BaseModel):
     email: str

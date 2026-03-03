@@ -6,6 +6,7 @@ version: '3.9'
 #   Backend   : FastAPI + Strawberry GraphQL → http://localhost:8001
 #   PostgreSQL: Port 5433 (host) → 5432 (container)   — PostgreSQL 16
 #   Redis     : Port 6380 (host) → 6379 (container)   — avoids host conflicts
+#   MongoDB   : REMOVED (full migration to PostgreSQL 16)
 # ─────────────────────────────────────────────────────────────────────────────
 
 networks:

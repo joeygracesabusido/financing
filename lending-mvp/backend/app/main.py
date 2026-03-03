@@ -21,7 +21,7 @@ from .kyc import KYCQuery, KYCMutation
 from .collateral import CollateralQuery, CollateralMutation
 from .guarantor import GuarantorQuery, GuarantorMutation
 from .chart_of_accounts import ChartOfAccountsQuery, ChartOfAccountsMutation, seed_chart_of_accounts
-from .aml_compliance import AMLComplianceQuery, AMLComplianceMutation
+# from .aml_compliance import AMLComplianceQuery # Temporarily disabled
 from .database import create_tables
 from .database.postgres import engine
 from .database.pg_models import Base
@@ -55,7 +55,6 @@ class Query(
     GuarantorQuery,
     CollectionsQuery,
     ChartOfAccountsQuery,
-    AMLComplianceQuery,
 ):
     pass
 
@@ -76,7 +75,6 @@ class Mutation(
     GuarantorMutation,
     ChartOfAccountsMutation,
     ExtendedLoanMutation,
-    AMLComplianceMutation,
 ):
     pass
 

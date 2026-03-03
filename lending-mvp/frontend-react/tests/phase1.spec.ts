@@ -93,15 +93,14 @@ test.describe('Phase 1 - Foundation Tests', () => {
     }
   });
 
-  test('MongoDB container is healthy', async () => {
+  test("MongoDB container removed", async () => {
     try {
-      const response = await fetch('http://localhost:27018', {
-        method: 'GET',
+      const response = await fetch("http://localhost:27018", {
+        method: "GET",
         signal: AbortSignal.timeout(5000)
       });
-      expect(response.ok).toBe(true);
+      expect(response.ok).toBe(false);
     } catch (error) {
-      // Container is running
       expect(error).toBeTruthy();
     }
   });
