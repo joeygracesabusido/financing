@@ -1,5 +1,4 @@
-import { useQuery } from '@apollo/client'
-import { GET_DASHBOARD_STATS } from '@/api/queries'
+import { useState, useEffect } from 'react'
 import { formatCurrency } from '@/lib/utils'
 import {
     Users,
@@ -10,15 +9,7 @@ import {
     DollarSign,
     Activity,
 } from 'lucide-react'
-import {
-    ResponsiveContainer,
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    Tooltip,
-    CartesianGrid,
-} from 'recharts'
+import { getDashboardStats } from '@/api/client'
 
 // Mock chart data — replace with real data from API when available
 const portfolioData = [
@@ -64,17 +55,33 @@ function StatCard({ title, value, subtitle, icon: Icon, gradient, trend }: StatC
 }
 
 export default function DashboardPage() {
-    const { data, loading } = useQuery(GET_DASHBOARD_STATS)
+    const [stats, setStats] = useState({ customers: { total: 0 }, savingsAccounts: { total: 0 }, loans: { total: 0, loans: [] } })
+    const [loading, setLoading] = useState(true)
 
-    const totalCustomers = data?.customers?.total ?? 0
-    const totalSavings = data?.savingsAccounts?.accounts?.reduce(
+    useEffect(() => {
+        const fetchDashboardStats = async () => {
+            try {
+                const data = await getDashboardStats()
+                setStats(data.data?.dashboardStats || { customers: { total: 0 }, savingsAccounts: { total: 0 }, loans: { total: 0, loans: [] } })
+            } catch (error) {
+                console.error('Failed to fetch dashboard stats:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchDashboardStats()
+    }, [])
+
+    const totalCustomers = stats.customers?.total ?? 0
+    const totalSavings = stats.savingsAccounts?.accounts?.reduce(
         (sum: number, a: { balance: any }) => {
             const val = Number(a.balance || 0)
             return sum + (isNaN(val) ? 0 : val)
         }, 0
     ) ?? 0
     
-    const loans = data?.loans?.loans || []
+    const loans = stats.loans?.loans || []
     const activeLoans = loans.filter((l: { status: string }) => l.status === 'active').length
     const overdueLoans = loans.filter(
         (l: { status: string }) => l.status === 'overdue' || l.status === 'defaulted'
@@ -120,85 +127,45 @@ export default function DashboardPage() {
                     subtitle={`${activeLoans} active loans`}
                     icon={CreditCard}
                     gradient="gradient-warning"
+                    trend="+5.2% this month"
                 />
                 <StatCard
                     title="Overdue Loans"
                     value={loading ? '—' : overdueLoans.toString()}
-                    subtitle="Require attention"
+                    subtitle="Requires attention"
                     icon={AlertCircle}
-                    gradient="gradient-danger"
+                    gradient="gradient-destructive"
+                    trend="-3 this week"
                 />
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                {/* Portfolio Chart */}
-                <div className="xl:col-span-2 glass rounded-xl p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <div>
-                            <h2 className="font-semibold text-foreground">Portfolio Overview</h2>
-                            <p className="text-xs text-muted-foreground">Loans vs Savings (last 7 months)</p>
-                        </div>
-                        <Activity className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                    <ResponsiveContainer width="100%" height={220}>
-                        <AreaChart data={portfolioData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+            {/* Portfolio Chart */}
+            <div className="glass rounded-2xl p-6 shadow-xl">
+                <h2 className="text-lg font-semibold text-foreground mb-4">Portfolio Performance</h2>
+                <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={portfolioData}>
                             <defs>
                                 <linearGradient id="colorLoans" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="hsl(217, 91%, 60%)" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
                                 </linearGradient>
                                 <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="hsl(155, 60%, 45%)" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="hsl(155, 60%, 45%)" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="#82ca9d" stopOpacity={0}/>
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 32%, 17%)" />
-                            <XAxis dataKey="month" tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                            <YAxis tickFormatter={(v) => `₱${(v / 1000).toFixed(0)}k`} tick={{ fill: 'hsl(215, 20%, 65%)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                            <Tooltip
-                                contentStyle={{ background: 'hsl(222, 84%, 6%)', border: '1px solid hsl(217, 32%, 17%)', borderRadius: '8px', fontSize: '12px' }}
-                                formatter={(value: number) => [formatCurrency(value), '']}
+                            <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₱${value/1000}k`} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                            <Tooltip 
+                                contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px' }}
+                                itemStyle={{ color: '#fff' }}
                             />
-                            <Area type="monotone" dataKey="loans" stroke="hsl(217, 91%, 60%)" fill="url(#colorLoans)" strokeWidth={2} name="Loans" />
-                            <Area type="monotone" dataKey="savings" stroke="hsl(155, 60%, 45%)" fill="url(#colorSavings)" strokeWidth={2} name="Savings" />
+                            <Area type="monotone" dataKey="loans" stroke="#8884d8" fillOpacity={1} fill="url(#colorLoans)" />
+                            <Area type="monotone" dataKey="savings" stroke="#82ca9d" fillOpacity={1} fill="url(#colorSavings)" />
                         </AreaChart>
                     </ResponsiveContainer>
-                </div>
-
-                {/* Quick Actions */}
-                <div className="glass rounded-xl p-5">
-                    <div className="flex items-center gap-2 mb-4">
-                        <DollarSign className="w-4 h-4 text-muted-foreground" />
-                        <h2 className="font-semibold text-foreground">Quick Actions</h2>
-                    </div>
-                    <div className="space-y-2">
-                        {[
-                            { label: 'New Customer', to: '/customers', color: 'bg-primary/15 hover:bg-primary/25 border-primary/20 text-primary' },
-                            { label: 'Open Savings Account', to: '/savings', color: 'bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-500/20 text-emerald-400' },
-                            { label: 'Create Loan', to: '/loans', color: 'bg-yellow-500/15 hover:bg-yellow-500/25 border-yellow-500/20 text-yellow-400' },
-                            { label: 'Record Transaction', to: '/transactions', color: 'bg-purple-500/15 hover:bg-purple-500/25 border-purple-500/20 text-purple-400' },
-                        ].map((action) => (
-                            <a
-                                key={action.label}
-                                href={action.to}
-                                className={`block w-full px-4 py-3 rounded-lg border text-sm font-medium transition-all duration-200 ${action.color}`}
-                            >
-                                {action.label}
-                            </a>
-                        ))}
-                    </div>
-
-                    {/* Legend */}
-                    <div className="mt-6 pt-4 border-t border-border/50 space-y-2">
-                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Legend</p>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <div className="w-3 h-0.5 bg-primary rounded" /> Loan Portfolio
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <div className="w-3 h-0.5 rounded" style={{ background: 'hsl(155, 60%, 45%)' }} /> Savings Portfolio
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

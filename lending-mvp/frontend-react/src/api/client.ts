@@ -1,11 +1,10 @@
 // Simple REST API client using fetch
-// No Apollo Client - using fetch directly for REST API
 
-const API_URL = '/api'
+const API_URL = '/graphql'
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const login = async (username: string, password: string, totpCode?: string) => {
-  const url = `${API_URL}/login/`
+  const url = `${API_URL}`
   const body = totpCode ? { username, password, totpCode } : { username, password }
   const response = await fetch(url, {
     method: 'POST',
@@ -14,7 +13,7 @@ export const login = async (username: string, password: string, totpCode?: strin
   })
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.detail || 'Login failed')
+    throw new Error(error.errors?.[0]?.message || 'Login failed')
   }
   return response.json()
 }
@@ -26,52 +25,40 @@ export const logout = () => {
   window.location.href = '/login'
 }
 
-// ── Users ─────────────────────────────────────────────────────────────────────
-export const getUsers = async (skip: number = 0, limit: number = 100) => {
-  const url = `${API_URL}/users?skip=${skip}&limit=${limit}`
-  const response = await fetch(url)
-  return response.json()
-}
-
-export const createUser = async (input: any) => {
-  const url = `${API_URL}/users`
-  const response = await fetch(url, {
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+export const getDashboardStats = async () => {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      query: `{ dashboardStats { customers { total } savingsAccounts { total } loans { total } } }`
+    }),
   })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch dashboard stats')
+  }
   return response.json()
 }
 
-export const updateUser = async (userId: string, input: any) => {
-  const url = `${API_URL}/users/${userId}`
-  const response = await fetch(url, {
-    method: 'PUT',
+export const getUsers = async (skip: number = 0, limit: number = 100) => {
+  const response = await fetch(API_URL, {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify({
+      query: `{ users(skip: ${skip}, limit: ${limit}) { id email username fullName isActive role } }`
+    }),
   })
-  return response.json()
-}
-
-export const deleteUser = async (userId: string) => {
-  const url = `${API_URL}/users/${userId}`
-  const response = await fetch(url, { method: 'DELETE' })
-  return response.json()
-}
-
-// ── Health ────────────────────────────────────────────────────────────────────
-export const getHealth = async () => {
-  const url = `${API_URL}/health`
-  const response = await fetch(url)
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch users')
+  }
   return response.json()
 }
 
 export default {
   login,
   logout,
+  getDashboardStats,
   getUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-  getHealth,
 }
