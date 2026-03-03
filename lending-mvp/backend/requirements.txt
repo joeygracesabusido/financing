@@ -5,11 +5,7 @@ uvicorn[standard]
 # GraphQL
 strawberry-graphql[fastapi]
 
-# Database — MongoDB (existing)
-motor
-pymongo
-
-# Database — PostgreSQL (Phase 1)
+# Database — PostgreSQL (Phase 2 - primary)
 asyncpg
 sqlalchemy[asyncio]
 alembic

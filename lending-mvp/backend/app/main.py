@@ -22,8 +22,7 @@ from .collateral import CollateralQuery, CollateralMutation
 from .guarantor import GuarantorQuery, GuarantorMutation
 from .chart_of_accounts import ChartOfAccountsQuery, ChartOfAccountsMutation, seed_chart_of_accounts
 from .aml_compliance import AMLComplianceQuery, AMLComplianceMutation
-from .database import create_indexes, get_users_collection
-from .database.crud import UserCRUD
+from .database import create_tables
 from .database.postgres import engine
 from .database.pg_models import Base
 from .database.redis_client import get_redis, close_redis
@@ -108,16 +107,22 @@ async def get_context(request: Request) -> dict:
         if not user_id:
             raise HTTPException(status_code=401, detail="Token missing subject claim")
 
-        users_collection = get_users_collection()
-        user_crud = UserCRUD(users_collection)
-        current_user = await user_crud.get_user_by_id(user_id)
-        if not current_user:
-            raise HTTPException(status_code=401, detail="User not found")
+        from sqlalchemy import select
+        from .database.pg_core_models import User
+        from .database.postgres import AsyncSessionLocal
+        
+        async with AsyncSessionLocal() as session:
+            result = await session.execute(
+                select(User).where(User.uuid == user_id)
+            )
+            current_user = result.scalar_one_or_none()
+            if not current_user:
+                raise HTTPException(status_code=401, detail="User not found")
 
-        # Attach to request state so AuditMiddleware can read it
-        request.state.current_user = current_user
+            # Attach to request state so AuditMiddleware can read it
+            request.state.current_user = current_user
 
-        return {"current_user": current_user}
+            return {"current_user": current_user}
 
     except HTTPException:
         raise
@@ -129,16 +134,15 @@ async def get_context(request: Request) -> dict:
         )
 
 
-# --- App lifecycle -----------------------------------------------------------
+# --- App lifecycle ------------------------------------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Starting up — creating DB indexes and PG tables...")
-    await create_indexes()
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    logger.info("Starting up — creating PostgreSQL tables...")
+    await create_tables()
     logger.info("PostgreSQL tables ensured.")
+    
     # Seed Chart of Accounts
     try:
         await seed_chart_of_accounts()
@@ -176,7 +180,7 @@ async def lifespan(app: FastAPI):
 graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)
 graphql_app = GraphQLRouter(graphql_schema, context_getter=get_context)
 
-app = FastAPI(title="Lending MVP API — Phase 1", lifespan=lifespan)
+app = FastAPI(title="Lending MVP API — Phase 2", lifespan=lifespan)
 
 # Audit middleware (must be added before CORS so it runs on all requests)
 app.add_middleware(AuditMiddleware)

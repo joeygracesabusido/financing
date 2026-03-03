@@ -1,12 +1,11 @@
 version: '3.9'
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Lending MVP — Modern Stack
+# Lending MVP — PostgreSQL 16 Only Stack
 #   Frontend  : React (Vite) → http://localhost:3010
 #   Backend   : FastAPI + Strawberry GraphQL → http://localhost:8001
-#   PostgreSQL: Port 5433 (host) → 5432 (container)   — avoids host conflicts
+#   PostgreSQL: Port 5433 (host) → 5432 (container)   — PostgreSQL 16
 #   Redis     : Port 6380 (host) → 6379 (container)   — avoids host conflicts
-#   MongoDB   : Port 27018 (host) → 27017 (container) — avoids host conflicts
 # ─────────────────────────────────────────────────────────────────────────────
 
 networks:
@@ -14,15 +13,14 @@ networks:
     driver: bridge
 
 volumes:
-  mongo_data:
   pg_data:
   redis_data:
 
 services:
 
-  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  # ── PostgreSQL 16 ─────────────────────────────────────────────────────────
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: lending_postgres
     restart: unless-stopped
     networks:
@@ -59,24 +57,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── MongoDB (as-is — backend stays wired to Mongo) ────────────────────────
-  mongodb:
-    image: mongo:6.0
-    container_name: lending_mongo
-    restart: unless-stopped
-    networks:
-      - lending_net
-    ports:
-      - "27018:27017"
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ── Backend (FastAPI — unchanged runtime logic) ───────────────────────────
+  # ── Backend (FastAPI — PostgreSQL 16 only) ─────────────────────────────────
   backend:
     build:
       context: ./backend
@@ -91,8 +72,6 @@ services:
       - ./backend/alembic:/app/alembic
       - ./backend/alembic.ini:/app/alembic.ini
     depends_on:
-      mongodb:
-        condition: service_healthy
       postgres:
         condition: service_healthy
       redis:
@@ -100,9 +79,7 @@ services:
     env_file:
       - ./.env
     environment:
-      # MongoDB (existing)
-      MONGO_URL: ${MONGO_URL:-mongodb://lending_mongo:27017}
-      # PostgreSQL (future migration)
+      # PostgreSQL 16 (primary database)
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-lending_user}:${POSTGRES_PASSWORD:-lending_secret}@postgres:5432/${POSTGRES_DB:-lending_db}
       # Redis
       REDIS_URL: redis://:${REDIS_PASSWORD:-lending_redis_pass}@redis:6379/0

@@ -1,61 +1,20 @@
+"""
+Pydantic models for the application.
+Uses PostgreSQL-compatible UUID/serial IDs instead of MongoDB's ObjectId.
+"""
+
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Any
 from datetime import datetime, date
-from bson import ObjectId
 from decimal import Decimal
-
-from pydantic import GetCoreSchemaHandler, GetJsonSchemaHandler
-from pydantic_core import core_schema
+from uuid import UUID, uuid4
 
 
+# --- Helper function for UUID generation ---
+def generate_uuid() -> UUID:
+    """Generate a new UUID4."""
+    return uuid4()
 
-
-# Helper for handling MongoDB's ObjectId
-# class PyObjectId(ObjectId):
-#     @classmethod
-#     def __get_validators__(cls):
-#         yield cls.validate
-#     @classmethod
-#     def validate(cls, v):
-#         if not ObjectId.is_valid(v):
-#             raise ValueError("Invalid ObjectId")
-#         return ObjectId(v)
-#     @classmethod
-#     def __get_pydantic_json_schema__(cls, field_schema):
-#         field_schema.update(type="string")
-
-
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls,
-        _source_type: Any,
-        _handler: GetCoreSchemaHandler,
-    ) -> core_schema.CoreSchema:
-        return core_schema.union_schema(
-            [
-                core_schema.is_instance_schema(ObjectId),
-                core_schema.no_info_plain_validator_function(cls._validate),
-            ]
-        )
-
-    @classmethod
-    def _validate(cls, value: Any) -> ObjectId:
-        if isinstance(value, ObjectId):
-            return value
-        if isinstance(value, str) and ObjectId.is_valid(value):
-            return ObjectId(value)
-        raise ValueError("Invalid ObjectId")
-
-    @classmethod
-    def __get_pydantic_json_schema__(
-        cls,
-        core_schema: core_schema.CoreSchema,
-        handler: GetJsonSchemaHandler,
-    ) -> Any:
-        json_schema = handler(core_schema)
-        json_schema.update(type="string", example="507f1f77bcf86cd799439011")
-        return json_schema
 
 # --- User Models ---
 class UserBase(BaseModel):
@@ -63,8 +22,9 @@ class UserBase(BaseModel):
     username: str
     full_name: str
     role: str
-    branch_id: Optional[int] = None    # PostgreSQL branches.id
-    branch_code: Optional[str] = None  # denormalized branch code (e.g. "HQ", "BR-QC")
+    branch_id: Optional[int] = None
+    branch_code: Optional[str] = None
+
 
 class UserCreate(UserBase):
     password: str
@@ -76,6 +36,7 @@ class UserCreate(UserBase):
             raise ValueError("Password must be at least 8 characters.")
         return v
 
+
 class UserUpdate(BaseModel):
     email: Optional[str] = None
     username: Optional[str] = None
@@ -86,8 +47,9 @@ class UserUpdate(BaseModel):
     branch_id: Optional[int] = None
     branch_code: Optional[str] = None
 
+
 class UserInDB(UserBase):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: UUID = Field(default_factory=generate_uuid, alias="_id")
     hashed_password: str
     is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -97,22 +59,23 @@ class UserInDB(UserBase):
 
     model_config = ConfigDict(
         populate_by_name=True,
-        arbitrary_types_allowed=True,
-        json_encoders={ObjectId: str}
+        json_encoders={UUID: str}
     )
 
+
 class User(UserBase):
-    id: str # For API responses, _id will be converted to str
+    id: UUID = Field(default_factory=generate_uuid)
     created_at: datetime
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
+
 # --- Customer Models ---
 class CustomerBase(BaseModel):
-    customer_type: str # Added customer_type
-    last_name: Optional[str] = None # Made optional
-    first_name: Optional[str] = None # Made optional
+    customer_type: str
+    last_name: Optional[str] = None
+    first_name: Optional[str] = None
     display_name: str
     middle_name: Optional[str] = None
     tin_no: Optional[str] = None
@@ -129,14 +92,16 @@ class CustomerBase(BaseModel):
     company_address: Optional[str] = None
     branch: str
 
+
 class CustomerCreate(CustomerBase):
     pass
 
+
 class CustomerUpdate(BaseModel):
-    customer_type: Optional[str] = None # Added customer_type and made optional for updates
+    customer_type: Optional[str] = None
     last_name: Optional[str] = None
     first_name: Optional[str] = None
-    display_name: Optional[str] = None # Made optional
+    display_name: Optional[str] = None
     middle_name: Optional[str] = None
     tin_no: Optional[str] = None
     sss_no: Optional[str] = None
@@ -152,37 +117,155 @@ class CustomerUpdate(BaseModel):
     company_address: Optional[str] = None
     branch: str
 
+
 class CustomerInDB(CustomerBase):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    id: int = Field(default_factory=lambda: 0, alias="id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
     model_config = ConfigDict(
         populate_by_name=True,
-        arbitrary_types_allowed=True,
-        json_encoders={ObjectId: str}
     )
 
+
 class Customer(CustomerBase):
-    id: str # For API responses, _id will be converted to str
+    id: int
     created_at: datetime
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
 
-
 # --- Ledger Entry Models ---
 class LedgerEntry(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    transaction_id: str # Unique ID for the balanced transaction
-    account: str # e.g., "Cash", "Loans Receivable"
+    id: int = Field(default_factory=lambda: 0, alias="id")
+    transaction_id: str
+    account: str
     amount: Decimal
-    entry_type: str # 'debit' or 'credit'
+    entry_type: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
     model_config = ConfigDict(
         populate_by_name=True,
-        arbitrary_types_allowed=True,
-        json_encoders={ObjectId: str}
     )
+
+
+# --- Loan Models ---
+class LoanBase(BaseModel):
+    loan_id: str
+    customer_id: int
+    product_id: int
+    principal: Decimal
+    interest_rate: Decimal
+    term_months: int
+    status: str = "pending"
+
+
+class LoanCreate(LoanBase):
+    pass
+
+
+class LoanUpdate(BaseModel):
+    status: Optional[str] = None
+    principal: Optional[Decimal] = None
+    interest_rate: Optional[Decimal] = None
+    term_months: Optional[int] = None
+    disbursement_date: Optional[datetime] = None
+
+
+class LoanInDB(LoanBase):
+    id: int = Field(default_factory=lambda: 0, alias="id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+
+
+class Loan(LoanBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# --- Savings Models ---
+class SavingsBase(BaseModel):
+    account_number: str
+    display_name: str
+    customer_id: int
+    account_type: str
+    primary_owner_id: int
+    secondary_owner_id: Optional[int] = None
+    current_balance: Decimal = 0.0
+    minimum_balance: Decimal = 1000.0
+    interest_rate: Decimal = 0.5
+    is_active: bool = True
+    status: str = "active"
+
+
+class SavingsCreate(SavingsBase):
+    pass
+
+
+class SavingsUpdate(BaseModel):
+    current_balance: Optional[Decimal] = None
+    is_active: Optional[bool] = None
+    status: Optional[str] = None
+
+
+class SavingsInDB(SavingsBase):
+    id: int = Field(default_factory=lambda: 0, alias="id")
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+
+
+class SavingsAccount(SavingsBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# --- Transaction Models ---
+class TransactionBase(BaseModel):
+    transaction_id: str
+    transaction_type: str
+    account_id: Optional[int] = None
+    amount: Decimal
+    balance_after: Optional[Decimal] = None
+    description: Optional[str] = None
+    reference: Optional[str] = None
+    status: str = "completed"
+
+
+class TransactionCreate(TransactionBase):
+    pass
+
+
+class TransactionUpdate(BaseModel):
+    status: Optional[str] = None
+    description: Optional[str] = None
+
+
+class TransactionInDB(TransactionBase):
+    id: int = Field(default_factory=lambda: 0, alias="id")
+    timestamp: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+
+
+class Transaction(TransactionBase):
+    id: int
+    timestamp: datetime
+
+    model_config = ConfigDict(from_attributes=True)

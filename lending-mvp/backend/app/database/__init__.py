@@ -1,68 +1,66 @@
-import motor.motor_asyncio
+"""
+PostgreSQL-only database initialization.
+Replaces MongoDB-based database initialization.
+"""
+
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
+
 from ..config import settings
 
-client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URL)
-db = client[settings.MONGO_DB_NAME]
+# Import all models to register them with Base
+from .pg_core_models import (
+    User, Customer, SavingsAccount, SavingsTransaction, Loan, LoanTransaction,
+    AmortizationSchedule, Transaction, LedgerEntry, StandingOrder, InterestLedger
+)
+from .pg_loan_models import (
+    PGLoanProduct, LoanApplication, LoanCollateral, LoanGuarantor,
+    CreditScore, LoanApplicationDocument, DisbursementChecklist, LoanTranche, PromiseToPay, LoanRestructureLog
+)
+from .pg_models import (
+    Branch, UserBranchAssignment, AuditLog, UserSession, KYCDocument,
+    Beneficiary, CustomerActivity, PasswordHistory, AMLAlert, PEPRecord
+)
+from .pg_accounting_models import GLAccount, JournalEntry, JournalLine
 
-# Collections
-users_collection = db["users"]
-loans_collection = db["loans"]
-ledger_collection = db["ledger_entries"]
-customers_collection = db["customers"]
-loan_transactions_collection = db["loan_transactions"]
-loan_products_collection = db["loan_products"]
-savings_collection = db["savings"]
-transactions_collection = db["transactions"]
-standing_orders_collection = db["standing_orders"]
-interest_ledger_collection = db["interest_ledger"]
-chart_of_accounts_collection = db["chart_of_accounts"]
+# Async SQLAlchemy engine
+engine = create_async_engine(
+    settings.database_url,
+    echo=False,
+    pool_pre_ping=True,
+    pool_size=10,
+    max_overflow=20,
+)
+
+AsyncSessionLocal = sessionmaker(
+    engine, class_=AsyncSession, expire_on_commit=False
+)
+
+Base = declarative_base()
 
 
-def get_users_collection():
-    return users_collection
+async def get_db_session():
+    """FastAPI dependency that yields a PostgreSQL async session."""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
-def get_loans_collection():
-    return loans_collection
 
-def get_ledger_collection():
-    return ledger_collection
+async def create_tables():
+    """Create all PostgreSQL tables."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("PostgreSQL tables created successfully.")
 
-def get_customers_collection():
-    return customers_collection
 
-def get_loan_transactions_collection():
-    return loan_transactions_collection
-
-def get_loan_products_collection():
-    return loan_products_collection
-
-def get_savings_collection():
-    return savings_collection
-
-def get_transactions_collection():
-    return transactions_collection
-
-def get_standing_orders_collection():
-    return standing_orders_collection
-
-def get_interest_ledger_collection():
-    return interest_ledger_collection
-
-def get_chart_of_accounts_collection():
-    return chart_of_accounts_collection
-
-def get_db():
-    return db
-
-async def create_indexes():
-    """
-    Creates necessary indexes for the collections.
-    """
-    print("Creating database indexes...")
-    try:
-        await users_collection.create_index("email", unique=True)
-        await users_collection.create_index("username", unique=True)
-        await customers_collection.create_index("display_name", unique=True)
-        print("Indexes created successfully.")
-    except Exception as e:
-        print(f"Error creating indexes: {e}")
+async def drop_tables():
+    """Drop all PostgreSQL tables (use with caution!)."""
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+    print("PostgreSQL tables dropped successfully.")

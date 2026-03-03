@@ -2,14 +2,11 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    # ── MongoDB (existing backend) ────────────────────────────────────────────
-    DATABASE_URL: str = "mongodb://lending_mongo:27017"
-    DATABASE_NAME: str = "lending_mvp"
-    MONGO_URL: str = "mongodb://lending_mongo:27017"
-    MONGO_DB_NAME: str = "lending_mvp"
-
-    # ── PostgreSQL ────────────────────────────────────────────────────────────
+    # ── PostgreSQL (primary database) ─────────────────────────────────────────
     database_url: str = "postgresql+asyncpg://lending_user:lending_secret@postgres:5432/lending_db"
+    
+    # PostgreSQL 16 support (upgrade from 15)
+    # Use postgres:16-alpine in docker-compose.yml
 
     # ── Redis ─────────────────────────────────────────────────────────────────
     redis_url: str = "redis://:lending_redis_pass@redis:6379/0"
