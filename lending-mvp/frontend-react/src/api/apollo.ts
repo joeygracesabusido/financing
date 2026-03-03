@@ -1,4 +1,4 @@
-import { createClient, InMemoryCache, HttpLink } from '@apollo/client'
+import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core'
 import { onError } from '@apollo/client/link/error'
 import { setContext } from '@apollo/client/link/context'
 
@@ -30,7 +30,7 @@ const errorLink = onError(({ networkError }) => {
     }
 })
 
-export const apolloClient = createClient({
+export const apolloClient = new ApolloClient({
     link: [errorLink, authLink, httpLink],
     cache: new InMemoryCache(),
     defaultOptions: {
