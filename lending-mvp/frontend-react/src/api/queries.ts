@@ -32,7 +32,6 @@ export const GET_USERS = gql`
         fullName
         isActive
         role
-        assignedBranch
         createdAt
         updatedAt
       }
@@ -52,7 +51,6 @@ export const CREATE_USER = gql`
         email
         fullName
         role
-        assignedBranch
         isActive
       }
     }
@@ -70,7 +68,6 @@ export const UPDATE_USER = gql`
         email
         fullName
         role
-        assignedBranch
         isActive
       }
     }

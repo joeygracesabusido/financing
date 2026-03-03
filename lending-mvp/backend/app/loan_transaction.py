@@ -4,10 +4,7 @@ from decimal import Decimal
 from datetime import datetime
 from strawberry.types import Info
 from fastapi import HTTPException, status
-from sqlalchemy.future import select as sa_select
 
-from .database.postgres import get_db_session
-from .database.pg_loan_models import LoanTransaction as PGLoanTransaction
 from .basemodel.loan_transaction_model import LoanTransaction, LoanTransactionBase
 from .models import UserInDB
 from .database import get_loan_transactions_collection
@@ -45,41 +42,18 @@ class LoanTransactionType:
             from .database.loan_crud import LoanCRUD
             from .database.customer_crud import CustomerCRUD
 
-            # Check if loan_id is numeric (PostgreSQL)
-            try:
-                numeric_loan_id = int(str(self.loan_id))
-                from .database.postgres import get_db_session
-                from .database.pg_loan_models import LoanApplication
+            loans_collection = get_loans_collection()
+            loan_crud = LoanCRUD(loans_collection)
+            loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
 
-                async for session in get_db_session():
-                    result = await session.execute(
-                        sa_select(LoanApplication).filter(
-                            LoanApplication.id == numeric_loan_id
-                        )
-                    )
-                    loan_db = result.scalar_one_or_none()
-                    if loan_db:
-                        customers_collection = get_customers_collection()
-                        customer_crud = CustomerCRUD(customers_collection)
-                        customer_db = await customer_crud.get_customer_by_id(
-                            str(loan_db.customer_id)
-                        )
-                        if customer_db:
-                            return customer_db.display_name
-            except ValueError:
-                # Fallback to MongoDB
-                loans_collection = get_loans_collection()
-                loan_crud = LoanCRUD(loans_collection)
-                loan_db = await loan_crud.get_loan_by_id(str(self.loan_id))
-
-                if loan_db:
-                    customers_collection = get_customers_collection()
-                    customer_crud = CustomerCRUD(customers_collection)
-                    customer_db = await customer_crud.get_customer_by_id(
-                        str(loan_db.borrower_id)
-                    )
-                    if customer_db:
-                        return customer_db.display_name
+            if loan_db:
+                customers_collection = get_customers_collection()
+                customer_crud = CustomerCRUD(customers_collection)
+                customer_db = await customer_crud.get_customer_by_id(
+                    str(loan_db.borrower_id)
+                )
+                if customer_db:
+                    return customer_db.display_name
         except Exception as e:
             print(f"Error resolving borrower name for transaction {self.id}: {e}")
 
@@ -220,29 +194,18 @@ class LoanTransactionQuery:
                     success=False, message="Loan transaction not found"
                 )
 
-            # --- Branch check for staff ---
-            if current_user.role != "admin":
-                from .database.postgres import get_db_session
-                from sqlalchemy.future import select as sa_select
-                from .database.pg_loan_models import LoanApplication
+            if current_user.role == "staff":
+                from .database import get_loans_collection
+                from .database.loan_crud import LoanCRUD
 
-                async for session in get_db_session():
-                    result = await session.execute(
-                        sa_select(LoanApplication).filter(
-                            LoanApplication.id == int(transaction_db.loan_id)
-                        )
+                loans_collection = get_loans_collection()
+                loan_crud = LoanCRUD(loans_collection)
+                loan_db = await loan_crud.get_loan_by_id(str(transaction_db.loan_id))
+                if loan_db and loan_db.borrower_id != current_user.id:
+                    return LoanTransactionResponse(
+                        success=False,
+                        message="Not authorized to access this loan transaction",
                     )
-                    loan_db = result.scalar_one_or_none()
-                    if not loan_db:
-                        return LoanTransactionResponse(
-                            success=False, message="Associated loan not found"
-                        )
-
-                    if current_user.assigned_branch != loan_db.branch:
-                        return LoanTransactionResponse(
-                            success=False,
-                            message=f"Access denied: Loan belongs to branch {loan_db.branch}",
-                        )
 
             transaction_type = convert_loan_transaction_db_to_loan_transaction_type(
                 transaction_db
@@ -290,6 +253,12 @@ class LoanTransactionQuery:
 
             if is_pg_id:
                 # Query PostgreSQL
+                from .database.postgres import get_db_session
+                from .database.pg_loan_models import (
+                    LoanTransaction as PGLoanTransaction,
+                )
+                from sqlalchemy import select as sa_select
+
                 async for session in get_db_session():
                     query = (
                         sa_select(PGLoanTransaction)
@@ -339,6 +308,8 @@ class LoanTransactionQuery:
             # Fallback to MongoDB
             loan_transactions_collection = get_loan_transactions_collection()
             transaction_crud = LoanTransactionCRUD(loan_transactions_collection)
+
+            # TODO: Add authorization check based on loan_id and current_user
 
             transactions_db = await transaction_crud.get_loan_transactions(
                 skip=skip, limit=limit, loan_id=str(loan_id) if loan_id else None

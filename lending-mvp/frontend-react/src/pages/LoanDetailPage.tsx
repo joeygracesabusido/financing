@@ -39,8 +39,7 @@ export default function LoanDetailPage() {
 
     const { data: loanData, loading: loanLoading, refetch: refetchLoan } = useQuery(GET_LOAN, { variables: { id } })
     const loan = loanData?.loan?.loan
-    const { data: txData, loading: txLoading, error: txError, refetch: refetchTx } = useQuery(GET_LOAN_TRANSACTIONS, { variables: { loanId: id } })
-
+    const { data: txData, refetch: refetchTx } = useQuery(GET_LOAN_TRANSACTIONS, { variables: { loanId: id } })
     const { data: amortData, refetch: refetchAmortization } = useQuery(GET_LOAN_AMORTIZATION, {
         variables: { loanId: parseInt(id || '0') },
         skip: !loan || !['active', 'paid', 'defaulted', 'written_off'].includes(loan?.status)
@@ -594,8 +593,6 @@ export default function LoanDetailPage() {
 
                 {tab === 'transactions' && (
                     <div className="glass rounded-xl overflow-hidden">
-                        {txLoading && <div className="p-4 text-center text-muted-foreground">Loading transactions...</div>}
-                        {txError && <div className="p-4 text-center text-red-400">Error: {txError.message}</div>}
                         <table className="w-full text-sm">
                             <thead className="bg-secondary/40">
                                 <tr>
@@ -616,7 +613,7 @@ export default function LoanDetailPage() {
                                         </td>
                                     </tr>
                                 ))}
-                                {(!txData?.loanTransactions?.transactions || txData.loanTransactions.transactions.length === 0) && !txLoading && (
+                                {(!txData?.loanTransactions?.transactions || txData.loanTransactions.transactions.length === 0) && (
                                     <tr><td colSpan={4} className="py-20 text-center text-muted-foreground">No transactions yet</td></tr>
                                 )}
                             </tbody>
