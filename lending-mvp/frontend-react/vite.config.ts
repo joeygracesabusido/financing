@@ -16,17 +16,17 @@ export default defineConfig({
         port: 3000,
         proxy: {
             '/graphql': {
-                target: 'http://backend:8000',
+                target: 'http://localhost:8001',
                 changeOrigin: true,
                 secure: false,
             },
             '/api-login/': {
-                target: 'http://backend:8000',
+                target: 'http://localhost:8001',
                 changeOrigin: true,
                 secure: false,
             },
             '/api': {
-                target: 'http://backend:8000',
+                target: 'http://localhost:8001',
                 changeOrigin: true,
                 secure: false,
             },
