@@ -51,6 +51,27 @@ class Branch(Base):
 
 
 # ---------------------------------------------------------------------------
+# User → Branch Assignment (many-to-one: each user belongs to one branch)
+# ---------------------------------------------------------------------------
+class UserBranchAssignment(Base):
+    __tablename__ = "user_branch_assignments"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(String(64), nullable=False, unique=True, index=True)  # MongoDB _id
+    branch_id = Column(Integer, ForeignKey("branches.id", ondelete="SET NULL"), nullable=True)
+    branch_code = Column(String(20), nullable=True, index=True)  # denormalized for fast lookups
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    assigned_by = Column(String(64), nullable=True)  # user_id of assigning admin
+
+    branch = relationship("Branch", backref="user_assignments")
+
+    __table_args__ = (
+        Index("ix_user_branch_user_id", "user_id"),
+        Index("ix_user_branch_branch_code", "branch_code"),
+    )
+
+
+# ---------------------------------------------------------------------------
 # Audit Log
 # ---------------------------------------------------------------------------
 class AuditLog(Base):
@@ -61,6 +82,7 @@ class AuditLog(Base):
     user_id = Column(String(64), nullable=True, index=True)
     username = Column(String(100), nullable=True)
     role = Column(String(50), nullable=True)
+    branch_code = Column(String(20), nullable=True, index=True)  # branch of the acting user
     action = Column(String(100), nullable=False)          # e.g. "create_customer"
     entity = Column(String(100), nullable=True)           # e.g. "customer"
     entity_id = Column(String(64), nullable=True)
@@ -71,6 +93,7 @@ class AuditLog(Base):
 
     __table_args__ = (
         Index("ix_audit_logs_user_created", "user_id", "created_at"),
+        Index("ix_audit_logs_branch", "branch_code"),
     )
 
 

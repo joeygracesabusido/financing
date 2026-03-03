@@ -20,7 +20,7 @@ from .auth.totp import generate_qr_base64, generate_totp_secret, get_totp_uri, v
 from .config import settings
 from .database import get_users_collection
 from .database.crud import UserCRUD
-from .database.pg_models import AuditLog, PasswordHistory, UserSession
+from .database.pg_models import AuditLog, PasswordHistory, UserSession, UserBranchAssignment
 from .database.postgres import AsyncSessionLocal
 from .database.redis_client import get_redis
 from .models import PyObjectId, UserCreate, UserInDB, UserUpdate
@@ -63,6 +63,8 @@ def convert_user_db_to_user_type(user_db: UserInDB) -> UserType:
         full_name=user_db.full_name,
         is_active=user_db.is_active,
         role=user_db.role,
+        branch_id=getattr(user_db, 'branch_id', None),
+        branch_code=getattr(user_db, 'branch_code', None),
         created_at=user_db.created_at,
         updated_at=user_db.updated_at
     )
@@ -399,6 +401,8 @@ class Mutation:
                 full_name=input.full_name,
                 password=input.password,
                 role=input.role,
+                branch_id=input.branch_id,
+                branch_code=input.branch_code,
             )
             user_db = await user_crud.create_user(user_create)
 
@@ -408,6 +412,25 @@ class Mutation:
                     user_id=str(user_db.id),
                     hashed_password=user_db.hashed_password,
                 ))
+                # Persist branch assignment if provided
+                if input.branch_id or input.branch_code:
+                    # Upsert branch assignment
+                    from sqlalchemy import select as sa_select
+                    existing_ba = await session.execute(
+                        sa_select(UserBranchAssignment).where(
+                            UserBranchAssignment.user_id == str(user_db.id)
+                        )
+                    )
+                    ba_row = existing_ba.scalar_one_or_none()
+                    if ba_row:
+                        ba_row.branch_id = input.branch_id
+                        ba_row.branch_code = input.branch_code
+                    else:
+                        session.add(UserBranchAssignment(
+                            user_id=str(user_db.id),
+                            branch_id=input.branch_id,
+                            branch_code=input.branch_code,
+                        ))
                 await session.commit()
 
             return UserResponse(success=True, message="User created", user=convert_user_db_to_user_type(user_db))
@@ -466,6 +489,29 @@ class Mutation:
                         user_id=str(user_db.id),
                         hashed_password=user_db.hashed_password,
                     ))
+                    await session.commit()
+
+            # Persist branch assignment changes
+            if input.branch_id is not None or input.branch_code is not None:
+                async with AsyncSessionLocal() as session:
+                    from sqlalchemy import select as sa_select
+                    existing_ba = await session.execute(
+                        sa_select(UserBranchAssignment).where(
+                            UserBranchAssignment.user_id == user_id
+                        )
+                    )
+                    ba_row = existing_ba.scalar_one_or_none()
+                    if ba_row:
+                        if input.branch_id is not None:
+                            ba_row.branch_id = input.branch_id
+                        if input.branch_code is not None:
+                            ba_row.branch_code = input.branch_code
+                    else:
+                        session.add(UserBranchAssignment(
+                            user_id=user_id,
+                            branch_id=input.branch_id,
+                            branch_code=input.branch_code,
+                        ))
                     await session.commit()
 
             return UserResponse(success=True, message="User updated", user=convert_user_db_to_user_type(user_db))

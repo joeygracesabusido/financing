@@ -12,6 +12,7 @@ from .database.pg_loan_models import LoanApplication, PGLoanProduct
 from .database.customer_crud import CustomerCRUD
 from .database import get_customers_collection
 from .customer import CustomerType, convert_customer_db_to_customer_type
+from .auth.rbac import get_sql_branch_filter, require_approval_role
 import math
 import uuid
 import os
@@ -69,6 +70,7 @@ class LoanType:
         name="nextDueDate", default=None
     )
     months_paid: Optional[int] = strawberry.field(name="monthsPaid", default=None)
+    branch_code: Optional[str] = strawberry.field(name="branchCode", default=None)
 
     @strawberry.field
     async def product_name(self) -> Optional[str]:
@@ -200,6 +202,12 @@ class LoanQuery:
                     LoanApplication.customer_id == customer_id
                 )
 
+            # Apply branch filter for non-admin/non-auditor staff
+            branch_code_filter = get_sql_branch_filter(current_user)
+            if branch_code_filter:
+                query = query.filter(LoanApplication.branch_code == branch_code_filter)
+                count_query = count_query.filter(LoanApplication.branch_code == branch_code_filter)
+
             result = await session.execute(query)
             loans_db = result.scalars().all()
             total_result = await session.execute(count_query)
@@ -221,6 +229,7 @@ class LoanQuery:
                     outstanding_balance=l.outstanding_balance,
                     next_due_date=l.next_due_date,
                     months_paid=l.months_paid,
+                    branch_code=l.branch_code,
                 )
                 for l in loans_db
             ]
@@ -575,11 +584,14 @@ class LoanMutation:
         """Approves and disburses the loan, generating Amortization and GL entries.
         Applies origination fee if configured on the product.
         Supports all 4 amortization types: flat_rate, declining_balance, balloon_payment, interest_only.
+
+        Only admin and branch_manager may disburse (approve) loans.
         """
         current_user: UserInDB = info.context.get("current_user")
-        if not current_user or current_user.role not in ["admin", "staff"]:
+        if not current_user or current_user.role not in ("admin", "branch_manager"):
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized"
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized — only admin or branch_manager may disburse loans",
             )
 
         async for session in get_db_session():

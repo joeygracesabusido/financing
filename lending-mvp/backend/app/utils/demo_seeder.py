@@ -107,6 +107,7 @@ SAMPLE_USERS = [
         "full_name": "Administrator",
         "role": "admin",
         "password": "Admin@123Demo",
+        "branch_code": "HQ",    # Admin has HQ as home but sees all
     },
     {
         "email": "loan_officer1@lending.demo",
@@ -114,6 +115,7 @@ SAMPLE_USERS = [
         "full_name": "Maria Santos",
         "role": "loan_officer",
         "password": "LoanOfficer@123",
+        "branch_code": "HQ",
     },
     {
         "email": "loan_officer2@lending.demo",
@@ -121,6 +123,7 @@ SAMPLE_USERS = [
         "full_name": "Pedro Garcia",
         "role": "loan_officer",
         "password": "LoanOfficer@123",
+        "branch_code": "BR-QC",
     },
     {
         "email": "teller1@lending.demo",
@@ -128,6 +131,15 @@ SAMPLE_USERS = [
         "full_name": "Rosa Villanueva",
         "role": "teller",
         "password": "Teller@123Demo",
+        "branch_code": "BR-CDO",
+    },
+    {
+        "email": "teller2@lending.demo",
+        "username": "teller_2",
+        "full_name": "Lito Reyes",
+        "role": "teller",
+        "password": "Teller@123Demo",
+        "branch_code": "HQ",
     },
     {
         "email": "branch_manager@lending.demo",
@@ -135,6 +147,15 @@ SAMPLE_USERS = [
         "full_name": "Juan Dela Cruz",
         "role": "branch_manager",
         "password": "BranchMgr@123",
+        "branch_code": "BR-QC",
+    },
+    {
+        "email": "branch_manager_cdo@lending.demo",
+        "username": "branch_manager_cdo",
+        "full_name": "Carlo Mendoza",
+        "role": "branch_manager",
+        "password": "BranchMgr@123",
+        "branch_code": "BR-CDO",
     },
     {
         "email": "auditor@lending.demo",
@@ -142,10 +163,12 @@ SAMPLE_USERS = [
         "full_name": "Ana Reyes",
         "role": "auditor",
         "password": "Auditor@123Demo",
+        "branch_code": "HQ",   # Auditor sees all branches
     },
 ]
 
 SAMPLE_CUSTOMERS_INDIVIDUAL = [
+    # HQ branch customers (3)
     {
         "customer_type": "individual",
         "first_name": "Juan",
@@ -161,6 +184,8 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "employer_name_address": "TechCorp Philippines, BGC",
         "job_title": "Senior Software Engineer",
         "salary_range": "100,000-150,000",
+        "branch": "HQ",
+        "branch_code": "HQ",
     },
     {
         "customer_type": "individual",
@@ -170,76 +195,15 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "display_name": "Maria Cruz Santos",
         "email_address": "maria.sample@example.com",
         "mobile_number": "+63 900 123 4002",
-        "permanent_address": "456 Quezon Avenue, Quezon City",
+        "permanent_address": "456 Quezon Avenue, Makati",
         "birth_date": "1990-03-22",
         "birth_place": "Quezon City",
         "tin_no": "987-654-321-000",
         "employer_name_address": "Finance Corp, Makati",
         "job_title": "Financial Analyst",
         "salary_range": "80,000-120,000",
-    },
-    {
-        "customer_type": "individual",
-        "first_name": "Pedro",
-        "middle_name": "Lopez",
-        "last_name": "Garcia",
-        "display_name": "Pedro Lopez Garcia",
-        "email_address": "pedro.sample@example.com",
-        "mobile_number": "+63 900 123 4003",
-        "permanent_address": "789 Espana Boulevard, Manila",
-        "birth_date": "1978-08-10",
-        "birth_place": "Cebu",
-        "tin_no": "456-789-123-000",
-        "employer_name_address": "Manufacturing Inc., Laguna",
-        "job_title": "Operations Manager",
-        "salary_range": "120,000-180,000",
-    },
-    {
-        "customer_type": "individual",
-        "first_name": "Rosa",
-        "middle_name": "Magdalo",
-        "last_name": "Villanueva",
-        "display_name": "Rosa Magdalo Villanueva",
-        "email_address": "rosa.sample@example.com",
-        "mobile_number": "+63 900 123 4004",
-        "permanent_address": "321 San Pedro Street, Muntinlupa",
-        "birth_date": "1988-11-30",
-        "birth_place": "Antipolo",
-        "tin_no": "789-123-456-000",
-        "job_title": "Freelance Consultant",
-        "salary_range": "50,000-100,000",
-    },
-    {
-        "customer_type": "individual",
-        "first_name": "Ana",
-        "middle_name": "Reyes",
-        "last_name": "Mendoza",
-        "display_name": "Ana Reyes Mendoza",
-        "email_address": "ana.sample@example.com",
-        "mobile_number": "+63 900 123 4005",
-        "permanent_address": "555 EDSA, Caloocan City",
-        "birth_date": "1992-07-18",
-        "birth_place": "Manila",
-        "tin_no": "321-654-987-000",
-        "employer_name_address": "Retail Solutions Inc.",
-        "job_title": "Store Manager",
-        "salary_range": "60,000-80,000",
-    },
-    {
-        "customer_type": "individual",
-        "first_name": "Carlos",
-        "middle_name": "Miguel",
-        "last_name": " Bautista",
-        "display_name": "Carlos Miguel Bautista",
-        "email_address": "carlos.sample@example.com",
-        "mobile_number": "+63 900 123 4006",
-        "permanent_address": "888 Taft Avenue, Manila",
-        "birth_date": "1980-01-25",
-        "birth_place": "Manila",
-        "tin_no": "654-321-098-000",
-        "employer_name_address": "Transport Corp.",
-        "job_title": "Fleet Supervisor",
-        "salary_range": "70,000-90,000",
+        "branch": "HQ",
+        "branch_code": "HQ",
     },
     {
         "customer_type": "individual",
@@ -256,6 +220,81 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "employer_name_address": "Marketing Pro Agency",
         "job_title": "Marketing Specialist",
         "salary_range": "55,000-75,000",
+        "branch": "HQ",
+        "branch_code": "HQ",
+    },
+    # BR-QC branch customers (3)
+    {
+        "customer_type": "individual",
+        "first_name": "Pedro",
+        "middle_name": "Lopez",
+        "last_name": "Garcia",
+        "display_name": "Pedro Lopez Garcia",
+        "email_address": "pedro.sample@example.com",
+        "mobile_number": "+63 900 123 4003",
+        "permanent_address": "789 Espana Boulevard, Manila",
+        "birth_date": "1978-08-10",
+        "birth_place": "Cebu",
+        "tin_no": "456-789-123-000",
+        "employer_name_address": "Manufacturing Inc., Laguna",
+        "job_title": "Operations Manager",
+        "salary_range": "120,000-180,000",
+        "branch": "BR-QC",
+        "branch_code": "BR-QC",
+    },
+    {
+        "customer_type": "individual",
+        "first_name": "Rosa",
+        "middle_name": "Magdalo",
+        "last_name": "Villanueva",
+        "display_name": "Rosa Magdalo Villanueva",
+        "email_address": "rosa.sample@example.com",
+        "mobile_number": "+63 900 123 4004",
+        "permanent_address": "321 San Pedro Street, Muntinlupa",
+        "birth_date": "1988-11-30",
+        "birth_place": "Antipolo",
+        "tin_no": "789-123-456-000",
+        "job_title": "Freelance Consultant",
+        "salary_range": "50,000-100,000",
+        "branch": "BR-QC",
+        "branch_code": "BR-QC",
+    },
+    {
+        "customer_type": "individual",
+        "first_name": "Ana",
+        "middle_name": "Reyes",
+        "last_name": "Mendoza",
+        "display_name": "Ana Reyes Mendoza",
+        "email_address": "ana.sample@example.com",
+        "mobile_number": "+63 900 123 4005",
+        "permanent_address": "555 EDSA, Quezon City",
+        "birth_date": "1992-07-18",
+        "birth_place": "Manila",
+        "tin_no": "321-654-987-000",
+        "employer_name_address": "Retail Solutions Inc.",
+        "job_title": "Store Manager",
+        "salary_range": "60,000-80,000",
+        "branch": "BR-QC",
+        "branch_code": "BR-QC",
+    },
+    # BR-CDO branch customers (2)
+    {
+        "customer_type": "individual",
+        "first_name": "Carlos",
+        "middle_name": "Miguel",
+        "last_name": "Bautista",
+        "display_name": "Carlos Miguel Bautista",
+        "email_address": "carlos.sample@example.com",
+        "mobile_number": "+63 900 123 4006",
+        "permanent_address": "888 Taft Avenue, Cagayan de Oro",
+        "birth_date": "1980-01-25",
+        "birth_place": "Manila",
+        "tin_no": "654-321-098-000",
+        "employer_name_address": "Transport Corp.",
+        "job_title": "Fleet Supervisor",
+        "salary_range": "70,000-90,000",
+        "branch": "BR-CDO",
+        "branch_code": "BR-CDO",
     },
     {
         "customer_type": "individual",
@@ -265,13 +304,15 @@ SAMPLE_CUSTOMERS_INDIVIDUAL = [
         "display_name": "Roberto Torres Flores",
         "email_address": "roberto.sample@example.com",
         "mobile_number": "+63 900 123 4008",
-        "permanent_address": "777 Aurora Boulevard, Quezon City",
+        "permanent_address": "777 Aurora Boulevard, Cagayan de Oro",
         "birth_date": "1975-04-08",
         "birth_place": "Manila",
         "tin_no": "444-555-666-000",
         "employer_name_address": "Agri Ventures Corp.",
         "job_title": "Farm Owner",
         "salary_range": "150,000-200,000",
+        "branch": "BR-CDO",
+        "branch_code": "BR-CDO",
     },
 ]
 
@@ -281,8 +322,10 @@ SAMPLE_CUSTOMERS_JOINT = [
         "first_name": "Juan & Maria",
         "display_name": "Dela Cruz - Santos Joint Account",
         "email_address": "joint.sample@example.com",
-        "mobile_number": "+63 900 SAMPLE 5",
+        "mobile_number": "+63 900 123 5555",
         "permanent_address": "500 Rizal Avenue, Makati City",
+        "branch": "HQ",
+        "branch_code": "HQ",
     },
 ]
 
@@ -295,6 +338,8 @@ SAMPLE_CUSTOMERS_CORPORATE = [
         "email_address": "corp1@example.com",
         "mobile_number": "+63 2 1234 0001",
         "tin_no": "001-234-567-000",
+        "branch": "HQ",
+        "branch_code": "HQ",
     },
     {
         "customer_type": "corporate",
@@ -304,6 +349,8 @@ SAMPLE_CUSTOMERS_CORPORATE = [
         "email_address": "corp2@example.com",
         "mobile_number": "+63 49 5678 0001",
         "tin_no": "002-345-678-000",
+        "branch": "BR-QC",
+        "branch_code": "BR-QC",
     },
 ]
 
@@ -413,43 +460,81 @@ async def seed_branches() -> Dict[str, int]:
 
 
 async def seed_users() -> Dict[str, Any]:
-    """Seed user data into MongoDB."""
+    """Seed user data into MongoDB with branch assignments."""
     logger.info("Seeding users...")
     users_collection = get_users_collection()
     created_users = []
 
+    # First get branch IDs from PostgreSQL for assignment
+    from sqlalchemy import select as sa_select
+    from ..database.pg_models import UserBranchAssignment
+
     for user_data in SAMPLE_USERS:
         # Check if already exists
         existing = await users_collection.find_one({"username": user_data["username"]})
+        branch_code = user_data.get("branch_code")
         if not existing:
-            password = user_data.pop("password")
+            user_data_copy = {k: v for k, v in user_data.items() if k != "password"}
+            password = user_data["password"]
             hashed_password = get_password_hash(
                 password[:72]
             )  # Ensure password is <= 72 bytes
             user_doc = {
-                "email": user_data["email"],
-                "username": user_data["username"],
-                "full_name": user_data["full_name"],
-                "role": user_data["role"],
+                "email": user_data_copy["email"],
+                "username": user_data_copy["username"],
+                "full_name": user_data_copy["full_name"],
+                "role": user_data_copy["role"],
                 "hashed_password": hashed_password,
                 "is_active": True,
+                "branch_code": branch_code,
                 "created_at": datetime.now(timezone.utc),
                 "updated_at": datetime.now(timezone.utc),
             }
             result = await users_collection.insert_one(user_doc)
+            user_id = str(result.inserted_id)
             created_users.append(
-                {"id": str(result.inserted_id), "username": user_data["username"]}
+                {"id": user_id, "username": user_data_copy["username"]}
             )
             logger.info(
-                f"  ✓ Created user: {user_data['username']} ({user_data['role']})"
+                f"  ✓ Created user: {user_data_copy['username']} ({user_data_copy['role']}) → branch: {branch_code}"
             )
+
+            # Persist branch assignment to PostgreSQL
+            if branch_code:
+                async with AsyncSessionLocal() as session:
+                    # Get branch id for this code
+                    branch_result = await session.execute(
+                        sa_select(Branch).where(Branch.code == branch_code)
+                    )
+                    branch_row = branch_result.scalar_one_or_none()
+                    if branch_row:
+                        existing_ba = await session.execute(
+                            sa_select(UserBranchAssignment).where(
+                                UserBranchAssignment.user_id == user_id
+                            )
+                        )
+                        if not existing_ba.scalar_one_or_none():
+                            session.add(UserBranchAssignment(
+                                user_id=user_id,
+                                branch_id=branch_row.id,
+                                branch_code=branch_code,
+                            ))
+                            await session.commit()
+        else:
+            # Update branch_code on existing user if missing
+            if branch_code and not existing.get("branch_code"):
+                await users_collection.update_one(
+                    {"_id": existing["_id"]},
+                    {"$set": {"branch_code": branch_code}}
+                )
+                logger.info(f"  ↻ Updated branch for existing user: {user_data['username']} → {branch_code}")
 
     logger.info(f"Users seeded: {len(created_users)} new records")
     return {"users_created": len(created_users), "users": created_users}
 
 
 async def seed_customers() -> Dict[str, Any]:
-    """Seed customer data into MongoDB."""
+    """Seed customer data into MongoDB with branch_code for scoping."""
     logger.info("Seeding customers...")
     customers_collection = get_customers_collection()
     created_customers = []
@@ -468,9 +553,12 @@ async def seed_customers() -> Dict[str, Any]:
             {"display_name": cust_data["display_name"]}
         )
         if not existing:
+            branch = cust_data.get("branch", "HQ")
+            branch_code = cust_data.get("branch_code", branch)  # use branch as fallback
             customer_doc = {
                 **cust_data,
-                "branch": "HQ",  # Default branch
+                "branch": branch,
+                "branch_code": branch_code,
                 "created_at": now,
                 "updated_at": now,
                 "is_active": True,
@@ -480,9 +568,10 @@ async def seed_customers() -> Dict[str, Any]:
                 {
                     "id": str(result.inserted_id),
                     "display_name": cust_data["display_name"],
+                    "branch_code": branch_code,
                 }
             )
-            logger.info(f"  ✓ Created customer: {cust_data['display_name']}")
+            logger.info(f"  ✓ Created customer: {cust_data['display_name']} (branch: {branch_code})")
 
     logger.info(f"Customers seeded: {len(created_customers)} new records")
     return {"customers_created": len(created_customers), "customers": created_customers}

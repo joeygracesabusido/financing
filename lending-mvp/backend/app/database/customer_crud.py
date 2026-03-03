@@ -49,7 +49,7 @@ class CustomerCRUD:
             return CustomerInDB.model_validate(customer_data)
         return None
 
-    async def get_customers(self, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> List[CustomerInDB]:
+    async def get_customers(self, skip: int = 0, limit: int = 100, search_term: Optional[str] = None, extra_filter: Optional[Dict[str, Any]] = None) -> List[CustomerInDB]:
         query: Dict[str, Any] = {}
         if search_term:
             # Case-insensitive regex search on display_name or email_address
@@ -59,11 +59,14 @@ class CustomerCRUD:
                     {"email_address": {"$regex": search_term, "$options": "i"}}
                 ]
             }
-        
+        # Merge branch/extra filter
+        if extra_filter:
+            query.update(extra_filter)
+
         customers_data = await self.collection.find(query).skip(skip).limit(limit).to_list(length=limit)
         return [CustomerInDB.model_validate(customer_data) for customer_data in customers_data]
 
-    async def count_customers(self, search_term: Optional[str] = None) -> int:
+    async def count_customers(self, search_term: Optional[str] = None, extra_filter: Optional[Dict[str, Any]] = None) -> int:
         query: Dict[str, Any] = {}
         if search_term:
             query = {
@@ -72,6 +75,8 @@ class CustomerCRUD:
                     {"email_address": {"$regex": search_term, "$options": "i"}}
                 ]
             }
+        if extra_filter:
+            query.update(extra_filter)
         return await self.collection.count_documents(query)
 
     async def update_customer(self, customer_id: str, customer_update: CustomerUpdate) -> Optional[CustomerInDB]:

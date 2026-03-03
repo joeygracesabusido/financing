@@ -13,6 +13,7 @@ from .database import get_customers_collection, get_db
 from .database.customer_crud import CustomerCRUD
 from .database.pg_models import Beneficiary, CustomerActivity
 from .database.postgres import AsyncSessionLocal
+from .auth.rbac import get_mongo_branch_filter, assert_branch_access, require_management_role
 from sqlalchemy import select
 
 
@@ -173,15 +174,17 @@ class Query:
 
     @strawberry.field
     async def customers(self, info: Info, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> CustomersResponse:
-        """Get all customers with optional search. Admin and Loan Officer can view."""
+        """Get customers. Branch-scoped for loan_officer/teller/branch_manager; admin/auditor see all."""
         current_user: UserInDB = info.context.get("current_user")
-        if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller"):
+        if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller", "auditor"):
             raise Exception("Not authorized")
         try:
             customers_collection = get_customers_collection()
             customer_crud = CustomerCRUD(customers_collection)
-            customers_db = await customer_crud.get_customers(skip=skip, limit=limit, search_term=search_term)
-            total = await customer_crud.count_customers(search_term=search_term)
+            # Apply branch filter based on caller's role
+            branch_filter = get_mongo_branch_filter(current_user)
+            customers_db = await customer_crud.get_customers(skip=skip, limit=limit, search_term=search_term, extra_filter=branch_filter)
+            total = await customer_crud.count_customers(search_term=search_term, extra_filter=branch_filter)
             customers = [convert_customer_db_to_customer_type(customer_db) for customer_db in customers_db]
             return CustomersResponse(success=True, message="Customers retrieved successfully", customers=customers, total=total)
         except Exception as e:
@@ -189,9 +192,9 @@ class Query:
 
     @strawberry.field
     async def customer_by_id(self, info: Info, customer_id: strawberry.ID) -> CustomerResponse:
-        """Get customer by ID."""
+        """Get customer by ID. Branch-scoped for non-admin roles."""
         current_user: UserInDB = info.context.get("current_user")
-        if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller"):
+        if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller", "auditor"):
             raise Exception("Not authorized")
         try:
             customers_collection = get_customers_collection()
@@ -199,7 +202,11 @@ class Query:
             customer_db = await customer_crud.get_customer_by_id(str(customer_id))
             if not customer_db:
                 return CustomerResponse(success=False, message="Customer not found")
+            # Enforce branch access for non-admin/non-auditor roles
+            assert_branch_access(current_user, getattr(customer_db, 'branch', None))
             return CustomerResponse(success=True, message="OK", customer=convert_customer_db_to_customer_type(customer_db))
+        except HTTPException as he:
+            raise he
         except Exception as e:
             return CustomerResponse(success=False, message=f"Error: {str(e)}")
 
@@ -291,6 +298,12 @@ class Mutation:
             if await customer_crud.get_customer_by_email(input.email_address):
                 return CustomerResponse(success=False, message="Customer with this email already exists")
 
+            # For branch-scoped roles, auto-assign to their branch (ignore client-sent branch)
+            if current_user.role in ("loan_officer", "branch_manager"):
+                user_branch = getattr(current_user, 'branch_code', None)
+                if user_branch:
+                    input.branch = user_branch
+
             # ── Duplicate name detection ──────────────────────────────────────
             pattern = re.compile(re.escape(input.display_name.strip()), re.IGNORECASE)
             similar_cursor = customers_collection.find(
@@ -303,8 +316,11 @@ class Mutation:
             if duplicate_names:
                 warning = f"Warning: Similar names found — {', '.join(duplicate_names)}. "
 
-            # Convert and create
+            # Store branch_code for scoping
             customer_data = strawberry.asdict(input)
+            # Ensure branch_code field is also stored for scoping
+            if 'branch' in customer_data:
+                customer_data['branch_code'] = customer_data['branch']
             customer_create = CustomerCreate(**customer_data)
             customer_db = await customer_crud.create_customer(customer_create)
             customer = convert_customer_db_to_customer_type(customer_db)

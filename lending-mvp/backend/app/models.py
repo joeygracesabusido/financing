@@ -63,6 +63,8 @@ class UserBase(BaseModel):
     username: str
     full_name: str
     role: str
+    branch_id: Optional[int] = None    # PostgreSQL branches.id
+    branch_code: Optional[str] = None  # denormalized branch code (e.g. "HQ", "BR-QC")
 
 class UserCreate(UserBase):
     password: str
@@ -81,6 +83,8 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     is_active: Optional[bool] = None
     password: Optional[str] = None
+    branch_id: Optional[int] = None
+    branch_code: Optional[str] = None
 
 class UserInDB(UserBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
@@ -88,6 +92,8 @@ class UserInDB(UserBase):
     is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    branch_id: Optional[int] = None
+    branch_code: Optional[str] = None
 
     model_config = ConfigDict(
         populate_by_name=True,

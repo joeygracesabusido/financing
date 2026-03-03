@@ -85,6 +85,7 @@ class LoanApplication(Base):
 
     # Mongo references
     customer_id = Column(String(64), nullable=False, index=True)
+    branch_code = Column(String(20), nullable=True, index=True)  # branch that originated the loan
 
     # Relations
     product_id = Column(BigInteger, ForeignKey("loan_products.id"), nullable=False)
