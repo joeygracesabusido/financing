@@ -1,34 +1,24 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
-import strawberry
-from strawberry.fastapi import GraphQLRouter
 from pydantic import BaseModel
-from typing import Dict
 import logging
 import os
 
-from .schema import Query as SchemaQuery, Mutation as SchemaMutation
-from .user import Query as getUser, Mutation as createUser
-from .customer import Query as getCustomer, Mutation as createCustomer
-from .savings import SavingsQuery, SavingsMutation
-from .transaction import TransactionQuery, TransactionMutation
-from .loan import LoanQuery, LoanMutation, CollectionsQuery, ExtendedLoanMutation
-from .loan_transaction import LoanTransactionQuery, LoanTransactionMutation
-from .loan_product import LoanProductQuery, LoanProductMutation
-from .branch import BranchQuery, BranchMutation
-from .kyc import KYCQuery, KYCMutation
-from .collateral import CollateralQuery, CollateralMutation
-from .guarantor import GuarantorQuery, GuarantorMutation
-from .chart_of_accounts import ChartOfAccountsQuery, ChartOfAccountsMutation, seed_chart_of_accounts
-# from .aml_compliance import AMLComplianceQuery # Temporarily disabled
 from .database import create_tables
 from .database.postgres import engine
-from .database.pg_models import Base
 from .database.redis_client import get_redis, close_redis
-from .auth.security import verify_token
 from .audit_middleware import AuditMiddleware
-from .utils.demo_seeder import seed_demo_data
+# Import the PostgreSQL-only enhanced seeder
+try:
+    from .utils.demo_seeder_enhanced import seed_demo_data_enhanced
+    DEMO_SEEDER_AVAILABLE = True
+except ImportError:
+    DEMO_SEEDER_AVAILABLE = False
+    seed_demo_data_enhanced = None
+
+# Import login endpoint to register routes
+from . import login_endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -36,100 +26,6 @@ logger = logging.getLogger(__name__)
 class LoginRequest(BaseModel):
     username: str
     password: str
-
-
-# --- GraphQL Schema composition -----------------------------------------------
-
-@strawberry.type
-class Query(
-    getUser,
-    getCustomer,
-    SavingsQuery,
-    TransactionQuery,
-    LoanQuery,
-    LoanTransactionQuery,
-    LoanProductQuery,
-    BranchQuery,
-    KYCQuery,
-    CollateralQuery,
-    GuarantorQuery,
-    CollectionsQuery,
-    ChartOfAccountsQuery,
-):
-    pass
-
-
-@strawberry.type
-class Mutation(
-    createUser,
-    createCustomer,
-    SchemaMutation,
-    SavingsMutation,
-    TransactionMutation,
-    LoanMutation,
-    LoanTransactionMutation,
-    LoanProductMutation,
-    BranchMutation,
-    KYCMutation,
-    CollateralMutation,
-    GuarantorMutation,
-    ChartOfAccountsMutation,
-    ExtendedLoanMutation,
-):
-    pass
-
-
-# --- Context ------------------------------------------------------------------
-
-async def get_context(request: Request) -> dict:
-    auth_header = request.headers.get("Authorization")
-
-    # GET requests (introspection / playground) – allow unauthenticated
-    if request.method == "GET":
-        return {"current_user": None}
-
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid Authorization header.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    try:
-        token = auth_header.replace("Bearer ", "", 1)
-        payload = verify_token(token)
-        if not payload:
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Token missing subject claim")
-
-        from sqlalchemy import select
-        from .database.pg_core_models import User
-        from .database.postgres import AsyncSessionLocal
-        
-        async with AsyncSessionLocal() as session:
-            result = await session.execute(
-                select(User).where(User.uuid == user_id)
-            )
-            current_user = result.scalar_one_or_none()
-            if not current_user:
-                raise HTTPException(status_code=401, detail="User not found")
-
-            # Attach to request state so AuditMiddleware can read it
-            request.state.current_user = current_user
-
-            return {"current_user": current_user}
-
-    except HTTPException:
-        raise
-    except Exception as exc:
-        logger.debug("Auth context error: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed: {str(exc)}",
-        )
 
 
 # --- App lifecycle ------------------------------------------------------------
@@ -143,18 +39,21 @@ async def lifespan(app: FastAPI):
     
     # Seed Chart of Accounts
     try:
+        from .chart_of_accounts import seed_chart_of_accounts
         await seed_chart_of_accounts()
         logger.info("Chart of Accounts seeded.")
     except Exception as exc:
         logger.warning("CoA seeding failed (non-fatal): %s", exc)
     
-    # Seed Demo Data (if enabled)
+    # Seed Demo Data (if enabled) - PostgreSQL-only
     try:
         seed_demo = os.getenv("SEED_DEMO_DATA", "false").lower() == "true"
-        if seed_demo:
-            logger.info("🌱 Seeding demo data...")
-            await seed_demo_data()
+        if seed_demo and DEMO_SEEDER_AVAILABLE:
+            logger.info("🌱 Seeding demo data (PostgreSQL-enhanced)...")
+            await seed_demo_data_enhanced()
             logger.info("✅ Demo data seeded successfully")
+        elif seed_demo and not DEMO_SEEDER_AVAILABLE:
+            logger.warning("Demo data seeding requested but enhanced seeder not available. Install pymongo or use demo_seeder_enhanced.py")
         else:
             logger.info("Demo data seeding disabled (set SEED_DEMO_DATA=true to enable)")
     except Exception as exc:
@@ -175,10 +74,10 @@ async def lifespan(app: FastAPI):
 
 # --- Build app ---------------------------------------------------------------
 
-graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)
-graphql_app = GraphQLRouter(graphql_schema, context_getter=get_context)
-
 app = FastAPI(title="Lending MVP API — Phase 2", lifespan=lifespan)
+
+# Include login endpoint
+app.include_router(login_endpoint.router, prefix="")
 
 # Audit middleware (must be added before CORS so it runs on all requests)
 app.add_middleware(AuditMiddleware)
@@ -191,8 +90,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(graphql_app, prefix="/graphql")
-
 
 @app.get("/")
 async def root():
@@ -202,42 +99,3 @@ async def root():
 @app.get("/health")
 async def health():
     return {"status": "ok"}
-
-
-# REST login bridge (unchanged — keeps HTML frontend compatible)
-@app.post("/api-login/")
-async def api_login(login_request: LoginRequest):
-    try:
-        from .user import Mutation as UserMutation
-        from .schema import LoginInput
-        
-        mutation = UserMutation()
-        login_input = LoginInput(
-            username=login_request.username,
-            password=login_request.password
-        )
-        
-        result = await mutation.login(input=login_input)
-        
-        # Convert Strawberry object to dict for JSON response
-        return {
-            "accessToken": result.access_token,
-            "tokenType": result.token_type,
-            "refreshToken": result.refresh_token,
-            "user": {
-                "id": str(result.user.id),
-                "username": result.user.username,
-                "email": result.user.email,
-                "fullName": result.user.full_name,
-                "isActive": result.user.is_active,
-                "role": result.user.role
-            } if result.user else None
-        }
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        logger.error(f"Login error: {str(e)}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Login error: {str(e)}"
-        )

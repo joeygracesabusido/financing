@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # ── PostgreSQL (primary database) ─────────────────────────────────────────
-    database_url: str = "postgresql+asyncpg://lending_user:lending_secret@postgres:5432/lending_db"
+    database_url: str = "postgresql+asyncpg://lending_user:lending_secret@localhost:5433/lending_db"
     
     # PostgreSQL 16 support (upgrade from 15)
     # Use postgres:16-alpine in docker-compose.yml

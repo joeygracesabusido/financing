@@ -21,23 +21,17 @@
  */
 
 import { test, expect, Page } from '@playwright/test';
+import { BASE_URL, API_URL, DEMO_USERS_LEGACY } from './demo-data';
 
 // ──────────────────────────────────────────────────────────────────────────────
 // CONFIG
 // ──────────────────────────────────────────────────────────────────────────────
 
-const BASE = 'http://localhost:3010';
+const BASE = BASE_URL;
 const TIMEOUT = 60_000;
 const NAV_TIMEOUT = 30_000;
 
-const USERS = {
-    admin: { u: 'admin', p: 'Admin@123Demo' },
-    loan_officer: { u: 'loan_officer_1', p: 'LoanOfficer@123' },
-    teller: { u: 'teller_1', p: 'Teller@123Demo' },
-    branch_manager: { u: 'branch_manager', p: 'BranchMgr@123' },
-    auditor: { u: 'auditor', p: 'Auditor@123Demo' },
-    customer: { u: 'juan.dela.cruz', p: 'Customer@123' },
-} as const;
+const USERS = DEMO_USERS_LEGACY;
 
 type UserKey = keyof typeof USERS;
 
@@ -47,21 +41,14 @@ type UserKey = keyof typeof USERS;
 
 async function login(page: Page, role: UserKey) {
     const { u, p } = USERS[role];
-    await page.goto(BASE);
+    await page.goto(`${BASE}/login`);
     await page.waitForLoadState('networkidle');
-
-    const url = page.url();
-    if (!url.includes('/dashboard') && !url.includes('/loans') && !url.includes('/savings')) {
-        const loginBtn = page.locator('button:has-text("Login"), a:has-text("Login")').first();
-        if (await loginBtn.isVisible({ timeout: 5000 })) {
-            await loginBtn.click();
-            await page.waitForURL(/\/login/, { timeout: NAV_TIMEOUT });
-        }
-        await page.fill('input[type="text"], input[name="username"]', u);
-        await page.fill('input[type="password"]', p);
-        await page.click('button[type="submit"], button:has-text("Sign In"), button:has-text("Login")');
-        await page.waitForLoadState('networkidle');
-    }
+    await page.waitForSelector('input[type="text"], input[name="username"]', { state: 'visible', timeout: 10000 });
+    await page.fill('input[type="text"], input[name="username"]', u);
+    await page.fill('input[type="password"]', p);
+    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 }
 
 async function go(page: Page, path: string) {
@@ -90,7 +77,7 @@ test.describe('INFRA: App Health & Startup', () => {
     });
 
     test('INFRA-002: Backend health endpoint responds', async ({ page }) => {
-        const res = await page.goto('http://localhost:8001/health');
+        const res = await page.goto(`${API_URL}/health`);
         expect(res?.status()).toBe(200);
         const body = await page.textContent('body');
         expect(body).toContain('ok');

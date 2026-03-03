@@ -22,15 +22,13 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
-from sqlalchemy.orm import DeclarativeBase, relationship
+from sqlalchemy.orm import relationship
+
+from .base import Base
 
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
-
-
-class Base(DeclarativeBase):
-    pass
 
 
 # ---------------------------------------------------------------------------

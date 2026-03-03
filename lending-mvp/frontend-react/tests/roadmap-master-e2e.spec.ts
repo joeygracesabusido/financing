@@ -19,41 +19,28 @@
  */
 
 import { test, expect, Page } from '@playwright/test';
+import { BASE_URL, API_URL, DEMO_USERS_LEGACY } from './demo-data';
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
-const BASE = 'http://localhost:3010';
-const API = 'http://localhost:8001';
+const BASE = BASE_URL;
+const API = API_URL;
 const T = 60_000;
 const NT = 30_000;
 
-const USERS = {
-    admin: { u: 'admin', p: 'Admin@123Demo' },
-    loan_officer: { u: 'loan_officer_1', p: 'LoanOfficer@123' },
-    teller: { u: 'teller_1', p: 'Teller@123Demo' },
-    branch_manager: { u: 'branch_manager', p: 'BranchMgr@123' },
-    auditor: { u: 'auditor', p: 'Auditor@123Demo' },
-    customer: { u: 'juan.dela.cruz', p: 'Customer@123' },
-} as const;
+const USERS = DEMO_USERS_LEGACY;
 
 type U = keyof typeof USERS;
 
 // ─── HELPERS ───────────────────────────────────────────────────────────────────
 async function login(page: Page, role: U) {
     const { u, p } = USERS[role];
-    await page.goto(BASE, { waitUntil: 'networkidle' });
-    const url = page.url();
-    if (url.includes('/login') || url === BASE + '/' || url === BASE) {
-        // Already on login page or root — look for login button
-        const btn = page.locator('button:has-text("Login"), a:has-text("Login")').first();
-        if (await btn.isVisible({ timeout: 4000 }).catch(() => false)) {
-            await btn.click();
-            await page.waitForURL(/\/login/, { timeout: NT });
-        }
-        await page.fill('input[type="text"], input[name="username"]', u);
-        await page.fill('input[type="password"]', p);
-        await page.click('button[type="submit"], button:has-text("Sign In"), button:has-text("Login")');
-        await page.waitForLoadState('networkidle');
-    }
+    await page.goto(`${BASE}/login`, { waitUntil: 'networkidle' });
+    await page.waitForSelector('input[type="text"], input[name="username"]', { state: 'visible', timeout: 10000 });
+    await page.fill('input[type="text"], input[name="username"]', u);
+    await page.fill('input[type="password"]', p);
+    await page.click('button[type="submit"]');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
 }
 
 async function go(page: Page, path: string) {

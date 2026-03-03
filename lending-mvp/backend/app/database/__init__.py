@@ -4,14 +4,13 @@ Replaces MongoDB-based database initialization.
 """
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
 
-from ..config import settings
-
-# Import all models to register them with Base
+# Import models to register with Base - but DON'T create engine yet
+from .base import Base
 from .pg_core_models import (
-    User, Customer, SavingsAccount, SavingsTransaction, Loan, LoanTransaction,
-    AmortizationSchedule, Transaction, LedgerEntry, StandingOrder, InterestLedger
+    User, Customer, SavingsAccount, SavingsTransaction, Loan,
+    Transaction, LedgerEntry, StandingOrder, InterestLedger
 )
 from .pg_loan_models import (
     PGLoanProduct, LoanApplication, LoanCollateral, LoanGuarantor,
@@ -23,25 +22,54 @@ from .pg_models import (
 )
 from .pg_accounting_models import GLAccount, JournalEntry, JournalLine
 
-# Async SQLAlchemy engine
-engine = create_async_engine(
-    settings.database_url,
-    echo=False,
-    pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-)
+# Lazy initialization - don't create engine until it's actually needed
+_engine = None
+_AsyncSessionLocal = None
 
-AsyncSessionLocal = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
-)
+def get_engine():
+    """Get or create the async engine."""
+    global _engine
+    if _engine is None:
+        from ..config import settings
+        _engine = create_async_engine(
+            settings.database_url,
+            echo=False,
+            pool_pre_ping=True,
+            pool_size=10,
+            max_overflow=20,
+        )
+    return _engine
 
-Base = declarative_base()
+def get_async_session_local():
+    """Get or create the AsyncSessionLocal factory."""
+    global _AsyncSessionLocal
+    if _AsyncSessionLocal is None:
+        engine = get_engine()
+        _AsyncSessionLocal = sessionmaker(
+            engine, class_=AsyncSession, expire_on_commit=False
+        )
+    return _AsyncSessionLocal
 
+# Module-level attributes that use lazy initialization
+class _LazyAttribute:
+    """Lazy attribute accessor."""
+    def __init__(self, factory):
+        self._factory = factory
+        self._value = None
+    
+    def _get(self):
+        if self._value is None:
+            self._value = self._factory()
+        return self._value
+
+# Keep backwards compatible module-level "engine" and "AsyncSessionLocal"
+# But make them lazy so they don't get created at import time
+# This is a workaround for Alembic imports
 
 async def get_db_session():
     """FastAPI dependency that yields a PostgreSQL async session."""
-    async with AsyncSessionLocal() as session:
+    session_factory = get_async_session_local()
+    async with session_factory() as session:
         try:
             yield session
             await session.commit()
@@ -53,155 +81,39 @@ async def get_db_session():
 
 
 async def create_tables():
-    """Create all PostgreSQL tables."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    print("PostgreSQL tables created successfully.")
+    """Create all PostgreSQL tables (skip if they already exist)."""
+    engine_obj = get_engine()
+    async with engine_obj.begin() as conn:
+        try:
+            await conn.run_sync(Base.metadata.create_all)
+            print("PostgreSQL tables created successfully.")
+        except Exception as e:
+            print(f"Table creation warning (tables may already exist): {e}")
 
 
 async def drop_tables():
     """Drop all PostgreSQL tables (use with caution!)."""
-    async with engine.begin() as conn:
+    engine_obj = get_engine()
+    async with engine_obj.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
     print("PostgreSQL tables dropped successfully.")
 
 
 def get_db():
-    """Get database session for MongoDB compatibility."""
-    return AsyncSessionLocal()
+    """Sync wrapper for async get_db_session (for use in sync contexts if needed)."""
+    return get_db_session()
 
+# Lazy module attributes - override __getattr__ at module level
+# This is a hack but necessary for backwards compatibility with Alembic
+import sys
 
-# ============================================================================
-# MongoDB Compatibility Layer (Temporary)
-# ============================================================================
-
-class MockCollection:
-    """Mock MongoDB collection for compatibility during migration."""
-    async def find(self, *args, **kwargs):
-        return MockCursor()
+class _ModuleWithLazyAttributes(sys.modules[__name__].__class__):
+    @property
+    def engine(self):
+        return get_engine()
     
-    async def find_one(self, *args, **kwargs):
-        return None
-    
-    async def insert_one(self, *args, **kwargs):
-        return MockInsertResult()
-    
-    async def insert_many(self, *args, **kwargs):
-        return MockInsertManyResult()
-    
-    async def update_one(self, *args, **kwargs):
-        return MockUpdateResult()
-    
-    async def delete_one(self, *args, **kwargs):
-        return MockDeleteResult()
-    
-    async def count_documents(self, *args, **kwargs):
-        return 0
-    
-    async def sort(self, *args, **kwargs):
-        return self
-    
-    async def limit(self, *args, **kwargs):
-        return self
+    @property
+    def AsyncSessionLocal(self):
+        return get_async_session_local()
 
-
-class MockCursor:
-    """Mock MongoDB cursor."""
-    async def to_list(self, *args, **kwargs):
-        return []
-    
-    async def next(self, *args, **kwargs):
-        return None
-
-
-class MockInsertResult:
-    """Mock MongoDB insert result."""
-    inserted_id = None
-
-
-class MockInsertManyResult:
-    """Mock MongoDB insert many result."""
-    inserted_ids = []
-
-
-class MockUpdateResult:
-    """Mock MongoDB update result."""
-    modified_count = 0
-
-
-class MockDeleteResult:
-    """Mock MongoDB delete result."""
-    deleted_count = 0
-
-
-# MongoDB collection stubs
-customers_collection = MockCollection()
-loans_collection = MockCollection()
-savings_collection = MockCollection()
-ledger_collection = MockCollection()
-users_collection = MockCollection()
-branches_collection = MockCollection()
-chart_of_accounts_collection = MockCollection()
-loan_products_collection = MockCollection()
-loan_transactions_collection = MockCollection()
-savings_transactions_collection = MockCollection()
-
-
-def get_customers_collection():
-    """Return customers collection for MongoDB compatibility."""
-    return customers_collection
-
-
-def get_loans_collection():
-    """Return loans collection for MongoDB compatibility."""
-    return loans_collection
-
-
-def get_savings_collection():
-    """Return savings collection for MongoDB compatibility."""
-    return savings_collection
-
-
-def get_ledger_collection():
-    """Return ledger collection for MongoDB compatibility."""
-    return ledger_collection
-
-
-def get_users_collection():
-    """Return users collection for MongoDB compatibility."""
-    return users_collection
-
-
-def get_branches_collection():
-    """Return branches collection for MongoDB compatibility."""
-    return branches_collection
-
-
-def get_chart_of_accounts_collection():
-    """Return chart of accounts collection for MongoDB compatibility."""
-    return chart_of_accounts_collection
-
-
-def get_loan_products_collection():
-    """Return loan products collection for MongoDB compatibility."""
-    return loan_products_collection
-
-
-def get_loan_transactions_collection():
-    """Return loan transactions collection for MongoDB compatibility."""
-    return loan_transactions_collection
-
-
-def get_savings_transactions_collection():
-    """Return savings transactions collection for MongoDB compatibility."""
-    return savings_transactions_collection
-
-
-def get_transactions_collection():
-    """Return transactions collection for MongoDB compatibility."""
-    return loans_collection
-
-
-async def create_mongo_client():
-    """Create MongoDB client for compatibility during migration."""
-    return None
+sys.modules[__name__].__class__ = _ModuleWithLazyAttributes

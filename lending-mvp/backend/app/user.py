@@ -18,8 +18,7 @@ from .auth.security import (
 )
 from .auth.totp import generate_qr_base64, generate_totp_secret, get_totp_uri, verify_totp
 from .config import settings
-from .database import get_users_collection
-from .database.crud import UserCRUD
+from .database.pg_user_crud import UserCRUD
 from .database.pg_models import AuditLog, PasswordHistory, UserSession, UserBranchAssignment
 from .database.postgres import AsyncSessionLocal
 from .database.redis_client import get_redis

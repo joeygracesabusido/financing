@@ -16,6 +16,9 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from bson import ObjectId
 
+# Import RBAC helpers for branch and role-based access control
+from .auth.rbac import get_sql_branch_filter, require_management_role
+
 
 from .database.postgres import AsyncSessionLocal
 from .utils.savings_accounting_utils import post_savings_transaction_accounting
@@ -42,8 +45,24 @@ class TransactionQuery:
         # Authorization: Ensure the user owns the account they are querying transactions for
         savings_crud = SavingsCRUD(db.savings)
         account = await savings_crud.get_savings_account_by_id(str(account_id))
-        # if not account or str(account.user_id) != str(current_user.id): # Corrected to account.user_id
-        #     return TransactionsResponse(success=False, message="Not authorized", transactions=[])
+        if not account:
+            return TransactionsResponse(success=False, message="Account not found", transactions=[], total=0)
+        
+        # Branch-based access control for staff roles
+        if current_user.role not in ("admin", "customer"):
+            branch_filter = get_sql_branch_filter(current_user)
+            if branch_filter:
+                # Verify account belongs to user's branch
+                from .database.customer_crud import CustomerCRUD
+                customer_crud = CustomerCRUD(db.customers)
+                customer = await customer_crud.get_customer_by_id(str(account.user_id))
+                if customer and customer.branch != branch_filter:
+                    return TransactionsResponse(
+                        success=False, 
+                        message=f"Access denied: Account belongs to branch {customer.branch}",
+                        transactions=[],
+                        total=0
+                    )
             
         transaction_crud = TransactionCRUD(db.transactions, savings_crud)
         transactions_data = await transaction_crud.get_transactions_by_account_id(str(account_id))
@@ -67,9 +86,24 @@ class TransactionMutation:
         if not account:
             return TransactionResponse(success=False, message="Account not found")
 
-        # Authorization check
-        # if str(account.user_id) != str(current_user.id):
-        #     return TransactionResponse(success=False, message="Not authorized for this account")
+        # Authorization check: User can only transact on their own account OR admin can transact on any
+        if str(account.user_id) != str(current_user.id):
+            # Only admin can access other accounts
+            if current_user.role not in ("admin",):
+                return TransactionResponse(success=False, message="Not authorized for this account")
+            
+            # Additional branch check for admin accessing other branches
+            if current_user.role == "admin":
+                branch_filter = get_sql_branch_filter(current_user)
+                if branch_filter:
+                    from .database.customer_crud import CustomerCRUD
+                    customer_crud = CustomerCRUD(db.customers)
+                    customer = await customer_crud.get_customer_by_id(str(account.user_id))
+                    if customer and customer.branch != branch_filter:
+                        return TransactionResponse(
+                            success=False, 
+                            message=f"Access denied: Account belongs to branch {customer.branch}",
+                        )
 
         transaction_crud = TransactionCRUD(db.transactions, savings_crud)
         
@@ -129,12 +163,25 @@ class TransactionMutation:
         if not from_account:
             return FundTransferResponse(success=False, message="Source account not found")
 
+        # Authorization: User can only transfer from their own account (admin exception)
+        if str(from_account.user_id) != str(current_user.id):
+            if current_user.role not in ("admin",):
+                return FundTransferResponse(success=False, message="Not authorized to transfer from this account")
+
         if from_account.balance < input.amount:
             return FundTransferResponse(success=False, message="Insufficient funds")
 
         to_account = await savings_crud.get_savings_account_by_id(str(input.to_account_id))
         if not to_account:
             return FundTransferResponse(success=False, message="Destination account not found")
+
+        # Branch validation for staff roles (admin can bypass)
+        if current_user.role not in ("admin", "customer"):
+            from_branch = get_sql_branch_filter(current_user)
+            if from_branch:
+                from_customer = await CustomerCRUD(db.customers).get_customer_by_id(str(from_account.user_id))
+                if from_customer and from_customer.branch != from_branch:
+                    return FundTransferResponse(success=False, message=f"Access denied: Source account belongs to branch {from_customer.branch}")
 
         await savings_crud.update_balance(str(input.from_account_id), -Decimal(str(input.amount)))
         await savings_crud.update_balance(str(input.to_account_id), Decimal(str(input.amount)))

@@ -15,7 +15,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
-from .pg_models import Base
+from .base import Base
 
 
 # ---------------------------------------------------------------------------
