@@ -17,10 +17,9 @@ class Health:
 
 @strawberry.type
 class DashboardStats:
-    customers_total: int
-    savings_total: float
-    loans_total: int
-    loans_active: int
+    customers: dict
+    savingsAccounts: dict
+    loans: dict
 
 @strawberry.type
 class UserNode:
@@ -84,21 +83,43 @@ class Query:
             # Count savings accounts
             savings_result = await session.execute(select(SavingsAccount))
             savings_accounts = savings_result.scalars().all()
-            total_savings = sum(
-                float(s.balance) for s in savings_accounts 
-                if s.balance is not None
-            )
+            savings_list = [
+                {
+                    "id": str(s.id),
+                    "accountNumber": s.account_number,
+                    "balance": float(s.balance) if s.balance is not None else 0,
+                }
+                for s in savings_accounts
+            ]
             
             # Count loans
             loan_result = await session.execute(select(Loan))
             loans = loan_result.scalars().all()
             active_loans = len([l for l in loans if l.status == 'active'])
+            loans_list = [
+                {
+                    "id": str(l.id),
+                    "status": l.status,
+                    "principal": float(l.principal) if l.principal is not None else 0,
+                    "approvedPrincipal": float(l.approved_principal) if l.approved_principal is not None else 0,
+                    "outstandingBalance": float(l.outstanding_balance) if l.outstanding_balance is not None else 0,
+                }
+                for l in loans
+            ]
             
             return DashboardStats(
-                customers_total=total_customers,
-                savings_total=total_savings,
-                loans_total=len(loans),
-                loans_active=active_loans,
+                customers={"success": True, "total": total_customers},
+                savingsAccounts={
+                    "success": True,
+                    "message": "Success",
+                    "accounts": savings_list,
+                    "total": len(savings_list),
+                },
+                loans={
+                    "success": True,
+                    "total": len(loans),
+                    "loans": loans_list,
+                },
             )
 
 schema = strawberry.Schema(query=Query)
