@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 import { CREATE_CUSTOMER } from '@/api/queries'
 import { Building2, ArrowLeft, Loader2, CheckCircle } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
 export default function NewCustomerPage() {
     const navigate = useNavigate()
+    const { user, isAdmin } = useAuth()
     const [createCustomer, { loading, error }] = useMutation(CREATE_CUSTOMER)
     const [success, setSuccess] = useState(false)
 
@@ -29,6 +31,13 @@ export default function NewCustomerPage() {
         company_address: '',
         branch: 'HQ',
     })
+
+    // Set branch to user's assigned branch if not admin
+    useEffect(() => {
+        if (!isAdmin && user?.assignedBranch) {
+            setFormData(prev => ({ ...prev, branch: user.assignedBranch! }))
+        }
+    }, [user, isAdmin])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -146,18 +155,22 @@ export default function NewCustomerPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-foreground mb-1.5">
-                                Branch *
+                                Branch * {!isAdmin && '(Assigned)'}
                             </label>
                             <select
                                 name="branch"
                                 value={formData.branch}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                disabled={!isAdmin}
+                                className={`w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 ${!isAdmin ? 'opacity-70 cursor-not-allowed' : ''}`}
                             >
                                 <option value="HQ">Head Office</option>
                                 <option value="BR-QC">Quezon City Branch</option>
                                 <option value="BR-CDO">Cagayan de Oro Branch</option>
+                                {!isAdmin && user?.assignedBranch && !['HQ', 'BR-QC', 'BR-CDO'].includes(user.assignedBranch) && (
+                                    <option value={user.assignedBranch}>{user.assignedBranch}</option>
+                                )}
                             </select>
                         </div>
 

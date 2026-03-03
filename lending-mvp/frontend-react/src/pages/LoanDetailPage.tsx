@@ -603,17 +603,17 @@ export default function LoanDetailPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(txData?.loanTransactions || []).map((t: any) => (
+                                {txData?.loanTransactions?.transactions?.map((t: any) => (
                                     <tr key={t.id} className="border-t border-border/50 hover:bg-secondary/20">
                                         <td className="px-4 py-3 font-mono">{formatDate(t.createdAt)}</td>
                                         <td className="px-4 py-3 capitalize">{t.transactionType}</td>
-                                        <td className="px-4 py-3 text-muted-foreground">{t.description}</td>
+                                        <td className="px-4 py-3 text-muted-foreground">{t.description || t.notes}</td>
                                         <td className={`px-4 py-3 text-right font-semibold ${t.transactionType === 'repayment' ? 'text-emerald-400' : 'text-primary'}`}>
                                             {formatCurrency(t.amount)}
                                         </td>
                                     </tr>
                                 ))}
-                                {(!txData?.loanTransactions || txData.loanTransactions.length === 0) && (
+                                {(!txData?.loanTransactions?.transactions || txData.loanTransactions.transactions.length === 0) && (
                                     <tr><td colSpan={4} className="py-20 text-center text-muted-foreground">No transactions yet</td></tr>
                                 )}
                             </tbody>

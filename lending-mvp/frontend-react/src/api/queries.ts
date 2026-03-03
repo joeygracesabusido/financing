@@ -552,14 +552,18 @@ export const PREVIEW_LOAN_SCHEDULE = gql`
 `
 
 export const GET_LOAN_TRANSACTIONS = gql`
-  query GetLoanTransactions($loanId: String!) {
+  query GetLoanTransactions($loanId: ID!) {
     loanTransactions(loanId: $loanId) {
-      id
-      transactionType
-      amount
-      balanceAfter
-      description
-      createdAt
+      success
+      message
+      transactions {
+        id
+        transactionType
+        amount
+        notes
+        createdAt
+      }
+      total
     }
   }
 `

@@ -31,10 +31,11 @@ interface UserForm {
     fullName: string
     password: string
     role: Role
+    assignedBranch: string
 }
 
 const emptyForm: UserForm = {
-    email: '', username: '', fullName: '', password: '', role: 'teller',
+    email: '', username: '', fullName: '', password: '', role: 'teller', assignedBranch: 'HQ'
 }
 
 function formatDate(d: string) {
@@ -81,7 +82,14 @@ export default function UsersPage() {
 
     const openEdit = (u: any) => {
         setEditId(u.id)
-        setForm({ email: u.email, username: u.username, fullName: u.fullName, password: '', role: u.role })
+        setForm({ 
+            email: u.email, 
+            username: u.username, 
+            fullName: u.fullName, 
+            password: '', 
+            role: u.role,
+            assignedBranch: u.assignedBranch ?? 'HQ'
+        })
         setError('')
         setShowModal(true)
     }
@@ -94,12 +102,22 @@ export default function UsersPage() {
         setError('')
         try {
             if (editId) {
-                const input: any = { email: form.email, username: form.username, fullName: form.fullName, role: form.role }
+                const input: any = { 
+                    email: form.email, 
+                    username: form.username, 
+                    fullName: form.fullName, 
+                    role: form.role,
+                    assignedBranch: form.assignedBranch 
+                }
                 if (form.password) input.password = form.password
                 const res = await updateUser({ variables: { userId: editId, input } })
                 if (!res.data?.updateUser?.success) throw new Error(res.data?.updateUser?.message)
             } else {
-                const res = await createUser({ variables: { input: form } })
+                const input = {
+                    ...form,
+                    assignedBranch: form.assignedBranch
+                }
+                const res = await createUser({ variables: { input } })
                 if (!res.data?.createUser?.success) throw new Error(res.data?.createUser?.message)
             }
             setShowModal(false)
@@ -168,7 +186,7 @@ export default function UsersPage() {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-border/50 bg-secondary/30">
-                                {['User', 'Username', 'Role', 'Status', 'Joined', 'Actions'].map(h => (
+                                {['User', 'Username', 'Role', 'Branch', 'Status', 'Joined', 'Actions'].map(h => (
                                     <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                                         {h}
                                     </th>
@@ -178,7 +196,7 @@ export default function UsersPage() {
                         <tbody>
                             {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-16 text-center text-muted-foreground text-sm">
+                                    <td colSpan={7} className="py-16 text-center text-muted-foreground text-sm">
                                         No users found
                                     </td>
                                 </tr>
@@ -201,6 +219,7 @@ export default function UsersPage() {
                                             {ROLE_LABELS[u.role as Role] ?? u.role}
                                         </span>
                                     </td>
+                                    <td className="px-5 py-3.5 font-medium text-xs text-muted-foreground">{u.assignedBranch ?? 'N/A'}</td>
                                     <td className="px-5 py-3.5">
                                         {u.isActive
                                             ? <span className="flex items-center gap-1 text-xs text-emerald-400"><UserCheck className="w-3.5 h-3.5" /> Active</span>
@@ -265,6 +284,18 @@ export default function UsersPage() {
                                     className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
                                 >
                                     {ROLES.map(r => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs text-muted-foreground mb-1">Branch *</label>
+                                <select
+                                    value={form.assignedBranch}
+                                    onChange={e => setForm({ ...form, assignedBranch: e.target.value })}
+                                    className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:border-primary/50"
+                                >
+                                    <option value="HQ">Head Office</option>
+                                    <option value="BR-QC">Quezon City Branch</option>
+                                    <option value="BR-CDO">Cagayan de Oro Branch</option>
                                 </select>
                             </div>
                             {error && <p className="text-destructive text-xs">{error}</p>}
