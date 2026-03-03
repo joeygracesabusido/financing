@@ -1,20 +1,21 @@
-import { createClient } from '@apollo/client'
+import { createClient, InMemoryCache, HttpLink } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
-import { RESTLink } from '@apollo/client/link/rest'
+import { setContext } from '@apollo/client/link/context'
 
-// Use REST API instead of GraphQL
-const restLink = new RESTLink({
+// Use REST API with HTTP link
+const httpLink = new HttpLink({
     uri: '/api',
 })
 
-const authLink = ({ headers, forward }) => {
+const authLink = setContext((_, { headers }) => {
     const token = localStorage.getItem('access_token')
-    const newHeaders = { ...headers }
-    if (token) {
-        newHeaders.authorization = `Bearer ${token}`
+    return {
+        headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : '',
+        },
     }
-    return forward({ ...this.context, headers: newHeaders })
-}
+})
 
 const errorLink = onError(({ networkError }) => {
     if (networkError) {
@@ -30,8 +31,8 @@ const errorLink = onError(({ networkError }) => {
 })
 
 export const apolloClient = createClient({
-    link: [errorLink, authLink, restLink],
-    cache: new (require('@apollo/client').InMemoryCache)(),
+    link: [errorLink, authLink, httpLink],
+    cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: { fetchPolicy: 'cache-and-network' },
     },
