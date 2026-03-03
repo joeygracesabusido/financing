@@ -17,8 +17,9 @@ except ImportError:
     DEMO_SEEDER_AVAILABLE = False
     seed_demo_data_enhanced = None
 
-# Import login endpoint to register routes
+# Import all routers to register routes
 from . import login_endpoint
+from . import rest_api  # REST API endpoints for frontend
 
 logger = logging.getLogger(__name__)
 
@@ -78,6 +79,9 @@ app = FastAPI(title="Lending MVP API — Phase 2", lifespan=lifespan)
 
 # Include login endpoint
 app.include_router(login_endpoint.router, prefix="")
+
+# Include REST API endpoints
+app.include_router(rest_api.router, prefix="")
 
 # Audit middleware (must be added before CORS so it runs on all requests)
 app.add_middleware(AuditMiddleware)

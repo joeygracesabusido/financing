@@ -1,42 +1,37 @@
-import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
+import { createClient } from '@apollo/client'
 import { onError } from '@apollo/client/link/error'
+import { RESTLink } from '@apollo/client/link/rest'
 
-const httpLink = createHttpLink({
-    uri: (import.meta as any).env.VITE_GRAPHQL_URL || '/graphql',
+// Use REST API instead of GraphQL
+const restLink = new RESTLink({
+    uri: '/api',
 })
 
-// Attach JWT token to every request
-const authLink = setContext((_, { headers }) => {
+const authLink = ({ headers, forward }) => {
     const token = localStorage.getItem('access_token')
-    return {
-        headers: {
-            ...headers,
-            authorization: token ? `Bearer ${token}` : '',
-        },
+    const newHeaders = { ...headers }
+    if (token) {
+        newHeaders.authorization = `Bearer ${token}`
     }
-})
+    return forward({ ...this.context, headers: newHeaders })
+}
 
-// Global error handler
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors) {
-        graphQLErrors.forEach(({ message }) => {
-            console.error(`[GraphQL error]: ${message}`)
-            if (message.toLowerCase().includes('unauthorized') || message.toLowerCase().includes('not authenticated')) {
-                localStorage.removeItem('access_token')
-                localStorage.removeItem('user')
-                window.location.href = '/login'
-            }
-        })
-    }
+const errorLink = onError(({ networkError }) => {
     if (networkError) {
         console.error(`[Network error]: ${networkError}`)
+        if (networkError.message.toLowerCase().includes('unauthorized') || 
+            networkError.message.toLowerCase().includes('not authenticated')) {
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('user')
+            localStorage.removeItem('refresh_token')
+            window.location.href = '/login'
+        }
     }
 })
 
-export const apolloClient = new ApolloClient({
-    link: from([errorLink, authLink, httpLink]),
-    cache: new InMemoryCache(),
+export const apolloClient = createClient({
+    link: [errorLink, authLink, restLink],
+    cache: new (require('@apollo/client').InMemoryCache)(),
     defaultOptions: {
         watchQuery: { fetchPolicy: 'cache-and-network' },
     },

@@ -9,11 +9,10 @@ from datetime import datetime, date, timezone
 from starlette.requests import Request
 
 from .models import CustomerInDB, CustomerCreate, CustomerUpdate, PyObjectId, UserInDB
-from .database import get_customers_collection, get_db
 from .database.customer_crud import CustomerCRUD
 from .database.pg_models import Beneficiary, CustomerActivity
 from .database.postgres import AsyncSessionLocal
-from .auth.rbac import get_mongo_branch_filter, assert_branch_access, require_management_role
+from .auth.rbac import get_sql_branch_filter, assert_branch_access, require_management_role
 from sqlalchemy import select
 
 
@@ -163,24 +162,7 @@ class CustomersResponse:
 class Query:
     @strawberry.field
     async def customer(self, info: Info) -> Optional["CustomerType"]:
-        db = get_db()
-        customer_crud = CustomerCRUD(db.customers)
-            
-        customer_data = await customer_crud.get_customer_by_id(str(self.user_id))
-            
-        if customer_data:
-            return convert_customer_db_to_customer_type(customer_data)
-        return None
-
-    @strawberry.field
-    async def customers(self, info: Info, skip: int = 0, limit: int = 100, search_term: Optional[str] = None) -> CustomersResponse:
-        """Get customers. Branch-scoped for loan_officer/teller/branch_manager; admin/auditor see all."""
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user or current_user.role not in ("admin", "loan_officer", "branch_manager", "teller", "auditor"):
-            raise Exception("Not authorized")
-        try:
-            customers_collection = get_customers_collection()
-            customer_crud = CustomerCRUD(customers_collection)
+        customer_crud = CustomerCRUD(AsyncSessionLocal())
             # Apply branch filter based on caller's role
             branch_filter = get_mongo_branch_filter(current_user)
             customers_db = await customer_crud.get_customers(skip=skip, limit=limit, search_term=search_term, extra_filter=branch_filter)
