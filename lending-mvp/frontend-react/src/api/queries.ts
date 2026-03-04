@@ -620,3 +620,144 @@ export const REMOVE_GUARANTOR = gql`
     }
   }
 `
+
+// ── Loan Schedule Preview ───────────────────────────────────────────────────
+export const PREVIEW_LOAN_SCHEDULE = gql`
+  query PreviewLoanSchedule($loanId: ID!) {
+    loanSchedule(loanId: $loanId) {
+      id
+      loanId
+      startDate
+      endDate
+      scheduleType
+      paymentDays
+      monthlyPayment
+      totalInterest
+      totalPayment
+      createdAt
+    }
+  }
+`
+
+// ── Loan Disbursements ──────────────────────────────────────────────────────
+export const DISBURSE_LOAN = gql`
+  mutation DisburseLoan($loanId: ID!, $amount: Float!, $disbursementDate: Date!) {
+    disburseLoan(input: { loanId: $loanId, amount: $amount, disbursementDate: $disbursementDate }) {
+      id
+      loanId
+      amount
+      disbursementDate
+      status
+      createdAt
+    }
+  }
+`
+
+export const REPAY_LOAN = gql`
+  mutation RepayLoan($loanId: ID!, $amount: Float!, $repaymentDate: Date!) {
+    repayLoan(input: { loanId: $loanId, amount: $amount, repaymentDate: $repaymentDate }) {
+      id
+      loanId
+      amount
+      repaymentDate
+      status
+      createdAt
+    }
+  }
+`
+
+export const SUBMIT_LOAN = gql`
+  mutation SubmitLoan($loanId: ID!, $documents: [String!]) {
+    submitLoan(input: { loanId: $loanId, documents: $documents }) {
+      id
+      loanId
+      status
+      submittedAt
+      createdAt
+    }
+  }
+`
+
+export const REVIEW_LOAN = gql`
+  mutation ReviewLoan($loanId: ID!, $reviewNotes: String!) {
+    reviewLoan(input: { loanId: $loanId, reviewNotes: $reviewNotes }) {
+      id
+      loanId
+      status
+      reviewedAt
+      reviewedBy
+      createdAt
+    }
+  }
+`
+
+export const APPROVE_LOAN = gql`
+  mutation ApproveLoan($loanId: ID!) {
+    approveLoan(input: { loanId: $loanId }) {
+      id
+      loanId
+      status
+      approvedAt
+      approvedBy
+      createdAt
+    }
+  }
+`
+
+export const REJECT_LOAN = gql`
+  mutation RejectLoan($loanId: ID!, $reason: String!) {
+    rejectLoan(input: { loanId: $loanId, reason: $reason }) {
+      id
+      loanId
+      status
+      rejectedAt
+      rejectedBy
+      rejectionReason
+      createdAt
+    }
+  }
+`
+
+export const WRITE_OFF_LOAN = gql`
+  mutation WriteOffLoan($loanId: ID!) {
+    writeOffLoan(input: { loanId: $loanId }) {
+      id
+      loanId
+      status
+      writtenOffAt
+      writtenOffBy
+      createdAt
+    }
+  }
+`
+
+// ── Amortization Updates ────────────────────────────────────────────────────
+export const UPDATE_AMORTIZATION_PAYMENT_DATE = gql`
+  mutation UpdateAmortizationPaymentDate($paymentId: ID!, $newDate: Date!) {
+    updateAmortizationPaymentDate(input: { paymentId: $paymentId, newDate: $newDate }) {
+      id
+      paymentNumber
+      dueDate
+      newDueDate
+      amount
+      status
+      updatedAt
+    }
+  }
+`
+
+export const UPDATE_AMORTIZATION_ROW = gql`
+  mutation UpdateAmortizationRow($loanId: ID!, $paymentNumber: Int!, $amount: Float!, $interest: Float!, $principal: Float!) {
+    updateAmortizationRow(input: { loanId: $loanId, paymentNumber: $paymentNumber, amount: $amount, interest: $interest, principal: $principal }) {
+      id
+      loanId
+      paymentNumber
+      amount
+      interest
+      principal
+      dueDate
+      status
+      updatedAt
+    }
+  }
+`
