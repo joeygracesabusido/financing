@@ -26,12 +26,12 @@ export default function CollectionDuePage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    query: `query GetCollectionsDue($days: Int!) { collectionsDue(days: $days) { id customerId amount status dueDate createdAt } }`,
+                    query: `query GetCollectionsDue($days: Int!) { collectionDue(days: $days) { id customerId amount status dueDate createdAt } }`,
                     variables: { days }
                 })
             })
             const data = await res.json()
-            setCollectionsData(data.data?.collectionsDue || [])
+            setCollectionsData(data.data?.collectionDue || [])
         } catch (e) {
             console.error('Failed to fetch collections due:', e)
         } finally {
