@@ -13,7 +13,7 @@ interface User {
     createdAt: string
 }
 
-export default async function UsersPage() {
+export default function UsersPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin'
 

@@ -81,3 +81,33 @@ export const deleteCustomer = async (customerId: string) => {
   }
   return response.json()
 }
+
+export const getCustomerLoans = async () => {
+  const response = await fetch(`${API_URL}/graphql`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `query GetCustomerLoans { loans { id productName principal outstandingBalance status } }`,
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch loans')
+  }
+  return response.json()
+}
+
+export const getCustomerSavings = async () => {
+  const response = await fetch(`${API_URL}/graphql`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `query GetCustomerSavings { savingsAccounts { accounts { id accountNumber balance openedAt status } } }`,
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch savings')
+  }
+  return response.json()
+}
