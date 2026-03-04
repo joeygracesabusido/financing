@@ -1,211 +1,115 @@
-import { useState } from 'react'
-import { useQuery } from '@apollo/client'
-import { useNavigate } from 'react-router-dom'
-import { GET_LOANS } from '@/api/queries'
-import { formatCurrency, formatDate, getLoanStatusColor } from '@/lib/utils'
-import { CreditCard, Search, Plus, Loader2, ArrowRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Plus, Eye, FileText } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { getLoans } from '@/api/loans'
 
 interface Loan {
     id: string
-    customerId: string
-    borrowerName: string
-    productId: string
-    productName: string
     principal: number
+    status: string
+    customerId: string
+    productId: string
+    borrowerName: string
+    productName: string
     termMonths: number
     approvedPrincipal?: number
     approvedRate?: number
-    status: string
     createdAt: string
-    updatedAt: string
     disbursedAt?: string
     outstandingBalance?: number
-    nextDueDate?: string
-    monthsPaid?: number
 }
 
-const PIPELINE_STAGES = [
-    { id: 'draft', label: 'Draft' },
-    { id: 'submitted', label: 'Submitted' },
-    { id: 'reviewing', label: 'Reviewing' },
-    { id: 'approved', label: 'Approved' },
-    { id: 'active', label: 'Active' },
-    { id: 'paid', label: 'Paid / Closed' },
-]
+export default async function LoansPage() {
+    const { user } = useAuth()
+    const isAdmin = user?.role === 'admin'
 
-export default function LoansPage() {
-    const navigate = useNavigate()
+    const [loading, setLoading] = useState(true)
+    const [loansData, setLoansData] = useState<Loan[]>([])
     const [search, setSearch] = useState('')
-    const [viewMode, setViewMode] = useState<'list' | 'kanban'>('kanban')
-    const { data, loading, error } = useQuery(GET_LOANS, {
-        variables: { skip: 0, limit: 300 },
-        fetchPolicy: 'network-only'
-    })
 
-    console.log('Loans data:', data)
-    console.log('Loans loading:', loading)
-    console.log('Loans error:', error)
+    const init = async () => {
+        try {
+            const data = await getLoans()
+            setLoansData(data.loans || [])
+        } catch (e) {
+            console.error('Failed to fetch loans:', e)
+        } finally {
+            setLoading(false)
+        }
+    }
 
-    const loans: Loan[] = data?.loans?.loans ?? []
-    const filtered = loans.filter((l) => {
-        const q = search.toLowerCase()
-        return (
-            !q ||
-            l.borrowerName?.toLowerCase().includes(q) ||
-            l.productName?.toLowerCase().includes(q) ||
-            l.id.includes(q)
-        )
-    })
+    useEffect(() => { init() }, [])
 
-    const totalOutstanding = loans.reduce((s, l) => {
-        if (l.status !== 'active') return s
-        const val = Number(l.outstandingBalance || l.approvedPrincipal || l.principal || 0)
-        return s + (isNaN(val) ? 0 : val)
-    }, 0)
-
-    const renderKanbanCard = (l: Loan) => (
-        <div 
-            key={l.id} 
-            onClick={() => navigate(`/loans/${l.id}`)}
-            className="glass rounded-xl p-4 space-y-3 hover:border-purple-500/30 transition-colors cursor-pointer group"
-        >            <div className="flex justify-between items-start">
-                <div>
-                    <h4 className="font-semibold text-sm group-hover:text-purple-400 transition-colors">{l.borrowerName || 'Unknown Customer'}</h4>
-                    <p className="text-xs text-muted-foreground">{l.productName}</p>
-                </div>
-                <span className={`px-2 py-0.5 rounded-md border text-[10px] uppercase font-bold tracking-wider ${getLoanStatusColor(l.status)}`}>
-                    {l.status}
-                </span>
-            </div>
-            <div className="pt-2 border-t border-border/50 flex justify-between items-end">
-                <div>
-                    <p className="text-[10px] text-muted-foreground">Amount</p>
-                    <p className="font-semibold text-sm">{formatCurrency(l.approvedPrincipal || l.principal)}</p>
-                </div>
-                <div className="text-right">
-                    <p className="text-[10px] text-muted-foreground">Term</p>
-                    <p className="font-semibold text-sm">{l.termMonths} mo</p>
-                </div>
-            </div>
-            <div className="pt-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                <span>{formatDate(l.createdAt)}</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-            </div>
-        </div>
-    )
+    const getStatusColor = (status: string) => {
+        const colors: { [key: string]: string } = {
+            'pending': 'text-amber-400',
+            'approved': 'text-emerald-400',
+            'disbursed': 'text-blue-400',
+            'repaid': 'text-emerald-400',
+            'default': 'text-red-400',
+            'written_off': 'text-red-500'
+        }
+        return colors[status] || 'text-muted-foreground'
+    }
 
     return (
-        <div className="space-y-5 animate-fade-in flex flex-col h-[calc(100vh-8rem)]">
+        <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                        <CreditCard className="w-6 h-6 text-yellow-400" /> Loans Pipeline
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-1">
-                        {loading ? 'Loading...' : `${loans.length} loans · Active Portfolio: ${formatCurrency(totalOutstanding)}`}
-                    </p>
+                    <h1 className="text-2xl font-bold text-foreground">Loans</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Manage loan applications</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <div className="bg-secondary/50 p-1 rounded-lg flex gap-1">
-                        <button
-                            onClick={() => setViewMode('kanban')}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                        >
-                            Kanban
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${viewMode === 'list' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                        >
-                            List
-                        </button>
-                    </div>
-                    <button 
-                        onClick={() => navigate('/customer/loans/new')}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-yellow-400/10 border border-yellow-400/20 text-yellow-500 text-sm font-semibold rounded-lg hover:bg-yellow-400/20 transition-all duration-200"
-                    >
-                        <Plus className="w-4 h-4" /> New Application
+                {isAdmin && (
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-medium shadow-lg hover:opacity-90 transition-opacity">
+                        <Plus className="w-4 h-4" /> New Loan
                     </button>
-                </div>
-            </div>
-
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search by borrower, product, or ID..."
-                    className="w-full pl-10 pr-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 max-w-sm"
-                />
+                )}
             </div>
 
             {loading ? (
-                <div className="flex-1 flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-yellow-400" />
-                </div>
-            ) : error ? (
-                <div className="flex-1 flex items-center justify-center text-destructive text-sm">{error.message}</div>
-            ) : viewMode === 'kanban' ? (
-                <div className="flex-1 flex gap-4 overflow-x-auto pb-4 scrollbar-thin">
-                    {PIPELINE_STAGES.map(stage => {
-                        const stageLoans = filtered.filter(l => l.status === stage.id)
-                        return (
-                            <div key={stage.id} className="min-w-[320px] w-[320px] flex flex-col bg-secondary/20 rounded-xl p-3 border border-border/50">
-                                <div className="flex items-center justify-between mb-3 px-1">
-                                    <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${stage.id === 'active' ? 'bg-emerald-400' : stage.id === 'paid' ? 'bg-blue-400' : stage.id === 'approved' ? 'bg-indigo-400' : 'bg-yellow-400'}`} />
-                                        {stage.label}
-                                    </h3>
-                                    <span className="text-xs font-medium text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-full">
-                                        {stageLoans.length}
-                                    </span>
-                                </div>
-                                <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                                    {stageLoans.map(renderKanbanCard)}
-                                    {stageLoans.length === 0 && (
-                                        <div className="h-24 border-2 border-dashed border-border/50 rounded-xl flex items-center justify-center text-xs text-muted-foreground/50">
-                                            No applications
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
+                <div className="text-center py-16 text-muted-foreground">Loading loans…</div>
             ) : (
-                <div className="flex-1 glass rounded-xl overflow-hidden overflow-y-auto">
-                    <table className="w-full">
-                        <thead className="sticky top-0 z-10">
-                            <tr className="border-b border-border/50 bg-secondary">
-                                {['ID', 'Borrower', 'Product', 'Principal', 'Term', 'Status', 'Date'].map((h) => (
-                                    <th key={h} className="text-left px-4 py-3.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">{h}</th>
-                                ))}
+                <div className="glass rounded-xl overflow-hidden">
+                    <div className="p-4 border-b border-border/50">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search loans..." className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50" />
+                        </div>
+                    </div>
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-border/50">
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Borrower</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Product</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Amount</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Term</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.length === 0 ? (
-                                <tr><td colSpan={7} className="py-16 text-center text-muted-foreground text-sm">No applications found</td></tr>
-                            ) : (
-                                filtered.map((l) => (
-                                    <tr 
-                                        key={l.id} 
-                                        onClick={() => navigate(`/loans/${l.id}`)}
-                                        className="data-table-row cursor-pointer hover:bg-secondary/30"
-                                    >                                        <td className="px-4 py-3.5 font-mono text-xs text-muted-foreground">...{l.id.slice(-6)}</td>
-                                        <td className="px-4 py-3.5 text-sm font-medium text-foreground">{l.borrowerName || 'Unknown Customer'}</td>
-                                        <td className="px-4 py-3.5 text-sm text-muted-foreground">{l.productName}</td>
-                                        <td className="px-4 py-3.5 text-sm text-foreground font-semibold">{formatCurrency(l.approvedPrincipal || l.principal)}</td>
-                                        <td className="px-4 py-3.5 text-sm text-muted-foreground">{l.termMonths} mo</td>
-                                        <td className="px-4 py-3.5">
-                                            <span className={`px-2 py-1 rounded-md border text-xs font-medium uppercase tracking-wider ${getLoanStatusColor(l.status)}`}>
-                                                {l.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-3.5 text-sm text-muted-foreground">{formatDate(l.createdAt)}</td>
-                                    </tr>
-                                ))
-                            )}
+                            {loansData.length === 0 ? (
+                                <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">No loans found.</td></tr>
+                            ) : loansData.map((loan) => (
+                                <tr key={loan.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
+                                    <td className="px-4 py-3">
+                                        <div className="font-medium text-foreground">{loan.borrowerName}</div>
+                                        <div className="text-xs text-muted-foreground">{loan.customerId}</div>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <div className="font-medium text-foreground">{loan.productName}</div>
+                                        <div className="text-xs text-muted-foreground">{loan.productId}</div>
+                                    </td>
+                                    <td className="px-4 py-3 text-foreground font-medium">
+                                        {loan.principal ? `₱${loan.principal.toLocaleString()}` : '—'}
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(loan.status)}`}>
+                                            {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-muted-foreground">{loan.termMonths} months</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>

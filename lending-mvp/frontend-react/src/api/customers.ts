@@ -1,0 +1,83 @@
+import { API_URL } from '@/lib/config'
+
+export const getCustomers = async () => {
+  const url = `${API_URL}/graphql`
+  const query = customerId 
+    ? `query GetCustomer($id: ID!) { customer(id: $id) { id displayName firstName lastName emailAddress mobileNumber customerType customerCategory kycStatus riskScore branch createdAt } }`
+    : `query GetCustomers { customers { id displayName customerType branchCode isActive emailAddress mobileNumber customerCategory kycStatus createdAt } }`
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables: customerId ? { id: customerId } : undefined }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch customers')
+  }
+  return response.json()
+}
+
+export const getCustomer = async (customerId: string) => {
+  const response = await fetch(`${API_URL}/graphql`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `query GetCustomer($id: ID!) { customer(id: $id) { id displayName firstName lastName emailAddress mobileNumber customerType customerCategory kycStatus riskScore branch createdAt } }`,
+      variables: { id: customerId }
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch customer')
+  }
+  return response.json()
+}
+
+export const createCustomer = async (input: any) => {
+  const response = await fetch(`${API_URL}/graphql`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `mutation CreateCustomer($input: CustomerInput!) { createCustomer(input: $input) { success message customer { id displayName } } }`,
+      variables: { input }
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to create customer')
+  }
+  return response.json()
+}
+
+export const updateCustomer = async (customerId: string, input: any) => {
+  const response = await fetch(`${API_URL}/graphql`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `mutation UpdateCustomer($input: CustomerInput!) { updateCustomer(input: $input) { success message } }`,
+      variables: { input }
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to update customer')
+  }
+  return response.json()
+}
+
+export const deleteCustomer = async (customerId: string) => {
+  const response = await fetch(`${API_URL}/graphql`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `mutation DeleteCustomer($id: ID!) { deleteCustomer(id: $id) { success message } }`,
+      variables: { id: customerId }
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to delete customer')
+  }
+  return response.json()
+}

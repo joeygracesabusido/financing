@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 GraphQL server for Lending MVP using Strawberry
 """
@@ -289,6 +291,7 @@ class BranchNode:
     isActive: bool = True
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
     updatedAt: datetime = strawberry.field(default_factory=datetime.now)
+@strawberry.type
 class Query:
     @strawberry.field
     async def users(self, skip: int = 0, limit: int = 100) -> List[UserNode]:
@@ -746,6 +749,8 @@ class Query:
             return DashboardStats(customersTotal=customer_count, loansTotal=loan_count)
 
 
+
+
 @strawberry.type
 class MutationResponse:
     success: bool
@@ -753,8 +758,6 @@ class MutationResponse:
 
 
 @strawberry.type
-
-@strawberry.type
 class BranchNode:
     id: int
     code: str
@@ -765,47 +768,26 @@ class BranchNode:
     isActive: bool = True
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
     updatedAt: datetime = strawberry.field(default_factory=datetime.now)
+
+
+@strawberry.type
 class Mutation:
     @strawberry.mutation
-    async def create_dummy(self) -> MutationResponse: return MutationResponse(success=True, message="Placeholder")
-    @strawberry.mutation
-    async def submit_loan(self, loanId: strawberry.ID) -> MutationResponse: return MutationResponse(success=True, message="Loan submitted for review")
-    @strawberry.mutation
-    async def approve_loan(self, id: strawberry.ID, approvedPrincipal: Optional[Decimal] = None, approvedRate: Optional[Decimal] = None) -> MutationResponse: return MutationResponse(success=True, message="Loan approved")
-    @strawberry.mutation
+    async def create_dummy(self) -> MutationResponse:
+        return MutationResponse(success=True, message="Placeholder")
 
-    @strawberry.field
-    async def branches(self) -> List[BranchNode]:
+    @strawberry.mutation
+    async def submit_loan(self, loanId: strawberry.ID) -> MutationResponse:
+        return MutationResponse(success=True, message="Loan submitted for review")
 
-        session_factory = get_async_session_local()
-        async with session_factory() as session:
-            stmt = select(Branch)
-            result = await session.execute(stmt)
-            branches = result.scalars().all()
-            return [
-                BranchNode(
-                    id=b.id,
-                    code=b.code,
-                    name=b.name,
-                    address=b.address,
-                    city=b.city,
-                    contactNumber=b.contact_number,
-                    isActive=b.is_active,
-                    createdAt=b.created_at,
-                    updatedAt=b.updated_at
-                ) for b in branches
-            ]
-@strawberry.type
-class BranchNode:
-    id: int
-    code: str
-    name: str
-    address: Optional[str] = None
-    city: Optional[str] = None
-    contactNumber: Optional[str] = None
-    isActive: bool = True
-    createdAt: datetime = strawberry.field(default_factory=datetime.now)
-    updatedAt: datetime = strawberry.field(default_factory=datetime.now)
+    @strawberry.mutation
+    async def approve_loan(
+        self,
+        id: strawberry.ID,
+        approvedPrincipal: Optional[Decimal] = None,
+        approvedRate: Optional[Decimal] = None
+    ) -> MutationResponse:
+        return MutationResponse(success=True, message="Loan approved")
 
     @strawberry.field
     async def branches(self) -> List[BranchNode]:
@@ -827,7 +809,6 @@ class BranchNode:
                     updatedAt=b.updated_at
                 ) for b in branches
             ]
-    async def disburse_loan(self, loanId: strawberry.ID, amount: Optional[float] = None) -> MutationResponse: return MutationResponse(success=True, message="Loan disbursed")
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)

@@ -1,467 +1,115 @@
 import { useState, useEffect } from 'react'
+import { ArrowLeft, Pencil, CheckCircle } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuery, useMutation } from '@apollo/client'
-import { GET_CUSTOMER, UPDATE_CUSTOMER } from '@/api/queries'
-import { Building2, ArrowLeft, Loader2, CheckCircle } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { getCustomer, updateCustomer } from '@/api/customers'
 
 export default function EditCustomerPage() {
-    const { id } = useParams<{ id: string }>()
+    const { user } = useAuth()
     const navigate = useNavigate()
-    const [updateCustomer, { loading: updating, error: updateError }] = useMutation(UPDATE_CUSTOMER)
+    const { id } = useParams()
+    const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
+
+    const [loading, setLoading] = useState(true)
+    const [saving, setSaving] = useState(false)
+    const [customer, setCustomer] = useState<any>(null)
+    const [form, setForm] = useState({ displayName: '', customerType: 'individual', branchCode: '', emailAddress: '', mobileNumber: '' })
+    const [error, setError] = useState('')
     const [success, setSuccess] = useState(false)
 
-    const { data: customerData, loading, error } = useQuery(GET_CUSTOMER, {
-        variables: { customerId: id },
-        skip: !id,
-    })
-
-    const [formData, setFormData] = useState({
-        customer_type: 'individual',
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        display_name: '',
-        tin_no: '',
-        sss_no: '',
-        permanent_address: '',
-        birth_date: '',
-        birth_place: '',
-        mobile_number: '',
-        email_address: '',
-        employer_name_address: '',
-        job_title: '',
-        salary_range: '',
-        company_name: '',
-        company_address: '',
-        branch: 'HQ',
-    })
-
     useEffect(() => {
-        if (customerData?.customerById?.customer) {
-            const c = customerData?.customerById?.customer
-            setFormData({
-                customer_type: c.customerType || 'individual',
-                first_name: c.firstName || '',
-                middle_name: c.middleName || '',
-                last_name: c.lastName || '',
-                display_name: c.displayName || '',
-                tin_no: c.tinNo || '',
-                sss_no: c.sssNo || '',
-                permanent_address: c.permanentAddress || '',
-                birth_date: c.birthDate ? c.birthDate.split('T')[0] : '',
-                birth_place: c.birthPlace || '',
-                mobile_number: c.mobileNumber || '',
-                email_address: c.emailAddress || '',
-                employer_name_address: c.employerNameAddress || '',
-                job_title: c.jobTitle || '',
-                salary_range: c.salaryRange || '',
-                company_name: c.companyName || '',
-                company_address: c.companyAddress || '',
-                branch: c.branch || 'HQ',
-            })
+        const loadCustomer = async () => {
+            try {
+                const data = await getCustomer(id || '')
+                setCustomer(data.customer)
+                setForm({
+                    displayName: data.customer.displayName,
+                    customerType: data.customer.customerType,
+                    branchCode: data.customer.branchCode,
+                    emailAddress: data.customer.emailAddress || '',
+                    mobileNumber: data.customer.mobileNumber || ''
+                })
+            } catch (e) {
+                console.error('Failed to load customer:', e)
+            } finally {
+                setLoading(false)
+            }
         }
-    }, [customerData])
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target
-        setFormData(prev => {
-            const updated = { ...prev, [name]: value }
-            
-            if (name === 'first_name' || name === 'middle_name' || name === 'last_name') {
-                if (prev.customer_type !== 'corporate') {
-                    const parts = [
-                        updated.first_name?.trim() || '',
-                        updated.middle_name?.trim() || '',
-                        updated.last_name?.trim() || ''
-                    ].filter(Boolean)
-                    updated.display_name = parts.join(' ')
-                }
-            }
-            
-            if (name === 'company_name' && prev.customer_type === 'corporate') {
-                updated.display_name = updated.company_name || ''
-            }
-            
-            return updated
-        })
-    }
+        loadCustomer()
+    }, [id])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (!form.displayName) { setError('Name is required'); return }
+        setSaving(true)
+        setError('')
         try {
-            const input = {
-                customerType: formData.customer_type,
-                firstName: formData.first_name,
-                middleName: formData.middle_name,
-                lastName: formData.last_name,
-                displayName: formData.display_name,
-                tinNo: formData.tin_no,
-                sssNo: formData.sss_no,
-                permanentAddress: formData.permanent_address,
-                birthDate: formData.birth_date || null,
-                birthPlace: formData.birth_place,
-                mobileNumber: formData.mobile_number,
-                emailAddress: formData.email_address,
-                employerNameAddress: formData.employer_name_address,
-                jobTitle: formData.job_title,
-                salaryRange: formData.salary_range,
-                companyName: formData.company_name,
-                companyAddress: formData.company_address,
-                branch: formData.branch,
-            }
-            
-            await updateCustomer({
-                variables: { customerId: id, input }
-            })
+            const input = { displayName: form.displayName, customerType: form.customerType, branchCode: form.branchCode, emailAddress: form.emailAddress, mobileNumber: form.mobileNumber }
+            await updateCustomer(input)
             setSuccess(true)
-            setTimeout(() => navigate(`/customers/${id}`), 2000)
-        } catch (err) {
-            console.error(err)
+            setTimeout(() => navigate('/customers'), 2000)
+        } catch (e: any) {
+            setError(e.message || 'Failed to update customer')
+        } finally {
+            setSaving(false)
         }
     }
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+    if (loading) return <div className="text-center py-16 text-muted-foreground">Loading...</div>
+    if (success) return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+                <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold text-foreground mb-2">Customer Updated!</h2>
+                <p className="text-muted-foreground">Redirecting...</p>
             </div>
-        )
-    }
-
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="text-center">
-                    <p className="text-destructive">Error loading customer: {error.message}</p>
-                    <button onClick={() => navigate('/customers')} className="mt-4 text-primary hover:underline">
-                        Back to Customers
-                    </button>
-                </div>
-            </div>
-        )
-    }
-
-    if (success) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="text-center">
-                    <CheckCircle className="w-16 h-16 text-emerald-400 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-foreground">Customer Updated!</h2>
-                    <p className="text-muted-foreground mt-2">Redirecting to customer details...</p>
-                </div>
-            </div>
-        )
-    }
+        </div>
+    )
 
     return (
-        <div className="space-y-5 animate-fade-in">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => navigate(`/customers/${id}`)}
-                        className="p-2 hover:bg-secondary rounded-lg transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-                    </button>
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                            <Building2 className="w-6 h-6 text-primary" /> Edit Customer
-                        </h1>
-                        <p className="text-muted-foreground text-sm mt-1">
-                            Update customer information
-                        </p>
-                    </div>
+        <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+            <div className="flex items-center gap-4">
+                <button onClick={() => navigate('/customers')} className="p-2 rounded-lg hover:bg-background/50 text-muted-foreground transition-colors">
+                    <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">Edit Customer</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Update customer information</p>
                 </div>
             </div>
 
-            <div className="glass rounded-xl p-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-1.5">
-                                Customer Type *
-                            </label>
-                            <select
-                                name="customer_type"
-                                value={formData.customer_type}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            >
-                                <option value="individual">Individual</option>
-                                <option value="joint">Joint</option>
-                                <option value="corporate">Corporate</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-1.5">
-                                Branch *
-                            </label>
-                            <select
-                                name="branch"
-                                value={formData.branch}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            >
-                                <option value="HQ">Head Office</option>
-                                <option value="BR-QC">Quezon City Branch</option>
-                                <option value="BR-CDO">Cagayan de Oro Branch</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-1.5">
-                                Display Name {formData.customer_type !== 'corporate' ? '(Auto-generated)' : '*'}
-                            </label>
-                            <input
-                                type="text"
-                                name="display_name"
-                                value={formData.display_name}
-                                onChange={handleChange}
-                                required
-                                readOnly={formData.customer_type !== 'corporate'}
-                                disabled={formData.customer_type !== 'corporate'}
-                                className={`w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 ${formData.customer_type !== 'corporate' ? 'opacity-70 cursor-not-allowed' : ''}`}
-                                placeholder={formData.customer_type === 'corporate' ? 'Company name' : 'Auto-generated from name fields'}
-                            />
-                        </div>
-
-                        {formData.customer_type !== 'corporate' && (
-                            <>
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        First Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="first_name"
-                                        value={formData.first_name}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Middle Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="middle_name"
-                                        value={formData.middle_name}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Last Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="last_name"
-                                        value={formData.last_name}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {formData.customer_type === 'corporate' && (
-                            <>
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Company Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="company_name"
-                                        value={formData.company_name}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Company Address
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="company_address"
-                                        value={formData.company_address}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-1.5">
-                                Email Address *
-                            </label>
-                            <input
-                                type="email"
-                                name="email_address"
-                                value={formData.email_address}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                placeholder="email@example.com"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-1.5">
-                                Mobile Number
-                            </label>
-                            <input
-                                type="text"
-                                name="mobile_number"
-                                value={formData.mobile_number}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                placeholder="+63 900 000 0000"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-foreground mb-1.5">
-                                TIN Number
-                            </label>
-                            <input
-                                type="text"
-                                name="tin_no"
-                                value={formData.tin_no}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                placeholder="123-456-789-000"
-                            />
-                        </div>
-
-                        {formData.customer_type !== 'corporate' && (
-                            <>
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        SSS Number
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="sss_no"
-                                        value={formData.sss_no}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Birth Date
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="birth_date"
-                                        value={formData.birth_date}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Birth Place
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="birth_place"
-                                        value={formData.birth_place}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Permanent Address
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="permanent_address"
-                                        value={formData.permanent_address}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Employer Name & Address
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="employer_name_address"
-                                        value={formData.employer_name_address}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Job Title
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="job_title"
-                                        value={formData.job_title}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Salary Range
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="salary_range"
-                                        value={formData.salary_range}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-                                        placeholder="50,000-100,000"
-                                    />
-                                </div>
-                            </>
-                        )}
+            <div className="glass rounded-xl p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Full Name *</label>
+                        <input value={form.displayName} onChange={e => setForm({ ...form, displayName: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50" required />
                     </div>
-
-                    {updateError && (
-                        <div className="px-4 py-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
-                            {updateError.message}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Customer Type</label>
+                        <select value={form.customerType} onChange={e => setForm({ ...form, customerType: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50">
+                            <option value="individual">Individual</option>
+                            <option value="corporate">Corporate</option>
+                        </select>
+                    </div>
+                    {isAdmin && (
+                        <div>
+                            <label className="block text-sm font-medium text-foreground mb-1">Branch Code</label>
+                            <input value={form.branchCode} onChange={e => setForm({ ...form, branchCode: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50" />
                         </div>
                     )}
-
-                    <div className="flex justify-end gap-3 pt-4">
-                        <button
-                            type="button"
-                            onClick={() => navigate(`/customers/${id}`)}
-                            className="px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={updating}
-                            className="flex items-center gap-2 px-6 py-2.5 gradient-primary text-white text-sm font-semibold rounded-lg shadow-lg shadow-primary/25 hover:opacity-90 transition-all duration-200 disabled:opacity-60"
-                        >
-                            {updating && <Loader2 className="w-4 h-4 animate-spin" />}
-                            {updating ? 'Updating...' : 'Update Customer'}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Email Address</label>
+                        <input value={form.emailAddress} onChange={e => setForm({ ...form, emailAddress: e.target.value })} type="email" className="w-full px-3 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50" />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">Mobile Number</label>
+                        <input value={form.mobileNumber} onChange={e => setForm({ ...form, mobileNumber: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50" />
+                    </div>
+                    {error && <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>}
+                    <div className="flex gap-3 pt-4">
+                        <button type="button" onClick={() => navigate('/customers')} className="flex-1 px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-white/5 transition-colors">Cancel</button>
+                        <button type="submit" disabled={saving} className="flex-1 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-medium disabled:opacity-60">
+                            {saving ? 'Updating...' : 'Update Customer'}
                         </button>
                     </div>
                 </form>

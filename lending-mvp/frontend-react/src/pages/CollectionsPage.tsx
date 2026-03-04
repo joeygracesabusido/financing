@@ -1,98 +1,105 @@
-import { formatCurrency } from '@/lib/utils'
-import { AlertTriangle, TrendingDown, Clock, ShieldAlert, Skull } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, FileText, AlertCircle } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
 
-const bucketIcons = {
-    Current: Clock,
-    '1-30 DPD': TrendingDown,
-    '31-60 DPD': AlertTriangle,
-    '61-90 DPD': ShieldAlert,
-    '90+ DPD': Skull,
+interface Collection {
+    id: string
+    customerId: string
+    amount: number
+    status: string
+    dueDate: string
+    createdAt: string
 }
 
-const bucketColors = {
-    Current: 'from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 text-emerald-400',
-    '1-30 DPD': 'from-yellow-500/20 to-yellow-600/10 border-yellow-500/30 text-yellow-400',
-    '31-60 DPD': 'from-orange-500/20 to-orange-600/10 border-orange-500/30 text-orange-400',
-    '61-90 DPD': 'from-red-500/20 to-red-600/10 border-red-500/30 text-red-400',
-    '90+ DPD': 'from-red-700/20 to-red-800/10 border-red-700/30 text-red-300',
-}
+export default async function CollectionsPage() {
+    const { user } = useAuth()
+    const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
 
-const MOCK_COLLECTIONS = {
-    totalLoans: 150,
-    totalOutstanding: 1250000,
-    buckets: [
-        { label: 'Current', loanCount: 100, totalOutstanding: 800000 },
-        { label: '1-30 DPD', loanCount: 20, totalOutstanding: 200000 },
-        { label: '31-60 DPD', loanCount: 15, totalOutstanding: 150000 },
-        { label: '61-90 DPD', loanCount: 10, totalOutstanding: 75000 },
-        { label: '90+ DPD', loanCount: 5, totalOutstanding: 25000 },
-    ],
-}
+    const [loading, setLoading] = useState(true)
+    const [collectionsData, setCollectionsData] = useState<Collection[]>([])
+    const [search, setSearch] = useState('')
 
-const overdueBuckets = ['31-60 DPD', '61-90 DPD', '90+ DPD']
+    const init = async () => {
+        try {
+            const res = await fetch('/graphql', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: `query GetCollections { collections { id customerId amount status dueDate createdAt } }`
+                })
+            })
+            const data = await res.json()
+            setCollectionsData(data.data?.collections || [])
+        } catch (e) {
+            console.error('Failed to fetch collections:', e)
+        } finally {
+            setLoading(false)
+        }
+    }
 
-export default function CollectionsPage() {
-    const dashboard = MOCK_COLLECTIONS
-    const atRiskCount = dashboard.buckets.filter((b: any) => overdueBuckets.includes(b.label)).reduce((s: number, b: any) => s + b.loanCount, 0)
-    const atRiskAmount = dashboard.buckets.filter((b: any) => overdueBuckets.includes(b.label)).reduce((s: number, b: any) => s + parseFloat(b.totalOutstanding || 0), 0)
-    const parOver30 = dashboard.totalOutstanding > 0 ? (atRiskAmount / dashboard.totalOutstanding) * 100 : 0
+    useEffect(() => { init() }, [])
+
+    const getStatusColor = (status: string) => {
+        const colors: { [key: string]: string } = {
+            'pending': 'bg-amber-500/20 text-amber-400',
+            'overdue': 'bg-red-500/20 text-red-400',
+            'collected': 'bg-emerald-500/20 text-emerald-400'
+        }
+        return colors[status] || 'bg-gray-500/20 text-gray-400'
+    }
 
     return (
         <div className="space-y-6 animate-fade-in">
-            <div>
-                <h1 className="text-2xl font-bold text-foreground">Collections Dashboard</h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                    Portfolio at Risk (PAR) - aging analysis of active loans by days past due
-                </p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">Collections</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Manage loan collections</p>
+                </div>
+                {isAdmin && (
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-medium shadow-lg hover:opacity-90 transition-opacity">
+                        <FileText className="w-4 h-4" /> New Collection
+                    </button>
+                )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="glass p-5 rounded-xl">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Loans</p>
-                    <p className="text-2xl font-bold mt-1">{dashboard.totalLoans}</p>
-                </div>
-                <div className="glass p-5 rounded-xl">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Outstanding</p>
-                    <p className="text-2xl font-bold text-primary mt-1">{formatCurrency(dashboard.totalOutstanding)}</p>
-                </div>
-                <div className="glass p-5 rounded-xl">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">At Risk</p>
-                    <p className="text-2xl font-bold text-red-400 mt-1">{atRiskCount}</p>
-                </div>
-                <div className="glass p-5 rounded-xl">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">PAR</p>
-                    <p className="text-2xl font-bold text-orange-400 mt-1">{parOver30.toFixed(1) + '%'}</p>
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <h2 className="text-lg font-semibold text-foreground">Collections Aging</h2>
-                {dashboard.buckets.map((bucket: any) => (
-                    <div key={bucket.label} className="glass rounded-xl p-5">
-                        <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${bucketColors[bucket.label as keyof typeof bucketColors]} flex items-center justify-center`}>
-                                    {(() => {
-                                        const Icon = bucketIcons[bucket.label as keyof typeof bucketIcons] || Clock
-                                        return <Icon className="w-5 h-5" />
-                                    })()}
-                                </div>
-                                <div>
-                                    <p className="font-medium text-foreground">{bucket.label}</p>
-                                    <p className="text-xs text-muted-foreground">{bucket.loanCount} loans</p>
-                                </div>
-                            </div>
-                            <p className="text-lg font-bold text-foreground">{formatCurrency(bucket.totalOutstanding)}</p>
-                        </div>
-                        <div className="w-full bg-secondary rounded-full h-2">
-                            <div
-                                className={`h-2 rounded-full ${bucketColors[bucket.label].split(' ')[0].replace('from-', 'bg-')}`}
-                                style={{ width: `${(bucket.totalOutstanding / dashboard.totalOutstanding) * 100}%` }}
-                            />
+            {loading ? (
+                <div className="text-center py-16 text-muted-foreground">Loading collections…</div>
+            ) : (
+                <div className="glass rounded-xl overflow-hidden">
+                    <div className="p-4 border-b border-border/50">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search collections..." className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background/50 focus:outline-none focus:border-primary/50" />
                         </div>
                     </div>
-                ))}
-            </div>
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-border/50">
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Amount</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Due Date</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {collectionsData.length === 0 ? (
+                                <tr><td colSpan={4} className="text-center py-12 text-muted-foreground">No collections found.</td></tr>
+                            ) : collectionsData.map((collection) => (
+                                <tr key={collection.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
+                                    <td className="px-4 py-3 text-foreground font-medium">₱{collection.amount.toLocaleString()}</td>
+                                    <td className="px-4 py-3 text-muted-foreground">{new Date(collection.dueDate).toLocaleDateString()}</td>
+                                    <td className="px-4 py-3">
+                                        <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(collection.status)}`}>
+                                            {collection.status.charAt(0).toUpperCase() + collection.status.slice(1)}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-muted-foreground">{new Date(collection.createdAt).toLocaleDateString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
         </div>
     )
 }

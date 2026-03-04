@@ -28,7 +28,7 @@ config = context.config
 # Override sqlalchemy.url from environment (used in Docker)
 pg_url = os.getenv(
     "DATABASE_URL",
-    "postgresql+asyncpg://lending_user:lending_secret@postgres:5432/lending_db",
+    "postgresql+asyncpg://lending_user:lending_password@postgres:5432/lending_db",
 )
 # Use sync psycopg2 for Alembic (Alembic uses sync engine for migrations)
 sync_url = pg_url.replace("postgresql+asyncpg://", "postgresql://")

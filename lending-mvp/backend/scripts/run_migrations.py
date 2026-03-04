@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 # FIX: Use local variable for Alembic; do not overwrite DATABASE_URL so other scripts get async URL
 database_url = os.getenv(
     "DATABASE_URL",
-    "postgresql+asyncpg://lending_user:lending_secret@postgres:5432/lending_db"
+    "postgresql+asyncpg://lending_user:lending_password@postgres:5432/lending_db"
 )
 alembic_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
 logger.info(f"🔄 Using database URL for migrations: {alembic_url.split('@')[1] if '@' in alembic_url else 'unknown'}")
@@ -74,7 +74,7 @@ def run_migrations():
         # Get the database URL from environment
         database_url = os.getenv(
             "DATABASE_URL",
-            "postgresql+asyncpg://lending_user:lending_secret@postgres:5432/lending_db"
+            "postgresql+asyncpg://lending_user:lending_password@postgres:5432/lending_db"
         )
         
         # Replace asyncpg with psycopg2 for Alembic (Alembic doesn't support async drivers for migration)
@@ -118,7 +118,7 @@ def main():
         # Get database URL (keep async form in env; use sync form for connection check)
         database_url = os.getenv(
             "DATABASE_URL",
-            "postgresql+asyncpg://lending_user:lending_secret@postgres:5432/lending_db"
+            "postgresql+asyncpg://lending_user:lending_password@postgres:5432/lending_db"
         )
         sync_url = database_url.replace("postgresql+asyncpg://", "postgresql://")
         

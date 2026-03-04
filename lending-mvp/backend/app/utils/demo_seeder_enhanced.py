@@ -10,7 +10,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import List, Dict, Any
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 # Setup logging
 logger = logging.getLogger(__name__)
@@ -32,6 +32,23 @@ from ..database.pg_models import (
 )
 from ..database.pg_accounting_models import GLAccount, JournalEntry, JournalLine
 from ..auth.security import get_password_hash
+
+
+async def ensure_tables_exist():
+    """Create all database tables if they don't exist."""
+    try:
+        from ..database import Base, get_engine
+        engine = get_engine()
+        async with engine.begin() as conn:
+            # create_all with checkfirst=True will skip existing tables
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables ensured.")
+    except Exception as e:
+        # Ignore errors about existing tables or indexes
+        if "already exists" in str(e).lower() or "duplicate" in str(e).lower():
+            logger.info("Tables already exist, skipping creation.")
+        else:
+            logger.warning(f"Table creation skipped: {e}")
 
 
 # ============================================================================
@@ -745,6 +762,9 @@ async def seed_core_pg() -> Dict[str, Any]:
     logger.info("=" * 60)
     logger.info("SEEDING CORE DATA (PostgreSQL)")
     logger.info("=" * 60)
+
+    # Ensure tables exist before seeding
+    await ensure_tables_exist()
 
     session_factory = get_async_session_local()
     counts: Dict[str, int] = {}

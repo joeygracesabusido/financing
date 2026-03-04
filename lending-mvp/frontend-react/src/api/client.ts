@@ -56,9 +56,25 @@ export const getUsers = async (skip: number = 0, limit: number = 100) => {
   return response.json()
 }
 
+export const getBranches = async () => {
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      query: `{ branches { id code name address city contactNumber isActive createdAt updatedAt } }`
+    }),
+  })
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.errors?.[0]?.message || 'Failed to fetch branches')
+  }
+  return response.json()
+}
+
 export default {
   login,
   logout,
   getDashboardStats,
   getUsers,
+  getBranches,
 }

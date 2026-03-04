@@ -1,87 +1,50 @@
-import { useState } from 'react'
-import { useQuery, useMutation, gql } from '@apollo/client'
+import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { getBranches } from '@/api/client'
 
-const GET_BRANCHES = gql`
-  query GetBranches {
-    branches {
-      success
-      message
-      branches {
-        id
-        code
-        name
-        address
-        city
-        contactNumber
-        isActive
-        createdAt
-      }
-      total
-    }
-  }
-`
-
-const CREATE_BRANCH = gql`
-  mutation CreateBranch($input: BranchCreateInput!) {
-    createBranch(input: $input) {
-      success
-      message
-      branch { id code name city isActive }
-    }
-  }
-`
-
-const UPDATE_BRANCH = gql`
-  mutation UpdateBranch($branchId: Int!, $input: BranchUpdateInput!) {
-    updateBranch(branchId: $branchId, input: $input) {
-      success
-      message
-      branch { id code name city isActive }
-    }
-  }
-`
-
-const DELETE_BRANCH = gql`
-  mutation DeleteBranch($branchId: Int!) {
-    deleteBranch(branchId: $branchId) {
-      success
-      message
-    }
-  }
-`
-
-interface BranchForm {
+interface Branch {
+    id: string | number
     code: string
     name: string
-    address: string
-    city: string
-    contact_number: string
+    address?: string
+    city?: string
+    contactNumber?: string
+    isActive: boolean
+    createdAt: string
+    updatedAt: string
 }
 
-const emptyForm: BranchForm = { code: '', name: '', address: '', city: '', contact_number: '' }
+const emptyForm: { code: string; name: string; address: string; city: string; contact_number: string } = { code: '', name: '', address: '', city: '', contact_number: '' }
 
 export default function BranchesPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
 
-    const { data, loading, refetch } = useQuery(GET_BRANCHES)
-    const [createBranch] = useMutation(CREATE_BRANCH)
-    const [updateBranch] = useMutation(UPDATE_BRANCH)
-    const [deleteBranch] = useMutation(DELETE_BRANCH)
-
+    const [loading, setLoading] = useState(true)
+    const [branchesData, setBranchesData] = useState<Branch[]>([])
     const [showModal, setShowModal] = useState(false)
     const [editId, setEditId] = useState<number | null>(null)
-    const [form, setForm] = useState<BranchForm>(emptyForm)
+    const [form, setForm] = useState<{ code: string; name: string; address: string; city: string; contact_number: string }>(emptyForm)
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState('')
 
-    const branches = data?.branches?.branches ?? []
+    const init = async () => {
+        try {
+            const data = await getBranches()
+            setBranchesData(data.branches || [])
+        } catch (e) {
+            console.error('Failed to fetch branches:', e)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => { init() }, [])
 
     const openCreate = () => { setEditId(null); setForm(emptyForm); setError(''); setShowModal(true) }
-    const openEdit = (b: any) => {
-        setEditId(b.id)
+    const openEdit = (b: Branch) => {
+        setEditId(Number(b.id))
         setForm({ code: b.code, name: b.name, address: b.address ?? '', city: b.city ?? '', contact_number: b.contactNumber ?? '' })
         setError('')
         setShowModal(true)
@@ -91,24 +54,23 @@ export default function BranchesPage() {
         if (!form.code || !form.name) { setError('Code and Name are required'); return }
         setSaving(true)
         try {
+            const input = { name: form.name, address: form.address, city: form.city, contactNumber: form.contact_number }
             if (editId) {
-                await updateBranch({ variables: { branchId: editId, input: { name: form.name, address: form.address, city: form.city, contact_number: form.contact_number } } })
+                await UpdateBranch({ branchId: editId, input, onSuccess: init })
             } else {
-                await createBranch({ variables: { input: form } })
+                await CreateBranch({ input, onSuccess: init })
             }
-            await refetch()
             setShowModal(false)
         } catch (e: any) {
-            setError(e.message)
+            setError(e.message || 'Failed to save branch')
         } finally {
             setSaving(false)
         }
     }
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: any) => {
         if (!confirm('Delete this branch?')) return
-        await deleteBranch({ variables: { branchId: id } })
-        refetch()
+        await DeleteBranch({ branchId: id, onSuccess: init })
     }
 
     return (
@@ -141,10 +103,10 @@ export default function BranchesPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {branches.length === 0 ? (
+                            {branchesData.length === 0 ? (
                                 <tr><td colSpan={6} className="text-center py-12 text-muted-foreground">No branches found. Create your first branch.</td></tr>
-                            ) : branches.map((b: any) => (
-                                <tr key={b.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
+                            ) : branchesData.map((b) => (
+                                <tr key={String(b.id)} className="border-b border-border/30 hover:bg-white/5 transition-colors">
                                     <td className="px-4 py-3 font-mono font-semibold text-primary">{b.code}</td>
                                     <td className="px-4 py-3 text-foreground font-medium">{b.name}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{b.city || '—'}</td>
@@ -210,4 +172,55 @@ export default function BranchesPage() {
             )}
         </div>
     )
+}
+
+const CreateBranch = async ({ input, onSuccess }: { input: any, onSuccess: () => void }) => {
+    const res = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query: `mutation CreateBranch($input: BranchInput!) { createBranch(input: $input) { success message branch { id code name } } }`,
+            variables: { input }
+        })
+    })
+    const data = await res.json()
+    if (data.data?.createBranch?.success) {
+        onSuccess()
+    } else {
+        throw new Error(data.errors?.[0]?.message || 'Failed to create branch')
+    }
+}
+
+const UpdateBranch = async ({ branchId, input, onSuccess }: { branchId: any, input: any, onSuccess: () => void }) => {
+    const res = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query: `mutation UpdateBranch($branchId: ID!, $input: BranchInput!) { updateBranch(branchId: $branchId, input: $input) { success message branch { id code name } } }`,
+            variables: { branchId, input }
+        })
+    })
+    const data = await res.json()
+    if (data.data?.updateBranch?.success) {
+        onSuccess()
+    } else {
+        throw new Error(data.errors?.[0]?.message || 'Failed to update branch')
+    }
+}
+
+const DeleteBranch = async ({ branchId, onSuccess }: { branchId: any, onSuccess: () => void }) => {
+    const res = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query: `mutation DeleteBranch($branchId: ID!) { deleteBranch(branchId: $branchId) { success message } }`,
+            variables: { branchId }
+        })
+    })
+    const data = await res.json()
+    if (data.data?.deleteBranch?.success) {
+        onSuccess()
+    } else {
+        throw new Error(data.errors?.[0]?.message || 'Failed to delete branch')
+    }
 }
