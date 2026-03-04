@@ -231,7 +231,7 @@ export default function NotificationPreferencesPage() {
                   Email Notifications
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {['Loan Approval', 'Payment Reminder', 'Account Update', 'Statement Ready', 'Promotional Offers'].map((item) => (
+                  [{ 'Loan Approval', 'Payment Reminder', 'Account Update', 'Statement Ready', 'Promotional Offers'].map((item) => (
                     <Badge
                       key={item}
                       variant={preferences.emailNotifications.includes(item) ? 'default' : 'outline'}
@@ -249,7 +249,7 @@ export default function NotificationPreferencesPage() {
                   SMS Notifications
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {['Transaction Alert', 'Payment Due', 'Security Notification', 'Cash Drawer Reconciliation', 'Loan Repayment'].map((item) => (
+                  [{ 'Transaction Alert', 'Payment Due', 'Security Notification', 'Cash Drawer Reconciliation', 'Loan Repayment'].map((item) => (
                     <Badge
                       key={item}
                       variant={preferences.smsNotifications.includes(item) ? 'default' : 'outline'}
@@ -267,7 +267,7 @@ export default function NotificationPreferencesPage() {
                   Push Notifications
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {['All Notifications', 'Loan Updates', 'Payment Reminders', 'Account Changes', 'Security Alerts'].map((item) => (
+                  [{ 'All Notifications', 'Loan Updates', 'Payment Reminders', 'Account Changes', 'Security Alerts'].map((item) => (
                     <Badge
                       key={item}
                       variant={preferences.pushNotifications.includes(item) ? 'default' : 'outline'}
