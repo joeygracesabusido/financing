@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy the requirements file and install dependencies
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir bcrypt  # Explicitly install bcrypt first
+RUN pip install --no-cache-dir bcrypt bson  # Explicitly install bcrypt first
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code into the container
