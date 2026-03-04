@@ -57,6 +57,12 @@ class CustomerNode:
 
 
 @strawberry.type
+class CustomerConnection:
+    customers: List[CustomerNode]
+    total: int
+
+
+@strawberry.type
 class SavingsAccountNode:
     id: str
     accountNumber: str
@@ -275,12 +281,45 @@ class Query:
         return Health(status="ok", message="Lending MVP GraphQL API is running")
 
     @strawberry.field
-    async def customers(self, skip: int = 0, limit: int = 100) -> List[CustomerNode]:
+    async def customers(
+        self, 
+        skip: int = 0, 
+        limit: int = 100,
+        searchTerm: Optional[str] = None
+    ) -> CustomerConnection:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            result = await session.execute(select(Customer).offset(skip).limit(limit))
+            query = select(Customer).offset(skip).limit(limit)
+            if searchTerm:
+                query = query.where(Customer.display_name.ilike(f"%{searchTerm}%"))
+            
+            result = await session.execute(query)
             customers = result.scalars().all()
-            return [CustomerNode(id=str(c.id), displayName=c.display_name, customerType=c.customer_type, branchCode=c.branch_code, isActive=c.is_active) for c in customers]
+            
+            customer_count = await session.execute(select(func.count()).select_from(Customer))
+            total = customer_count.scalar()
+            
+            return CustomerConnection(
+                customers=[
+                    CustomerNode(
+                        id=str(c.id), 
+                        displayName=c.display_name, 
+                        customerType=c.customer_type, 
+                        branchCode=c.branch_code, 
+                        isActive=c.is_active,
+                        firstName=c.first_name,
+                        lastName=c.last_name,
+                        emailAddress=c.email_address,
+                        mobileNumber=c.mobile_number,
+                        customerCategory=c.customer_category,
+                        kycStatus=c.kyc_status,
+                        riskScore=c.risk_score,
+                        branch=c.branch,
+                        createdAt=c.created_at
+                    ) for c in customers
+                ],
+                total=total
+            )
 
     @strawberry.field
     async def customer(self, id: strawberry.ID) -> Optional[CustomerNode]:
