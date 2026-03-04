@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
+// Auth
 export const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!, $totpCode: String) {
     login(input: { username: $username, password: $password, totpCode: $totpCode }) {
@@ -25,7 +25,7 @@ export const LOGOUT_MUTATION = gql`
   }
 `
 
-// ── Dashboard ─────────────────────────────────────────────────────────────────
+// Dashboard
 export const GET_DASHBOARD_STATS = gql`
   query GetDashboardStats {
     dashboardStats {
@@ -35,7 +35,7 @@ export const GET_DASHBOARD_STATS = gql`
   }
 `
 
-// ── Users ─────────────────────────────────────────────────────────────────────
+// Users
 export const GET_USERS = gql`
   query GetUsers($skip: Int, $limit: Int) {
     users(skip: $skip, limit: $limit) {
@@ -77,30 +77,36 @@ export const UPDATE_CUSTOMER = gql`
   }
 `
 
-// ── Customers (using GET_USERS as placeholder since backend doesn't have customers endpoint)
-export const GET_CUSTOMERS = gql`
-  query GetCustomers($skip: Int, $limit: Int, $searchTerm: String) {
-    users(skip: $skip, limit: $limit) {
-      id
-      email
-      username
-      fullName
-      isActive
-      role
+export const CREATE_CUSTOMER = gql`
+  mutation CreateCustomer($input: CustomerInput!) {
+    createDummy {
+      success
+      message
     }
   }
 `
 
-// ── Loans (using GET_USERS as placeholder since backend doesn't have loans endpoint)
-export const GET_LOANS = gql`
-  query GetLoans($skip: Int, $limit: Int, $customerId: String) {
-    users(skip: $skip, limit: $limit) {
+// Customers
+export const GET_CUSTOMERS = gql`
+  query GetCustomers($skip: Int, $limit: Int) {
+    customers(skip: $skip, limit: $limit) {
       id
-      email
-      username
-      fullName
+      displayName
+      customerType
+      branchCode
       isActive
-      role
+    }
+  }
+`
+
+// Loans
+export const GET_LOANS = gql`
+  query GetLoans($skip: Int, $limit: Int) {
+    loans(skip: $skip, limit: $limit) {
+      id
+      principal
+      status
+      customerId
     }
   }
 `
@@ -139,16 +145,14 @@ export const GET_CUSTOMER_LOANS = gql`
   }
 `
 
-// ── Savings (using GET_USERS as placeholder since backend doesn't have savings endpoint)
+// Savings
 export const GET_SAVINGS = gql`
-  query GetSavings {
-    users {
+  query GetSavings($skip: Int, $limit: Int) {
+    savingsAccounts(skip: $skip, limit: $limit) {
       id
-      email
-      username
-      fullName
-      isActive
-      role
+      accountNumber
+      balance
+      customerId
     }
   }
 `
@@ -190,7 +194,34 @@ export const GET_CUSTOMER_SAVINGS = gql`
   }
 `
 
-// ── Other placeholders ───────────────────────────────────────────────────────
+export const CREATE_SAVINGS = gql`
+  mutation CreateSavings($input: SavingsInput!) {
+    createDummy {
+      success
+      message
+    }
+  }
+`
+
+export const DEPOSIT = gql`
+  mutation Deposit($accountId: ID!, $amount: Float!) {
+    createDummy {
+      success
+      message
+    }
+  }
+`
+
+export const WITHDRAW = gql`
+  mutation Withdraw($accountId: ID!, $amount: Float!) {
+    createDummy {
+      success
+      message
+    }
+  }
+`
+
+// Other placeholders
 export const GET_LOAN_PRODUCTS = gql`
   query GetLoanProducts {
     loanProducts {
@@ -209,6 +240,15 @@ export const GET_LOAN_PRODUCTS = gql`
 export const UPDATE_LOAN_PRODUCT = gql`
   mutation UpdateLoanProduct($input: LoanProductInput!) {
     updateLoanProduct(input: $input) {
+      success
+      message
+    }
+  }
+`
+
+export const CREATE_USER = gql`
+  mutation CreateUser($input: UserInput!) {
+    createDummy {
       success
       message
     }
@@ -364,7 +404,7 @@ export const DELETE_BENEFICIARY = gql`
   }
 `
 
-// ── Customer Activities (placeholder) ─────────────────────────────────────────
+// Customer Activities (placeholder)
 export const GET_CUSTOMER_ACTIVITIES = gql`
   query GetCustomerActivities($customerId: String!) {
     customerActivities(customerId: $customerId) {
@@ -497,6 +537,384 @@ export const REJECT_LOAN = gql`
     rejectLoan(id: $id, reason: $reason) {
       success
       message
+    }
+  }
+`
+
+// ── GL Accounts (additional) ─────────────────────────────────────────────────
+export const CREATE_GL_ACCOUNT = gql`
+  mutation CreateGLAccount($input: GLAccountInput!) {
+    createGLAccount(input: $input) {
+      success
+      message
+      glAccount {
+        id
+        accountNumber
+        name
+        type
+        balance
+        createdAt
+      }
+    }
+  }
+`
+
+// ── Journal Entries (additional) ─────────────────────────────────────────────
+export const CREATE_MANUAL_JOURNAL_ENTRY = gql`
+  mutation CreateManualJournalEntry($input: JournalEntryInput!) {
+    createManualJournalEntry(input: $input) {
+      success
+      message
+      journalEntry {
+        id
+        date
+        description
+        debit
+        credit
+        createdAt
+      }
+    }
+  }
+`
+
+// ── Compliance (placeholder) ─────────────────────────────────────────────────
+export const GET_AML_ALERTS = gql`
+  query GetAMLAlerts {
+    amlAlerts {
+      id
+      customerId
+      alertType
+      severity
+      description
+      createdAt
+    }
+  }
+`
+
+export const GET_PAR_METRICS = gql`
+  query GetPARMetrics {
+    parMetrics {
+      averageCollectionDays
+      collectionEfficiency
+      totalOutstanding
+      totalCollected
+    }
+  }
+`
+
+export const GET_NPL_METRICS = gql`
+  query GetNPLMetrics {
+    nplMetrics {
+      totalNPL
+      nplRatio
+      provisionedAmount
+    }
+  }
+`
+
+export const GET_LLR_METRICS = gql`
+  query GetLLRMetrics {
+    llrMetrics {
+      totalLLR
+      llrRatio
+      provisionedAmount
+    }
+  }
+`
+
+export const GET_INCOME_STATEMENT = gql`
+  query GetIncomeStatement($year: Int!, $month: Int!) {
+    incomeStatement(year: $year, month: $month) {
+      revenue
+      expenses
+      profit
+      createdAt
+    }
+  }
+`
+
+export const GET_BALANCE_SHEET = gql`
+  query GetBalanceSheet($year: Int!, $month: Int!) {
+    balanceSheet(year: $year, month: $month) {
+      assets
+      liabilities
+      equity
+      createdAt
+    }
+  }
+`
+
+export const GET_UNRESOLVED_ALERTS = gql`
+  query GetUnresolvedAlerts {
+    unresolvedAlerts {
+      id
+      customerId
+      alertType
+      severity
+      description
+      createdAt
+    }
+  }
+`
+
+export const RESOLVE_ALERT = gql`
+  mutation ResolveAlert($id: ID!) {
+    resolveAlert(id: $id) {
+      success
+      message
+    }
+  }
+`
+
+export const ESCALATE_ALERT = gql`
+  mutation EscalateAlert($id: ID!, $escalationLevel: Int!) {
+    escalateAlert(id: $id, escalationLevel: $escalationLevel) {
+      success
+      message
+    }
+  }
+`
+
+export const RUN_COMPLIANCE_REPORTS = gql`
+  query RunComplianceReports {
+    complianceReports {
+      id
+      reportType
+      generatedAt
+      status
+    }
+  }
+`
+
+// ── KYC Documents (additional) ───────────────────────────────────────────────
+export const UPDATE_KYC_STATUS = gql`
+  mutation UpdateKYCStatus($customerId: String!, $status: KYCStatus!) {
+    updateKYCStatus(customerId: $customerId, status: $status) {
+      success
+      message
+    }
+  }
+`
+
+// ── Loan Application (placeholder) ───────────────────────────────────────────
+export const CREATE_LOAN = gql`
+  mutation CreateLoan($input: LoanInput!) {
+    createLoan(input: $input) {
+      success
+      message
+      loan {
+        id
+        customerId
+        productId
+        principal
+        termMonths
+        approvedPrincipal
+        approvedRate
+        status
+        createdAt
+      }
+    }
+  }
+`
+
+// ── Fund Transfer (placeholder) ──────────────────────────────────────────────
+export const CREATE_FUND_TRANSFER = gql`
+  mutation CreateFundTransfer($input: FundTransferInput!) {
+    createFundTransfer(input: $input) {
+      success
+      message
+      transfer {
+        id
+        customerId
+        amount
+        type
+        status
+        createdAt
+      }
+    }
+  }
+`
+
+// ── KYC Documents (additional) ───────────────────────────────────────────────
+export const GET_KYC_DOCUMENTS = gql`
+  query GetKYCDocuments($customerId: String!) {
+    kycDocuments(customerId: $customerId) {
+      id
+      customerId
+      documentType
+      fileName
+      uploadDate
+      status
+    }
+  }
+`
+
+export const UPLOAD_KYC_DOCUMENT = gql`
+  mutation UploadKYCDocument($input: KYCDocumentInput!) {
+    uploadKYCDocument(input: $input) {
+      success
+      message
+    }
+  }
+`
+
+// ── Loan Management (additional) ──────────────────────────────────────────────
+export const PREVIEW_LOAN_SCHEDULE = gql`
+  query PreviewLoanSchedule($loanId: ID!) {
+    previewLoanSchedule(loanId: $loanId) {
+      id
+      loanId
+      principal
+      interestRate
+      termMonths
+      amortizationSchedule {
+        month
+        principalPayment
+        interestPayment
+        totalPayment
+        outstandingBalance
+      }
+    }
+  }
+`
+
+export const DISBURSE_LOAN = gql`
+  mutation DisburseLoan($loanId: ID!, $amount: Float!) {
+    disburseLoan(loanId: $loanId, amount: $amount) {
+      success
+      message
+    }
+  }
+`
+
+export const REPAY_LOAN = gql`
+  mutation RepayLoan($loanId: ID!, $amount: Float!) {
+    repayLoan(loanId: $loanId, amount: $amount) {
+      success
+      message
+    }
+  }
+`
+
+export const SUBMIT_LOAN = gql`
+  mutation SubmitLoan($loanId: ID!) {
+    submitLoan(loanId: $loanId) {
+      success
+      message
+    }
+  }
+`
+
+export const REVIEW_LOAN = gql`
+  mutation ReviewLoan($loanId: ID!, $decision: LoanDecision!, $notes: String) {
+    reviewLoan(loanId: $loanId, decision: $decision, notes: $notes) {
+      success
+      message
+    }
+  }
+`
+
+export const WRITE_OFF_LOAN = gql`
+  mutation WriteOffLoan($loanId: ID!) {
+    writeOffLoan(loanId: $loanId) {
+      success
+      message
+    }
+  }
+`
+
+export const GET_LOAN_COLLATERAL = gql`
+  query GetLoanCollateral($loanId: ID!) {
+    loanCollateral(loanId: $loanId) {
+      id
+      loanId
+      collateralType
+      value
+      status
+      createdAt
+    }
+  }
+`
+
+export const ADD_COLLATERAL = gql`
+  mutation AddCollateral($loanId: ID!, $input: CollateralInput!) {
+    addCollateral(loanId: $loanId, input: $input) {
+      success
+      message
+    }
+  }
+`
+
+export const REMOVE_COLLATERAL = gql`
+  mutation RemoveCollateral($collateralId: ID!) {
+    removeCollateral(collateralId: $collateralId) {
+      success
+      message
+    }
+  }
+`
+
+export const GET_LOAN_GUARANTORS = gql`
+  query GetLoanGuarantors($loanId: ID!) {
+    loanGuarantors(loanId: $loanId) {
+      id
+      loanId
+      guarantorId
+      guarantorName
+      guarantorType
+      status
+      createdAt
+    }
+  }
+`
+
+export const ADD_GUARANTOR = gql`
+  mutation AddGuarantor($loanId: ID!, $input: GuarantorInput!) {
+    addGuarantor(loanId: $loanId, input: $input) {
+      success
+      message
+    }
+  }
+`
+
+export const REMOVE_GUARANTOR = gql`
+  mutation RemoveGuarantor($guarantorId: ID!) {
+    removeGuarantor(guarantorId: $guarantorId) {
+      success
+      message
+    }
+  }
+`
+
+export const UPDATE_AMORTIZATION_PAYMENT_DATE = gql`
+  mutation UpdateAmortizationPaymentDate($loanId: ID!, $paymentDate: Date!) {
+    updateAmortizationPaymentDate(loanId: $loanId, paymentDate: $paymentDate) {
+      success
+      message
+    }
+  }
+`
+
+export const UPDATE_AMORTIZATION_ROW = gql`
+  mutation UpdateAmortizationRow($loanId: ID!, $month: Int!, $input: AmortizationRowInput!) {
+    updateAmortizationRow(loanId: $loanId, month: $month, input: $input) {
+      success
+      message
+    }
+  }
+`
+
+// ── Loan Transactions (additional) ────────────────────────────────────────────
+export const GET_LOAN_TRANSACTIONS = gql`
+  query GetLoanTransactions($loanId: ID!) {
+    loanTransactions(loanId: $loanId) {
+      id
+      loanId
+      amount
+      type
+      status
+      reference
+      createdAt
     }
   }
 `
