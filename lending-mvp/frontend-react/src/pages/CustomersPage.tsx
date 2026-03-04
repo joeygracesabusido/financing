@@ -33,7 +33,7 @@ export default function CustomersPage() {
     const init = async () => {
         try {
             const data = await getCustomers()
-            setCustomersData(data.customers || [])
+            setCustomersData(data.customers?.customers || [])
         } catch (e) {
             console.error('Failed to fetch customers:', e)
         } finally {

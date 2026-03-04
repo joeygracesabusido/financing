@@ -3,8 +3,8 @@ import { API_URL } from '@/lib/config'
 export const getCustomers = async (customerId?: string) => {
   const url = `${API_URL}/graphql`
   const query = customerId 
-    ? `query GetCustomer($id: ID!) { customer(id: $id) { id displayName firstName lastName emailAddress mobileNumber customerType customerCategory kycStatus riskScore branch } }`
-    : `query GetCustomers { customers { id displayName customerType branchCode isActive emailAddress mobileNumber customerCategory kycStatus } }`
+    ? `query GetCustomer($id: ID!) { customer(id: $id) { id displayName firstName lastName emailAddress mobileNumber customerType branch } }`
+    : `query GetCustomers { customers { customers { id displayName customerType branchCode isActive emailAddress mobileNumber customerCategory } } }`
   
   const response = await fetch(url, {
     method: 'POST',
