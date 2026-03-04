@@ -1,4 +1,5 @@
 import strawberry
+from pydantic import BaseModel
 from typing import List, Optional
 from decimal import Decimal
 from datetime import datetime, date
