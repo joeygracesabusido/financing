@@ -116,72 +116,53 @@ export const GET_CUSTOMER_ACTIVITIES = gql`
   }
 `
 
-export const GET_KYC_DOCUMENTS = gql`
-  query GetKYCDocuments($customerId: String!) {
-    kycDocuments(customerId: $customerId) {
-      documents {
+// ── Users ───────────────────────────────────────────────────────────────────
+export const GET_USERS = gql`
+  query GetUsers($skip: Int, $limit: Int, $searchTerm: String) {
+    users(skip: $skip, limit: $limit, searchTerm: $searchTerm) {
+      users {
         id
-        docType
-        fileName
-        fileSizeBytes
-        status
-        uploadedAt
-        reviewedAt
-        rejectionReason
-        expiresAt
-      }
-      total
-    }
-  }
-`
-
-export const UPLOAD_KYC_DOCUMENT = gql`
-  mutation UploadKycDocument($input: KycUploadInput!) {
-    uploadKycDocument(input: $input) {
-      success
-      message
-    }
-  }
-`
-
-export const UPDATE_KYC_STATUS = gql`
-  mutation UpdateKycStatus($documentId: Int!, $status: String!, $rejectionReason: String) {
-    updateKycStatus(documentId: $documentId, status: $status, rejectionReason: $rejectionReason) {
-      success
-      message
-    }
-  }
-`
-
-export const GET_BENEFICIARIES = gql`
-  query GetBeneficiaries($customerId: String!) {
-    beneficiaries(customerId: $customerId) {
-      beneficiaries {
-        id
-        fullName
-        relationship
-        contactNumber
+        username
         email
-        address
-        isPrimary
+        role
+        isActive
+        createdAt
       }
       total
     }
   }
 `
 
-export const ADD_BENEFICIARY = gql`
-  mutation AddBeneficiary($input: BeneficiaryInput!) {
-    addBeneficiary(input: $input) {
+export const CREATE_USER = gql`
+  mutation CreateUser($input: UserInput!) {
+    createUser(input: $input) {
+      id
+      username
+      email
+      role
       success
       message
     }
   }
 `
 
-export const DELETE_BENEFICIARY = gql`
-  mutation DeleteBeneficiary($beneficiaryId: Int!) {
-    deleteBeneficiary(beneficiaryId: $beneficiaryId) {
+export const UPDATE_USER = gql`
+  mutation UpdateUser($input: UserInput!) {
+    updateUser(input: $input) {
+      id
+      username
+      email
+      role
+      isActive
+      success
+      message
+    }
+  }
+`
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(id: $id) {
       success
       message
     }
@@ -244,29 +225,95 @@ export const CREATE_LOAN = gql`
   }
 `
 
+// ── Loan Workflow ───────────────────────────────────────────────────────────
 export const SUBMIT_LOAN = gql`
-  mutation SubmitLoan($loanId: ID!) {
-    submitLoan(loanId: $loanId) {
-      success
-      message
+  mutation SubmitLoan($loanId: ID!, $documents: [String!]) {
+    submitLoan(input: { loanId: $loanId, documents: $documents }) {
+      id
+      loanId
+      status
+      submittedAt
+      createdAt
+    }
+  }
+`
+
+export const REVIEW_LOAN = gql`
+  mutation ReviewLoan($loanId: ID!, $reviewNotes: String!) {
+    reviewLoan(input: { loanId: $loanId, reviewNotes: $reviewNotes }) {
+      id
+      loanId
+      status
+      reviewedAt
+      reviewedBy
+      createdAt
     }
   }
 `
 
 export const APPROVE_LOAN = gql`
-  mutation ApproveLoan($id: ID!, $approvedPrincipal: Float, $approvedRate: Float) {
-    approveLoan(id: $id, approvedPrincipal: $approvedPrincipal, approvedRate: $approvedRate) {
-      success
-      message
+  mutation ApproveLoan($loanId: ID!) {
+    approveLoan(input: { loanId: $loanId }) {
+      id
+      loanId
+      status
+      approvedAt
+      approvedBy
+      createdAt
     }
   }
 `
 
+export const REJECT_LOAN = gql`
+  mutation RejectLoan($loanId: ID!, $reason: String!) {
+    rejectLoan(input: { loanId: $loanId, reason: $reason }) {
+      id
+      loanId
+      status
+      rejectedAt
+      rejectedBy
+      rejectionReason
+      createdAt
+    }
+  }
+`
+
+export const WRITE_OFF_LOAN = gql`
+  mutation WriteOffLoan($loanId: ID!) {
+    writeOffLoan(input: { loanId: $loanId }) {
+      id
+      loanId
+      status
+      writtenOffAt
+      writtenOffBy
+      createdAt
+    }
+  }
+`
+
+export const REPAY_LOAN = gql`
+  mutation RepayLoan($loanId: ID!, $amount: Float!, $repaymentDate: Date!) {
+    repayLoan(input: { loanId: $loanId, amount: $amount, repaymentDate: $repaymentDate }) {
+      id
+      loanId
+      amount
+      repaymentDate
+      status
+      createdAt
+    }
+  }
+`
+
+// ── Loan Disbursements ──────────────────────────────────────────────────────
 export const DISBURSE_LOAN = gql`
-  mutation DisburseLoan($loanId: ID!, $amount: Float) {
-    disburseLoan(loanId: $loanId, amount: $amount) {
-      success
-      message
+  mutation DisburseLoan($loanId: ID!, $amount: Float!, $disbursementDate: Date!) {
+    disburseLoan(input: { loanId: $loanId, amount: $amount, disbursementDate: $disbursementDate }) {
+      id
+      loanId
+      amount
+      disbursementDate
+      status
+      createdAt
     }
   }
 `
@@ -320,9 +367,53 @@ export const GET_LOAN_PRODUCTS = gql`
   }
 `
 
+// ── Loan Products ───────────────────────────────────────────────────────────
+export const CREATE_LOAN_PRODUCT = gql`
+  mutation CreateLoanProduct($input: LoanProductInput!) {
+    createLoanProduct(input: $input) {
+      id
+      name
+      productCode
+      description
+      interestRate
+      termMonths
+      minLoanAmount
+      maxLoanAmount
+      success
+      message
+    }
+  }
+`
+
+export const UPDATE_LOAN_PRODUCT = gql`
+  mutation UpdateLoanProduct($input: LoanProductInput!) {
+    updateLoanProduct(input: $input) {
+      id
+      name
+      productCode
+      description
+      interestRate
+      termMonths
+      minLoanAmount
+      maxLoanAmount
+      success
+      message
+    }
+  }
+`
+
+export const DELETE_LOAN_PRODUCT = gql`
+  mutation DeleteLoanProduct($id: ID!) {
+    deleteLoanProduct(id: $id) {
+      success
+      message
+    }
+  }
+`
+
 // ── Savings ──────────────────────────────────────────────────────────────────
 export const GET_SAVINGS = gql`
-  query GetSavings($skip: Int, $limit: Int, $customerId: String, $searchTerm: String) {
+  query GetSavingsAccounts($skip: Int, $limit: Int, $customerId: String, $searchTerm: String) {
     savingsAccounts(skip: $skip, limit: $limit, customerId: $customerId, searchTerm: $searchTerm) {
       accounts {
         id
@@ -338,8 +429,8 @@ export const GET_SAVINGS = gql`
   }
 `
 
-export const GET_SAVING = gql`
-  query GetSaving($id: ID!) {
+export const GET_SAVINGS_ACCOUNT = gql`
+  query GetSavingsAccount($id: ID!) {
     savingsAccount(id: $id) {
       id
       accountNumber
@@ -366,7 +457,7 @@ export const CREATE_SAVINGS = gql`
 `
 
 export const GET_SAVINGS_TRANSACTIONS = gql`
-  query GetSavingsTransactions($accountId: ID!) {
+  query GetSavingsAccountsTransactions($accountId: ID!) {
     savingsTransactions(accountId: $accountId) {
       id
       accountId
@@ -432,8 +523,8 @@ export const GET_JOURNAL_ENTRIES = gql`
   }
 `
 
-export const GET_JOURNAL_ENTRY_BY_REF = gql`
-  query GetJournalEntryByRef($reference: String!) {
+export const GET_JOURNAL_ENTRY_BY_REFERENCE = gql`
+  query GetJournalEntryByReference($reference: String!) {
     journalEntryByReference(reference: $reference) {
       id
       date
@@ -639,98 +730,6 @@ export const PREVIEW_LOAN_SCHEDULE = gql`
   }
 `
 
-// ── Loan Disbursements ──────────────────────────────────────────────────────
-export const DISBURSE_LOAN = gql`
-  mutation DisburseLoan($loanId: ID!, $amount: Float!, $disbursementDate: Date!) {
-    disburseLoan(input: { loanId: $loanId, amount: $amount, disbursementDate: $disbursementDate }) {
-      id
-      loanId
-      amount
-      disbursementDate
-      status
-      createdAt
-    }
-  }
-`
-
-export const REPAY_LOAN = gql`
-  mutation RepayLoan($loanId: ID!, $amount: Float!, $repaymentDate: Date!) {
-    repayLoan(input: { loanId: $loanId, amount: $amount, repaymentDate: $repaymentDate }) {
-      id
-      loanId
-      amount
-      repaymentDate
-      status
-      createdAt
-    }
-  }
-`
-
-export const SUBMIT_LOAN = gql`
-  mutation SubmitLoan($loanId: ID!, $documents: [String!]) {
-    submitLoan(input: { loanId: $loanId, documents: $documents }) {
-      id
-      loanId
-      status
-      submittedAt
-      createdAt
-    }
-  }
-`
-
-export const REVIEW_LOAN = gql`
-  mutation ReviewLoan($loanId: ID!, $reviewNotes: String!) {
-    reviewLoan(input: { loanId: $loanId, reviewNotes: $reviewNotes }) {
-      id
-      loanId
-      status
-      reviewedAt
-      reviewedBy
-      createdAt
-    }
-  }
-`
-
-export const APPROVE_LOAN = gql`
-  mutation ApproveLoan($loanId: ID!) {
-    approveLoan(input: { loanId: $loanId }) {
-      id
-      loanId
-      status
-      approvedAt
-      approvedBy
-      createdAt
-    }
-  }
-`
-
-export const REJECT_LOAN = gql`
-  mutation RejectLoan($loanId: ID!, $reason: String!) {
-    rejectLoan(input: { loanId: $loanId, reason: $reason }) {
-      id
-      loanId
-      status
-      rejectedAt
-      rejectedBy
-      rejectionReason
-      createdAt
-    }
-  }
-`
-
-export const WRITE_OFF_LOAN = gql`
-  mutation WriteOffLoan($loanId: ID!) {
-    writeOffLoan(input: { loanId: $loanId }) {
-      id
-      loanId
-      status
-      writtenOffAt
-      writtenOffBy
-      createdAt
-    }
-  }
-`
-
 // ── Amortization Updates ────────────────────────────────────────────────────
 export const UPDATE_AMORTIZATION_PAYMENT_DATE = gql`
   mutation UpdateAmortizationPaymentDate($paymentId: ID!, $newDate: Date!) {
@@ -758,6 +757,195 @@ export const UPDATE_AMORTIZATION_ROW = gql`
       dueDate
       status
       updatedAt
+    }
+  }
+`
+
+// ── KYC and Beneficiaries ───────────────────────────────────────────────────
+export const GET_KYC_DOCUMENTS = gql`
+  query GetKYCDocuments($customerId: String!) {
+    kycDocuments(customerId: $customerId) {
+      documents {
+        id
+        docType
+        fileName
+        fileSizeBytes
+        status
+        uploadedAt
+        reviewedAt
+        rejectionReason
+        expiresAt
+      }
+      total
+    }
+  }
+`
+
+export const UPLOAD_KYC_DOCUMENT = gql`
+  mutation UploadKycDocument($input: KycUploadInput!) {
+    uploadKycDocument(input: $input) {
+      success
+      message
+    }
+  }
+`
+
+export const UPDATE_KYC_STATUS = gql`
+  mutation UpdateKycStatus($documentId: Int!, $status: String!, $rejectionReason: String) {
+    updateKycStatus(documentId: $documentId, status: $status, rejectionReason: $rejectionReason) {
+      success
+      message
+    }
+  }
+`
+
+export const GET_BENEFICIARIES = gql`
+  query GetBeneficiaries($customerId: String!) {
+    beneficiaries(customerId: $customerId) {
+      beneficiaries {
+        id
+        fullName
+        relationship
+        contactNumber
+        email
+        address
+        isPrimary
+      }
+      total
+    }
+  }
+`
+
+export const ADD_BENEFICIARY = gql`
+  mutation AddBeneficiary($input: BeneficiaryInput!) {
+    addBeneficiary(input: $input) {
+      success
+      message
+    }
+  }
+`
+
+export const DELETE_BENEFICIARY = gql`
+  mutation DeleteBeneficiary($beneficiaryId: Int!) {
+    deleteBeneficiary(beneficiaryId: $beneficiaryId) {
+      success
+      message
+    }
+  }
+`
+
+// ── GL Account Management ───────────────────────────────────────────────────
+export const CREATE_GL_ACCOUNT = gql`
+  mutation CreateGLAccount($input: GLAccountInput!) {
+    createGLAccount(input: $input) {
+      id
+      accountNumber
+      name
+      type
+      balance
+      createdAt
+      success
+      message
+    }
+  }
+`
+
+export const UPDATE_GL_ACCOUNT = gql`
+  mutation UpdateGLAccount($input: GLAccountInput!) {
+    updateGLAccount(input: $input) {
+      id
+      accountNumber
+      name
+      type
+      balance
+      success
+      message
+    }
+  }
+`
+
+export const DELETE_GL_ACCOUNT = gql`
+  mutation DeleteGLAccount($id: ID!) {
+    deleteGLAccount(id: $id) {
+      success
+      message
+    }
+  }
+`
+
+// ── Journal Entry Management ─────────────────────────────────────────────────
+export const CREATE_MANUAL_JOURNAL_ENTRY = gql`
+  mutation CreateManualJournalEntry($input: ManualJournalEntryInput!) {
+    createManualJournalEntry(input: $input) {
+      id
+      date
+      description
+      reference
+      debit
+      credit
+      createdAt
+      success
+      message
+    }
+  }
+`
+
+// ── Customer Dashboard ──────────────────────────────────────────────────────
+export const GET_CUSTOMER_LOANS = gql`
+  query GetCustomerLoans {
+    loans {
+      loans {
+        id
+        principal
+        status
+        customerId
+        productId
+        borrowerName
+        productName
+        termMonths
+        approvedPrincipal
+        approvedRate
+        createdAt
+        updatedAt
+        disbursedAt
+        outstandingBalance
+      }
+      total
+    }
+  }
+`
+
+export const GET_CUSTOMER_SAVINGS = gql`
+  query GetCustomerSavings {
+    savingsAccounts {
+      accounts {
+        id
+        accountNumber
+        balance
+        customerId
+        type
+        status
+        openedAt
+      }
+      total
+    }
+  }
+`
+
+// ── Fund Transfers ──────────────────────────────────────────────────────────
+export const CREATE_FUND_TRANSFER = gql`
+  mutation CreateFundTransfer($input: FundTransferInput!) {
+    createFundTransfer(input: $input) {
+      id
+      fromAccount
+      toAccount
+      amount
+      description
+      status
+      reference
+      createdAt
+      success
+      message
     }
   }
 `
