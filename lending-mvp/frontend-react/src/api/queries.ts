@@ -55,7 +55,7 @@ export const GET_CUSTOMERS = gql`
         kycStatus
         createdAt
       }
-      total
+    total
     }
   }
 `
@@ -111,7 +111,7 @@ export const GET_CUSTOMER_ACTIVITIES = gql`
         actorUsername
         createdAt
       }
-      total
+    total
     }
   }
 `
@@ -128,7 +128,7 @@ export const GET_USERS = gql`
         isActive
         createdAt
       }
-      total
+    total
     }
   }
 `
@@ -189,7 +189,7 @@ export const GET_LOANS = gql`
         disbursedAt
         outstandingBalance
       }
-      total
+    total
     }
   }
 `
@@ -424,7 +424,7 @@ export const GET_SAVINGS = gql`
         status
         openedAt
       }
-      total
+    total
     }
   }
 `
@@ -776,7 +776,7 @@ export const GET_KYC_DOCUMENTS = gql`
         rejectionReason
         expiresAt
       }
-      total
+    total
     }
   }
 `
@@ -811,7 +811,7 @@ export const GET_BENEFICIARIES = gql`
         address
         isPrimary
       }
-      total
+    total
     }
   }
 `
@@ -910,7 +910,7 @@ export const GET_CUSTOMER_LOANS = gql`
         disbursedAt
         outstandingBalance
       }
-      total
+    total
     }
   }
 `
@@ -927,7 +927,7 @@ export const GET_CUSTOMER_SAVINGS = gql`
         status
         openedAt
       }
-      total
+    total
     }
   }
 `
