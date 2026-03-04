@@ -115,21 +115,23 @@ export const GET_LOAN_PRODUCTS = `
 export const GET_LOANS = `
   query GetLoans {
     loans {
-      id
-      customer {
+      loans {
         id
-        displayName
+        customer {
+          id
+          displayName
+        }
+        product {
+          id
+          name
+          interestRate
+        }
+        principal
+        outstandingBalance
+        status
+        startDate
+        endDate
       }
-      product {
-        id
-        name
-        interestRate
-      }
-      principal
-      outstandingBalance
-      status
-      startDate
-      endDate
     }
   }
 `
