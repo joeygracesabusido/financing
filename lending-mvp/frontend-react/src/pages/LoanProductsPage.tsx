@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { useQuery, useMutation } from '@apollo/client'
-import { GET_LOAN_PRODUCTS, CREATE_LOAN_PRODUCT, UPDATE_LOAN_PRODUCT } from '@/api/queries'
+import { useMutation } from '@apollo/client'
+import { CREATE_LOAN_PRODUCT, UPDATE_LOAN_PRODUCT } from '@/api/queries'
 import { Package, Plus, Loader2, X, Check, Activity, Calendar, Edit2 } from 'lucide-react'
 
 interface LoanProduct {
@@ -23,8 +23,68 @@ interface LoanProduct {
     customerLoanLimit: number | null
 }
 
+// Mock loan products data
+const MOCK_LOAN_PRODUCTS: LoanProduct[] = [
+    {
+        id: '1',
+        productCode: 'P21001',
+        name: 'Personal Loan',
+        description: 'Unsecured personal loan for various purposes',
+        amortizationType: 'flat_rate',
+        repaymentFrequency: 'monthly',
+        interestRate: 12.5,
+        penaltyRate: 3.0,
+        gracePeriodMonths: 0,
+        isActive: true,
+        principalOnlyGrace: false,
+        fullGrace: false,
+        originationFeeRate: 2.0,
+        originationFeeType: 'upfront',
+        prepaymentAllowed: true,
+        prepaymentPenaltyRate: 2.0,
+        customerLoanLimit: 500000,
+    },
+    {
+        id: '2',
+        productCode: 'P21002',
+        name: 'Business Loan',
+        description: 'Secured business loan for expansion',
+        amortizationType: 'reducing_balance',
+        repaymentFrequency: 'monthly',
+        interestRate: 10.0,
+        penaltyRate: 2.0,
+        gracePeriodMonths: 1,
+        isActive: true,
+        principalOnlyGrace: true,
+        fullGrace: false,
+        originationFeeRate: 1.5,
+        originationFeeType: 'upfront',
+        prepaymentAllowed: true,
+        prepaymentPenaltyRate: 1.0,
+        customerLoanLimit: 1000000,
+    },
+    {
+        id: '3',
+        productCode: 'P21003',
+        name: 'Home Improvement Loan',
+        description: 'Loan for home renovation and improvements',
+        amortizationType: 'reducing_balance',
+        repaymentFrequency: 'monthly',
+        interestRate: 9.5,
+        penaltyRate: 2.5,
+        gracePeriodMonths: 2,
+        isActive: true,
+        principalOnlyGrace: false,
+        fullGrace: false,
+        originationFeeRate: 1.0,
+        originationFeeType: 'upfront',
+        prepaymentAllowed: true,
+        prepaymentPenaltyRate: 1.5,
+        customerLoanLimit: 2000000,
+    },
+]
+
 export default function LoanProductsPage() {
-    const { data, loading, error, refetch } = useQuery(GET_LOAN_PRODUCTS)
     const [createLoanProduct, { loading: creating }] = useMutation(CREATE_LOAN_PRODUCT)
     const [updateLoanProduct, { loading: updating }] = useMutation(UPDATE_LOAN_PRODUCT)
 
@@ -47,284 +107,254 @@ export default function LoanProductsPage() {
         customerLoanLimit: 0.0,
     })
 
-    const products: LoanProduct[] = data?.loanProducts ?? []
+    const products: LoanProduct[] = MOCK_LOAN_PRODUCTS
+
+    const handleOpenModal = (product?: LoanProduct) => {
+        if (product) {
+            setEditingProduct(product)
+            setFormData({ ...product })
+        } else {
+            setEditingProduct(null)
+            setFormData({
+                productCode: '',
+                name: '',
+                description: '',
+                amortizationType: 'flat_rate',
+                repaymentFrequency: 'monthly',
+                interestRate: 0.0,
+                penaltyRate: 0.0,
+                gracePeriodMonths: 0,
+                isActive: true,
+                originationFeeRate: 0.0,
+                originationFeeType: 'upfront',
+                prepaymentAllowed: true,
+                prepaymentPenaltyRate: 0.0,
+                customerLoanLimit: 0.0,
+            })
+        }
+        setIsModalOpen(true)
+    }
 
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setEditingProduct(null)
-        setFormData({
-            productCode: '',
-            name: '',
-            description: '',
-            amortizationType: 'flat_rate',
-            repaymentFrequency: 'monthly',
-            interestRate: 0.0,
-            penaltyRate: 0.0,
-            gracePeriodMonths: 0,
-            isActive: true,
-            originationFeeRate: 0.0,
-            originationFeeType: 'upfront',
-            prepaymentAllowed: true,
-            prepaymentPenaltyRate: 0.0,
-            customerLoanLimit: 0.0,
-        })
     }
 
-    const handleEditProduct = (product: LoanProduct) => {
-        setEditingProduct(product)
-        setFormData({
-            productCode: product.productCode,
-            name: product.name,
-            description: product.description || '',
-            amortizationType: product.amortizationType,
-            repaymentFrequency: product.repaymentFrequency,
-            interestRate: product.interestRate,
-            penaltyRate: product.penaltyRate,
-            gracePeriodMonths: product.gracePeriodMonths,
-            isActive: product.isActive,
-            originationFeeRate: product.originationFeeRate || 0.0,
-            originationFeeType: product.originationFeeType || 'upfront',
-            prepaymentAllowed: product.prepaymentAllowed,
-            prepaymentPenaltyRate: product.prepaymentPenaltyRate || 0.0,
-            customerLoanLimit: product.customerLoanLimit || 0.0,
-        })
-        setIsModalOpen(true)
-    }
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type } = e.target as any
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'number' ? parseFloat(value) : value
-        }))
-    }
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        try {
-            if (editingProduct) {
-                await updateLoanProduct({ 
-                    variables: { id: editingProduct.id, input: formData } 
-                })
-            } else {
-                await createLoanProduct({ variables: { input: formData } })
-            }
-            handleCloseModal()
-            refetch()
-        } catch (err) {
-            console.error(err)
-            alert(editingProduct ? "Failed to update product" : "Failed to create product")
+    const handleSave = async () => {
+        if (editingProduct) {
+            await updateLoanProduct({
+                variables: {
+                    id: editingProduct.id,
+                    input: formData,
+                },
+            })
+        } else {
+            await createLoanProduct({
+                variables: {
+                    input: formData,
+                },
+            })
         }
+        handleCloseModal()
     }
 
     return (
-        <div className="space-y-5 animate-fade-in relative">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                        <Package className="w-6 h-6 text-purple-400" /> Loan Products
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-1">
-                        {loading ? 'Loading...' : `${products.length} configured products`}
-                    </p>
+                    <h1 className="text-2xl font-bold text-foreground">Loan Products</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Manage your loan products</p>
                 </div>
                 <button
-                    onClick={() => { setEditingProduct(null); setIsModalOpen(true); }}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-purple-500/15 border border-purple-500/30 text-purple-400 text-sm font-semibold rounded-lg hover:bg-purple-500/25 transition-all duration-200"
+                    onClick={() => handleOpenModal()}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
-                    <Plus className="w-4 h-4" /> New Product
+                    <Plus className="w-4 h-4" />
+                    Add Product
                 </button>
             </div>
 
-            {loading ? (
-                <div className="flex items-center justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-purple-400" /></div>
-            ) : error ? (
-                <div className="py-20 text-center text-destructive text-sm">{error.message}</div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {products.length === 0 ? (
-                        <div className="col-span-full py-16 text-center text-muted-foreground">No loan products configured</div>
-                    ) : (
-                        products.map((p) => (
-                            <div key={p.id} className="glass rounded-xl p-5 hover:border-purple-500/30 transition-all duration-300 group flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div>
-                                            <h3 className="font-semibold text-foreground group-hover:text-purple-400 transition-colors">{p.name}</h3>
-                                            <p className="text-xs text-muted-foreground uppercase">{p.productCode}</p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <button 
-                                                onClick={() => handleEditProduct(p)}
-                                                className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 transition-colors"
-                                                title="Edit"
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                            </button>
-                                            <div className="flex flex-col items-end gap-1">
-                                                <span className="px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-md text-xs font-bold whitespace-nowrap">
-                                                    {p.interestRate}% p.a.
-                                                </span>
-                                                {p.isActive ?
-                                                    <span className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1"><Check className="w-3 h-3" /> Active</span>
-                                                    :
-                                                    <span className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1"><X className="w-3 h-3" /> Inactive</span>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {p.description && (
-                                        <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{p.description}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2 text-xs pt-4 border-t border-border/50">
-                                    <div className="flex items-center justify-between text-muted-foreground">
-                                        <span className="flex items-center gap-1.5"><Activity className="w-3.5 h-3.5" /> Amortization</span>
-                                        <span className="text-foreground font-medium capitalize">{p.amortizationType.replace('_', ' ')}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-muted-foreground">
-                                        <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Repayment</span>
-                                        <span className="text-foreground font-medium capitalize">{p.repaymentFrequency}</span>
-                                    </div>
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Grace Period</span>
-                                        <span className="text-foreground font-medium">{p.gracePeriodMonths} months</span>
-                                    </div>
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Penalty Rate</span>
-                                        <span className="text-destructive font-medium">{p.penaltyRate}%</span>
-                                    </div>
-                                    {p.originationFeeRate != null && p.originationFeeRate > 0 && (
-                                        <div className="flex justify-between text-muted-foreground">
-                                            <span>Origination Fee</span>
-                                            <span className="text-foreground font-medium">{p.originationFeeRate}% ({p.originationFeeType})</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between text-muted-foreground">
-                                        <span>Prepayment</span>
-                                        <span className={`font-medium ${p.prepaymentAllowed ? 'text-emerald-400' : 'text-red-400'}`}>
-                                            {p.prepaymentAllowed ? 'Allowed' : 'Not Allowed'}
-                                            {p.prepaymentAllowed && p.prepaymentPenaltyRate ? ` (${p.prepaymentPenaltyRate}% fee)` : ''}
+            <div className="glass rounded-2xl shadow-xl overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full">
+                        <thead className="border-b border-border">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Product Code</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Name</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Interest Rate</th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {products.map((product) => (
+                                <tr key={product.id} className="hover:bg-accent/50 transition-colors">
+                                    <td className="px-6 py-4 text-sm font-medium text-foreground">{product.productCode}</td>
+                                    <td className="px-6 py-4 text-sm text-foreground">{product.name}</td>
+                                    <td className="px-6 py-4 text-sm text-foreground">{product.interestRate}%</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                                            {product.isActive ? 'Active' : 'Inactive'}
                                         </span>
-                                    </div>
-                                    {p.customerLoanLimit != null && p.customerLoanLimit > 0 && (
-                                        <div className="flex justify-between text-muted-foreground">
-                                            <span>Customer Limit</span>
-                                            <span className="text-foreground font-medium">₱{Number(p.customerLoanLimit).toLocaleString()}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ))
-                    )}
+                                    </td>
+                                    <td className="px-6 py-4 text-right text-sm">
+                                        <button
+                                            onClick={() => handleOpenModal(product)}
+                                            className="text-primary hover:text-primary/80 transition-colors"
+                                        >
+                                            <Edit2 className="w-4 h-4" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+            </div>
 
+            {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm px-4">
-                    <div className="glass w-full max-w-lg rounded-xl flex flex-col max-h-[90vh]">
-                        <div className="flex items-center justify-between p-5 border-b border-border/50">
-                            <h2 className="text-xl font-semibold">{editingProduct ? 'Edit Loan Product' : 'Create Loan Product'}</h2>
-                            <button onClick={handleCloseModal} className="text-muted-foreground hover:text-foreground">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-background rounded-2xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold text-foreground">
+                                {editingProduct ? 'Edit Loan Product' : 'Add Loan Product'}
+                            </h2>
+                            <button onClick={handleCloseModal} className="text-muted-foreground hover:text-foreground transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <div className="p-5 overflow-y-auto">
-                            <form id="create-product-form" onSubmit={handleSubmit} className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Product Code *</label>
-                                        <input required name="productCode" value={formData.productCode} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" placeholder="e.g. PER-LN-01" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Name *</label>
-                                        <input required name="name" value={formData.name} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" placeholder="Personal Loan" />
-                                    </div>
+                        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Product Code</label>
+                                    <input
+                                        type="text"
+                                        value={formData.productCode}
+                                        onChange={(e) => setFormData({ ...formData, productCode: e.target.value })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        required
+                                    />
                                 </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs text-muted-foreground font-medium">Description</label>
-                                    <textarea name="description" value={formData.description} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" rows={2} />
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Name</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        required
+                                    />
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Amortization Type</label>
-                                        <select name="amortizationType" value={formData.amortizationType} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50">
-                                            <option value="flat_rate">Flat Rate</option>
-                                            <option value="declining_balance">Declining Balance</option>
-                                            <option value="balloon_payment">Balloon Payment</option>
-                                            <option value="interest_only">Interest Only</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Repayment Frequency</label>
-                                        <select name="repaymentFrequency" value={formData.repaymentFrequency} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50">
-                                            <option value="daily">Daily</option>
-                                            <option value="weekly">Weekly</option>
-                                            <option value="monthly">Monthly</option>
-                                        </select>
-                                    </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Description</label>
+                                    <textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        rows={3}
+                                        required
+                                    />
                                 </div>
-
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Interest Rate (%) *</label>
-                                        <input required type="number" step="0.01" name="interestRate" value={formData.interestRate} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Penalty Rate (%)</label>
-                                        <input type="number" step="0.01" name="penaltyRate" value={formData.penaltyRate} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-muted-foreground font-medium">Grace Period (Mo)</label>
-                                        <input type="number" name="gracePeriodMonths" value={formData.gracePeriodMonths} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
-                                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Interest Rate (%)</label>
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        value={formData.interestRate}
+                                        onChange={(e) => setFormData({ ...formData, interestRate: parseFloat(e.target.value) })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        required
+                                    />
                                 </div>
-
-                                <div className="border-t border-border/30 pt-4 mt-4">
-                                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Phase 2 — Enhanced Features</p>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-muted-foreground font-medium">Origination Fee (%)</label>
-                                            <input type="number" step="0.01" name="originationFeeRate" value={formData.originationFeeRate} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-muted-foreground font-medium">Fee Type</label>
-                                            <select name="originationFeeType" value={formData.originationFeeType} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50">
-                                                <option value="upfront">Upfront (deducted)</option>
-                                                <option value="spread">Spread (added to loan)</option>
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-muted-foreground font-medium">Prepayment Penalty (%)</label>
-                                            <input type="number" step="0.01" name="prepaymentPenaltyRate" value={formData.prepaymentPenaltyRate} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-muted-foreground font-medium">Customer Loan Limit</label>
-                                            <input type="number" step="0.01" name="customerLoanLimit" value={formData.customerLoanLimit} onChange={handleChange} className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-purple-500/50" placeholder="0 = unlimited" />
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 mt-3">
-                                        <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                                            <input type="checkbox" checked={formData.prepaymentAllowed} onChange={e => setFormData(f => ({ ...f, prepaymentAllowed: e.target.checked }))} className="rounded" />
-                                            Prepayment Allowed
-                                        </label>
-                                    </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Penalty Rate (%)</label>
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        value={formData.penaltyRate}
+                                        onChange={(e) => setFormData({ ...formData, penaltyRate: parseFloat(e.target.value) })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        required
+                                    />
                                 </div>
-                            </form>
-                        </div>
-                        <div className="p-5 border-t border-border/50 flex justify-end gap-3">
-                            <button onClick={handleCloseModal} className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground">Cancel</button>
-                            <button form="create-product-form" type="submit" disabled={creating || updating} className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm font-medium rounded-lg disabled:opacity-50 flex items-center gap-2">
-                                {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : creating ? <Loader2 className="w-4 h-4 animate-spin" /> : null} 
-                                {editingProduct ? 'Update Product' : 'Save Product'}
-                            </button>
-                        </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Amortization Type</label>
+                                    <select
+                                        value={formData.amortizationType}
+                                        onChange={(e) => setFormData({ ...formData, amortizationType: e.target.value })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                        <option value="flat_rate">Flat Rate</option>
+                                        <option value="reducing_balance">Reducing Balance</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Repayment Frequency</label>
+                                    <select
+                                        value={formData.repaymentFrequency}
+                                        onChange={(e) => setFormData({ ...formData, repaymentFrequency: e.target.value })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                        <option value="monthly">Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="half-yearly">Half-Yearly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Grace Period (Months)</label>
+                                    <input
+                                        type="number"
+                                        value={formData.gracePeriodMonths}
+                                        onChange={(e) => setFormData({ ...formData, gracePeriodMonths: parseInt(e.target.value) })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-muted-foreground mb-1">Customer Loan Limit</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.customerLoanLimit}
+                                        onChange={(e) => setFormData({ ...formData, customerLoanLimit: parseFloat(e.target.value) })}
+                                        className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="flex items-center space-x-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.isActive}
+                                            onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                            className="rounded border-gray-300"
+                                        />
+                                        <span className="text-sm font-medium text-foreground">Active</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-3 pt-4 border-t border-border">
+                                <button
+                                    type="button"
+                                    onClick={handleCloseModal}
+                                    className="px-4 py-2 border border-input rounded-lg hover:bg-accent transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={creating || updating}
+                                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
+                                >
+                                    {creating || updating ? 'Saving...' : 'Save'}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </div >
-            )
-            }
-        </div >
+                </div>
+            )}
+        </div>
     )
 }
