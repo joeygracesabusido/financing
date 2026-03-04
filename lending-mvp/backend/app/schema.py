@@ -603,3 +603,15 @@ class Mutation:
         )
     
     # ... existing mutations ...
+# Cash Drawer Update Schema
+class CashDrawerUpdate(BaseModel):
+    initial_amount: Optional[Decimal] = None
+    notes: Optional[str] = None
+
+# Transaction Limit Update Schema  
+class TransactionLimitUpdate(BaseModel):
+    daily_limit: Optional[Decimal] = None
+    weekly_limit: Optional[Decimal] = None
+    monthly_limit: Optional[Decimal] = None
+    single_transaction_limit: Optional[Decimal] = None
+    active: Optional[bool] = None
