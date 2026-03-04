@@ -533,8 +533,8 @@ class Query:
                 acc = row[0]
                 total_debit = row[1] or Decimal('0.00')
                 total_credit = row[2] or Decimal('0.00')
-                balance = (total_debit - total_credit) if acc.account_type.lower() in ['asset', 'expense'] else (total_credit - total_debit)
-                nodes.append(GLAccountNode(id=str(acc.id), accountNumber=acc.code, name=acc.name, accountType=acc.account_type, balance=balance, createdAt=acc.created_at))
+                balance = (total_debit - total_credit) if acc.type.lower() in ['asset', 'expense'] else (total_credit - total_debit)
+                nodes.append(GLAccountNode(id=str(acc.id), accountNumber=acc.code, name=acc.name, accountType=acc.type, balance=balance, createdAt=acc.created_at))
             return nodes
 
     @strawberry.field
