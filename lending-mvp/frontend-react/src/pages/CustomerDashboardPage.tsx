@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { getCustomerLoans, getCustomerSavings } from '@/api/customers'
 
-export default async function CustomerDashboardPage() {
+export default function CustomerDashboardPage() {
     const { user } = useAuth()
     const customerId = user?.id
 
@@ -15,15 +15,13 @@ export default async function CustomerDashboardPage() {
     const init = async () => {
         if (!customerId) return
         try {
-            const [loansRes, savingsRes] = await Promise.all([
-                getCustomerLoans(),
-                getCustomerSavings()
-            ])
-            setLoansData(loansData.loans || [])
-            setSavingsData(savingsData.savingsAccounts.accounts || [])
+            const loansRes = await getCustomerLoans()
+            const savingsRes = await getCustomerSavings()
+            setLoansData(loansRes.loans || [])
+            setSavingsData(savingsRes.savingsAccounts.accounts || [])
             
-            const loanTotal = (loansData.loans || []).reduce((sum, loan) => sum + (loan.principal || 0), 0)
-            const savingsTotal = (savingsData.savingsAccounts.accounts || []).reduce((sum, account) => sum + (account.balance || 0), 0)
+            const loanTotal = (loansRes.loans || []).reduce((sum: number, loan: any) => sum + (loan.principal || 0), 0)
+            const savingsTotal = (savingsRes.savingsAccounts.accounts || []).reduce((sum: number, account: any) => sum + (account.balance || 0), 0)
             setTotalLoans(loanTotal)
             setTotalSavings(savingsTotal)
         } catch (e) {

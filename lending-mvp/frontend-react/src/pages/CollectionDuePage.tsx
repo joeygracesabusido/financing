@@ -11,7 +11,7 @@ interface Collection {
     createdAt: string
 }
 
-export default async function CollectionDuePage() {
+export default function CollectionDuePage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
 

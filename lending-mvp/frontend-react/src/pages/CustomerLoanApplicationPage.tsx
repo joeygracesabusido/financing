@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@apollo/client'
@@ -33,13 +34,13 @@ export default function CustomerLoanApplicationPage() {
     const customerDropdownRef = useRef<HTMLDivElement>(null)
     const navigate = useNavigate()
 
-    const { data: customersData, loading: customersLoading } = useQuery(GET_CUSTOMERS, {
+    const { data: customersData, loading: customersLoading } = useQuery(GET_CUSTOMERS as any, {
         variables: { searchTerm: customerSearch, limit: 10 }
     })
 
-    const { data: productsData, loading: productsLoading } = useQuery(GET_LOAN_PRODUCTS)
+    const { data: productsData, loading: productsLoading } = useQuery(GET_LOAN_PRODUCTS as any)
 
-    const [createLoan, { loading: submitting, error }] = useMutation(CREATE_LOAN, {
+    const [createLoan, { loading: submitting, error }] = useMutation(CREATE_LOAN as any, {
         refetchQueries: [{ query: GET_LOANS }]
     })
 

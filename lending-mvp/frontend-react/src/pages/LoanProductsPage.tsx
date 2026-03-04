@@ -13,7 +13,7 @@ interface LoanProduct {
     maxLoanAmount?: number
 }
 
-export default async function LoanProductsPage() {
+export default function LoanProductsPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin'
 

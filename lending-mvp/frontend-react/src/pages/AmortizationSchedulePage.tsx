@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
@@ -38,12 +39,12 @@ export default function AmortizationSchedulePage() {
     const { id } = useParams<{ id: string }>()
     const [showAll, setShowAll] = useState(false)
 
-    const { data: loanData, loading: loanLoading, error: loanError } = useQuery(GET_LOAN, {
+    const { data: loanData, loading: loanLoading, error: loanError } = useQuery(GET_LOAN as any, {
         variables: { id },
         skip: !id
     })
 
-    const { data: amortizationData, loading: amortizationLoading, error: amortizationError } = useQuery(GET_LOAN_AMORTIZATION, {
+    const { data: amortizationData, loading: amortizationLoading, error: amortizationError } = useQuery(GET_LOAN_AMORTIZATION as any, {
         variables: { loanId: id ? parseInt(id) : 0 },
         skip: !id || isNaN(parseInt(id))
     })

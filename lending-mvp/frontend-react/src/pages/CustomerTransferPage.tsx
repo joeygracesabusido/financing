@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { CREATE_FUND_TRANSFER } from '@/api/queries'
@@ -15,7 +16,7 @@ export default function CustomerTransferPage() {
     const [reference, setReference] = useState('')
     const navigate = useNavigate()
 
-    const [createFundTransfer, { data }] = useMutation(CREATE_FUND_TRANSFER)
+    const [createFundTransfer, { data }] = useMutation(CREATE_FUND_TRANSFER as any)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

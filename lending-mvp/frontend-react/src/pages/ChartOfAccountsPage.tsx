@@ -11,7 +11,7 @@ interface GLAccount {
     createdAt: string
 }
 
-export default async function ChartOfAccountsPage() {
+export default function ChartOfAccountsPage() {
     const { user } = useAuth()
 
     const [loading, setLoading] = useState(true)

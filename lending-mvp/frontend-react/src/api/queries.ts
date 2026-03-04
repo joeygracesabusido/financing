@@ -1,3 +1,4 @@
+
 // This file is deprecated. Please use the new native fetch API clients.
 // Migration guide:
 // - Customers: Use @/api/customers.ts

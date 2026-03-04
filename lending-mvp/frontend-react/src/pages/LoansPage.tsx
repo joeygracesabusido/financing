@@ -19,7 +19,7 @@ interface Loan {
     outstandingBalance?: number
 }
 
-export default async function LoansPage() {
+export default function LoansPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin'
 

@@ -11,7 +11,7 @@ interface Collection {
     createdAt: string
 }
 
-export default async function CollectionsPage() {
+export default function CollectionsPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
 

@@ -10,7 +10,7 @@ interface AuditLog {
     timestamp: string
 }
 
-export default async function AuditLogPage() {
+export default function AuditLogPage() {
     const { user } = useAuth()
 
     const [loading, setLoading] = useState(true)

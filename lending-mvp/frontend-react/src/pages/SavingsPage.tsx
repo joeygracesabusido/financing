@@ -12,7 +12,7 @@ interface SavingsAccount {
     openedAt: string
 }
 
-export default async function SavingsPage() {
+export default function SavingsPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
 

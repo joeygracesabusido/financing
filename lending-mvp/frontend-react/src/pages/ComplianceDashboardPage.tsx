@@ -16,7 +16,7 @@ interface PEPRecord {
     createdAt: string
 }
 
-export default async function ComplianceDashboardPage() {
+export default function ComplianceDashboardPage() {
     const { user } = useAuth()
 
     const [loading, setLoading] = useState(true)

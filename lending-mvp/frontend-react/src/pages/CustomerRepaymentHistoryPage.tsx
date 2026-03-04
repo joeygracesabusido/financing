@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import { useQuery } from '@apollo/client'
 import { GET_CUSTOMER_LOANS } from '@/api/queries'
 import { formatCurrency } from '@/lib/utils'
@@ -20,7 +21,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function CustomerRepaymentHistoryPage() {
-    const { data, loading, error } = useQuery(GET_CUSTOMER_LOANS)
+    const { data, loading, error } = useQuery(GET_CUSTOMER_LOANS as any)
 
     if (loading) return <div className="text-center py-8 text-muted-foreground">Loading...</div>
     if (error) return <div className="p-4 bg-red-500/10 text-red-500 rounded-lg">Error: {error.message}</div>

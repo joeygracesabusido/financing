@@ -45,7 +45,7 @@ export default function EditCustomerPage() {
         setError('')
         try {
             const input = { displayName: form.displayName, customerType: form.customerType, branchCode: form.branchCode, emailAddress: form.emailAddress, mobileNumber: form.mobileNumber }
-            await updateCustomer(input)
+            await updateCustomer(id || "", input as any)
             setSuccess(true)
             setTimeout(() => navigate('/customers'), 2000)
         } catch (e: any) {

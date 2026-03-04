@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useQuery, useLazyQuery } from '@apollo/client'
 import { GET_SAVINGS_ACCOUNT, GET_SAVINGS_TRANSACTIONS, GET_JOURNAL_ENTRY_BY_REFERENCE } from '@/api/queries'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import {
@@ -50,7 +49,7 @@ interface JournalEntry {
 }
 
 function JournalEntryView({ referenceNo }: { referenceNo: string }) {
-    const { data, loading, error } = useQuery(GET_JOURNAL_ENTRY_BY_REFERENCE, {
+    const { data, loading, error } = useQuery(GET_JOURNAL_ENTRY_BY_REFERENCE as any, {
         variables: { referenceNo },
         skip: !referenceNo
     })
@@ -128,11 +127,11 @@ export default function SavingsDetailPage() {
     const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'passbook'>('overview')
     const [expandedTxn, setExpandedTxn] = useState<string | null>(null)
 
-    const { data, loading, error } = useQuery(GET_SAVINGS_ACCOUNT, {
+    const { data, loading, error } = useQuery(GET_SAVINGS_ACCOUNT as any, {
         variables: { id }
     })
 
-    const { data: txnData, loading: loadingTxns, refetch: refetchTxns } = useQuery(GET_SAVINGS_TRANSACTIONS, {
+    const { data: txnData, loading: loadingTxns, refetch: refetchTxns } = useQuery(GET_SAVINGS_TRANSACTIONS as any, {
         variables: { accountId: id },
         skip: !id
     })
