@@ -355,6 +355,26 @@ class Query:
                     updatedAt=b.updated_at
                 ) for b in branches
             ]
+    @strawberry.field
+    async def branches(self) -> List[BranchNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            stmt = select(Branch)
+            result = await session.execute(stmt)
+            branches = result.scalars().all()
+            return [
+                BranchNode(
+                    id=b.id,
+                    code=b.code,
+                    name=b.name,
+                    address=b.address,
+                    city=b.city,
+                    contactNumber=b.contact_number,
+                    isActive=b.is_active,
+                    createdAt=b.created_at,
+                    updatedAt=b.updated_at
+                ) for b in branches
+            ]
         return Health(status="ok", message="Lending MVP GraphQL API is running")
 
     @strawberry.field
