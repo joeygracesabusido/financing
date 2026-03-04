@@ -312,11 +312,11 @@ async def open_cash_drawer(
     
     # await audit_log(
     user_id=str(current_user["id"]),
-    action="CASH_DRAWER_OPENED",
-    details=f"Opened cash drawer with initial amount {data.initial_amount}",
-    metadata={"session_id": result.session_id}
-    )
-    await send_notification(
+        action="CASH_DRAWER_OPENED",
+        details=f"Opened cash drawer with initial amount {data.initial_amount}",
+        metadata={"session_id": result.session_id}
+        )
+        await send_notification(
         user_id=str(current_user["id"]),
         title="Cash Drawer Opened",
         message=f"Your cash drawer session has been opened with {data.initial_amount}",
