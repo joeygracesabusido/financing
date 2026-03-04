@@ -615,6 +615,24 @@ export const GET_JOURNAL_ENTRIES = gql`
   }
 `
 
+export const CREATE_LOAN_PRODUCT = gql`
+  mutation CreateLoanProduct($input: LoanProductInput!) {
+    createLoanProduct(input: $input) {
+      success
+      message
+      loanProduct {
+        id
+        name
+        description
+        minLoanAmount
+        maxLoanAmount
+        interestRate
+        termMonths
+        createdAt
+      }
+    }
+  }
+`
 export const CREATE_MANUAL_JOURNAL_ENTRY = gql`
   mutation CreateManualJournalEntry($input: JournalEntryInput!) {
     createDummy {
