@@ -585,7 +585,7 @@ class Query:
         async with session_factory() as session:
             today = date.today()
             result = await session.execute(
-                select(Collection).where(Collection.due_date <= today)
+                select(Collection).where(Collection.due_date <= today).order_by(Collection.due_date.asc()).limit(1)
             )
             collection = result.scalar_one_or_none()
             if not collection:
