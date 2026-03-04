@@ -686,6 +686,39 @@ class Mutation:
     @strawberry.mutation
     async def approve_loan(self, id: strawberry.ID, approvedPrincipal: Optional[Decimal] = None, approvedRate: Optional[Decimal] = None) -> MutationResponse: return MutationResponse(success=True, message="Loan approved")
     @strawberry.mutation
+
+    @strawberry.field
+    async def branches(self) -> List[BranchNode]:
+
+@strawberry.type
+class BranchNode:
+    id: int
+    code: str
+    name: str
+    address: Optional[str] = None
+    city: Optional[str] = None
+    contactNumber: Optional[str] = None
+    isActive: bool = True
+    createdAt: datetime = strawberry.field(default_factory=datetime.now)
+    updatedAt: datetime = strawberry.field(default_factory=datetime.now)
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            stmt = select(Branch)
+            result = await session.execute(stmt)
+            branches = result.scalars().all()
+            return [
+                BranchNode(
+                    id=b.id,
+                    code=b.code,
+                    name=b.name,
+                    address=b.address,
+                    city=b.city,
+                    contactNumber=b.contact_number,
+                    isActive=b.is_active,
+                    createdAt=b.created_at,
+                    updatedAt=b.updated_at
+                ) for b in branches
+            ]
     async def disburse_loan(self, loanId: strawberry.ID, amount: Optional[float] = None) -> MutationResponse: return MutationResponse(success=True, message="Loan disbursed")
 
 
