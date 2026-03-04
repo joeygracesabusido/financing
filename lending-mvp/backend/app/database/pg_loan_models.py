@@ -102,7 +102,6 @@ class LoanApplication(Base):
     status = Column(String(50), nullable=False, default="draft")
     # Statuses: draft, submitted, reviewing, approved, active, paid, rejected, defaulted
 
-    branch = Column(String(20), nullable=True, index=True) # Added for branch-level access control
 
     review_note = Column(Text, nullable=True)
     disbursement_method = Column(

@@ -20,7 +20,7 @@ except ImportError:
 # Import all routers to register routes
 from . import login_endpoint
 from . import rest_api  # REST API endpoints for frontend
-# from . import graphql  # GraphQL endpoint for frontend (commented out due to schema error)
+from . import graphql as graphql_module  # Real Strawberry GraphQL endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -84,40 +84,11 @@ app.include_router(login_endpoint.router, prefix="")
 # Include REST API endpoints
 app.include_router(rest_api.router, prefix="")
 
-# Mock GraphQL endpoint for development
-from fastapi import Request
-from fastapi.responses import JSONResponse
+# Mount the real Strawberry GraphQL router
+from strawberry.fastapi import GraphQLRouter
 
-@app.post("/graphql")
-async def graphql_endpoint(request: Request):
-    # Get query from JSON body or form data
-    import json
-    body = await request.json() if request.headers.get('content-type') == 'application/json' else {}
-    graphql_query = body.get('query', '')
-    
-    if not graphql_query:
-        return JSONResponse({"errors": [{"message": "Missing query"}]}, status_code=400)
-    
-    # Return mock data for development
-    if 'dashboardStats' in graphql_query:
-        return JSONResponse({
-            "data": {
-                "dashboardStats": {
-                    "customersTotal": 150,
-                    "loansTotal": 85
-                }
-            }
-        })
-    
-    # For other queries, return a simple response
-    return JSONResponse({
-        "data": {
-            "health": {
-                "status": "ok",
-                "message": "Lending MVP GraphQL API is running"
-            }
-        }
-    })
+graphql_app = GraphQLRouter(graphql_module.schema)
+app.include_router(graphql_app, prefix="/graphql")
 
 # Audit middleware (must be added before CORS so it runs on all requests)
 app.add_middleware(AuditMiddleware)

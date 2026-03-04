@@ -45,15 +45,15 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    uuid = Column(String(36), default=lambda: str(uuid4()), unique=True, index=True)
+    uuid = Column(String(36), default=lambda: str(uuid4()), unique=True)
     
-    email = Column(String(200), nullable=False, unique=True, index=True)
-    username = Column(String(100), nullable=False, unique=True, index=True)
+    email = Column(String(200), nullable=False, unique=True)
+    username = Column(String(100), nullable=False, unique=True)
     full_name = Column(String(200), nullable=False)
     hashed_password = Column(String(200), nullable=False)
     role = Column(String(50), nullable=False)  # "admin", "manager", "staff", "teller"
     
-    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True, index=True)
     branch_code = Column(String(20), nullable=True, index=True)  # denormalized for performance
     
     is_active = Column(Boolean, default=True, nullable=False)
@@ -65,12 +65,6 @@ class User(Base):
         server_default=func.now(), 
         onupdate=func.now(), 
         nullable=False
-    )
-    
-    __table_args__ = (
-        Index("ix_users_email", "email"),
-        Index("ix_users_username", "username"),
-        Index("ix_users_branch", "branch_id"),
     )
 
 
@@ -99,7 +93,7 @@ class Customer(Base):
     birth_place = Column(String(200), nullable=True)
     
     # Contact
-    mobile_number = Column(String(50), nullable=True)
+    mobile_number = Column(String(50), nullable=True, index=True)
     email_address = Column(String(200), nullable=True)
     
     # Address
@@ -115,7 +109,7 @@ class Customer(Base):
     company_address = Column(Text, nullable=True)
     
     # Branch association
-    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=False)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=False, index=True)
     branch_code = Column(String(20), nullable=False, index=True)
     
     # Status
@@ -131,12 +125,6 @@ class Customer(Base):
     
     savings_accounts = relationship("SavingsAccount", back_populates="customer", cascade="all, delete-orphan")
     loans = relationship("Loan", back_populates="customer", cascade="all, delete-orphan")
-    
-    __table_args__ = (
-        Index("ix_customers_display_name", "display_name"),
-        Index("ix_customers_branch", "branch_id"),
-        Index("ix_customers_mobile", "mobile_number"),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -147,8 +135,8 @@ class SavingsAccount(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     
-    account_number = Column(String(50), nullable=False, unique=True, index=True)
-    customer_id = Column(BigInteger, ForeignKey("customers.id"), nullable=False)
+    account_number = Column(String(50), nullable=False, unique=True)
+    customer_id = Column(BigInteger, ForeignKey("customers.id"), nullable=False, index=True)
     customer = relationship("Customer", back_populates="savings_accounts")
     
     account_type = Column(String(50), nullable=False)  # "regular", "fixed", "salary"
@@ -170,11 +158,6 @@ class SavingsAccount(Base):
     )
     
     transactions = relationship("SavingsTransaction", back_populates="account", cascade="all, delete-orphan")
-    
-    __table_args__ = (
-        Index("ix_savings_accounts_account_number", "account_number"),
-        Index("ix_savings_accounts_customer", "customer_id"),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -184,7 +167,7 @@ class SavingsTransaction(Base):
     __tablename__ = "savings_transactions"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=False)
+    account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=False, index=True)
     account = relationship("SavingsAccount", back_populates="transactions")
     
     transaction_type = Column(String(20), nullable=False)  # "deposit", "withdrawal"
@@ -197,10 +180,6 @@ class SavingsTransaction(Base):
     description = Column(Text, nullable=True)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    
-    __table_args__ = (
-        Index("ix_savings_transactions_account", "account_id"),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -211,17 +190,17 @@ class Loan(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     
-    loan_number = Column(String(50), nullable=False, unique=True, index=True)
-    customer_id = Column(BigInteger, ForeignKey("customers.id"), nullable=False)
+    loan_number = Column(String(50), nullable=False, unique=True)
+    customer_id = Column(BigInteger, ForeignKey("customers.id"), nullable=False, index=True)
     customer = relationship("Customer", back_populates="loans")
     
-    loan_product_id = Column(BigInteger, ForeignKey("loan_products.id"), nullable=False)
+    loan_product_id = Column(BigInteger, ForeignKey("loan_products.id"), nullable=False, index=True)
     
     amount = Column(Numeric(15, 2), nullable=False)
     interest_rate = Column(Numeric(5, 2), nullable=False)
     term_months = Column(Integer, nullable=False)
     
-    status = Column(String(20), default="pending", nullable=False)
+    status = Column(String(20), default="pending", nullable=False, index=True)
     
     disbursement_date = Column(Date, nullable=True)
     maturity_date = Column(Date, nullable=True)
@@ -236,12 +215,6 @@ class Loan(Base):
     
     # transactions = relationship("LoanTransaction", back_populates="loan", cascade="all, delete-orphan")
     # amortization_schedule = relationship("AmortizationSchedule", uselist=False, back_populates="loan", cascade="all, delete-orphan")
-    
-    __table_args__ = (
-        Index("ix_loans_loan_number", "loan_number"),
-        Index("ix_loans_customer", "customer_id"),
-        Index("ix_loans_status", "status"),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -253,23 +226,17 @@ class Transaction(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     
-    transaction_date = Column(Date, nullable=False)
+    transaction_date = Column(Date, nullable=False, index=True)
     transaction_type = Column(String(50), nullable=False)
     
     # Reference to related entities
-    loan_id = Column(BigInteger, ForeignKey("loans.id"), nullable=True)
-    savings_account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=True)
+    loan_id = Column(BigInteger, ForeignKey("loans.id"), nullable=True, index=True)
+    savings_account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=True, index=True)
     
     amount = Column(Numeric(15, 2), nullable=False)
     description = Column(Text, nullable=True)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    
-    __table_args__ = (
-        Index("ix_transactions_date", "transaction_date"),
-        Index("ix_transactions_loan", "loan_id"),
-        Index("ix_transactions_savings", "savings_account_id"),
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -280,10 +247,10 @@ class LedgerEntry(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     
-    transaction_id = Column(BigInteger, ForeignKey("transactions.id"), nullable=False)
+    transaction_id = Column(BigInteger, ForeignKey("transactions.id"), nullable=False, index=True)
     transaction = relationship("Transaction", backref="ledger_entries")
     
-    account_id = Column(BigInteger, ForeignKey("gl_accounts.id"), nullable=False)
+    account_id = Column(BigInteger, ForeignKey("gl_accounts.id"), nullable=False, index=True)
     gl_account = relationship("GLAccount", backref="ledger_entries")
     
     debit_amount = Column(Numeric(15, 2), default=0.00)
@@ -300,7 +267,7 @@ class StandingOrder(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     
-    account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=False)
+    account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=False, index=True)
     account = relationship("SavingsAccount", backref="standing_orders")
     
     recipient_account = Column(String(50), nullable=False)
@@ -329,7 +296,7 @@ class InterestLedger(Base):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     
-    account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=False)
+    account_id = Column(BigInteger, ForeignKey("savings_accounts.id"), nullable=False, index=True)
     account = relationship("SavingsAccount", backref="interest_ledger")
     
     interest_rate = Column(Numeric(5, 2), nullable=False)
@@ -342,5 +309,3 @@ class InterestLedger(Base):
     posted_date = Column(DateTime(timezone=True), server_default=func.now())
     
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-
-

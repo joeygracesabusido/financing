@@ -14,7 +14,7 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision: str = "002_create_users_customers_transactions"
+revision: str = "002_create_users"
 down_revision: Union[str, Sequence[str], None] = "660db17c429a"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
