@@ -123,6 +123,7 @@ class LoanNode:
     termMonths: int = 12
     approvedPrincipal: Optional[Decimal] = None
     approvedRate: Optional[Decimal] = None
+    outstandingBalance: Optional[Decimal] = None
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
     updatedAt: datetime = strawberry.field(default_factory=datetime.now)
     disbursedAt: Optional[datetime] = None
@@ -379,6 +380,7 @@ class Query:
                         termMonths=l.term_months,
                         approvedPrincipal=l.approved_principal,
                         approvedRate=l.approved_rate,
+                        outstandingBalance=l.outstanding_balance,
                         createdAt=l.created_at,
                         updatedAt=l.updated_at,
                         disbursedAt=l.disbursed_at
