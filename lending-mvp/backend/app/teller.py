@@ -6,7 +6,7 @@ from decimal import Decimal
 from bson import ObjectId
 
 from app.models import PyObjectId
-from app.schemas import (
+from app.schema import (
     CashDrawerSession, CashDrawerUpdate, TransactionLimitConfig,
     TransactionLimitUpdate, TellerSessionResponse
 )
