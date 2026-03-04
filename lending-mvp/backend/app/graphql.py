@@ -139,6 +139,7 @@ class LoanConnection:
 class LoanConnection:
     loans: List[LoanNode]
     total: int
+@strawberry.type
 class LoanTransactionNode:
     id: str
     loanId: str
