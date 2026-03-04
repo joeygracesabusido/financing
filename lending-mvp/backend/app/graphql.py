@@ -7,11 +7,11 @@ from typing import List, Optional
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, date
 
 from .database import get_async_session_local
 from .database.pg_core_models import User, Customer, SavingsAccount, Loan
-from .database.pg_loan_models import LoanTransaction, LoanApplication
+from .database.pg_loan_models import LoanTransaction, LoanApplication, AmortizationSchedule, PGLoanProduct
 from .database.pg_accounting_models import GLAccount, JournalEntry, JournalLine
 
 
@@ -44,6 +44,15 @@ class CustomerNode:
     customerType: str
     branchCode: str
     isActive: bool
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    emailAddress: Optional[str] = None
+    mobileNumber: Optional[str] = None
+    customerCategory: Optional[str] = None
+    kycStatus: Optional[str] = None
+    riskScore: Optional[float] = None
+    branch: Optional[str] = None
+    createdAt: datetime = strawberry.field(default_factory=datetime.now)
 
 
 @strawberry.type
@@ -60,12 +69,14 @@ class LoanNode:
     principal: Decimal
     status: str
     customerId: str
+    productId: Optional[int] = None
     borrowerName: str = "Demo Borrower"
     productName: str = "Demo Product"
     termMonths: int = 12
     approvedPrincipal: Optional[Decimal] = None
     approvedRate: Optional[Decimal] = None
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
+    updatedAt: datetime = strawberry.field(default_factory=datetime.now)
     disbursedAt: Optional[datetime] = None
 
 
@@ -113,6 +124,89 @@ class GLTransactionNode:
 
 
 @strawberry.type
+class CollectionsDashboardNode:
+    totalCollections: Decimal
+    pendingCollections: Decimal
+    overdueCollections: Decimal
+    collectedThisMonth: Decimal
+
+
+@strawberry.type
+class CollectionNode:
+    id: str
+    customerId: str
+    amount: Decimal
+    status: str
+    dueDate: date
+    createdAt: datetime
+
+
+@strawberry.type
+class AuditLogNode:
+    id: str
+    userId: str
+    action: str
+    resource: str
+    timestamp: datetime
+
+
+@strawberry.type
+class AmortizationScheduleRow:
+    month: int
+    principalPayment: Decimal
+    interestPayment: Decimal
+    totalPayment: Decimal
+    outstandingBalance: Decimal
+
+
+@strawberry.type
+class LoanAmortizationNode:
+    id: str
+    loanId: str
+    principal: Decimal
+    interestRate: Decimal
+    termMonths: int
+    amortizationSchedule: List[AmortizationScheduleRow]
+
+
+@strawberry.type
+class LoanProductNode:
+    id: str
+    name: str
+    productCode: str
+    description: Optional[str]
+    interestRate: Decimal
+    termMonths: int
+    minLoanAmount: Decimal = Decimal('1000.00')
+    maxLoanAmount: Decimal = Decimal('1000000.00')
+    createdAt: datetime = strawberry.field(default_factory=datetime.now)
+
+
+@strawberry.type
+class FinancialMetricsNode:
+    averageCollectionDays: float = 0.0
+    collectionEfficiency: float = 100.0
+    totalOutstanding: Decimal = Decimal('0.00')
+    totalCollected: Decimal = Decimal('0.00')
+    totalNPL: Decimal = Decimal('0.00')
+    nplRatio: float = 0.0
+    totalLLR: Decimal = Decimal('0.00')
+    llrRatio: float = 0.0
+    provisionedAmount: Decimal = Decimal('0.00')
+
+
+@strawberry.type
+class FinancialStatementNode:
+    revenue: Decimal = Decimal('0.00')
+    expenses: Decimal = Decimal('0.00')
+    profit: Decimal = Decimal('0.00')
+    assets: Decimal = Decimal('0.00')
+    liabilities: Decimal = Decimal('0.00')
+    equity: Decimal = Decimal('0.00')
+    createdAt: datetime = strawberry.field(default_factory=datetime.now)
+
+
+@strawberry.type
 class Query:
     @strawberry.field
     async def users(self, skip: int = 0, limit: int = 100) -> List[UserNode]:
@@ -135,48 +229,35 @@ class Query:
             ]
 
     @strawberry.field
+    async def health(self) -> Health:
+        return Health(status="ok", message="Lending MVP GraphQL API is running")
+
+    @strawberry.field
     async def customers(self, skip: int = 0, limit: int = 100) -> List[CustomerNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            result = await session.execute(
-                select(Customer).offset(skip).limit(limit)
-            )
+            result = await session.execute(select(Customer).offset(skip).limit(limit))
             customers = result.scalars().all()
-            return [
-                CustomerNode(
-                    id=str(c.id),
-                    displayName=c.display_name,
-                    customerType=c.customer_type,
-                    branchCode=c.branch_code,
-                    isActive=c.is_active,
-                )
-                for c in customers
-            ]
+            return [CustomerNode(id=str(c.id), displayName=c.display_name, customerType=c.customer_type, branchCode=c.branch_code, isActive=c.is_active) for c in customers]
+
+    @strawberry.field
+    async def customer(self, id: strawberry.ID) -> Optional[CustomerNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(select(Customer).where(Customer.id == str(id)))
+            c = result.scalar_one_or_none()
+            if not c: return None
+            return CustomerNode(id=str(c.id), displayName=c.display_name, customerType=c.customer_type, branchCode=c.branch_code, isActive=c.is_active, firstName=c.first_name, lastName=c.last_name, emailAddress=c.email, mobileNumber=c.mobile_number, createdAt=c.created_at)
 
     @strawberry.field
     async def loans(self, skip: int = 0, limit: int = 100, customerId: Optional[str] = None) -> List[LoanNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
             stmt = select(LoanApplication)
-            if customerId:
-                stmt = stmt.where(LoanApplication.customer_id == customerId)
-            
+            if customerId: stmt = stmt.where(LoanApplication.customer_id == customerId)
             result = await session.execute(stmt.offset(skip).limit(limit))
             loans = result.scalars().all()
-            return [
-                LoanNode(
-                    id=str(l.id),
-                    principal=l.principal,
-                    status=l.status,
-                    customerId=str(l.customer_id),
-                    termMonths=l.term_months,
-                    approvedPrincipal=l.approved_principal,
-                    approvedRate=l.approved_rate,
-                    createdAt=l.created_at,
-                    disbursedAt=l.disbursed_at,
-                )
-                for l in loans
-            ]
+            return [LoanNode(id=str(l.id), principal=l.principal, status=l.status, customerId=str(l.customer_id), productId=l.product_id, termMonths=l.term_months, approvedPrincipal=l.approved_principal, approvedRate=l.approved_rate, createdAt=l.created_at, updatedAt=l.updated_at, disbursedAt=l.disbursed_at) for l in loans]
 
     @strawberry.field
     async def loan(self, id: strawberry.ID) -> Optional[LoanNode]:
@@ -184,180 +265,129 @@ class Query:
         async with session_factory() as session:
             result = await session.execute(select(LoanApplication).where(LoanApplication.id == int(id)))
             l = result.scalar_one_or_none()
-            if not l:
-                return None
-            return LoanNode(
-                id=str(l.id),
-                principal=l.principal,
-                status=l.status,
-                customerId=str(l.customer_id),
-                termMonths=l.term_months,
-                approvedPrincipal=l.approved_principal,
-                approvedRate=l.approved_rate,
-                createdAt=l.created_at,
-                disbursedAt=l.disbursed_at,
-            )
+            if not l: return None
+            return LoanNode(id=str(l.id), principal=l.principal, status=l.status, customerId=str(l.customer_id), productId=l.product_id, termMonths=l.term_months, approvedPrincipal=l.approved_principal, approvedRate=l.approved_rate, createdAt=l.created_at, updatedAt=l.updated_at, disbursedAt=l.disbursed_at)
 
     @strawberry.field
     async def loanTransactions(self, loanId: strawberry.ID) -> List[LoanTransactionNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            result = await session.execute(
-                select(LoanTransaction).where(LoanTransaction.loan_id == int(loanId))
-            )
+            result = await session.execute(select(LoanTransaction).where(LoanTransaction.loan_id == int(loanId)))
             txs = result.scalars().all()
-            return [
-                LoanTransactionNode(
-                    id=str(t.id),
-                    loanId=str(t.loan_id),
-                    amount=t.amount,
-                    transactionType=t.type,
-                    description=t.description,
-                    reference=t.receipt_number,
-                    createdAt=t.timestamp,
-                )
-                for t in txs
-            ]
+            return [LoanTransactionNode(id=str(t.id), loanId=str(t.loan_id), amount=t.amount, transactionType=t.type, description=t.description, reference=t.receipt_number, createdAt=t.timestamp) for t in txs]
 
     @strawberry.field
     async def savingsAccounts(self, skip: int = 0, limit: int = 100, customerId: Optional[str] = None) -> List[SavingsAccountNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
             stmt = select(SavingsAccount)
-            if customerId:
-                stmt = stmt.where(SavingsAccount.customer_id == customerId)
-            
+            if customerId: stmt = stmt.where(SavingsAccount.customer_id == customerId)
             result = await session.execute(stmt.offset(skip).limit(limit))
             accounts = result.scalars().all()
-            return [
-                SavingsAccountNode(
-                    id=str(a.id),
-                    accountNumber=a.account_number,
-                    balance=a.balance,
-                    customerId=str(a.customer_id),
-                )
-                for a in accounts
-            ]
+            return [SavingsAccountNode(id=str(a.id), accountNumber=a.account_number, balance=a.balance, customerId=str(a.customer_id)) for a in accounts]
 
     @strawberry.field
     async def glAccounts(self) -> List[GLAccountNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            # Query accounts and their balances (sum of lines)
-            stmt = select(
-                GLAccount,
-                func.sum(JournalLine.debit).label("total_debit"),
-                func.sum(JournalLine.credit).label("total_credit")
-            ).outerjoin(
-                JournalLine, GLAccount.code == JournalLine.account_code
-            ).group_by(GLAccount.id)
-            
+            stmt = select(GLAccount, func.sum(JournalLine.debit).label("total_debit"), func.sum(JournalLine.credit).label("total_credit")).outerjoin(JournalLine, GLAccount.code == JournalLine.account_code).group_by(GLAccount.id)
             result = await session.execute(stmt)
             rows = result.all()
-            
             nodes = []
             for row in rows:
                 acc = row[0]
                 total_debit = row[1] or Decimal('0.00')
                 total_credit = row[2] or Decimal('0.00')
-                
-                # Simple balance: Asset/Expense increases with debit, Liability/Equity/Income increases with credit
-                if acc.type.lower() in ['asset', 'expense']:
-                    balance = total_debit - total_credit
-                else:
-                    balance = total_credit - total_debit
-                
-                nodes.append(GLAccountNode(
-                    id=str(acc.id),
-                    accountNumber=acc.code,
-                    name=acc.name,
-                    type=acc.type,
-                    balance=balance,
-                    createdAt=acc.created_at
-                ))
+                balance = (total_debit - total_credit) if acc.type.lower() in ['asset', 'expense'] else (total_credit - total_debit)
+                nodes.append(GLAccountNode(id=str(acc.id), accountNumber=acc.code, name=acc.name, type=acc.type, balance=balance, createdAt=acc.created_at))
             return nodes
+
+    @strawberry.field
+    async def collectionsDashboard(self) -> CollectionsDashboardNode:
+        session_factory = get_async_session_local()
+        today = date.today()
+        first_day_of_month = today.replace(day=1)
+        async with session_factory() as session:
+            total_collections = (await session.execute(select(func.sum(AmortizationSchedule.principal_paid + AmortizationSchedule.interest_paid)))).scalar() or Decimal('0.00')
+            pending_collections = (await session.execute(select(func.sum(AmortizationSchedule.principal_due + AmortizationSchedule.interest_due - AmortizationSchedule.principal_paid - AmortizationSchedule.interest_paid)).where(AmortizationSchedule.due_date >= today))).scalar() or Decimal('0.00')
+            overdue_collections = (await session.execute(select(func.sum(AmortizationSchedule.principal_due + AmortizationSchedule.interest_due - AmortizationSchedule.principal_paid - AmortizationSchedule.interest_paid)).where(AmortizationSchedule.due_date < today))).scalar() or Decimal('0.00')
+            collected_this_month = (await session.execute(select(func.sum(AmortizationSchedule.principal_paid + AmortizationSchedule.interest_paid)).where(AmortizationSchedule.due_date >= first_day_of_month))).scalar() or Decimal('0.00')
+            return CollectionsDashboardNode(totalCollections=total_collections, pendingCollections=pending_collections, overdueCollections=overdue_collections, collectedThisMonth=collected_this_month)
+
+    @strawberry.field
+    async def auditLogs(self, limit: int = 50, offset: int = 0) -> List[AuditLogNode]: return []
+
+    @strawberry.field
+    async def loanAmortization(self, loanId: strawberry.ID) -> Optional[LoanAmortizationNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            l = (await session.execute(select(LoanApplication).where(LoanApplication.id == int(loanId)))).scalar_one_or_none()
+            if not l: return None
+            sched_items = (await session.execute(select(AmortizationSchedule).where(AmortizationSchedule.loan_id == l.id).order_by(AmortizationSchedule.installment_number))).scalars().all()
+            rows, balance = [], l.principal
+            for item in sched_items:
+                balance -= item.principal_paid
+                rows.append(AmortizationScheduleRow(month=item.installment_number, principalPayment=item.principal_due, interestPayment=item.interest_due, totalPayment=item.principal_due + item.interest_due, outstandingBalance=balance))
+            return LoanAmortizationNode(id=str(l.id), loanId=str(l.id), principal=l.principal, interestRate=l.approved_rate or Decimal('12.00'), termMonths=l.term_months, amortizationSchedule=rows)
+
+    @strawberry.field
+    async def loanProducts(self) -> List[LoanProductNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            prods = (await session.execute(select(PGLoanProduct))).scalars().all()
+            return [LoanProductNode(id=str(p.id), name=p.name, productCode=p.product_code, description=p.description, interestRate=p.interest_rate, termMonths=12, createdAt=p.created_at) for p in prods]
+
+    @strawberry.field
+    async def parMetrics(self) -> FinancialMetricsNode: return FinancialMetricsNode()
+    @strawberry.field
+    async def nplMetrics(self) -> FinancialMetricsNode: return FinancialMetricsNode()
+    @strawberry.field
+    async def llrMetrics(self) -> FinancialMetricsNode: return FinancialMetricsNode()
+    @strawberry.field
+    async def incomeStatement(self, year: int, month: int) -> FinancialStatementNode: return FinancialStatementNode()
+    @strawberry.field
+    async def balanceSheet(self, year: int, month: int) -> FinancialStatementNode: return FinancialStatementNode()
+    @strawberry.field
+    async def unresolvedAlerts(self) -> List[Health]: return [] # Placeholder
+    @strawberry.field
+    async def complianceReports(self) -> List[Health]: return [] # Placeholder
 
     @strawberry.field
     async def journalEntries(self, limit: int = 50, offset: int = 0) -> List[JournalEntryNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            # Subquery to get totals for each entry
-            totals_stmt = select(
-                JournalLine.entry_id,
-                func.sum(JournalLine.debit).label("total_debit"),
-                func.sum(JournalLine.credit).label("total_credit")
-            ).group_by(JournalLine.entry_id).subquery()
-            
-            stmt = select(
-                JournalEntry,
-                totals_stmt.c.total_debit,
-                totals_stmt.c.total_credit
-            ).outerjoin(
-                totals_stmt, JournalEntry.id == totals_stmt.c.entry_id
-            ).order_by(JournalEntry.timestamp.desc()).offset(offset).limit(limit)
-            
+            totals_stmt = select(JournalLine.entry_id, func.sum(JournalLine.debit).label("total_debit"), func.sum(JournalLine.credit).label("total_credit")).group_by(JournalLine.entry_id).subquery()
+            stmt = select(JournalEntry, totals_stmt.c.total_debit, totals_stmt.c.total_credit).outerjoin(totals_stmt, JournalEntry.id == totals_stmt.c.entry_id).order_by(JournalEntry.timestamp.desc()).offset(offset).limit(limit)
             result = await session.execute(stmt)
             rows = result.all()
-            
-            return [
-                JournalEntryNode(
-                    id=str(r[0].id),
-                    date=r[0].timestamp,
-                    description=r[0].description,
-                    reference=r[0].reference_no,
-                    debit=r[1] or Decimal('0.00'),
-                    credit=r[2] or Decimal('0.00'),
-                    createdAt=r[0].timestamp
-                )
-                for r in rows
-            ]
+            return [JournalEntryNode(id=str(r[0].id), date=r[0].timestamp, description=r[0].description, reference=r[0].reference_no, debit=r[1] or Decimal('0.00'), credit=r[2] or Decimal('0.00'), createdAt=r[0].timestamp) for r in rows]
+
+    @strawberry.field
+    async def journalEntryByReference(self, reference: str) -> Optional[JournalEntryNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            totals_stmt = select(JournalLine.entry_id, func.sum(JournalLine.debit).label("total_debit"), func.sum(JournalLine.credit).label("total_credit")).group_by(JournalLine.entry_id).subquery()
+            stmt = select(JournalEntry, totals_stmt.c.total_debit, totals_stmt.c.total_credit).outerjoin(totals_stmt, JournalEntry.id == totals_stmt.c.entry_id).where(JournalEntry.reference_no == reference)
+            r = (await session.execute(stmt)).first()
+            if not r: return None
+            return JournalEntryNode(id=str(r[0].id), date=r[0].timestamp, description=r[0].description, reference=r[0].reference_no, debit=r[1] or Decimal('0.00'), credit=r[2] or Decimal('0.00'), createdAt=r[0].timestamp)
 
     @strawberry.field
     async def glAccountTransactions(self, accountId: strawberry.ID) -> List[GLTransactionNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            # First find the account to get the code
-            acc_result = await session.execute(select(GLAccount).where(GLAccount.id == int(accountId)))
-            acc = acc_result.scalar_one_or_none()
-            if not acc:
-                return []
-            
-            # Join lines with entries for timestamp and reference
-            stmt = select(JournalLine, JournalEntry).join(JournalEntry).where(JournalLine.account_code == acc.code).order_by(JournalEntry.timestamp.desc())
-            result = await session.execute(stmt)
-            rows = result.all()
-            
-            nodes = []
-            for line, entry in rows:
-                amount = line.debit if line.debit > 0 else line.credit
-                type_ = 'debit' if line.debit > 0 else 'credit'
-                
-                nodes.append(GLTransactionNode(
-                    id=str(line.id),
-                    accountId=str(acc.id),
-                    amount=amount,
-                    type=type_,
-                    reference=entry.reference_no,
-                    createdAt=entry.timestamp
-                ))
-            return nodes
-
-    @strawberry.field
-    async def health(self) -> Health:
-        return Health(status="ok", message="Lending MVP GraphQL API is running")
+            acc = (await session.execute(select(GLAccount).where(GLAccount.id == int(accountId)))).scalar_one_or_none()
+            if not acc: return []
+            rows = (await session.execute(select(JournalLine, JournalEntry).join(JournalEntry).where(JournalLine.account_code == acc.code).order_by(JournalEntry.timestamp.desc()))).all()
+            return [GLTransactionNode(id=str(l.id), accountId=str(acc.id), amount=l.debit if l.debit > 0 else l.credit, type='debit' if l.debit > 0 else 'credit', reference=e.reference_no, createdAt=e.timestamp) for l, e in rows]
 
     @strawberry.field
     async def dashboardStats(self) -> DashboardStats:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            # Get real counts
-            customer_count = await session.execute(select(func.count(Customer.id)))
-            loan_count = await session.execute(select(func.count(LoanApplication.id)))
-            
-            return DashboardStats(
-                customersTotal=customer_count.scalar() or 0,
-                loansTotal=loan_count.scalar() or 0,
-            )
+            customer_count = (await session.execute(select(func.count(Customer.id)))).scalar() or 0
+            loan_count = (await session.execute(select(func.count(LoanApplication.id)))).scalar() or 0
+            return DashboardStats(customersTotal=customer_count, loansTotal=loan_count)
 
 
 @strawberry.type
@@ -369,20 +399,13 @@ class MutationResponse:
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    async def create_dummy(self) -> MutationResponse:
-        return MutationResponse(success=True, message="Placeholder")
-
+    async def create_dummy(self) -> MutationResponse: return MutationResponse(success=True, message="Placeholder")
     @strawberry.mutation
-    async def submit_loan(self, loanId: strawberry.ID) -> MutationResponse:
-        return MutationResponse(success=True, message="Loan submitted for review")
-
+    async def submit_loan(self, loanId: strawberry.ID) -> MutationResponse: return MutationResponse(success=True, message="Loan submitted for review")
     @strawberry.mutation
-    async def approve_loan(self, id: strawberry.ID, approvedPrincipal: Optional[Decimal] = None, approvedRate: Optional[Decimal] = None) -> MutationResponse:
-        return MutationResponse(success=True, message="Loan approved")
-
+    async def approve_loan(self, id: strawberry.ID, approvedPrincipal: Optional[Decimal] = None, approvedRate: Optional[Decimal] = None) -> MutationResponse: return MutationResponse(success=True, message="Loan approved")
     @strawberry.mutation
-    async def disburse_loan(self, loanId: strawberry.ID, amount: Optional[float] = None) -> MutationResponse:
-        return MutationResponse(success=True, message="Loan disbursed")
+    async def disburse_loan(self, loanId: strawberry.ID, amount: Optional[float] = None) -> MutationResponse: return MutationResponse(success=True, message="Loan disbursed")
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)

@@ -71,8 +71,11 @@ export default function CollectionsPage() {
                     <div key={bucket.label} className="glass rounded-xl p-5">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${bucketColors[bucket.label]} flex items-center justify-center`}>
-                                    <bucketIcons[bucket.label] className="w-5 h-5" />
+                                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${bucketColors[bucket.label as keyof typeof bucketColors]} flex items-center justify-center`}>
+                                    {(() => {
+                                        const Icon = bucketIcons[bucket.label as keyof typeof bucketIcons] || Clock
+                                        return <Icon className="w-5 h-5" />
+                                    })()}
                                 </div>
                                 <div>
                                     <p className="font-medium text-foreground">{bucket.label}</p>
