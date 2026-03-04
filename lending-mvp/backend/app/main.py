@@ -20,6 +20,7 @@ except ImportError:
 # Import all routers to register routes
 from . import login_endpoint
 from . import rest_api  # REST API endpoints for frontend
+from . import teller  # Teller endpoints
 from . import graphql as graphql_module  # Real Strawberry GraphQL endpoint
 
 logger = logging.getLogger(__name__)
@@ -83,6 +84,7 @@ app.include_router(login_endpoint.router, prefix="")
 
 # Include REST API endpoints
 app.include_router(rest_api.router, prefix="")
+app.include_router(teller.router, prefix="")
 
 # Mount the real Strawberry GraphQL router
 from strawberry.fastapi import GraphQLRouter
