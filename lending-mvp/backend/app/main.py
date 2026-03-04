@@ -20,7 +20,7 @@ except ImportError:
 # Import all routers to register routes
 from . import login_endpoint
 from . import rest_api  # REST API endpoints for frontend
-from . import teller  # Teller endpoints
+# from . import teller  # Disabled: MongoDB not configured  # Teller endpoints
 from . import graphql as graphql_module  # Real Strawberry GraphQL endpoint
 
 logger = logging.getLogger(__name__)
