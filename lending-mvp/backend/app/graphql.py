@@ -311,10 +311,6 @@ class Query:
                         lastName=c.last_name,
                         emailAddress=c.email_address,
                         mobileNumber=c.mobile_number,
-                        customerCategory=c.customer_category,
-                        kycStatus=c.kyc_status,
-                        riskScore=c.risk_score,
-                        branch=c.branch,
                         createdAt=c.created_at
                     ) for c in customers
                 ],
@@ -328,7 +324,7 @@ class Query:
             result = await session.execute(select(Customer).where(Customer.id == str(id)))
             c = result.scalar_one_or_none()
             if not c: return None
-            return CustomerNode(id=str(c.id), displayName=c.display_name, customerType=c.customer_type, branchCode=c.branch_code, isActive=c.is_active, firstName=c.first_name, lastName=c.last_name, emailAddress=c.email, mobileNumber=c.mobile_number, createdAt=c.created_at)
+            return CustomerNode(id=str(c.id), displayName=c.display_name, customerType=c.customer_type, branchCode=c.branch_code, isActive=c.is_active, firstName=c.first_name, lastName=c.last_name, emailAddress=c.email_address, mobileNumber=c.mobile_number, createdAt=c.created_at)
 
     @strawberry.field
     async def loans(self, skip: int = 0, limit: int = 100, customerId: Optional[str] = None) -> List[LoanNode]:
