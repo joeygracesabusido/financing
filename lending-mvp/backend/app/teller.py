@@ -10,7 +10,7 @@ from app.schema import (
     CashDrawerSession, CashDrawerUpdate, TransactionLimitConfig,
     TransactionLimitUpdate, TellerSessionResponse
 )
-from app.main import db
+# from app.main import db  # TODO: Implement MongoDB setup
 from app.audit_middleware import audit_log
 from app.worker import send_notification
 
