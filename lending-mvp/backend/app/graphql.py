@@ -126,9 +126,19 @@ class LoanNode:
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
     updatedAt: datetime = strawberry.field(default_factory=datetime.now)
     disbursedAt: Optional[datetime] = None
+@strawberry.type
+class LoanConnection:
+    loans: List[LoanNode]
+    total: int
+
 
 
 @strawberry.type
+
+@strawberry.type
+class LoanConnection:
+    loans: List[LoanNode]
+    total: int
 class LoanTransactionNode:
     id: str
     loanId: str
@@ -337,14 +347,44 @@ class Query:
             return CustomerNode(id=str(c.id), displayName=c.display_name, customerType=c.customer_type, branchCode=c.branch_code, isActive=c.is_active, firstName=c.first_name, lastName=c.last_name, emailAddress=c.email_address, mobileNumber=c.mobile_number, createdAt=c.created_at)
 
     @strawberry.field
-    async def loans(self, skip: int = 0, limit: int = 100, customerId: Optional[str] = None) -> List[LoanNode]:
+    async def loans(
+        self, 
+        skip: int = 0, 
+        limit: int = 100,
+        customerId: Optional[str] = None,
+        searchTerm: Optional[str] = None
+    ) -> LoanConnection:
         session_factory = get_async_session_local()
         async with session_factory() as session:
             stmt = select(LoanApplication)
             if customerId: stmt = stmt.where(LoanApplication.customer_id == customerId)
+            if searchTerm:
+                stmt = stmt.where(LoanApplication.borrower_name.ilike(f"%{searchTerm}%"))
+            
             result = await session.execute(stmt.offset(skip).limit(limit))
-            loans = result.scalars().all()
-            return [LoanNode(id=str(l.id), principal=l.principal, status=l.status, customerId=str(l.customer_id), productId=l.product_id, termMonths=l.term_months, approvedPrincipal=l.approved_principal, approvedRate=l.approved_rate, createdAt=l.created_at, updatedAt=l.updated_at, disbursedAt=l.disbursed_at) for l in loans]
+            loan_list = result.scalars().all()
+            
+            loan_count = await session.execute(select(func.count()).select_from(LoanApplication))
+            total = loan_count.scalar()
+            
+            return LoanConnection(
+                loans=[
+                    LoanNode(
+                        id=str(l.id),
+                        principal=l.principal,
+                        status=l.status,
+                        customerId=str(l.customer_id),
+                        productId=l.product_id,
+                        termMonths=l.term_months,
+                        approvedPrincipal=l.approved_principal,
+                        approvedRate=l.approved_rate,
+                        createdAt=l.created_at,
+                        updatedAt=l.updated_at,
+                        disbursedAt=l.disbursed_at
+                    ) for l in loan_list
+                ],
+                total=total
+            )
 
     @strawberry.field
     async def loan(self, id: strawberry.ID) -> Optional[LoanNode]:
