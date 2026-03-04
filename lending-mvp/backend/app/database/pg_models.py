@@ -230,3 +230,28 @@ class PEPRecord(Base):
     pep_type = Column(String(50), nullable=True)  # "foreign_pep", "domestic_pep", "pep_associate"
     added_date = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+
+
+# ---------------------------------------------------------------------------
+# Collections (loan repayment collections)
+# ---------------------------------------------------------------------------
+class Collection(Base):
+    __tablename__ = "collections"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    customer_id = Column(String(64), nullable=False, index=True)
+    amount = Column(Float, nullable=False)
+    status = Column(String(20), nullable=False, default="pending")  # pending, partial, collected, overdue, written_off
+    due_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    collection_date = Column(DateTime(timezone=True), nullable=True)
+    collected_by = Column(String(64), nullable=True)
+    reference_number = Column(String(100), nullable=True)
+    collection_type = Column(String(50), nullable=True)  # principal, interest, penalty
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (
+        Index("ix_collections_due_date", "due_date"),
+        Index("ix_collections_status", "status"),
+    )

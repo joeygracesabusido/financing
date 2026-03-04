@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Import database connections - PostgreSQL only
 from ..database import get_async_session_local
-from ..database.pg_core_models import User, Customer, SavingsAccount, Loan
+from ..database.pg_core_models import User, Customer, SavingsAccount, Loan, SavingsTransaction
 from ..database.pg_loan_models import LoanApplication, PGLoanProduct
 from ..database.pg_models import (
     Branch,
@@ -28,6 +28,7 @@ from ..database.pg_models import (
     Beneficiary,
     CustomerActivity,
     PEPRecord,
+    Collection,
 )
 from ..database.pg_accounting_models import GLAccount, JournalEntry, JournalLine
 from ..auth.security import get_password_hash
@@ -979,6 +980,141 @@ async def seed_core_pg() -> Dict[str, Any]:
 
 
 # ============================================================================
+# CUSTOMER ACTIVITIES SEEDING (PostgreSQL)
+# ============================================================================
+
+
+async def seed_customer_activities() -> Dict[str, Any]:
+    """
+    Seed customer activities linked to real customers in PostgreSQL.
+    Creates realistic activity history for each customer.
+    """
+    logger.info("Seeding customer activities (PostgreSQL)...")
+    session_factory = get_async_session_local()
+    created_activities = 0
+    
+    async with session_factory() as session:
+        # Get all active customers
+        result = await session.execute(select(Customer).where(Customer.is_active == True))
+        customers = result.scalars().all()
+        
+        if not customers:
+            logger.warning("No active customers found to seed activities for")
+            return {"customer_activities_created": 0}
+        
+        activities = [
+            "created", "kyc_submitted", "kyc_verified", "updated_profile",
+            "applied_for_loan", "opened_savings_account", "made_payment",
+            "loan_disbursed", "loan_closed", "account_closed", "contacted",
+            "document_uploaded", "loan_reviewed", "loan_approved"
+        ]
+        
+        for customer in customers:
+            customer_id = str(customer.id)
+            customer_name = customer.display_name
+            # Generate 5-10 activities per customer going back 1 year
+            num_activities = 5 + (customer.id % 6)
+            
+            for idx in range(num_activities):
+                days_ago = 365 - (idx * 30)
+                if days_ago < 0:
+                    days_ago = 30 + idx
+                
+                activity_date = datetime.now(timezone.utc) - timedelta(days=days_ago)
+                activity = activities[idx % len(activities)]
+                
+                # Get a random user for actor (optional)
+                actor_user_id = None
+                actor_username = "system"
+                if customer.id % 3 == 0:
+                    # Use a staff member as actor
+                    result = await session.execute(select(User).where(User.is_active == True).limit(1))
+                    users = result.scalars().all()
+                    if users:
+                        actor_user_id = str(users[0].id)
+                        actor_username = users[0].username
+                
+                activity_log = CustomerActivity(
+                    customer_id=customer_id,
+                    actor_user_id=actor_user_id,
+                    actor_username=actor_username,
+                    action=activity,
+                    detail=f"{customer_name} - {activity}",
+                    created_at=activity_date,
+                )
+                session.add(activity_log)
+                created_activities += 1
+        
+        await session.commit()
+    
+    logger.info(f"Customer activities seeded (PostgreSQL): {created_activities} records")
+    return {"customer_activities_created": created_activities}
+
+
+# ============================================================================
+# COLLECTIONS SEEDING (PostgreSQL)
+# ============================================================================
+
+
+async def seed_collections() -> Dict[str, Any]:
+    """
+    Seed collections data linked to real customers in PostgreSQL.
+    Creates realistic collection records with various statuses and due dates.
+    """
+    logger.info("Seeding collections (PostgreSQL)...")
+    session_factory = get_async_session_local()
+    created_collections = 0
+    
+    async with session_factory() as session:
+        # Get all active customers (simpler approach)
+        result = await session.execute(
+            select(Customer).where(Customer.is_active == True)
+        )
+        customers_with_loans = result.scalars().all()
+        
+        if not customers_with_loans:
+            logger.warning("No active customers found to seed collections for")
+            return {"collections_created": 0}
+        
+        statuses = ["pending", "partial", "collected", "overdue", "written_off"]
+        collection_types = ["principal", "interest", "penalty"]
+        
+        for customer in customers_with_loans[:5]:  # Limit to first 5 customers
+            customer_id = str(customer.id)
+            customer_name = customer.display_name
+            
+            # Generate 2-3 collections per customer
+            num_collections = 2 + (customer.id % 2)
+            
+            for idx in range(num_collections):
+                # Create collections with various due dates
+                months_ago = 1 + idx
+                due_date = (datetime.now(timezone.utc) - timedelta(days=30 * months_ago)).date()
+                
+                # Calculate amount based on loan status
+                base_amount = 50000 + (idx * 10000)
+                status = "pending" if months_ago <= 1 else ("overdue" if months_ago >= 2 else "collected")
+                
+                collection = Collection(
+                    customer_id=customer_id,
+                    amount=Decimal(str(base_amount)),
+                    status=status,
+                    due_date=due_date,
+                    collection_type=collection_types[idx % len(collection_types)],
+                    reference_number=f"COL-{months_ago:03d}-{customer.id}",
+                    notes=f"Collection for {customer_name}",
+                    created_at=datetime.now(timezone.utc) - timedelta(days=30 * months_ago),
+                )
+                session.add(collection)
+                created_collections += 1
+        
+        await session.commit()
+    
+    logger.info(f"Collections seeded (PostgreSQL): {created_collections} records")
+    return {"collections_created": created_collections}
+
+
+# ============================================================================
 # ENHANCED MAIN ORCHESTRATION (PostgreSQL Only)
 # ============================================================================
 
@@ -997,6 +1133,19 @@ async def seed_demo_data_enhanced() -> Dict[str, Any]:
     try:
         # CORE: Seed branches, users, customers, loan products, savings, loans
         results["core_data"] = await seed_core_pg()
+
+        # Seed customer activities with real customer IDs
+        results["customer_activities"] = await seed_customer_activities()
+
+        # Seed collections linked to customers with loans (skip if table doesn't exist)
+        try:
+            results["collections"] = await seed_collections()
+        except Exception as e:
+            if "collections" in str(e).lower() and "does not exist" in str(e).lower():
+                logger.warning("Skipping collections seeding - table doesn't exist yet")
+                results["collections"] = {"collections_created": 0, "note": "Table not created - run migration first"}
+            else:
+                raise
 
         # Recommendation 3: Seed PEP records
         results["pep_records"] = await seed_pep_records_comprehensive()

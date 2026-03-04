@@ -10,9 +10,10 @@ from decimal import Decimal
 from datetime import datetime, date
 
 from .database import get_async_session_local
-from .database.pg_core_models import User, Customer, SavingsAccount, Loan
+from .database.pg_core_models import User, Customer, SavingsAccount, Loan, SavingsTransaction
 from .database.pg_loan_models import LoanTransaction, LoanApplication, AmortizationSchedule, PGLoanProduct
 from .database.pg_accounting_models import GLAccount, JournalEntry, JournalLine
+from .database.pg_models import CustomerActivity, Collection, Branch
 
 
 @strawberry.type
@@ -61,6 +62,37 @@ class SavingsAccountNode:
     accountNumber: str
     balance: Decimal
     customerId: str
+
+
+@strawberry.type
+class SavingsTransactionNode:
+    id: str
+    accountId: str
+    amount: Decimal
+    type: str
+    reference: Optional[str] = None
+    description: Optional[str] = None
+    createdAt: datetime
+
+
+@strawberry.type
+class CollectionNode:
+    id: str
+    customerId: str
+    amount: Decimal
+    status: str
+    dueDate: date
+    createdAt: datetime
+
+
+@strawberry.type
+class CustomerActivityNode:
+    id: str
+    customerId: str
+    activityType: str
+    description: Optional[str] = None
+    timestamp: datetime
+    createdBy: Optional[str] = None
 
 
 @strawberry.type
@@ -124,11 +156,21 @@ class GLTransactionNode:
 
 
 @strawberry.type
+class CollectionBucket:
+    label: str
+    loanCount: int
+    totalOutstanding: Decimal
+
+
+@strawberry.type
 class CollectionsDashboardNode:
-    totalCollections: Decimal
-    pendingCollections: Decimal
-    overdueCollections: Decimal
-    collectedThisMonth: Decimal
+    totalLoans: int
+    totalOutstanding: Decimal
+    buckets: List[CollectionBucket]
+    totalCollections: Decimal = Decimal('0.00')
+    pendingCollections: Decimal = Decimal('0.00')
+    overdueCollections: Decimal = Decimal('0.00')
+    collectedThisMonth: Decimal = Decimal('0.00')
 
 
 @strawberry.type
@@ -287,6 +329,85 @@ class Query:
             return [SavingsAccountNode(id=str(a.id), accountNumber=a.account_number, balance=a.balance, customerId=str(a.customer_id)) for a in accounts]
 
     @strawberry.field
+    async def savingsTransactions(self, accountId: strawberry.ID) -> List[SavingsTransactionNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(
+                select(SavingsTransaction).where(SavingsTransaction.account_id == int(accountId))
+            )
+            transactions = result.scalars().all()
+            return [
+                SavingsTransactionNode(
+                    id=str(t.id),
+                    accountId=str(t.account_id),
+                    amount=t.amount,
+                    type=t.transaction_type,
+                    reference=t.reference,
+                    description=t.description,
+                    createdAt=t.created_at
+                )
+                for t in transactions
+            ]
+
+    @strawberry.field
+    async def customerActivities(self, customerId: str) -> List[CustomerActivityNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(
+                select(CustomerActivity).where(CustomerActivity.customer_id == customerId)
+            )
+            activities = result.scalars().all()
+            return [
+                CustomerActivityNode(
+                    id=str(a.id),
+                    customerId=str(a.customer_id),
+                    activityType=a.action,
+                    description=a.detail,
+                    timestamp=a.created_at,
+                    createdBy=a.actor_username or "system"
+                )
+                for a in activities
+            ]
+
+    @strawberry.field
+    async def collections(self) -> List[CollectionNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(select(Collection))
+            collections = result.scalars().all()
+            return [
+                CollectionNode(
+                    id=str(c.id),
+                    customerId=str(c.customer_id),
+                    amount=c.amount,
+                    status=c.status,
+                    dueDate=c.due_date,
+                    createdAt=c.created_at
+                )
+                for c in collections
+            ]
+
+    @strawberry.field
+    async def collectionDue(self) -> Optional[CollectionNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            today = date.today()
+            result = await session.execute(
+                select(Collection).where(Collection.due_date <= today)
+            )
+            collection = result.scalar_one_or_none()
+            if not collection:
+                return None
+            return CollectionNode(
+                id=str(collection.id),
+                customerId=str(collection.customer_id),
+                amount=collection.amount,
+                status=collection.status,
+                dueDate=collection.due_date,
+                createdAt=collection.created_at
+            )
+
+    @strawberry.field
     async def glAccounts(self) -> List[GLAccountNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
@@ -308,11 +429,57 @@ class Query:
         today = date.today()
         first_day_of_month = today.replace(day=1)
         async with session_factory() as session:
+            # 1. Dashboard Metrics
             total_collections = (await session.execute(select(func.sum(AmortizationSchedule.principal_paid + AmortizationSchedule.interest_paid)))).scalar() or Decimal('0.00')
             pending_collections = (await session.execute(select(func.sum(AmortizationSchedule.principal_due + AmortizationSchedule.interest_due - AmortizationSchedule.principal_paid - AmortizationSchedule.interest_paid)).where(AmortizationSchedule.due_date >= today))).scalar() or Decimal('0.00')
             overdue_collections = (await session.execute(select(func.sum(AmortizationSchedule.principal_due + AmortizationSchedule.interest_due - AmortizationSchedule.principal_paid - AmortizationSchedule.interest_paid)).where(AmortizationSchedule.due_date < today))).scalar() or Decimal('0.00')
             collected_this_month = (await session.execute(select(func.sum(AmortizationSchedule.principal_paid + AmortizationSchedule.interest_paid)).where(AmortizationSchedule.due_date >= first_day_of_month))).scalar() or Decimal('0.00')
-            return CollectionsDashboardNode(totalCollections=total_collections, pendingCollections=pending_collections, overdueCollections=overdue_collections, collectedThisMonth=collected_this_month)
+            
+            # 2. Aging Buckets (Simplified logic based on overdue installments)
+            # Fetch all unpaid installments to bucketize
+            stmt = select(AmortizationSchedule).where(AmortizationSchedule.status != 'paid')
+            unpaid = (await session.execute(stmt)).scalars().all()
+            
+            buckets = {
+                'Current': {'count': 0, 'amount': Decimal('0.00')},
+                '1-30 DPD': {'count': 0, 'amount': Decimal('0.00')},
+                '31-60 DPD': {'count': 0, 'amount': Decimal('0.00')},
+                '61-90 DPD': {'count': 0, 'amount': Decimal('0.00')},
+                '90+ DPD': {'count': 0, 'amount': Decimal('0.00')}
+            }
+            
+            loan_ids_counted = set()
+            total_loans_count = (await session.execute(select(func.count(LoanApplication.id)))).scalar() or 0
+            total_outstanding_stmt = select(func.sum(AmortizationSchedule.principal_due + AmortizationSchedule.interest_due - AmortizationSchedule.principal_paid - AmortizationSchedule.interest_paid))
+            total_outstanding = (await session.execute(total_outstanding_stmt)).scalar() or Decimal('0.00')
+
+            for item in unpaid:
+                days_past_due = (today - item.due_date).days
+                amount_due = item.principal_due + item.interest_due - item.principal_paid - item.interest_paid
+                
+                label = 'Current'
+                if days_past_due > 90: label = '90+ DPD'
+                elif days_past_due > 60: label = '61-90 DPD'
+                elif days_past_due > 30: label = '31-60 DPD'
+                elif days_past_due > 0: label = '1-30 DPD'
+                
+                buckets[label]['amount'] += amount_due
+                buckets[label]['count'] += 1 # In a real system this would be per loan, but using per installment for simplicity
+                
+            bucket_nodes = [
+                CollectionBucket(label=k, loanCount=v['count'], totalOutstanding=v['amount'])
+                for k, v in buckets.items()
+            ]
+            
+            return CollectionsDashboardNode(
+                totalLoans=total_loans_count,
+                totalOutstanding=total_outstanding,
+                buckets=bucket_nodes,
+                totalCollections=total_collections,
+                pendingCollections=pending_collections,
+                overdueCollections=overdue_collections,
+                collectedThisMonth=collected_this_month
+            )
 
     @strawberry.field
     async def auditLogs(self, limit: int = 50, offset: int = 0) -> List[AuditLogNode]: return []
