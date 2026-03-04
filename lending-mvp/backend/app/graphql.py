@@ -68,7 +68,7 @@ class SavingsAccountNode:
     accountNumber: str
     balance: Decimal
     customerId: str
-    type: str
+    accountType: str
     status: str
     openedAt: datetime
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
@@ -85,7 +85,7 @@ class SavingsTransactionNode:
     id: str
     accountId: str
     amount: Decimal
-    type: str
+    accountType: str
     reference: Optional[str] = None
     description: Optional[str] = None
     createdAt: datetime
@@ -145,7 +145,7 @@ class GLAccountNode:
     id: str
     accountNumber: str
     name: str
-    type: str # asset, liability, equity, income, expense
+    accountType: str # asset, liability, equity, income, expense
     balance: Decimal
     createdAt: datetime
 
@@ -166,7 +166,7 @@ class GLTransactionNode:
     id: str
     accountId: str
     amount: Decimal
-    type: str # debit or credit
+    accountType: str # debit or credit
     reference: str
     createdAt: datetime
 
