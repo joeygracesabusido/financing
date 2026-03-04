@@ -310,13 +310,12 @@ async def open_cash_drawer(
     """Open teller cash drawer session"""
     result = await TellerOperations.open_cash_drawer(data)
     
-    # # await audit_log(
+    # await audit_log(
         user_id=str(current_user["id"]),
         action="CASH_DRAWER_OPENED",
         details=f"Opened cash drawer with initial amount {data.initial_amount}",
         metadata={"session_id": result.session_id}
-        )
-        
+    )
     await send_notification(
         user_id=str(current_user["id"]),
         title="Cash Drawer Opened",
@@ -338,14 +337,12 @@ async def close_cash_drawer(
     if result.variance != 0:
         variance_msg = f" with variance of {result.variance}"
     
-# # await audit_log(
+    # await audit_log(
         user_id=str(current_user["id"]),
-        action="CASH_DRAWER_CLOSED",
-        details=f"Closed cash drawer{variance_msg}",
-        metadata={"session_id": result.session_id, "variance": result.variance}
+        action="CASH_DRAWER_OPENED",
+        details=f"Opened cash drawer with initial amount {data.initial_amount}",
+        metadata={"session_id": result.session_id}
     )
-    
-    await send_notification(
         user_id=str(current_user["id"]),
         title="Cash Drawer Closed",
         message=f"Your cash drawer session has been closed{variance_msg}",
@@ -362,14 +359,12 @@ async def process_cash_transaction(
     """Process a cash drawer transaction"""
     result = await TellerOperations.process_transaction(data)
     
-# # await audit_log(
+    # await audit_log(
         user_id=str(current_user["id"]),
-        action="CASH_TRANSACTION_PROCESSED",
-        details=f"Processed {data.transaction_type} transaction of {data.amount}",
-        metadata={"transaction_id": result["transaction_id"], "session_id": data.session_id}
+        action="CASH_DRAWER_OPENED",
+        details=f"Opened cash drawer with initial amount {data.initial_amount}",
+        metadata={"session_id": result.session_id}
     )
-    
-    await send_notification(
         user_id=str(current_user["id"]),
         title="Transaction Processed",
         message=f"Your {data.transaction_type} transaction of {data.amount} has been processed",
@@ -394,86 +389,9 @@ async def set_transaction_limits(
     """Set transaction limits for a role"""
     result = await TellerOperations.set_transaction_limits(data)
     
-# # await audit_log(
+    # await audit_log(
         user_id=str(current_user["id"]),
-        action="TRANSACTION_LIMITS_SET",
-        details=f"Set transaction limits for role {data.role}",
-        metadata={"role": data.role, "daily_limit": float(data.daily_limit)}
-    )
-    
-    return result
-
-@router.put("/transaction-limits/{limit_id}", response_model=TransactionLimitConfig)
-async def update_transaction_limits(
-    limit_id: str,
-    data: TransactionLimitUpdate,
-    current_user: dict = Depends(...)
-):
-    """Update transaction limits"""
-    result = await TellerOperations.update_transaction_limits(limit_id, data)
-    
-# # await audit_log(
-        user_id=str(current_user["id"]),
-        action="TRANSACTION_LIMITS_UPDATED",
-        details=f"Updated transaction limits for limit ID {limit_id}",
-        metadata={"limit_id": limit_id}
-    )
-    
-    return result
-
-@router.get("/transaction-limits/role/{role}", response_model=TransactionLimitConfig)
-async def get_transaction_limits_for_role(
-    role: str,
-    current_user: dict = Depends(...)
-):
-    """Get transaction limits for a specific role"""
-    limit = await db.transaction_limits.find_one({"role": role, "active": True})
-    
-    if not limit:
-        raise HTTPException(status_code=404, detail="Transaction limits not found for this role")
-    
-    return TransactionLimitConfig(
-        id=str(limit["_id"]),
-        role=limit["role"],
-        daily_limit=limit["daily_limit"],
-        weekly_limit=limit["weekly_limit"],
-        monthly_limit=limit["monthly_limit"],
-        single_transaction_limit=limit["single_transaction_limit"],
-        branch_id=limit.get("branch_id"),
-        active=limit["active"]
-    )
-
-@router.get("/cash-drawer/sessions", response_model=List[CashDrawerSession])
-async def get_teller_sessions(
-    current_user: dict = Depends(...)
-):
-    """Get all teller sessions for current user"""
-    sessions = await db.cash_drawers.find({
-        "teller_id": str(current_user["id"])
-    }).to_list(100)
-    
-    return sessions
-
-@router.get("/cash-drawer/active", response_model=CashDrawerSession)
-async def get_active_session(
-    current_user: dict = Depends(...)
-):
-    """Get active session for current user"""
-    session = await db.cash_drawers.find_one({
-        "teller_id": str(current_user["id"]),
-        "status": "open"
-    })
-    
-    if not session:
-        raise HTTPException(status_code=404, detail="No active session found")
-    
-    return CashDrawerSession(
-        session_id=str(session["_id"]),
-        teller_id=session["teller_id"],
-        branch_id=session["branch_id"],
-        opening_time=session["opening_time"],
-        initial_amount=session["initial_amount"],
-        current_amount=session["current_amount"],
-        status=session["status"],
-        notes=session.get("notes")
+        action="CASH_DRAWER_OPENED",
+        details=f"Opened cash drawer with initial amount {data.initial_amount}",
+        metadata={"session_id": result.session_id}
     )
