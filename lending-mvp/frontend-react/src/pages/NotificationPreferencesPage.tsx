@@ -46,9 +46,10 @@ export default function NotificationPreferencesPage() {
   };
 
   const handleToggle = (type: 'email' | 'sms' | 'push') => {
+    const key = `${type}Enabled`;
     setPreferences((prev) => ({
       ...prev,
-      [`${type}Enabled`]: !prev[`${type}Enabled`] as boolean,
+      [key]: !prev[key],
     }));
   };
 
