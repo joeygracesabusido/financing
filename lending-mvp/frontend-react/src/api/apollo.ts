@@ -1,10 +1,10 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core'
-import { onError } from '@apollo/client/link/error'
 import { setContext } from '@apollo/client/link/context'
 
 // Use Apollo Client's createHttpLink for REST API
 const httpLink = createHttpLink({
     uri: '/graphql',
+    credentials: 'include',
 })
 
 const authLink = setContext((_, { headers }) => {
@@ -17,23 +17,10 @@ const authLink = setContext((_, { headers }) => {
     }
 })
 
-const errorLink = onError(({ networkError }) => {
-    if (networkError) {
-        console.error(`[Network error]: ${networkError}`)
-        if (networkError.message.toLowerCase().includes('unauthorized') || 
-            networkError.message.toLowerCase().includes('not authenticated')) {
-            localStorage.removeItem('access_token')
-            localStorage.removeItem('user')
-            localStorage.removeItem('refresh_token')
-            window.location.href = '/login'
-        }
-    }
-})
-
 export const apolloClient = new ApolloClient({
-    link: [errorLink, authLink, httpLink],
+    link: [httpLink, authLink],
     cache: new InMemoryCache(),
     defaultOptions: {
-        watchQuery: { fetchPolicy: 'cache-and-network' },
+        query: { fetchPolicy: 'cache-first' },
     },
 })

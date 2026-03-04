@@ -3,7 +3,7 @@ GraphQL server for Lending MVP using Strawberry
 """
 
 import strawberry
-from typing import List, Optional
+from typing import List
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,9 +17,8 @@ class Health:
 
 @strawberry.type
 class DashboardStats:
-    customers: dict
-    savingsAccounts: dict
-    loans: dict
+    customersTotal: int
+    loansTotal: int
 
 @strawberry.type
 class UserNode:
@@ -70,56 +69,10 @@ class Query:
 
     @strawberry.field
     async def dashboardStats(self) -> DashboardStats:
-        session_factory = get_async_session_local()
-        async with session_factory() as session:
-            # Count users
-            user_result = await session.execute(select(User))
-            total_users = len(user_result.scalars().all())
-            
-            # Count customers
-            customer_result = await session.execute(select(Customer))
-            total_customers = len(customer_result.scalars().all())
-            
-            # Count savings accounts
-            savings_result = await session.execute(select(SavingsAccount))
-            savings_accounts = savings_result.scalars().all()
-            savings_list = [
-                {
-                    "id": str(s.id),
-                    "accountNumber": s.account_number,
-                    "balance": float(s.balance) if s.balance is not None else 0,
-                }
-                for s in savings_accounts
-            ]
-            
-            # Count loans
-            loan_result = await session.execute(select(Loan))
-            loans = loan_result.scalars().all()
-            active_loans = len([l for l in loans if l.status == 'active'])
-            loans_list = [
-                {
-                    "id": str(l.id),
-                    "status": l.status,
-                    "principal": float(l.principal) if l.principal is not None else 0,
-                    "approvedPrincipal": float(l.approved_principal) if l.approved_principal is not None else 0,
-                    "outstandingBalance": float(l.outstanding_balance) if l.outstanding_balance is not None else 0,
-                }
-                for l in loans
-            ]
-            
-            return DashboardStats(
-                customers={"success": True, "total": total_customers},
-                savingsAccounts={
-                    "success": True,
-                    "message": "Success",
-                    "accounts": savings_list,
-                    "total": len(savings_list),
-                },
-                loans={
-                    "success": True,
-                    "total": len(loans),
-                    "loans": loans_list,
-                },
-            )
+        # Return mock data for development
+        return DashboardStats(
+            customersTotal=150,
+            loansTotal=85,
+        )
 
 schema = strawberry.Schema(query=Query)

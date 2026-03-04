@@ -11,22 +11,25 @@ export default defineConfig({
             '@material-tailwind/react': path.resolve(__dirname, './node_modules/@material-tailwind/react'),
         },
     },
+    optimizeDeps: {
+        include: ['@apollo/client'],
+    },
     server: {
         host: '0.0.0.0',
         port: 3000,
         proxy: {
             '/graphql': {
-                target: 'http://localhost:8001',
+                target: 'http://lending_backend:8000',
                 changeOrigin: true,
                 secure: false,
             },
             '/api-login/': {
-                target: 'http://localhost:8001',
+                target: 'http://lending_backend:8000',
                 changeOrigin: true,
                 secure: false,
             },
             '/api': {
-                target: 'http://localhost:8001',
+                target: 'http://lending_backend:8000',
                 changeOrigin: true,
                 secure: false,
             },

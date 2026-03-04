@@ -1,12 +1,9 @@
-version: '3.9'
-
 # ─────────────────────────────────────────────────────────────────────────────
 # Lending MVP — PostgreSQL 16 Only Stack
 #   Frontend  : React (Vite) → http://localhost:3010
 #   Backend   : FastAPI + Strawberry GraphQL → http://localhost:8001
 #   PostgreSQL: Port 5433 (host) → 5432 (container)   — PostgreSQL 16
 #   Redis     : Port 6380 (host) → 6379 (container)   — avoids host conflicts
-#   MongoDB   : REMOVED (full migration to PostgreSQL 16)
 # ─────────────────────────────────────────────────────────────────────────────
 
 networks:
@@ -80,13 +77,9 @@ services:
     env_file:
       - ./.env
     environment:
-      # PostgreSQL 16 (primary database)
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-lending_user}:${POSTGRES_PASSWORD:-lending_secret}@postgres:5432/${POSTGRES_DB:-lending_db}
-      # Redis
       REDIS_URL: redis://:${REDIS_PASSWORD:-lending_redis_pass}@redis:6379/0
-      # Enable demo data seeding
       SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
-      # Increased for E2E parallel testing (each test creates its own session)
       MAX_CONCURRENT_SESSIONS: 200
 
   # ── Frontend (React + Vite dev server) ────────────────────────────────────
@@ -102,9 +95,8 @@ services:
       - "3010:3000"
     volumes:
       - ./frontend-react:/app
-      - /app/node_modules          # anonymous volume keeps node_modules inside container
     depends_on:
       - backend
     environment:
-      VITE_GRAPHQL_URL: /api
-      VITE_API_URL: http://localhost:8001
+      VITE_GRAPHQL_URL: /graphql
+      VITE_API_URL: http://lending_backend:8000

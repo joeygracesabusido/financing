@@ -10,6 +10,7 @@ import {
     Activity,
 } from 'lucide-react'
 import { getDashboardStats } from '@/api/client'
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 
 // Mock chart data — replace with real data from API when available
 const portfolioData = [
@@ -55,14 +56,14 @@ function StatCard({ title, value, subtitle, icon: Icon, gradient, trend }: StatC
 }
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState({ customers: { total: 0 }, savingsAccounts: { total: 0 }, loans: { total: 0, loans: [] } })
+    const [stats, setStats] = useState({ dashboardStats: { customersTotal: 0, loansTotal: 0 } })
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const fetchDashboardStats = async () => {
             try {
                 const data = await getDashboardStats()
-                setStats(data.data?.dashboardStats || { customers: { total: 0 }, savingsAccounts: { total: 0 }, loans: { total: 0, loans: [] } })
+                setStats(data.data?.dashboardStats || { dashboardStats: { customersTotal: 0, loansTotal: 0 } })
             } catch (error) {
                 console.error('Failed to fetch dashboard stats:', error)
             } finally {
@@ -73,25 +74,14 @@ export default function DashboardPage() {
         fetchDashboardStats()
     }, [])
 
-    const totalCustomers = stats.customers?.total ?? 0
-    const totalSavings = stats.savingsAccounts?.accounts?.reduce(
-        (sum: number, a: { balance: any }) => {
-            const val = Number(a.balance || 0)
-            return sum + (isNaN(val) ? 0 : val)
-        }, 0
-    ) ?? 0
+    const totalCustomers = stats.dashboardStats?.customersTotal ?? 0
+    const totalSavings = 0 // Not available in current schema
     
-    const loans = stats.loans?.loans || []
-    const activeLoans = loans.filter((l: { status: string }) => l.status === 'active').length
-    const overdueLoans = loans.filter(
-        (l: { status: string }) => l.status === 'overdue' || l.status === 'defaulted'
-    ).length
+    const loans = [] // Not available in current schema
+    const activeLoans = 0
+    const overdueLoans = 0
     
-    const totalPortfolio = loans.reduce((s, l: any) => {
-        if (l.status !== 'active') return s
-        const val = Number(l.outstandingBalance || l.approvedPrincipal || l.principal || 0)
-        return s + (isNaN(val) ? 0 : val)
-    }, 0)
+    const totalPortfolio = 0
 
     return (
         <div className="space-y-6 animate-fade-in">

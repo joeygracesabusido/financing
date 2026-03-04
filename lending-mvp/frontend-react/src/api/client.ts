@@ -31,7 +31,7 @@ export const getDashboardStats = async () => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      query: `{ dashboardStats { customers { total } savingsAccounts { total } loans { total } } }`
+      query: `{ dashboardStats { customersTotal loansTotal } }`
     }),
   })
   if (!response.ok) {
