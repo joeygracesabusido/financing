@@ -68,6 +68,16 @@ class SavingsAccountNode:
     accountNumber: str
     balance: Decimal
     customerId: str
+    type: str
+    status: str
+    openedAt: datetime
+    createdAt: datetime = strawberry.field(default_factory=datetime.now)
+
+
+@strawberry.type
+class SavingsAccountConnection:
+    accounts: List[SavingsAccountNode]
+    total: int
 
 
 @strawberry.type
@@ -354,14 +364,40 @@ class Query:
             return [LoanTransactionNode(id=str(t.id), loanId=str(t.loan_id), amount=t.amount, transactionType=t.type, description=t.description, reference=t.receipt_number, createdAt=t.timestamp) for t in txs]
 
     @strawberry.field
-    async def savingsAccounts(self, skip: int = 0, limit: int = 100, customerId: Optional[str] = None) -> List[SavingsAccountNode]:
+    async def savingsAccounts(
+        self, 
+        skip: int = 0, 
+        limit: int = 100,
+        customerId: Optional[str] = None,
+        searchTerm: Optional[str] = None
+    ) -> SavingsAccountConnection:
         session_factory = get_async_session_local()
         async with session_factory() as session:
             stmt = select(SavingsAccount)
             if customerId: stmt = stmt.where(SavingsAccount.customer_id == customerId)
+            if searchTerm:
+                stmt = stmt.where(SavingsAccount.account_number.ilike(f"%{searchTerm}%"))
+            
             result = await session.execute(stmt.offset(skip).limit(limit))
             accounts = result.scalars().all()
-            return [SavingsAccountNode(id=str(a.id), accountNumber=a.account_number, balance=a.balance, customerId=str(a.customer_id)) for a in accounts]
+            
+            account_count = await session.execute(select(func.count()).select_from(SavingsAccount))
+            total = account_count.scalar()
+            
+            return SavingsAccountConnection(
+                accounts=[
+                    SavingsAccountNode(
+                        id=str(a.id),
+                        accountNumber=a.account_number,
+                        balance=a.balance,
+                        customerId=str(a.customer_id),
+                        type=a.type,
+                        status=a.status,
+                        openedAt=a.opened_at
+                    ) for a in accounts
+                ],
+                total=total
+            )
 
     @strawberry.field
     async def savingsTransactions(self, accountId: strawberry.ID) -> List[SavingsTransactionNode]:
