@@ -26,8 +26,7 @@ export default function CollectionDuePage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    query: `query GetCollectionsDue($days: Int!) { collectionDue(days: $days) { id customerId amount status dueDate createdAt } }`,
-                    variables: { days }
+                    query: `query GetCollectionsDue { collectionDue { id customerId amount status dueDate createdAt } }`
                 })
             })
             const data = await res.json()
@@ -39,7 +38,7 @@ export default function CollectionDuePage() {
         }
     }
 
-    useEffect(() => { init() }, [days])
+    useEffect(() => { init() }, [])
 
     const getStatusColor = (status: string) => {
         const colors: { [key: string]: string } = {
