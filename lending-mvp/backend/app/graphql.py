@@ -580,24 +580,25 @@ class Query:
             ]
 
     @strawberry.field
-    async def collectionDue(self) -> Optional[CollectionNode]:
+    async def collectionDue(self) -> List[CollectionNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
             today = date.today()
             result = await session.execute(
-                select(Collection).where(Collection.due_date <= today).order_by(Collection.due_date.asc()).limit(1)
+                select(Collection).where(Collection.due_date <= today).order_by(Collection.due_date.asc())
             )
-            collection = result.scalar_one_or_none()
-            if not collection:
-                return None
-            return CollectionNode(
-                id=str(collection.id),
-                customerId=str(collection.customer_id),
-                amount=collection.amount,
-                status=collection.status,
-                dueDate=collection.due_date,
-                createdAt=collection.created_at
-            )
+            collections = result.scalars().all()
+            return [
+                CollectionNode(
+                    id=str(c.id),
+                    customerId=str(c.customer_id),
+                    amount=c.amount,
+                    status=c.status,
+                    dueDate=c.due_date,
+                    createdAt=c.created_at
+                )
+                for c in collections
+            ]
 
     @strawberry.field
     async def glAccounts(self) -> List[GLAccountNode]:
