@@ -35,7 +35,7 @@ export default function NotificationPreferencesPage() {
 
   const fetchPreferences = async () => {
     try {
-      const response = await fetch('/api/v1/teller/notification-preferences');
+      const response = await fetch(`${API_URL}/api/v1/teller/notification-preferences');
       if (response.ok) {
         const data = await response.json();
         setPreferences(data);
@@ -56,7 +56,7 @@ export default function NotificationPreferencesPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/v1/teller/notification-preferences', {
+      const response = await fetch(`${API_URL}/api/v1/teller/notification-preferences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

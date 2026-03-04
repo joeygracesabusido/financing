@@ -61,7 +61,7 @@ export default function TellerTransactionLimitsPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/v1/teller/transaction-limits', {
+      const response = await fetch(`${API_URL}/api/v1/teller/transaction-limits', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -58,7 +58,7 @@ export default function TellerCashDrawerPage() {
 
   const fetchSession = async () => {
     try {
-      const response = await fetch('/api/v1/teller/cash-drawer/active');
+      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/active`);
       if (response.ok) {
         const data = await response.json();
         setSession(data);
@@ -73,7 +73,7 @@ export default function TellerCashDrawerPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/v1/teller/cash-drawer/transaction', {
+      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/transaction', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ export default function TellerCashDrawerPage() {
     const actualAmount = parseFloat(amount) || 0;
 
     try {
-      const response = await fetch('/api/v1/teller/cash-drawer/close', {
+      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/close', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
