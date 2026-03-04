@@ -338,7 +338,7 @@ async def close_cash_drawer(
         variance_msg = f" with variance of {result.variance}"
     
     # await audit_log(
-        user_id=str(current_user["id"]),
+                user_id=str(current_user["id"]),
         action="CASH_DRAWER_OPENED",
         details=f"Opened cash drawer with initial amount {data.initial_amount}",
         metadata={"session_id": result.session_id}
@@ -360,7 +360,7 @@ async def process_cash_transaction(
     result = await TellerOperations.process_transaction(data)
     
     # await audit_log(
-        user_id=str(current_user["id"]),
+                user_id=str(current_user["id"]),
         action="CASH_DRAWER_OPENED",
         details=f"Opened cash drawer with initial amount {data.initial_amount}",
         metadata={"session_id": result.session_id}
@@ -390,7 +390,7 @@ async def set_transaction_limits(
     result = await TellerOperations.set_transaction_limits(data)
     
     # await audit_log(
-        user_id=str(current_user["id"]),
+                user_id=str(current_user["id"]),
         action="CASH_DRAWER_OPENED",
         details=f"Opened cash drawer with initial amount {data.initial_amount}",
         metadata={"session_id": result.session_id}
