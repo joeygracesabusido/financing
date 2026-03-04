@@ -420,7 +420,7 @@ export const GET_SAVINGS = gql`
         accountNumber
         balance
         customerId
-        type
+        accountType
         status
         openedAt
       }
@@ -436,7 +436,7 @@ export const GET_SAVINGS_ACCOUNT = gql`
       accountNumber
       balance
       customerId
-      type
+      accountType
       status
       openedAt
     }
@@ -502,7 +502,7 @@ export const GET_GL_ACCOUNTS = gql`
       id
       accountNumber
       name
-      type
+      accountType
       balance
       createdAt
     }
@@ -543,7 +543,7 @@ export const GET_GL_ACCOUNT_TRANSACTIONS = gql`
       id
       accountId
       amount
-      type
+      accountType
       reference
       createdAt
     }
@@ -841,7 +841,7 @@ export const CREATE_GL_ACCOUNT = gql`
       id
       accountNumber
       name
-      type
+      accountType
       balance
       createdAt
       success
@@ -856,7 +856,7 @@ export const UPDATE_GL_ACCOUNT = gql`
       id
       accountNumber
       name
-      type
+      accountType
       balance
       success
       message
@@ -923,7 +923,7 @@ export const GET_CUSTOMER_SAVINGS = gql`
         accountNumber
         balance
         customerId
-        type
+        accountType
         status
         openedAt
       }
