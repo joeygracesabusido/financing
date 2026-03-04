@@ -1104,6 +1104,7 @@ async def seed_collections() -> Dict[str, Any]:
                     reference_number=f"COL-{months_ago:03d}-{customer.id}",
                     notes=f"Collection for {customer_name}",
                     created_at=datetime.now(timezone.utc) - timedelta(days=30 * months_ago),
+                    updated_at=datetime.now(timezone.utc),
                 )
                 session.add(collection)
                 created_collections += 1
