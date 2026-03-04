@@ -391,7 +391,7 @@ class Query:
                         accountNumber=a.account_number,
                         balance=a.balance,
                         customerId=str(a.customer_id),
-                        account_type=a.account_type,
+                        accountType=a.account_type,
                         status=a.status,
                         openedAt=a.opened_at
                     ) for a in accounts
