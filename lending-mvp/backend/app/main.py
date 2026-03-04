@@ -84,7 +84,7 @@ app.include_router(login_endpoint.router, prefix="")
 
 # Include REST API endpoints
 app.include_router(rest_api.router, prefix="")
-app.include_router(teller.router, prefix="")
+# app.include_router(teller.router, prefix="")  # Disabled
 
 # Mount the real Strawberry GraphQL router
 from strawberry.fastapi import GraphQLRouter
