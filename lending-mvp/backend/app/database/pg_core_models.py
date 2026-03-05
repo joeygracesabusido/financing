@@ -142,13 +142,28 @@ class SavingsAccount(Base):
     account_type = Column(String(50), nullable=False)  # "regular", "fixed", "salary"
     
     balance = Column(Numeric(15, 2), default=0.00, nullable=False)
-    currency = Column(String(3), default="USD", nullable=False)
+    currency = Column(String(3), default="PHP", nullable=False)
     
     status = Column(String(20), default="active", nullable=False)
     
     interest_rate = Column(Numeric(5, 2), default=0.00)
     opened_at = Column(DateTime(timezone=True), server_default=func.now())
     
+    # Ported from master branch
+    maturity_date = Column(DateTime(timezone=True), nullable=True)
+    principal = Column(Numeric(15, 2), nullable=True)
+    term_days = Column(Integer, nullable=True)
+    interest_paid_frequency = Column(String(50), nullable=True)
+    target_amount = Column(Numeric(15, 2), nullable=True)
+    target_date = Column(DateTime(timezone=True), nullable=True)
+    goal_name = Column(String(200), nullable=True)
+    guardian_id = Column(String(64), nullable=True)
+    guardian_name = Column(String(200), nullable=True)
+    minor_date_of_birth = Column(DateTime(timezone=True), nullable=True)
+    secondary_owner_id = Column(String(64), nullable=True)
+    secondary_owner_name = Column(String(200), nullable=True)
+    operation_mode = Column(String(50), nullable=True, default="EITHER")
+
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(
         DateTime(timezone=True), 

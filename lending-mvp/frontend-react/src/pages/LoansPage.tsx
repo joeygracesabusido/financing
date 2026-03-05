@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Search, Plus, Eye, FileText } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { getLoans } from '@/api/loans'
+import { useNavigate } from 'react-router-dom'
 
 interface Loan {
     id: string
@@ -21,7 +22,8 @@ interface Loan {
 
 export default function LoansPage() {
     const { user } = useAuth()
-    const isAdmin = user?.role === 'admin'
+    const navigate = useNavigate()
+    const canCreateLoan = user?.role === 'admin' || user?.role === 'branch_manager'
 
     const [loading, setLoading] = useState(true)
     const [loansData, setLoansData] = useState<Loan[]>([])
@@ -59,8 +61,11 @@ export default function LoansPage() {
                     <h1 className="text-2xl font-bold text-foreground">Loans</h1>
                     <p className="text-muted-foreground text-sm mt-1">Manage loan applications</p>
                 </div>
-                {isAdmin && (
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-medium shadow-lg hover:opacity-90 transition-opacity">
+                {canCreateLoan && (
+                    <button 
+                        onClick={() => navigate('/customer/loans/new')}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-medium shadow-lg hover:opacity-90 transition-opacity"
+                    >
                         <Plus className="w-4 h-4" /> New Loan
                     </button>
                 )}

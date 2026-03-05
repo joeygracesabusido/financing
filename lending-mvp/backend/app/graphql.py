@@ -203,6 +203,23 @@ class SavingsAccountNode:
     status: str
     openedAt: datetime
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
+    
+    # Ported from master
+    currency: str = "PHP"
+    interestRate: Optional[Decimal] = None
+    maturityDate: Optional[datetime] = None
+    principal: Optional[Decimal] = None
+    termDays: Optional[int] = None
+    interestPaidFrequency: Optional[str] = None
+    targetAmount: Optional[Decimal] = None
+    targetDate: Optional[datetime] = None
+    goalName: Optional[str] = None
+    guardianId: Optional[str] = None
+    guardianName: Optional[str] = None
+    minorDateOfBirth: Optional[datetime] = None
+    secondaryOwnerId: Optional[str] = None
+    secondaryOwnerName: Optional[str] = None
+    operationMode: Optional[str] = "EITHER"
 
     @strawberry.field
     async def customer(self) -> Optional[CustomerNode]:
@@ -225,6 +242,39 @@ class SavingsAccountNode:
             )
 
 
+@strawberry.input
+class SavingsAccountCreateInput:
+    customerId: str
+    accountNumber: str
+    accountType: str
+    balance: Decimal = Decimal("0.00")
+    currency: str = "PHP"
+    status: str = "active"
+    openedAt: Optional[datetime] = None
+    
+    # Ported from master
+    interestRate: Optional[Decimal] = None
+    interestPaidFrequency: Optional[str] = None
+    principal: Optional[Decimal] = None
+    termDays: Optional[int] = None
+    targetAmount: Optional[Decimal] = None
+    targetDate: Optional[datetime] = None
+    goalName: Optional[str] = None
+    guardianId: Optional[str] = None
+    guardianName: Optional[str] = None
+    minorDateOfBirth: Optional[datetime] = None
+    secondaryOwnerId: Optional[str] = None
+    secondaryOwnerName: Optional[str] = None
+    operationMode: Optional[str] = "EITHER"
+
+
+@strawberry.type
+class SavingsAccountResponse:
+    success: bool
+    message: str
+    account: Optional[SavingsAccountNode] = None
+
+
 @strawberry.type
 class SavingsAccountConnection:
     accounts: List[SavingsAccountNode]
@@ -240,6 +290,22 @@ class SavingsTransactionNode:
     reference: Optional[str] = None
     description: Optional[str] = None
     createdAt: datetime
+
+
+@strawberry.input
+class SavingsTransactionCreateInput:
+    accountId: str
+    amount: Decimal
+    transactionType: str  # "deposit" | "withdrawal"
+    description: Optional[str] = None
+    reference: Optional[str] = None
+
+
+@strawberry.type
+class SavingsTransactionResponse:
+    success: bool
+    message: str
+    transaction: Optional[SavingsTransactionNode] = None
 
 
 @strawberry.type
@@ -303,6 +369,132 @@ class LoanTransactionNode:
     status: str = "success"
     reference: Optional[str] = None
     createdAt: datetime
+    
+    # Ported from master
+    commercialBank: Optional[str] = None
+    servicingBranch: Optional[str] = None
+    region: Optional[str] = None
+    loanProductId: Optional[str] = None
+    debitAccount: Optional[str] = None
+    creditAccount: Optional[str] = None
+    disbursementMethod: Optional[str] = None
+    disbursementStatus: Optional[str] = "pending"
+    chequeNumber: Optional[str] = None
+    beneficiaryBank: Optional[str] = None
+    beneficiaryAccount: Optional[str] = None
+    approvedBy: Optional[str] = None
+    processedBy: Optional[str] = None
+    createdBy: Optional[str] = None
+    updatedBy: Optional[str] = None
+    borrowerName: Optional[str] = "N/A"
+    updatedAt: datetime = strawberry.field(default_factory=datetime.now)
+
+    @strawberry.field
+    async def loanProduct(self) -> Optional[LoanProductNode]:
+        if not self.loanProductId:
+            return None
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                # loanProductId might be numeric or legacy string
+                if str(self.loanProductId).isdigit():
+                    stmt = select(PGLoanProduct).filter(PGLoanProduct.id == int(self.loanProductId))
+                    result = await session.execute(stmt)
+                    lp = result.scalar_one_or_none()
+                    if lp:
+                        return LoanProductNode(
+                            id=str(lp.id),
+                            productCode=lp.product_code,
+                            name=lp.name,
+                            interestRate=lp.interest_rate,
+                            penaltyRate=lp.penalty_rate,
+                        )
+            except:
+                pass
+        return None
+
+    @strawberry.field
+    async def borrower(self) -> Optional[CustomerNode]:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                # First get the loan to get the customer_id
+                loan_stmt = select(LoanApplication).filter(LoanApplication.id == int(self.loanId))
+                loan_res = await session.execute(loan_stmt)
+                loan = loan_res.scalar_one_or_none()
+                if loan:
+                    # Now get the customer (customer_id in LoanApplication is a string currently, might need casting)
+                    cust_id_str = str(loan.customer_id)
+                    if cust_id_str.isdigit():
+                        cust_stmt = select(Customer).filter(Customer.id == int(cust_id_str))
+                        cust_res = await session.execute(cust_stmt)
+                        customer = cust_res.scalar_one_or_none()
+                        if customer:
+                            return CustomerNode(
+                                id=str(customer.id),
+                                displayName=customer.display_name,
+                                customerType=customer.customer_type,
+                                branchCode=customer.branch_code,
+                                isActive=customer.is_active,
+                                createdAt=customer.created_at,
+                            )
+            except:
+                pass
+        return None
+
+
+@strawberry.input
+class LoanTransactionCreateInput:
+    loanId: str
+    transactionType: str
+    amount: Decimal
+    description: Optional[str] = None
+    receiptNumber: Optional[str] = None
+    
+    # Ported from master
+    commercialBank: Optional[str] = None
+    servicingBranch: Optional[str] = None
+    region: Optional[str] = None
+    loanProductId: Optional[str] = None
+    debitAccount: Optional[str] = None
+    creditAccount: Optional[str] = None
+    disbursementMethod: Optional[str] = None
+    disbursementStatus: Optional[str] = "pending"
+    chequeNumber: Optional[str] = None
+    beneficiaryBank: Optional[str] = None
+    beneficiaryAccount: Optional[str] = None
+    approvedBy: Optional[str] = None
+    borrowerName: Optional[str] = None
+
+
+@strawberry.input
+class LoanTransactionUpdateInput:
+    transactionType: Optional[str] = None
+    amount: Optional[Decimal] = None
+    description: Optional[str] = None
+    receiptNumber: Optional[str] = None
+    
+    # Ported from master
+    commercialBank: Optional[str] = None
+    servicingBranch: Optional[str] = None
+    region: Optional[str] = None
+    loanProductId: Optional[str] = None
+    debitAccount: Optional[str] = None
+    creditAccount: Optional[str] = None
+    disbursementMethod: Optional[str] = None
+    disbursementStatus: Optional[str] = None
+    chequeNumber: Optional[str] = None
+    beneficiaryBank: Optional[str] = None
+    beneficiaryAccount: Optional[str] = None
+    approvedBy: Optional[str] = None
+    borrowerName: Optional[str] = None
+
+
+@strawberry.type
+class LoanTransactionResponse:
+    success: bool
+    message: str
+    transaction: Optional[LoanTransactionNode] = None
 
 
 @strawberry.type
@@ -684,13 +876,25 @@ class Query:
 
     @strawberry.field
     async def loanTransactions(
-        self, loanId: strawberry.ID
+        self, 
+        loanId: Optional[strawberry.ID] = None,
+        searchTerm: Optional[str] = None,
+        transactionType: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 100
     ) -> List[LoanTransactionNode]:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            result = await session.execute(
-                select(LoanTransaction).where(LoanTransaction.loan_id == int(loanId))
-            )
+            stmt = select(LoanTransaction)
+            if loanId:
+                stmt = stmt.where(LoanTransaction.loan_id == int(loanId))
+            if searchTerm:
+                stmt = stmt.where(LoanTransaction.description.ilike(f"%{searchTerm}%"))
+            if transactionType:
+                stmt = stmt.where(LoanTransaction.type == transactionType)
+            
+            stmt = stmt.offset(skip).limit(limit).order_by(LoanTransaction.timestamp.desc())
+            result = await session.execute(stmt)
             txs = result.scalars().all()
             return [
                 LoanTransactionNode(
@@ -701,6 +905,24 @@ class Query:
                     description=t.description,
                     reference=t.receipt_number,
                     createdAt=t.timestamp,
+                    # Ported fields
+                    commercialBank=t.commercial_bank,
+                    servicingBranch=t.servicing_branch,
+                    region=t.region,
+                    loanProductId=t.loan_product_id,
+                    debitAccount=t.debit_account,
+                    creditAccount=t.credit_account,
+                    disbursementMethod=t.disbursement_method,
+                    disbursementStatus=t.disbursement_status,
+                    chequeNumber=t.cheque_number,
+                    beneficiaryBank=t.beneficiary_bank,
+                    beneficiaryAccount=t.beneficiary_account,
+                    approvedBy=t.approved_by,
+                    processedBy=t.processed_by,
+                    createdBy=t.created_by,
+                    updatedBy=t.updated_by,
+                    borrowerName=t.borrower_name,
+                    updatedAt=t.updated_at,
                 )
                 for t in txs
             ]
@@ -1679,6 +1901,317 @@ class Mutation:
                 )
                 for b in branches
             ]
+
+    @strawberry.mutation
+    async def createSavingsAccount(
+        self, info: Info, input: SavingsAccountCreateInput
+    ) -> SavingsAccountResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return SavingsAccountResponse(success=False, message="Not authenticated")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                # Basic validation
+                if not input.customerId or not input.accountNumber:
+                    return SavingsAccountResponse(
+                        success=False, message="Customer and Account Number are required"
+                    )
+
+                new_account = SavingsAccount(
+                    account_number=input.accountNumber,
+                    customer_id=int(input.customerId),
+                    account_type=input.accountType,
+                    balance=input.balance,
+                    currency=input.currency,
+                    status=input.status,
+                    interest_rate=input.interestRate if input.interestRate else 0.00,
+                    opened_at=input.openedAt if input.openedAt else datetime.now(),
+                    
+                    # Ported fields
+                    principal=input.principal,
+                    term_days=input.termDays,
+                    interest_paid_frequency=input.interestPaidFrequency,
+                    target_amount=input.targetAmount,
+                    target_date=input.targetDate,
+                    goal_name=input.goalName,
+                    guardian_id=input.guardianId,
+                    guardian_name=input.guardianName,
+                    minor_date_of_birth=input.minorDateOfBirth,
+                    secondary_owner_id=input.secondaryOwnerId,
+                    secondary_owner_name=input.secondaryOwnerName,
+                    operation_mode=input.operationMode,
+                )
+                
+                # Calculate maturity date if applicable
+                if input.termDays and input.openedAt:
+                    from datetime import timedelta
+                    new_account.maturity_date = input.openedAt + timedelta(days=input.termDays)
+
+                session.add(new_account)
+                await session.commit()
+                await session.refresh(new_account)
+
+                return SavingsAccountResponse(
+                    success=True,
+                    message="Savings account created successfully",
+                    account=SavingsAccountNode(
+                        id=str(new_account.id),
+                        accountNumber=new_account.account_number,
+                        balance=new_account.balance,
+                        customerId=str(new_account.customer_id),
+                        accountType=new_account.account_type,
+                        status=new_account.status,
+                        openedAt=new_account.opened_at,
+                        
+                        # Ported fields mapping
+                        currency=new_account.currency,
+                        interestRate=new_account.interest_rate,
+                        maturityDate=new_account.maturity_date,
+                        principal=new_account.principal,
+                        termDays=new_account.term_days,
+                        interestPaidFrequency=new_account.interest_paid_frequency,
+                        targetAmount=new_account.target_amount,
+                        targetDate=new_account.target_date,
+                        goalName=new_account.goal_name,
+                        guardianId=new_account.guardian_id,
+                        guardianName=new_account.guardian_name,
+                        minorDateOfBirth=new_account.minor_date_of_birth,
+                        secondaryOwnerId=new_account.secondary_owner_id,
+                        secondaryOwnerName=new_account.secondary_owner_name,
+                        operationMode=new_account.operation_mode,
+                    ),
+                )
+            except Exception as e:
+                await session.rollback()
+                return SavingsAccountResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def createLoanTransaction(
+        self, info: Info, input: LoanTransactionCreateInput
+    ) -> LoanTransactionResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return LoanTransactionResponse(success=False, message="Not authenticated")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                new_tx = LoanTransaction(
+                    loan_id=int(input.loanId),
+                    type=input.transactionType,
+                    amount=input.amount,
+                    description=input.description,
+                    receipt_number=input.receiptNumber,
+                    processed_by=str(current_user.id),
+                    
+                    # Ported fields
+                    commercial_bank=input.commercialBank,
+                    servicing_branch=input.servicingBranch,
+                    region=input.region,
+                    loan_product_id=input.loanProductId,
+                    debit_account=input.debitAccount,
+                    credit_account=input.creditAccount,
+                    disbursement_method=input.disbursementMethod,
+                    disbursement_status=input.disbursementStatus,
+                    cheque_number=input.chequeNumber,
+                    beneficiary_bank=input.beneficiaryBank,
+                    beneficiary_account=input.beneficiaryAccount,
+                    approved_by=input.approvedBy,
+                    borrower_name=input.borrowerName,
+                    created_by=str(current_user.id),
+                    updated_by=str(current_user.id),
+                )
+                
+                session.add(new_tx)
+                await session.commit()
+                await session.refresh(new_tx)
+
+                return LoanTransactionResponse(
+                    success=True,
+                    message="Loan transaction created successfully",
+                    transaction=LoanTransactionNode(
+                        id=str(new_tx.id),
+                        loanId=str(new_tx.loan_id),
+                        amount=new_tx.amount,
+                        transactionType=new_tx.type,
+                        description=new_tx.description,
+                        reference=new_tx.receipt_number,
+                        createdAt=new_tx.timestamp,
+                        
+                        # Ported fields mapping
+                        commercialBank=new_tx.commercial_bank,
+                        servicingBranch=new_tx.servicing_branch,
+                        region=new_tx.region,
+                        loanProductId=new_tx.loan_product_id,
+                        debitAccount=new_tx.debit_account,
+                        creditAccount=new_tx.credit_account,
+                        disbursementMethod=new_tx.disbursement_method,
+                        disbursementStatus=new_tx.disbursement_status,
+                        chequeNumber=new_tx.cheque_number,
+                        beneficiaryBank=new_tx.beneficiary_bank,
+                        beneficiaryAccount=new_tx.beneficiary_account,
+                        approvedBy=new_tx.approved_by,
+                        processedBy=new_tx.processed_by,
+                        createdBy=new_tx.created_by,
+                        updatedBy=new_tx.updated_by,
+                        borrowerName=new_tx.borrower_name,
+                        updatedAt=new_tx.updated_at,
+                    ),
+                )
+            except Exception as e:
+                await session.rollback()
+                return LoanTransactionResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def updateLoanTransaction(
+        self, info: Info, id: strawberry.ID, input: LoanTransactionUpdateInput
+    ) -> LoanTransactionResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return LoanTransactionResponse(success=False, message="Not authenticated")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                result = await session.execute(
+                    select(LoanTransaction).where(LoanTransaction.id == int(str(id)))
+                )
+                tx = result.scalar_one_or_none()
+                if not tx:
+                    return LoanTransactionResponse(success=False, message="Transaction not found")
+
+                # Update fields if provided
+                if input.transactionType is not None: tx.type = input.transactionType
+                if input.amount is not None: tx.amount = input.amount
+                if input.description is not None: tx.description = input.description
+                if input.receiptNumber is not None: tx.receipt_number = input.receiptNumber
+                if input.commercialBank is not None: tx.commercial_bank = input.commercialBank
+                if input.servicingBranch is not None: tx.servicing_branch = input.servicingBranch
+                if input.region is not None: tx.region = input.region
+                if input.loanProductId is not None: tx.loan_product_id = input.loanProductId
+                if input.debitAccount is not None: tx.debit_account = input.debitAccount
+                if input.creditAccount is not None: tx.credit_account = input.creditAccount
+                if input.disbursementMethod is not None: tx.disbursement_method = input.disbursementMethod
+                if input.disbursementStatus is not None: tx.disbursement_status = input.disbursementStatus
+                if input.chequeNumber is not None: tx.cheque_number = input.chequeNumber
+                if input.beneficiaryBank is not None: tx.beneficiary_bank = input.beneficiaryBank
+                if input.beneficiaryAccount is not None: tx.beneficiary_account = input.beneficiaryAccount
+                if input.approvedBy is not None: tx.approved_by = input.approvedBy
+                if input.borrowerName is not None: tx.borrower_name = input.borrowerName
+                
+                tx.updated_by = str(current_user.id)
+                tx.updated_at = datetime.now()
+
+                await session.commit()
+                await session.refresh(tx)
+
+                return LoanTransactionResponse(
+                    success=True,
+                    message="Loan transaction updated successfully",
+                    transaction=LoanTransactionNode(
+                        id=str(tx.id),
+                        loanId=str(tx.loan_id),
+                        amount=tx.amount,
+                        transactionType=tx.type,
+                        description=tx.description,
+                        reference=tx.receipt_number,
+                        createdAt=tx.timestamp,
+                        # Ported mapping...
+                        borrowerName=tx.borrower_name,
+                    ),
+                )
+            except Exception as e:
+                await session.rollback()
+                return LoanTransactionResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def deleteLoanTransaction(
+        self, info: Info, id: strawberry.ID
+    ) -> MutationResponse:
+        current_user = info.context.get("current_user")
+        if not current_user or current_user.role not in ("admin"):
+            return MutationResponse(success=False, message="Not authorized")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                result = await session.execute(
+                    select(LoanTransaction).where(LoanTransaction.id == int(str(id)))
+                )
+                tx = result.scalar_one_or_none()
+                if not tx:
+                    return MutationResponse(success=False, message="Transaction not found")
+
+                await session.delete(tx)
+                await session.commit()
+                return MutationResponse(success=True, message="Transaction deleted successfully")
+            except Exception as e:
+                await session.rollback()
+                return MutationResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def createSavingsTransaction(
+        self, info: Info, input: SavingsTransactionCreateInput
+    ) -> SavingsTransactionResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return SavingsTransactionResponse(success=False, message="Not authenticated")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                # 1. Fetch account
+                stmt = select(SavingsAccount).where(SavingsAccount.id == int(input.accountId))
+                result = await session.execute(stmt)
+                acc = result.scalar_one_or_none()
+                if not acc:
+                    return SavingsTransactionResponse(success=False, message="Account not found")
+
+                # 2. Prepare transaction
+                balance_before = acc.balance
+                amount = input.amount
+                
+                if input.transactionType == "withdrawal":
+                    if acc.balance < amount:
+                        return SavingsTransactionResponse(success=False, message="Insufficient balance")
+                    acc.balance -= amount
+                elif input.transactionType == "deposit":
+                    acc.balance += amount
+                else:
+                    return SavingsTransactionResponse(success=False, message="Invalid transaction type")
+
+                new_tx = SavingsTransaction(
+                    account_id=acc.id,
+                    transaction_type=input.transactionType,
+                    amount=amount,
+                    balance_before=balance_before,
+                    balance_after=acc.balance,
+                    reference=input.reference,
+                    description=input.description,
+                )
+                
+                session.add(new_tx)
+                await session.commit()
+                await session.refresh(new_tx)
+
+                return SavingsTransactionResponse(
+                    success=True,
+                    message=f"Savings {input.transactionType} successful",
+                    transaction=SavingsTransactionNode(
+                        id=str(new_tx.id),
+                        accountId=str(new_tx.account_id),
+                        amount=new_tx.amount,
+                        accountType=new_tx.transaction_type, # mapping to existing field
+                        reference=new_tx.reference,
+                        description=new_tx.description,
+                        createdAt=new_tx.created_at,
+                    ),
+                )
+            except Exception as e:
+                await session.rollback()
+                return SavingsTransactionResponse(success=False, message=f"Error: {str(e)}")
 
     @strawberry.mutation
     async def createGLAccount(

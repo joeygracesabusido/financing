@@ -235,6 +235,33 @@ class LoanTransaction(Base):
     )
     processed_by = Column(String(64), nullable=True)  # mongo user id
 
+    # Ported from master branch
+    commercial_bank = Column(String(100), nullable=True)
+    servicing_branch = Column(String(100), nullable=True)
+    region = Column(String(100), nullable=True)
+    loan_product_id = Column(String(100), nullable=True)
+    debit_account = Column(String(100), nullable=True)
+    credit_account = Column(String(100), nullable=True)
+    disbursement_method = Column(String(100), nullable=True)
+    disbursement_status = Column(String(50), nullable=True, default="pending")
+    cheque_number = Column(String(100), nullable=True)
+    beneficiary_bank = Column(String(100), nullable=True)
+    beneficiary_account = Column(String(100), nullable=True)
+    approved_by = Column(String(64), nullable=True)
+    created_by = Column(String(64), nullable=True)
+    updated_by = Column(String(64), nullable=True)
+    borrower_name = Column(String(200), nullable=True)
+    
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
 
 # ---------------------------------------------------------------------------
 # Credit Scoring (5 Cs)
