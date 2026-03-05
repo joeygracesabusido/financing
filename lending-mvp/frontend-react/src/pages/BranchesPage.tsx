@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { getBranches } from '@/api/client'
+import { API_URL } from '@/lib/config'
 
 interface Branch {
     id: string | number
@@ -13,6 +14,14 @@ interface Branch {
     isActive: boolean
     createdAt: string
     updatedAt: string
+}
+
+const getHeaders = () => {
+    const token = localStorage.getItem('access_token')
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+    }
 }
 
 const emptyForm: { code: string; name: string; address: string; city: string; contact_number: string } = { code: '', name: '', address: '', city: '', contact_number: '' }
@@ -31,8 +40,9 @@ export default function BranchesPage() {
 
     const init = async () => {
         try {
-            const data = await getBranches()
-            setBranchesData(data.branches || [])
+            const res = await getBranches()
+            // getBranches returns response.json(), so we need to access data.branches
+            setBranchesData(res.data?.branches || [])
         } catch (e) {
             console.error('Failed to fetch branches:', e)
         } finally {
@@ -54,15 +64,24 @@ export default function BranchesPage() {
         if (!form.code || !form.name) { setError('Code and Name are required'); return }
         setSaving(true)
         try {
-            const input = { name: form.name, address: form.address, city: form.city, contactNumber: form.contact_number }
+            const input = { 
+                code: form.code,
+                name: form.name, 
+                address: form.address, 
+                city: form.city, 
+                contactNumber: form.contact_number 
+            }
             if (editId) {
                 await UpdateBranch({ branchId: editId, input, onSuccess: init })
+                alert('Branch updated successfully!')
             } else {
                 await CreateBranch({ input, onSuccess: init })
+                alert('Branch created successfully!')
             }
             setShowModal(false)
         } catch (e: any) {
             setError(e.message || 'Failed to save branch')
+            alert('Error: ' + (e.message || 'Failed to save branch'))
         } finally {
             setSaving(false)
         }
@@ -70,7 +89,12 @@ export default function BranchesPage() {
 
     const handleDelete = async (id: any) => {
         if (!confirm('Delete this branch?')) return
-        await DeleteBranch({ branchId: id, onSuccess: init })
+        try {
+            await DeleteBranch({ branchId: id, onSuccess: init })
+            alert('Branch deleted successfully!')
+        } catch (e: any) {
+            alert('Error: ' + (e.message || 'Failed to delete branch'))
+        }
     }
 
     return (
@@ -175,9 +199,9 @@ export default function BranchesPage() {
 }
 
 const CreateBranch = async ({ input, onSuccess }: { input: any, onSuccess: () => void }) => {
-    const res = await fetch('/graphql', {
+    const res = await fetch(`${API_URL}/graphql`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({
             query: `mutation CreateBranch($input: BranchInput!) { createBranch(input: $input) { success message branch { id code name } } }`,
             variables: { input }
@@ -187,14 +211,14 @@ const CreateBranch = async ({ input, onSuccess }: { input: any, onSuccess: () =>
     if (data.data?.createBranch?.success) {
         onSuccess()
     } else {
-        throw new Error(data.errors?.[0]?.message || 'Failed to create branch')
+        throw new Error(data.data?.createBranch?.message || data.errors?.[0]?.message || 'Failed to create branch')
     }
 }
 
 const UpdateBranch = async ({ branchId, input, onSuccess }: { branchId: any, input: any, onSuccess: () => void }) => {
-    const res = await fetch('/graphql', {
+    const res = await fetch(`${API_URL}/graphql`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({
             query: `mutation UpdateBranch($branchId: ID!, $input: BranchInput!) { updateBranch(branchId: $branchId, input: $input) { success message branch { id code name } } }`,
             variables: { branchId, input }
@@ -204,14 +228,14 @@ const UpdateBranch = async ({ branchId, input, onSuccess }: { branchId: any, inp
     if (data.data?.updateBranch?.success) {
         onSuccess()
     } else {
-        throw new Error(data.errors?.[0]?.message || 'Failed to update branch')
+        throw new Error(data.data?.updateBranch?.message || data.errors?.[0]?.message || 'Failed to update branch')
     }
 }
 
 const DeleteBranch = async ({ branchId, onSuccess }: { branchId: any, onSuccess: () => void }) => {
-    const res = await fetch('/graphql', {
+    const res = await fetch(`${API_URL}/graphql`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({
             query: `mutation DeleteBranch($branchId: ID!) { deleteBranch(branchId: $branchId) { success message } }`,
             variables: { branchId }
@@ -221,6 +245,6 @@ const DeleteBranch = async ({ branchId, onSuccess }: { branchId: any, onSuccess:
     if (data.data?.deleteBranch?.success) {
         onSuccess()
     } else {
-        throw new Error(data.errors?.[0]?.message || 'Failed to delete branch')
+        throw new Error(data.data?.deleteBranch?.message || data.errors?.[0]?.message || 'Failed to delete branch')
     }
 }

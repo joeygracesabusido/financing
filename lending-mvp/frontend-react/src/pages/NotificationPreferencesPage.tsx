@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '@/lib/config';
 import { Card, CardHeader, CardContent as CardBody, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +36,7 @@ export default function NotificationPreferencesPage() {
 
   const fetchPreferences = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/v1/teller/notification-preferences');
+      const response = await fetch(`${API_URL}/api/v1/teller/notification-preferences`);
       if (response.ok) {
         const data = await response.json();
         setPreferences(data);

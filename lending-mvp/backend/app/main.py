@@ -89,7 +89,7 @@ app.include_router(rest_api.router, prefix="")
 # Mount the real Strawberry GraphQL router
 from strawberry.fastapi import GraphQLRouter
 
-graphql_app = GraphQLRouter(graphql_module.schema)
+graphql_app = GraphQLRouter(graphql_module.schema, context_getter=graphql_module.get_context)
 app.include_router(graphql_app, prefix="/graphql")
 
 # Audit middleware (must be added before CORS so it runs on all requests)

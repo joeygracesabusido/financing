@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '@/lib/config';
 import { formatCurrency, formatDateTime, cn } from '@/lib/utils';
 import {
   Wallet,
@@ -73,7 +74,7 @@ export default function TellerCashDrawerPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/transaction', {
+      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/transaction`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ export default function TellerCashDrawerPage() {
     const actualAmount = parseFloat(amount) || 0;
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/close', {
+      const response = await fetch(`${API_URL}/api/v1/teller/cash-drawer/close`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

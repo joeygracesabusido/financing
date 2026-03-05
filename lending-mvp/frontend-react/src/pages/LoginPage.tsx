@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { Building2, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { API_URL } from '@/lib/config'
 
 export default function LoginPage() {
     const navigate = useNavigate()
@@ -18,7 +19,7 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            const response = await fetch(`${API_URL}/api-login/', {
+            const response = await fetch(`${API_URL}/api-login/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),

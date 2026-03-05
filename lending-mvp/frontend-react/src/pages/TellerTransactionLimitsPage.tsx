@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '@/lib/config';
 import { cn, formatCurrency } from '@/lib/utils';
 import {
   ShieldCheck,
@@ -61,7 +62,7 @@ export default function TellerTransactionLimitsPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/teller/transaction-limits', {
+      const response = await fetch(`${API_URL}/api/v1/teller/transaction-limits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

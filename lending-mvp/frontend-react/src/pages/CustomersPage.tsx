@@ -1,7 +1,14 @@
-import { useState, useEffect } from 'react'
-import { Search, Plus, Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Search, Plus, Pencil, Trash2, CheckCircle, XCircle, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { getCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer } from '@/api/customers'
+import { getBranches } from '@/api/client'
+
+interface Branch {
+    id: number
+    code: string
+    name: string
+}
 
 interface Customer {
     id: string
@@ -23,6 +30,7 @@ export default function CustomersPage() {
 
     const [loading, setLoading] = useState(true)
     const [customersData, setCustomersData] = useState<Customer[]>([])
+    const [branches, setBranches] = useState<Branch[]>([])
     const [search, setSearch] = useState('')
     const [showModal, setShowModal] = useState(false)
     const [editId, setEditId] = useState<string | null>(null)
@@ -30,12 +38,22 @@ export default function CustomersPage() {
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState('')
 
+    // Autocomplete state
+    const [branchSearch, setBranchSearch] = useState('')
+    const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false)
+    const [focusedBranchIndex, setFocusedBranchIndex] = useState(-1)
+    const branchRef = useRef<HTMLDivElement>(null)
+
     const init = async () => {
         try {
-            const data = await getCustomers()
-            setCustomersData(data.customers?.customers || [])
+            const [customersRes, branchesRes] = await Promise.all([
+                getCustomers(),
+                getBranches()
+            ])
+            setCustomersData(customersRes.customers?.customers || [])
+            setBranches(branchesRes.data?.branches || [])
         } catch (e) {
-            console.error('Failed to fetch customers:', e)
+            console.error('Failed to fetch data:', e)
         } finally {
             setLoading(false)
         }
@@ -43,12 +61,71 @@ export default function CustomersPage() {
 
     useEffect(() => { init() }, [])
 
-    const openCreate = () => { setEditId(null); setForm({ displayName: '', customerType: 'individual', branchCode: '', emailAddress: '', mobileNumber: '' }); setError(''); setShowModal(true) }
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (branchRef.current && !branchRef.current.contains(event.target as Node)) {
+                setIsBranchDropdownOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    const filteredBranches = branches.filter(b => 
+        b.name.toLowerCase().includes(branchSearch.toLowerCase()) ||
+        b.code.toLowerCase().includes(branchSearch.toLowerCase())
+    )
+
+    const openCreate = () => { 
+        setEditId(null); 
+        setForm({ displayName: '', customerType: 'individual', branchCode: '', emailAddress: '', mobileNumber: '' }); 
+        setBranchSearch('');
+        setError(''); 
+        setShowModal(true) 
+    }
+    
     const openEdit = (c: Customer) => {
         setEditId(c.id)
         setForm({ displayName: c.displayName, customerType: c.customerType, branchCode: c.branchCode, emailAddress: c.emailAddress ?? '', mobileNumber: c.mobileNumber ?? '' })
+        const b = branches.find(br => br.code === c.branchCode)
+        setBranchSearch(b ? `${b.name} (${b.code})` : c.branchCode)
         setError('')
         setShowModal(true)
+    }
+
+    const selectBranch = (b: Branch) => {
+        setForm({ ...form, branchCode: b.code })
+        setBranchSearch(`${b.name} (${b.code})`)
+        setIsBranchDropdownOpen(false)
+        setFocusedBranchIndex(-1)
+    }
+
+    const handleBranchKeyDown = (e: React.KeyboardEvent) => {
+        if (!isBranchDropdownOpen) {
+            if (e.key === 'ArrowDown' || e.key === 'Enter') setIsBranchDropdownOpen(true)
+            return
+        }
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault()
+                setFocusedBranchIndex(prev => (prev < filteredBranches.length - 1 ? prev + 1 : prev))
+                break
+            case 'ArrowUp':
+                e.preventDefault()
+                setFocusedBranchIndex(prev => (prev > 0 ? prev - 1 : prev))
+                break
+            case 'Enter':
+                e.preventDefault()
+                if (focusedBranchIndex >= 0 && focusedBranchIndex < filteredBranches.length) {
+                    selectBranch(filteredBranches[focusedBranchIndex])
+                }
+                break
+            case 'Escape':
+                setIsBranchDropdownOpen(false)
+                break
+        }
     }
 
     const handleSave = async () => {
@@ -57,14 +134,25 @@ export default function CustomersPage() {
         try {
             const input = { displayName: form.displayName, customerType: form.customerType, branchCode: form.branchCode, emailAddress: form.emailAddress, mobileNumber: form.mobileNumber }
             if (editId) {
-                await updateCustomer(editId, input)
+                const res = await updateCustomer(editId, input)
+                if (res.updateCustomer?.success) {
+                    alert('Customer updated successfully!')
+                } else {
+                    throw new Error(res.updateCustomer?.message || 'Failed to update customer')
+                }
             } else {
-                await createCustomer(input)
+                const res = await createCustomer(input)
+                if (res.createCustomer?.success) {
+                    alert('Customer created successfully!')
+                } else {
+                    throw new Error(res.createCustomer?.message || 'Failed to create customer')
+                }
             }
             await init()
             setShowModal(false)
         } catch (e: any) {
             setError(e.message || 'Failed to save customer')
+            alert('Error: ' + (e.message || 'Failed to save customer'))
         } finally {
             setSaving(false)
         }
@@ -72,9 +160,24 @@ export default function CustomersPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this customer?')) return
-        await deleteCustomer(id)
-        await init()
+        try {
+            const res = await deleteCustomer(id)
+            if (res.deleteCustomer?.success) {
+                alert('Customer deleted successfully!')
+                await init()
+            } else {
+                alert('Error: ' + (res.deleteCustomer?.message || 'Failed to delete customer'))
+            }
+        } catch (e: any) {
+            alert('Error: ' + (e.message || 'Failed to delete customer'))
+        }
     }
+
+    const filteredCustomers = customersData.filter(c => 
+        c.displayName.toLowerCase().includes(search.toLowerCase()) ||
+        c.branchCode.toLowerCase().includes(search.toLowerCase()) ||
+        (c.emailAddress && c.emailAddress.toLowerCase().includes(search.toLowerCase()))
+    )
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -105,19 +208,22 @@ export default function CustomersPage() {
                             <tr className="border-b border-border/50">
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Name</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Branch</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Phone</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">KYC</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                                {isAdmin && <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>}
                             </tr>
                         </thead>
                         <tbody>
-                            {customersData.length === 0 ? (
-                                <tr><td colSpan={6} className="text-center py-12 text-muted-foreground">No customers found. Create your first customer.</td></tr>
-                            ) : customersData.map((c) => (
-                                <tr key={c.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
+                            {filteredCustomers.length === 0 ? (
+                                <tr><td colSpan={8} className="text-center py-12 text-muted-foreground">No customers found.</td></tr>
+                            ) : filteredCustomers.map((c) => (
+                                <tr key={c.id} className="border-b border-border/30 hover:bg-white/5 transition-colors group">
                                     <td className="px-4 py-3 text-foreground font-medium">{c.displayName}</td>
                                     <td className="px-4 py-3 text-muted-foreground capitalize">{c.customerType}</td>
+                                    <td className="px-4 py-3 text-muted-foreground uppercase">{c.branchCode}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{c.emailAddress || '—'}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{c.mobileNumber || '—'}</td>
                                     <td className="px-4 py-3">
@@ -130,6 +236,18 @@ export default function CustomersPage() {
                                             ? <span className="flex items-center gap-1.5 text-emerald-400 text-xs"><CheckCircle className="w-3.5 h-3.5" /> Active</span>
                                             : <span className="flex items-center gap-1.5 text-destructive text-xs"><XCircle className="w-3.5 h-3.5" /> Inactive</span>}
                                     </td>
+                                    {isAdmin && (
+                                        <td className="px-4 py-3 text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <button onClick={() => openEdit(c)} className="p-1.5 rounded-lg hover:bg-primary/15 text-primary transition-colors" title="Edit Customer">
+                                                    <Pencil className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button onClick={() => handleDelete(c.id)} className="p-1.5 rounded-lg hover:bg-destructive/15 text-destructive transition-colors" title="Delete Customer">
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>
@@ -141,7 +259,7 @@ export default function CustomersPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="glass rounded-2xl p-6 w-full max-w-md shadow-2xl border border-border/50">
                         <h2 className="font-bold text-lg text-foreground mb-4">{editId ? 'Edit Customer' : 'New Customer'}</h2>
-                        <div className="space-y-3">
+                        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
                             <div>
                                 <label className="block text-xs text-muted-foreground mb-1">Full Name *</label>
                                 <input value={form.displayName} onChange={e => setForm({ ...form, displayName: e.target.value })} placeholder="John Doe" className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50" />
@@ -153,10 +271,45 @@ export default function CustomersPage() {
                                     <option value="corporate">Corporate</option>
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-xs text-muted-foreground mb-1">Branch Code</label>
-                                <input value={form.branchCode} onChange={e => setForm({ ...form, branchCode: e.target.value })} placeholder="HQ" className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50" />
+                            
+                            <div className="relative" ref={branchRef}>
+                                <label className="block text-xs text-muted-foreground mb-1">Branch *</label>
+                                <div className="relative">
+                                    <input 
+                                        value={branchSearch} 
+                                        onChange={e => {
+                                            setBranchSearch(e.target.value)
+                                            setIsBranchDropdownOpen(true)
+                                            setFocusedBranchIndex(-1)
+                                        }} 
+                                        onFocus={() => setIsBranchDropdownOpen(true)}
+                                        onKeyDown={handleBranchKeyDown}
+                                        placeholder="Type to search branch..." 
+                                        className="w-full bg-background/50 border border-border rounded-lg pl-3 pr-10 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50" 
+                                    />
+                                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                                </div>
+                                
+                                {isBranchDropdownOpen && filteredBranches.length > 0 && (
+                                    <div className="absolute z-10 w-full mt-1 bg-[#1a1c2e] border border-border/50 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                                        <div className="max-h-48 overflow-y-auto">
+                                            {filteredBranches.map((b, index) => (
+                                                <button
+                                                    key={b.id}
+                                                    type="button"
+                                                    onClick={() => selectBranch(b)}
+                                                    onMouseEnter={() => setFocusedBranchIndex(index)}
+                                                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${focusedBranchIndex === index ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:bg-white/5'}`}
+                                                >
+                                                    <div className="font-medium text-foreground">{b.name}</div>
+                                                    <div className="text-xs opacity-60">{b.code}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
+
                             <div>
                                 <label className="block text-xs text-muted-foreground mb-1">Email Address</label>
                                 <input value={form.emailAddress} onChange={e => setForm({ ...form, emailAddress: e.target.value })} placeholder="john@example.com" className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50" />
@@ -167,7 +320,7 @@ export default function CustomersPage() {
                             </div>
                             {error && <p className="text-destructive text-xs">{error}</p>}
                         </div>
-                        <div className="flex gap-3 mt-5">
+                        <div className="flex gap-3 mt-6">
                             <button onClick={() => setShowModal(false)} className="flex-1 px-4 py-2 rounded-lg border border-border text-sm text-muted-foreground hover:bg-white/5 transition-colors">Cancel</button>
                             <button onClick={handleSave} disabled={saving} className="flex-1 px-4 py-2 rounded-lg gradient-primary text-white text-sm font-medium disabled:opacity-60">
                                 {saving ? 'Saving…' : editId ? 'Update' : 'Create'}

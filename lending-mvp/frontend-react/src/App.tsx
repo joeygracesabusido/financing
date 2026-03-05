@@ -15,6 +15,8 @@ import AuditLogPage from '@/pages/AuditLogPage'
 import UsersPage from '@/pages/UsersPage'
 import CollectionsPage from '@/pages/CollectionsPage'
 import ChartOfAccountsPage from '@/pages/ChartOfAccountsPage'
+import JournalEntriesPage from '@/pages/JournalEntriesPage'
+import CreateJournalEntryPage from '@/pages/CreateJournalEntryPage'
 import SavingsDetailPage from '@/pages/SavingsDetailPage'
 import CustomerDashboardPage from '@/pages/CustomerDashboardPage'
 import CustomerLoanApplicationPage from '@/pages/CustomerLoanApplicationPage'
@@ -68,6 +70,8 @@ function ProtectedLayout() {
                         <Route path="/collection-due" element={<CollectionDuePage />} />
                         <Route path="/loans/:id/amortization" element={<AmortizationSchedulePage />} />
                         <Route path="/chart-of-accounts" element={<ChartOfAccountsPage />} />
+                        <Route path="/journal-entries" element={<JournalEntriesPage />} />
+                        <Route path="/journal-entries/create" element={<CreateJournalEntryPage />} />
                         <Route path="/savings/:id" element={<SavingsDetailPage />} />
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>

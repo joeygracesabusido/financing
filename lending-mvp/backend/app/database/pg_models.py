@@ -242,7 +242,7 @@ class Collection(Base):
     customer_id = Column(String(64), nullable=False, index=True)
     amount = Column(Float, nullable=False)
     status = Column(String(20), nullable=False, default="pending")  # pending, partial, collected, overdue, written_off
-    due_date = Column(DateTime(timezone=True), nullable=False, index=True)
+    due_date = Column(DateTime(timezone=True), nullable=False)
     collection_date = Column(DateTime(timezone=True), nullable=True)
     collected_by = Column(String(64), nullable=True)
     reference_number = Column(String(100), nullable=True)
