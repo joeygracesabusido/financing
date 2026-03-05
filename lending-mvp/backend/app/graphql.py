@@ -5,6 +5,7 @@ GraphQL server for Lending MVP using Strawberry
 """
 
 import strawberry
+import uuid
 from fastapi import Request
 from typing import List, Optional
 from sqlalchemy import select, func, and_
@@ -335,8 +336,6 @@ class LoanNode:
     status: str
     customerId: str
     productId: Optional[int] = None
-    borrowerName: str = "Demo Borrower"
-    productName: str = "Demo Product"
     termMonths: int = 12
     approvedPrincipal: Optional[Decimal] = None
     approvedRate: Optional[Decimal] = None
@@ -344,6 +343,63 @@ class LoanNode:
     createdAt: datetime = strawberry.field(default_factory=datetime.now)
     updatedAt: datetime = strawberry.field(default_factory=datetime.now)
     disbursedAt: Optional[datetime] = None
+    
+    @strawberry.field
+    async def borrowerName(self) -> str:
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            # Check if customerId is numeric (PG ID) or string (Mongo ID)
+            if self.customerId.isdigit():
+                stmt = select(Customer).where(Customer.id == int(self.customerId))
+            else:
+                stmt = select(Customer).where(Customer.uuid == self.customerId)
+            
+            result = await session.execute(stmt)
+            customer = result.scalar_one_or_none()
+            return customer.display_name if customer else "Unknown Borrower"
+
+    @strawberry.field
+    async def productName(self) -> str:
+        if not self.productId:
+            return "N/A"
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            stmt = select(PGLoanProduct).where(PGLoanProduct.id == self.productId)
+            result = await session.execute(stmt)
+            product = result.scalar_one_or_none()
+            return product.name if product else "Unknown Product"
+
+    @strawberry.field
+    def referenceNo(self) -> str:
+        return f"LOAN-{self.id}"
+
+    @strawberry.field
+    def startDate(self) -> datetime:
+        return self.disbursedAt or self.createdAt
+
+    @strawberry.field
+    def endDate(self) -> Optional[datetime]:
+        from dateutil.relativedelta import relativedelta
+        start = self.disbursedAt or self.createdAt
+        if not start:
+            return None
+        return start + relativedelta(months=int(self.termMonths))
+
+
+@strawberry.input
+class LoanInput:
+    customerId: str
+    productId: int
+    principal: Decimal
+    termMonths: int
+    disbursementMethod: Optional[str] = None
+
+
+@strawberry.type
+class LoanResponse:
+    success: bool
+    message: str
+    loan: Optional[LoanNode] = None
 
 
 @strawberry.type
@@ -584,11 +640,17 @@ class AuditLogNode:
 
 @strawberry.type
 class AmortizationScheduleRow:
-    month: int
-    principalPayment: Decimal
-    interestPayment: Decimal
-    totalPayment: Decimal
-    outstandingBalance: Decimal
+    installmentNumber: int
+    dueDate: date
+    principalDue: Decimal
+    interestDue: Decimal
+    penaltyDue: Decimal
+    principalPaid: Decimal
+    interestPaid: Decimal
+    penaltyPaid: Decimal
+    status: str
+    totalDue: Decimal
+    totalPaid: Decimal
 
 
 @strawberry.type
@@ -598,7 +660,7 @@ class LoanAmortizationNode:
     principal: Decimal
     interestRate: Decimal
     termMonths: int
-    amortizationSchedule: List[AmortizationScheduleRow]
+    rows: List[AmortizationScheduleRow]
 
 
 @strawberry.type
@@ -816,10 +878,11 @@ class Query:
             stmt = select(LoanApplication)
             if customerId:
                 stmt = stmt.where(LoanApplication.customer_id == customerId)
-            if searchTerm:
-                stmt = stmt.where(
-                    LoanApplication.borrower_name.ilike(f"%{searchTerm}%")
-                )
+            # Remove non-existent borrower_name filter that caused crashes
+            # if searchTerm:
+            #     stmt = stmt.where(
+            #         LoanApplication.borrower_name.ilike(f"%{searchTerm}%")
+            #     )
 
             result = await session.execute(stmt.offset(skip).limit(limit))
             loan_list = result.scalars().all()
@@ -869,6 +932,7 @@ class Query:
                 termMonths=l.term_months,
                 approvedPrincipal=l.approved_principal,
                 approvedRate=l.approved_rate,
+                outstandingBalance=l.outstanding_balance,
                 createdAt=l.created_at,
                 updatedAt=l.updated_at,
                 disbursedAt=l.disbursed_at,
@@ -1246,16 +1310,21 @@ class Query:
                 .scalars()
                 .all()
             )
-            rows, balance = [], l.principal
+            rows = []
             for item in sched_items:
-                balance -= item.principal_paid
                 rows.append(
                     AmortizationScheduleRow(
-                        month=item.installment_number,
-                        principalPayment=item.principal_due,
-                        interestPayment=item.interest_due,
-                        totalPayment=item.principal_due + item.interest_due,
-                        outstandingBalance=balance,
+                        installmentNumber=item.installment_number,
+                        dueDate=item.due_date,
+                        principalDue=item.principal_due,
+                        interestDue=item.interest_due,
+                        penaltyDue=item.penalty_due,
+                        principalPaid=item.principal_paid,
+                        interestPaid=item.interest_paid,
+                        penaltyPaid=item.penalty_paid,
+                        status=item.status,
+                        totalDue=item.principal_due + item.interest_due + item.penalty_due,
+                        totalPaid=item.principal_paid + item.interest_paid + item.penalty_paid,
                     )
                 )
             return LoanAmortizationNode(
@@ -1264,7 +1333,7 @@ class Query:
                 principal=l.principal,
                 interestRate=l.approved_rate or Decimal("12.00"),
                 termMonths=l.term_months,
-                amortizationSchedule=rows,
+                rows=rows,
             )
 
     @strawberry.field
@@ -1315,11 +1384,21 @@ class Query:
 
     @strawberry.field
     async def journalEntries(
-        self, skip: int = 0, limit: int = 50, referenceNo: Optional[str] = None
+        self, skip: int = 0, limit: int = 50, referenceNo: Optional[str] = None, accountCode: Optional[str] = None
     ) -> JournalEntriesResponse:
         session_factory = get_async_session_local()
         async with session_factory() as session:
             query = select(JournalEntry)
+            
+            # Filter by account code if provided
+            if accountCode:
+                lines_subquery = (
+                    select(JournalLine.entry_id)
+                    .filter(JournalLine.account_code == accountCode)
+                    .distinct()
+                )
+                query = query.filter(JournalEntry.id.in_(lines_subquery))
+            
             if referenceNo:
                 query = query.filter(JournalEntry.reference_no == referenceNo)
 
@@ -1988,6 +2067,163 @@ class Mutation:
                 return SavingsAccountResponse(success=False, message=f"Error: {str(e)}")
 
     @strawberry.mutation
+    async def createLoan(self, info: Info, input: LoanInput) -> LoanResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return LoanResponse(success=False, message="Not authenticated")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                new_loan = LoanApplication(
+                    customer_id=input.customerId,
+                    product_id=input.productId,
+                    principal=input.principal,
+                    term_months=input.termMonths,
+                    disbursement_method=input.disbursementMethod,
+                    status="draft",
+                )
+                session.add(new_loan)
+                await session.commit()
+                await session.refresh(new_loan)
+
+                return LoanResponse(
+                    success=True,
+                    message="Loan created successfully",
+                    loan=LoanNode(
+                        id=str(new_loan.id),
+                        principal=new_loan.principal,
+                        status=new_loan.status,
+                        customerId=str(new_loan.customer_id),
+                        productId=new_loan.product_id,
+                        termMonths=new_loan.term_months,
+                        approvedPrincipal=new_loan.approved_principal,
+                        approvedRate=new_loan.approved_rate,
+                        outstandingBalance=new_loan.outstanding_balance,
+                        createdAt=new_loan.created_at,
+                        updatedAt=new_loan.updated_at,
+                        disbursedAt=new_loan.disbursed_at,
+                    ),
+                )
+            except Exception as e:
+                await session.rollback()
+                return LoanResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def submitLoan(self, info: Info, id: strawberry.ID) -> MutationResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return MutationResponse(success=False, message="Not authenticated")
+            
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(select(LoanApplication).where(LoanApplication.id == int(str(id))))
+            loan = result.scalar_one_or_none()
+            if not loan:
+                return MutationResponse(success=False, message="Loan not found")
+            loan.status = "submitted"
+            await session.commit()
+            return MutationResponse(success=True, message="Loan submitted for review")
+
+    @strawberry.mutation
+    async def reviewLoan(self, info: Info, id: strawberry.ID) -> MutationResponse:
+        current_user = info.context.get("current_user")
+        if not current_user or current_user.role not in ("admin", "branch_manager", "loan_officer"):
+            return MutationResponse(success=False, message="Not authorized")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(select(LoanApplication).where(LoanApplication.id == int(str(id))))
+            loan = result.scalar_one_or_none()
+            if not loan:
+                return MutationResponse(success=False, message="Loan not found")
+            loan.status = "reviewing"
+            await session.commit()
+            return MutationResponse(success=True, message="Loan is now under review")
+
+    @strawberry.mutation
+    async def approveLoan(
+        self, 
+        info: Info, 
+        id: strawberry.ID, 
+        approvedPrincipal: Optional[Decimal] = None,
+        approvedRate: Optional[Decimal] = None
+    ) -> MutationResponse:
+        current_user = info.context.get("current_user")
+        if not current_user or current_user.role not in ("admin", "branch_manager", "loan_officer"):
+            return MutationResponse(success=False, message="Not authorized")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(select(LoanApplication).where(LoanApplication.id == int(str(id))))
+            loan = result.scalar_one_or_none()
+            if not loan:
+                return MutationResponse(success=False, message="Loan not found")
+            
+            # Determine approved amount
+            approved_amount = approvedPrincipal if approvedPrincipal else (loan.principal or Decimal(0))
+            
+            loan.status = "approved"
+            if approvedPrincipal:
+                loan.approved_principal = approvedPrincipal
+            else:
+                loan.approved_principal = loan.principal
+            
+            if approvedRate:
+                loan.approved_rate = approvedRate
+            
+            # Create GAAP-compliant journal entry for loan approval
+            from .accounting import create_journal_entry
+            
+            reference_no = f"JNL-APRV-{loan.id:06d}"
+            gl_lines = [
+                {
+                    "account_code": "1300",
+                    "debit": approved_amount,
+                    "credit": Decimal(0),
+                    "description": f"Loan Approval - {loan.customer_name or 'Customer'}",
+                },
+                {
+                    "account_code": "2010",
+                    "debit": Decimal(0),
+                    "credit": approved_amount,
+                    "description": f"Disbursement Payable - {loan.customer_name or 'Customer'}",
+                },
+            ]
+            
+            try:
+                await create_journal_entry(
+                    session=session,
+                    reference_no=reference_no,
+                    description=f"Loan Approval - Customer {loan.customer_id} - Principal {approved_amount}",
+                    created_by=str(current_user.id),
+                    lines=gl_lines,
+                )
+            except Exception as e:
+                import logging
+                logging.error(f"Failed to create journal entry for loan approval: {e}")
+            
+            await session.commit()
+            return MutationResponse(success=True, message="Loan approved successfully")
+
+    @strawberry.mutation
+    async def rejectLoan(self, info: Info, id: strawberry.ID, reason: str) -> MutationResponse:
+        current_user = info.context.get("current_user")
+        if not current_user or current_user.role not in ("admin", "branch_manager", "loan_officer"):
+            return MutationResponse(success=False, message="Not authorized")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            result = await session.execute(select(LoanApplication).where(LoanApplication.id == int(str(id))))
+            loan = result.scalar_one_or_none()
+            if not loan:
+                return MutationResponse(success=False, message="Loan not found")
+            loan.status = "rejected"
+            loan.rejected_reason = reason
+            await session.commit()
+            return MutationResponse(success=True, message="Loan rejected")
+
+    @strawberry.mutation
     async def createLoanTransaction(
         self, info: Info, input: LoanTransactionCreateInput
     ) -> LoanTransactionResponse:
@@ -2150,6 +2386,253 @@ class Mutation:
             except Exception as e:
                 await session.rollback()
                 return MutationResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def disburseLoan(
+        self, 
+        info: Info, 
+        id: strawberry.ID,
+        disbursementMethod: Optional[str] = "cash"
+    ) -> LoanResponse:
+        current_user = info.context.get("current_user")
+        if not current_user or current_user.role not in ("admin", "branch_manager", "loan_officer"):
+            return LoanResponse(success=False, message="Not authorized")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                print(f"DEBUG: Disbursing loan {id}")
+                # 1. Fetch loan
+                result = await session.execute(
+                    select(LoanApplication).where(LoanApplication.id == int(str(id)))
+                )
+                loan = result.scalar_one_or_none()
+                if not loan:
+                    print(f"DEBUG: Loan {id} not found")
+                    return LoanResponse(success=False, message="Loan not found")
+                
+                print(f"DEBUG: Loan found, status: {loan.status}")
+                if loan.status != "approved":
+                    return LoanResponse(success=False, message=f"Loan must be approved before disbursement. Current status: {loan.status}")
+
+                # 2. Update loan status
+                loan.status = "active"
+                loan.disbursed_at = datetime.now()
+                loan.disbursement_method = disbursementMethod
+                loan.outstanding_balance = loan.approved_principal or loan.principal
+                
+                print(f"DEBUG: Fetching product for loan {loan.id}")
+                # 3. Fetch product for amortization type
+                prod_result = await session.execute(
+                    select(PGLoanProduct).where(PGLoanProduct.id == loan.product_id)
+                )
+                product = prod_result.scalar_one()
+                
+                print(f"DEBUG: Generating schedule for loan {loan.id}")
+                # 4. Generate amortization schedule
+                principal = loan.approved_principal or loan.principal
+                rate_annual = loan.approved_rate or product.interest_rate
+                term_months = int(loan.term_months)
+                amortization_type = product.amortization_type
+                
+                from dateutil.relativedelta import relativedelta
+                balance = principal
+                rate_monthly = (rate_annual / Decimal(100)) / Decimal(12)
+
+                if amortization_type == "flat_rate":
+                    interest_per_month = principal * rate_monthly
+                    principal_per_month = principal / Decimal(term_months)
+                    for i in range(1, term_months + 1):
+                        balance -= principal_per_month
+                        sched = AmortizationSchedule(
+                            loan_id=loan.id,
+                            installment_number=i,
+                            due_date=(loan.disbursed_at + relativedelta(months=i)).date(),
+                            principal_due=round(principal_per_month, 2),
+                            interest_due=round(interest_per_month, 2),
+                            status="pending"
+                        )
+                        session.add(sched)
+
+                elif amortization_type == "declining_balance":
+                    if rate_monthly > 0:
+                        pmt = (principal * rate_monthly) / (
+                            Decimal(1) - (Decimal(1) + rate_monthly) ** Decimal(-term_months)
+                        )
+                    else:
+                        pmt = principal / Decimal(term_months)
+                    for i in range(1, term_months + 1):
+                        interest_for_month = balance * rate_monthly
+                        principal_for_month = pmt - interest_for_month
+                        balance -= principal_for_month
+                        sched = AmortizationSchedule(
+                            loan_id=loan.id,
+                            installment_number=i,
+                            due_date=(loan.disbursed_at + relativedelta(months=i)).date(),
+                            principal_due=round(principal_for_month, 2),
+                            interest_due=round(interest_for_month, 2),
+                            status="pending"
+                        )
+                        session.add(sched)
+                else:
+                    # Default/Interest-only fallback
+                    interest_per_month = principal * rate_monthly
+                    principal_per_month = principal / Decimal(term_months)
+                    for i in range(1, term_months + 1):
+                        sched = AmortizationSchedule(
+                            loan_id=loan.id,
+                            installment_number=i,
+                            due_date=(loan.disbursed_at + relativedelta(months=i)).date(),
+                            principal_due=round(principal_per_month, 2),
+                            interest_due=round(interest_per_month, 2),
+                            status="pending"
+                        )
+                        session.add(sched)
+
+                print(f"DEBUG: Creating transaction for loan {loan.id}")
+                # 5. Create disbursement transaction
+                txn = LoanTransaction(
+                    loan_id=loan.id,
+                    type="disbursement",
+                    amount=loan.approved_principal or loan.principal,
+                    receipt_number=f"DSB-{uuid.uuid4().hex[:8].upper()}",
+                    description=f"Loan disbursement via {disbursementMethod}",
+                    processed_by=str(current_user.id)
+                )
+                session.add(txn)
+                
+                # 6. Create journal entry for disbursement - reverse Disbursement Payable and record cash outflow
+                from .accounting import create_journal_entry
+                
+                principal = loan.approved_principal or loan.principal
+                disbursement_ref = f"JNL-DSB-{loan.id:06d}"
+                gl_lines = [
+                    {
+                        "account_code": "2010",
+                        "debit": principal,
+                        "credit": Decimal(0),
+                        "description": "Reverse Disbursement Payable - Loan Disbursed",
+                    },
+                    {
+                        "account_code": "1010",
+                        "debit": Decimal(0),
+                        "credit": principal,
+                        "description": "Cash Disbursed to Customer",
+                    },
+                ]
+                
+                try:
+                    await create_journal_entry(
+                        session=session,
+                        reference_no=disbursement_ref,
+                        description=f"Loan Disbursement - Customer {loan.customer_id} - Principal {principal}",
+                        created_by=str(current_user.id),
+                        lines=gl_lines,
+                    )
+                except Exception as e:
+                    import logging
+                    logging.error(f"Failed to create journal entry for loan disbursement: {e}")
+                
+                print(f"DEBUG: Committing disbursement for loan {loan.id}")
+                await session.commit()
+                await session.refresh(loan)
+                print(f"DEBUG: Disbursement successful for loan {loan.id}")
+
+                return LoanResponse(
+                    success=True,
+                    message="Loan disbursed successfully",
+                    loan=LoanNode(
+                        id=str(loan.id),
+                        principal=loan.principal,
+                        status=loan.status,
+                        customerId=str(loan.customer_id),
+                        productId=loan.product_id,
+                        termMonths=loan.term_months,
+                        approvedPrincipal=loan.approved_principal,
+                        approvedRate=loan.approved_rate,
+                        outstandingBalance=loan.outstanding_balance,
+                        createdAt=loan.created_at,
+                        updatedAt=loan.updated_at,
+                        disbursedAt=loan.disbursed_at,
+                    ),
+                )
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                await session.rollback()
+                return LoanResponse(success=False, message=f"Error: {str(e)}")
+
+    @strawberry.mutation
+    async def repayLoan(
+        self, 
+        info: Info, 
+        id: strawberry.ID,
+        amount: Decimal,
+        paymentMethod: Optional[str] = "cash",
+        notes: Optional[str] = None
+    ) -> LoanResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return LoanResponse(success=False, message="Not authenticated")
+
+        session_factory = get_async_session_local()
+        async with session_factory() as session:
+            try:
+                # 1. Fetch loan
+                result = await session.execute(
+                    select(LoanApplication).where(LoanApplication.id == int(str(id)))
+                )
+                loan = result.scalar_one_or_none()
+                if not loan:
+                    return LoanResponse(success=False, message="Loan not found")
+                
+                if loan.status != "active":
+                    return LoanResponse(success=False, message="Only active loans can accept repayments")
+
+                # 2. Update balance
+                if not loan.outstanding_balance:
+                    loan.outstanding_balance = loan.approved_principal or loan.principal
+                
+                loan.outstanding_balance -= amount
+                if loan.outstanding_balance <= 0:
+                    loan.outstanding_balance = 0
+                    loan.status = "paid"
+                
+                # 3. Create transaction record
+                txn = LoanTransaction(
+                    loan_id=loan.id,
+                    type="repayment",
+                    amount=amount,
+                    receipt_number=f"PAY-{uuid.uuid4().hex[:8].upper()}",
+                    description=notes or f"Repayment via {paymentMethod}",
+                    processed_by=str(current_user.id)
+                )
+                session.add(txn)
+                
+                await session.commit()
+                await session.refresh(loan)
+
+                return LoanResponse(
+                    success=True,
+                    message=f"Repayment of ₱{amount:,.2f} recorded successfully",
+                    loan=LoanNode(
+                        id=str(loan.id),
+                        principal=loan.principal,
+                        status=loan.status,
+                        customerId=str(loan.customer_id),
+                        productId=loan.product_id,
+                        termMonths=loan.term_months,
+                        approvedPrincipal=loan.approved_principal,
+                        approvedRate=loan.approved_rate,
+                        outstandingBalance=loan.outstanding_balance,
+                        createdAt=loan.created_at,
+                        updatedAt=loan.updated_at,
+                        disbursedAt=loan.disbursed_at,
+                    ),
+                )
+            except Exception as e:
+                await session.rollback()
+                return LoanResponse(success=False, message=f"Error: {str(e)}")
 
     @strawberry.mutation
     async def createSavingsTransaction(

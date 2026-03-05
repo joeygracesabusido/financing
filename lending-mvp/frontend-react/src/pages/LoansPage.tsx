@@ -29,10 +29,19 @@ export default function LoansPage() {
     const [loansData, setLoansData] = useState<Loan[]>([])
     const [search, setSearch] = useState('')
 
+    const filteredLoans = loansData.filter(loan => 
+        loan.borrowerName.toLowerCase().includes(search.toLowerCase()) ||
+        loan.productName.toLowerCase().includes(search.toLowerCase()) ||
+        loan.id.toLowerCase().includes(search.toLowerCase()) ||
+        loan.status.toLowerCase().includes(search.toLowerCase())
+    )
+
     const init = async () => {
         try {
             const data = await getLoans()
-            setLoansData(data.loans || [])
+            // The GraphQL response for 'loans' is { data: { loans: { loans: [...] } } }
+            // Our getLoans in api/loans.ts returns the json() which is { data: { ... } }
+            setLoansData(data.data?.loans?.loans || [])
         } catch (e) {
             console.error('Failed to fetch loans:', e)
         } finally {
@@ -92,10 +101,14 @@ export default function LoansPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {loansData.length === 0 ? (
+                            {filteredLoans.length === 0 ? (
                                 <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">No loans found.</td></tr>
-                            ) : loansData.map((loan) => (
-                                <tr key={loan.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
+                            ) : filteredLoans.map((loan) => (
+                                <tr 
+                                    key={loan.id} 
+                                    onClick={() => navigate(`/loans/${loan.id}`)}
+                                    className="border-b border-border/30 hover:bg-white/5 transition-colors cursor-pointer"
+                                >
                                     <td className="px-4 py-3">
                                         <div className="font-medium text-foreground">{loan.borrowerName}</div>
                                         <div className="text-xs text-muted-foreground">{loan.customerId}</div>

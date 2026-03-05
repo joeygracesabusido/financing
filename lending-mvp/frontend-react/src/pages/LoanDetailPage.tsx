@@ -1,33 +1,76 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, FileText, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, FileText, CheckCircle, XCircle, AlertCircle, PlayCircle, Eye, Wallet, Banknote } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
-import { getLoan } from '@/api/loans'
+import { getLoan, submitLoan, reviewLoan, approveLoan, rejectLoan, disburseLoan, repayLoan } from '@/api/loans'
 
 export default function LoanDetailPage() {
     const { user } = useAuth()
     const navigate = useNavigate()
     const { id } = useParams()
-    const isAdmin = user?.role === 'admin'
+    const isOfficer = user?.role === 'admin' || user?.role === 'loan_officer' || user?.role === 'branch_manager'
 
     const [loading, setLoading] = useState(true)
     const [loan, setLoan] = useState<any>(null)
     const [error, setError] = useState('')
+    const [actionLoading, setActionLoading] = useState(false)
+    
+    // Approval inputs
+    const [inputApprovedPrincipal, setInputApprovedPrincipal] = useState<string>('')
+    const [inputApprovedRate, setInputApprovedRate] = useState<string>('')
+    
+    // Disbursement inputs
+    const [disbursementMethod, setDisbursementMethod] = useState<string>('cash')
+
+    // Repayment inputs
+    const [repayAmount, setRepayAmount] = useState<string>('')
+
+    const loadLoan = async () => {
+        try {
+            const data = await getLoan(id || '')
+            const loanData = data.data?.loan
+            setLoan(loanData)
+            
+            // Initialize approval inputs with original values if not yet approved
+            if (loanData) {
+                setInputApprovedPrincipal(loanData.approvedPrincipal?.toString() || loanData.principal?.toString() || '')
+                setInputApprovedRate(loanData.approvedRate?.toString() || '12.0')
+                // Default repay amount to something reasonable
+                setRepayAmount('')
+            }
+        } catch (e) {
+            console.error('Failed to load loan:', e)
+            setError('Failed to load loan details')
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const loadLoan = async () => {
-            try {
-                const data = await getLoan(id || '')
-                setLoan(data.loan)
-            } catch (e) {
-                console.error('Failed to load loan:', e)
-                setError('Failed to load loan details')
-            } finally {
-                setLoading(false)
-            }
-        }
         loadLoan()
     }, [id])
+
+    const handleAction = async (actionFn: () => Promise<any>, successMsg: string) => {
+        setActionLoading(true)
+        try {
+            const res = await actionFn()
+            if (res.errors && res.errors.length > 0) {
+                alert('GraphQL Error: ' + res.errors[0].message)
+                return
+            }
+            const data = res.data ? Object.values(res.data)[0] as any : null
+            if (data?.success) {
+                alert(successMsg)
+                loadLoan()
+            } else {
+                alert('Action failed: ' + (data?.message || 'Unknown error'))
+            }
+        } catch (e: any) {
+            alert('Request Error: ' + e.message)
+        } finally {
+            setActionLoading(false)
+        }
+    }
 
     if (loading) return <div className="text-center py-16 text-muted-foreground">Loading loan details...</div>
     if (error) return <div className="text-center py-16 text-destructive">{error}</div>
@@ -35,93 +78,217 @@ export default function LoanDetailPage() {
 
     const getStatusColor = (status: string) => {
         const colors: { [key: string]: string } = {
-            'pending': 'text-amber-400',
-            'approved': 'text-emerald-400',
-            'disbursed': 'text-blue-400',
-            'repaid': 'text-emerald-400',
-            'default': 'text-red-400'
+            'draft': 'text-slate-400 bg-slate-400/10',
+            'submitted': 'text-amber-400 bg-amber-400/10',
+            'reviewing': 'text-blue-400 bg-blue-400/10',
+            'approved': 'text-emerald-400 bg-emerald-400/10',
+            'disbursed': 'text-indigo-400 bg-indigo-400/10',
+            'repaid': 'text-emerald-400 bg-emerald-400/10',
+            'paid': 'text-emerald-400 bg-emerald-400/10',
+            'rejected': 'text-red-400 bg-red-400/10'
         }
-        return colors[loan.status] || 'text-muted-foreground'
+        return colors[status] || 'text-muted-foreground'
     }
 
     return (
-        <div className="space-y-6 animate-fade-in">
-            <div className="flex items-center gap-4">
-                <button onClick={() => navigate('/loans')} className="p-2 rounded-lg hover:bg-background/50 text-muted-foreground transition-colors">
-                    <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div>
-                    <h1 className="text-2xl font-bold text-foreground">Loan Details</h1>
-                    <p className="text-muted-foreground text-sm mt-1">ID: {loan.id}</p>
+        <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => navigate('/loans')} className="p-2 rounded-lg hover:bg-white/5 text-muted-foreground transition-colors">
+                        <ArrowLeft className="w-5 h-5" />
+                    </button>
+                    <div>
+                        <h1 className="text-2xl font-bold text-foreground">Loan Details</h1>
+                        <p className="text-muted-foreground text-sm mt-1">Ref: {loan.id}</p>
+                    </div>
                 </div>
+                <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusColor(loan.status)}`}>
+                    {loan.status.toUpperCase()}
+                </span>
             </div>
 
-            <div className="glass rounded-xl p-6 space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-border">
-                    <div>
-                        <h2 className="text-lg font-bold text-foreground">{loan.borrowerName}</h2>
-                        <p className="text-sm text-muted-foreground">{loan.productName}</p>
-                    </div>
-                    <span className={`text-sm px-3 py-1 rounded-full ${getStatusColor(loan.status)}`}>
-                        {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
-                    </span>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-2 space-y-6">
+                    <div className="glass rounded-xl p-6 space-y-6">
+                        <div className="flex items-center justify-between pb-4 border-b border-border/50">
+                            <div>
+                                <h2 className="text-lg font-bold text-foreground">{loan.borrowerName}</h2>
+                                <p className="text-sm text-muted-foreground">{loan.productName}</p>
+                            </div>
+                        </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-xs text-muted-foreground">Principal</label>
-                        <p className="text-lg font-semibold text-foreground">₱{loan.principal?.toLocaleString()}</p>
+                        <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+                            <div>
+                                <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Principal</label>
+                                <p className="text-xl font-bold text-foreground">₱{loan.principal?.toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Term</label>
+                                <p className="text-xl font-bold text-foreground">{loan.termMonths} months</p>
+                            </div>
+                            <div>
+                                <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Approved Principal</label>
+                                <p className="text-lg font-semibold text-foreground">{loan.approvedPrincipal ? `₱${loan.approvedPrincipal.toLocaleString()}` : '—'}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Approved Rate</label>
+                                <p className="text-lg font-semibold text-foreground">{loan.approvedRate ? `${loan.approvedRate}%` : '—'}</p>
+                            </div>
+                            <div>
+                                <label className="text-xs text-primary uppercase tracking-wider font-bold">Outstanding Balance</label>
+                                <p className="text-xl font-bold text-primary">₱{loan.outstandingBalance?.toLocaleString() || '0.00'}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label className="text-xs text-muted-foreground">Approved Amount</label>
-                        <p className="text-lg font-semibold text-foreground">₱{loan.approvedPrincipal?.toLocaleString()}</p>
-                    </div>
-                    <div>
-                        <label className="text-xs text-muted-foreground">Interest Rate</label>
-                        <p className="text-lg font-semibold text-foreground">{loan.approvedRate?.toFixed(2)}%</p>
-                    </div>
-                    <div>
-                        <label className="text-xs text-muted-foreground">Term</label>
-                        <p className="text-lg font-semibold text-foreground">{loan.termMonths} months</p>
-                    </div>
-                    <div>
-                        <label className="text-xs text-muted-foreground">Outstanding Balance</label>
-                        <p className="text-lg font-semibold text-foreground">₱{loan.outstandingBalance?.toLocaleString()}</p>
-                    </div>
-                    <div>
-                        <label className="text-xs text-muted-foreground">Created</label>
-                        <p className="text-sm text-muted-foreground">{new Date(loan.createdAt).toLocaleDateString()}</p>
-                    </div>
-                    {loan.disbursedAt && (
-                        <div>
-                            <label className="text-xs text-muted-foreground">Disbursed</label>
-                            <p className="text-sm text-muted-foreground">{new Date(loan.disbursedAt).toLocaleDateString()}</p>
+
+                    {isOfficer && (
+                        <div className="glass rounded-xl p-6 border-t-4 border-primary/50">
+                            <h3 className="text-sm font-bold text-foreground mb-4 uppercase tracking-wider flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-primary" /> Workflow Actions
+                            </h3>
+                            <div className="flex flex-wrap gap-3">
+                                {loan.status === 'draft' && (
+                                    <button 
+                                        disabled={actionLoading}
+                                        onClick={() => handleAction(() => submitLoan(loan.id), 'Loan submitted successfully')}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                                    >
+                                        <PlayCircle className="w-4 h-4" /> Submit for Review
+                                    </button>
+                                )}
+                                
+                                {loan.status === 'submitted' && (
+                                    <button 
+                                        disabled={actionLoading}
+                                        onClick={() => handleAction(() => reviewLoan(loan.id), 'Loan is now under review')}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                                    >
+                                        <Eye className="w-4 h-4" /> Start Review
+                                    </button>
+                                )}
+
+                                {loan.status === 'reviewing' && (
+                                    <div className="w-full space-y-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] text-muted-foreground uppercase font-bold">Approved Principal (₱)</label>
+                                                <input 
+                                                    type="number" 
+                                                    value={inputApprovedPrincipal}
+                                                    onChange={(e) => setInputApprovedPrincipal(e.target.value)}
+                                                    className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                                />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] text-muted-foreground uppercase font-bold">Approved Rate (%)</label>
+                                                <input 
+                                                    type="number" 
+                                                    step="0.01"
+                                                    value={inputApprovedRate}
+                                                    onChange={(e) => setInputApprovedRate(e.target.value)}
+                                                    className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <button 
+                                                disabled={actionLoading}
+                                                onClick={() => handleAction(() => approveLoan(loan.id, parseFloat(inputApprovedPrincipal), parseFloat(inputApprovedRate)), 'Loan approved')}
+                                                className="flex items-center justify-center gap-2 px-6 py-2 rounded-lg bg-emerald-600 text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex-1"
+                                            >
+                                                <CheckCircle className="w-4 h-4" /> Finalize & Approve
+                                            </button>
+                                            <button 
+                                                disabled={actionLoading}
+                                                onClick={() => {
+                                                    const reason = prompt('Reason for rejection:')
+                                                    if (reason) handleAction(() => rejectLoan(loan.id, reason), 'Loan rejected')
+                                                }}
+                                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600/20 text-red-400 text-sm font-medium hover:bg-red-600/30 transition-colors disabled:opacity-50"
+                                            >
+                                                <XCircle className="w-4 h-4" /> Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {loan.status === 'active' && (
+                                    <div className="w-full space-y-4">
+                                        <div className="flex gap-3">
+                                            <button 
+                                                onClick={() => navigate(`/loans/${loan.id}/amortization`)}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1"
+                                            >
+                                                <FileText className="w-4 h-4" /> Amortization
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="pt-4 border-t border-border/50 space-y-3">
+                                            <label className="text-[10px] text-muted-foreground uppercase font-bold">Record Repayment</label>
+                                            <div className="flex gap-2">
+                                                <input 
+                                                    type="number" 
+                                                    placeholder="Amount"
+                                                    value={repayAmount}
+                                                    onChange={(e) => setRepayAmount(e.target.value)}
+                                                    className="bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 flex-1"
+                                                />
+                                                <button 
+                                                    disabled={actionLoading || !repayAmount}
+                                                    onClick={() => handleAction(() => repayLoan(loan.id, parseFloat(repayAmount)), 'Repayment recorded')}
+                                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                                                >
+                                                    <Banknote className="w-4 h-4" /> Pay
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {loan.status === 'approved' && (
+                                    <div className="w-full space-y-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] text-muted-foreground uppercase font-bold">Disbursement Method</label>
+                                            <select 
+                                                value={disbursementMethod}
+                                                onChange={(e) => setDisbursementMethod(e.target.value)}
+                                                className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                            >
+                                                <option value="cash">Cash</option>
+                                                <option value="bank_transfer">Bank Transfer</option>
+                                                <option value="cheque">Cheque</option>
+                                                <option value="savings_transfer">Transfer to Savings Account</option>
+                                            </select>
+                                        </div>
+                                        <button 
+                                            disabled={actionLoading}
+                                            onClick={() => handleAction(() => disburseLoan(loan.id, disbursementMethod), 'Loan disbursed successfully')}
+                                            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                                        >
+                                            <Wallet className="w-4 h-4" /> Finalize Disbursement
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
 
-                {isAdmin && (
-                    <div className="pt-4 border-t border-border">
-                        <h3 className="text-sm font-semibold text-foreground mb-3">Actions</h3>
-                        <div className="flex gap-3">
-                            {loan.status === 'pending' && (
-                                <>
-                                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 text-emerald-400 text-sm font-medium hover:bg-emerald-500/30 transition-colors">
-                                        <CheckCircle className="w-4 h-4" /> Approve
-                                    </button>
-                                    <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/30 transition-colors">
-                                        <XCircle className="w-4 h-4" /> Reject
-                                    </button>
-                                </>
-                            )}
-                            {loan.status === 'approved' && (
-                                <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 text-sm font-medium hover:bg-blue-500/30 transition-colors">
-                                    <FileText className="w-4 h-4" /> Disburse
-                                </button>
-                            )}
+                <div className="space-y-6">
+                    <div className="glass rounded-xl p-4 space-y-4">
+                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Timestamps</h3>
+                        <div className="space-y-3">
+                            <div>
+                                <label className="text-[10px] text-muted-foreground block">Application Date</label>
+                                <p className="text-sm font-medium text-foreground">{new Date(loan.createdAt).toLocaleString()}</p>
+                            </div>
+                            <div>
+                                <label className="text-[10px] text-muted-foreground block">Last Updated</label>
+                                <p className="text-sm font-medium text-foreground">{new Date(loan.updatedAt).toLocaleString()}</p>
+                            </div>
                         </div>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     )

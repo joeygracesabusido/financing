@@ -23,13 +23,15 @@ DEFAULT_COA = [
     {"code": "1005", "name": "Petty Cash", "type": "asset"},
     {"code": "1010", "name": "Cash in Bank", "type": "asset"},
     {"code": "1100", "name": "Accounts Receivable", "type": "asset"},
-    {"code": "1300", "name": "Loans Receivable", "type": "asset"},
+    {"code": "1200", "name": "Loans Receivable - Current", "type": "asset"},
+    {"code": "1300", "name": "Loans Receivable - Non-Current", "type": "asset"},
     {"code": "1400", "name": "Allowance for Loan Losses", "type": "asset"},
     {"code": "1500", "name": "Fixed Assets", "type": "asset"},
     {"code": "1600", "name": "Accumulated Depreciation", "type": "asset"},
     # Liabilities
     {"code": "2000", "name": "Accounts Payable", "type": "liability"},
-    {"code": "2010", "name": "Savings Deposits Payable", "type": "liability"},
+    {"code": "2010", "name": "Disbursement Payable", "type": "liability"},
+    {"code": "2020", "name": "Savings Deposits Payable", "type": "liability"},
     {"code": "2100", "name": "Customer Advances (Overpayments)", "type": "liability"},
     {"code": "2200", "name": "Withholding Tax Payable", "type": "liability"},
     {"code": "2300", "name": "Other Liabilities", "type": "liability"},
@@ -292,6 +294,7 @@ class ChartOfAccountsQuery:
         skip: int = 0,
         limit: int = 50,
         referenceNo: Optional[str] = None,
+        accountCode: Optional[str] = None,
     ) -> JournalEntriesResponse:
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role in ["customer"]:
@@ -300,21 +303,33 @@ class ChartOfAccountsQuery:
             )
 
         async for session in get_db_session():
+            from sqlalchemy.orm import joinedload
+            
+            # Base query
             query = select(JournalEntry)
+            
+            # Get entry IDs that have lines with the specified accountCode
+            if accountCode:
+                lines_subquery = (
+                    select(JournalLine.entry_id)
+                    .filter(JournalLine.account_code == accountCode)
+                    .distinct()
+                )
+                query = query.filter(JournalEntry.id.in_(lines_subquery))
+            
             if referenceNo:
                 query = query.filter(JournalEntry.reference_no == referenceNo)
 
+            # Get total count
             count_result = await session.execute(query)
-            # This is inefficient for large tables but okay for MVP/POC
-            all_entries = count_result.scalars().all()
-            total = len(all_entries)
+            total = len(count_result.scalars().all())
 
+            # Get paginated results
             result = await session.execute(
                 query.order_by(JournalEntry.timestamp.desc()).offset(skip).limit(limit)
             )
+            
             entries = []
-            from sqlalchemy.orm import joinedload
-
             for entry in result.scalars().all():
                 lines_result = await session.execute(
                     select(JournalLine)
@@ -332,6 +347,7 @@ class ChartOfAccountsQuery:
                     )
                     for l in lines_result.scalars().all()
                 ]
+                
                 entries.append(
                     JournalEntryType(
                         id=strawberry.ID(str(entry.id)),

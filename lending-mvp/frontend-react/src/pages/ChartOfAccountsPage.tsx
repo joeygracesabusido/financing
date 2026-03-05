@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Download, Plus, FileText } from 'lucide-react'
+import { Download, Plus, FileText, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -11,6 +11,13 @@ const getHeaders = () => {
     }
 }
 
+const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(value || 0)
+}
+
 interface GLAccount {
     id: string
     code: string
@@ -18,6 +25,24 @@ interface GLAccount {
     type: string
     balance: number
     createdAt: string
+}
+
+interface JournalLine {
+    id: string
+    accountCode: string
+    accountName: string
+    debit: number
+    credit: number
+    description: string
+}
+
+interface JournalEntry {
+    id: string
+    referenceNo: string
+    description: string
+    timestamp: string
+    createdBy: string
+    lines: JournalLine[]
 }
 
 interface GroupedAccounts {
@@ -39,6 +64,12 @@ export default function ChartOfAccountsPage() {
     })
     const [submitting, setSubmitting] = useState(false)
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
+    const [selectedAccount, setSelectedAccount] = useState<GLAccount | null>(null)
+    const [accountEntries, setAccountEntries] = useState<JournalEntry[]>([])
+    const [entriesLoading, setEntriesLoading] = useState(false)
+    const [entriesPage, setEntriesPage] = useState(1)
+    const [entriesTotal, setEntriesTotal] = useState(0)
+    const entriesPerPage = 10
 
     const init = async () => {
         try {
@@ -60,6 +91,75 @@ export default function ChartOfAccountsPage() {
     }
 
     useEffect(() => { init() }, [])
+
+    const fetchAccountEntries = async (accountCode: string, page = 1) => {
+        setEntriesLoading(true)
+        try {
+            const skip = (page - 1) * entriesPerPage
+            const res = await fetch('/graphql', {
+                method: 'POST',
+                headers: getHeaders(),
+                body: JSON.stringify({
+                    query: `query GetJournalEntriesByAccount($skip: Int!, $limit: Int!, $accountCode: String!) {
+                        journalEntries(skip: $skip, limit: $limit, accountCode: $accountCode) {
+                            success
+                            message
+                            entries {
+                                id
+                                referenceNo
+                                description
+                                timestamp
+                                createdBy
+                                lines {
+                                    id
+                                    accountCode
+                                    accountName
+                                    debit
+                                    credit
+                                    description
+                                }
+                            }
+                            total
+                        }
+                    }`,
+                    variables: { skip, limit: entriesPerPage, accountCode }
+                })
+            })
+            const data = await res.json()
+            const journalData = data.data?.journalEntries
+            if (journalData) {
+                setAccountEntries(journalData.entries || [])
+                setEntriesTotal(journalData.total || 0)
+            }
+        } catch (e) {
+            console.error('Failed to fetch account entries:', e)
+        } finally {
+            setEntriesLoading(false)
+        }
+    }
+
+    const handleAccountClick = (account: GLAccount) => {
+        setSelectedAccount(account)
+        setEntriesPage(1)
+        fetchAccountEntries(account.code, 1)
+    }
+
+    const handleEntriesPageChange = (newPage: number) => {
+        if (selectedAccount) {
+            setEntriesPage(newPage)
+            fetchAccountEntries(selectedAccount.code, newPage)
+        }
+    }
+
+    const formatDate = (dateStr: string) => {
+        return new Date(dateStr).toLocaleDateString('en-PH', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
 
     const getAccountTypeLabel = (type: string) => {
         const labels: { [key: string]: string } = {
@@ -206,11 +306,15 @@ export default function ChartOfAccountsPage() {
                                         </thead>
                                         <tbody>
                                             {accounts.map((account) => (
-                                                <tr key={account.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
+                                                <tr 
+                                                    key={account.id} 
+                                                    className="border-b border-border/30 hover:bg-white/5 transition-colors cursor-pointer"
+                                                    onClick={() => handleAccountClick(account)}
+                                                >
                                                     <td className="px-4 py-3 font-mono text-foreground font-medium">{account.code}</td>
                                                     <td className="px-4 py-3 text-foreground">{account.name}</td>
                                                     <td className="px-4 py-3 text-right text-foreground font-medium">
-                                                        {account.balance ? `₱${account.balance.toLocaleString()}` : '—'}
+                                                        {account.balance ? `₱${formatCurrency(account.balance)}` : '—'}
                                                     </td>
                                                 </tr>
                                             ))}
@@ -315,6 +419,101 @@ export default function ChartOfAccountsPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Account Journal Entries Modal */}
+            {selectedAccount && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-[#1a1d23] rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                        <div className="border-b border-border p-4 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-lg font-semibold text-foreground">Journal Entries</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {selectedAccount.name} ({selectedAccount.code})
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedAccount(null)}
+                                className="p-2 hover:bg-white/5 rounded-lg transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-auto p-4">
+                            {entriesLoading ? (
+                                <div className="text-center py-8 text-muted-foreground">Loading entries...</div>
+                            ) : accountEntries.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">No journal entries found for this account.</div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {accountEntries.map((entry) => (
+                                        <div key={entry.id} className="glass rounded-lg p-4">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <div>
+                                                    <span className="font-mono text-blue-400">{entry.referenceNo}</span>
+                                                    <span className="text-muted-foreground text-sm ml-3">{formatDate(entry.timestamp)}</span>
+                                                </div>
+                                                <span className="text-muted-foreground text-sm">By: {entry.createdBy}</span>
+                                            </div>
+                                            <p className="text-sm text-foreground mb-3">{entry.description}</p>
+                                            <table className="w-full text-sm">
+                                                <thead>
+                                                    <tr className="text-muted-foreground border-b border-border/30">
+                                                        <th className="text-left py-2">Account</th>
+                                                        <th className="text-right py-2">Debit</th>
+                                                        <th className="text-right py-2">Credit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {entry.lines.map((line) => (
+                                                        <tr key={line.id} className="border-b border-border/20">
+                                                            <td className="py-2">
+                                                                <span className="font-mono text-xs">{line.accountCode}</span>
+                                                                <span className="ml-2">{line.accountName}</span>
+                                                            </td>
+                                                            <td className="py-2 text-right text-green-400">
+                                                                {line.debit > 0 ? `₱${formatCurrency(line.debit)}` : '—'}
+                                                            </td>
+                                                            <td className="py-2 text-right text-red-400">
+                                                                {line.credit > 0 ? `₱${formatCurrency(line.credit)}` : '—'}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Pagination */}
+                        {entriesTotal > entriesPerPage && (
+                            <div className="border-t border-border p-4 flex items-center justify-between">
+                                <div className="text-sm text-muted-foreground">
+                                    Showing {((entriesPage - 1) * entriesPerPage) + 1} - {Math.min(entriesPage * entriesPerPage, entriesTotal)} of {entriesTotal}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => handleEntriesPageChange(entriesPage - 1)}
+                                        disabled={entriesPage === 1}
+                                        className="p-2 rounded-lg border border-border hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => handleEntriesPageChange(entriesPage + 1)}
+                                        disabled={entriesPage * entriesPerPage >= entriesTotal}
+                                        className="p-2 rounded-lg border border-border hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

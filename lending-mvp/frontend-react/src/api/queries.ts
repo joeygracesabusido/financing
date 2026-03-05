@@ -221,7 +221,7 @@ export const GET_LOAN = `
 `
 
 export const GET_LOAN_AMORTIZATION = `
-  query GetLoanAmortization($loanId: Int!) {
+  query GetLoanAmortization($loanId: ID!) {
     loanAmortization(loanId: $loanId) {
       rows {
         installmentNumber

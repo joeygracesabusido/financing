@@ -127,7 +127,21 @@ npx playwright test
 - `lending-mvp/AGENTS.md`: Operational protocol for AI assistants.
 - `START_HERE.md`: Summary of recent critical fixes.
 - `lending-mvp/backend/app/main.py`: API Entry point and Lifespan logic.
-- `lending-mvp/backend/app/database/__init__.py`: MongoDB collection mapping.
+- `lending-mvp/backend/app/database/__init__.py`: PostgreSQL initialization and session factory.
+- `lending-mvp/backend/app/graphql.py`: Core GraphQL schema and mutations (Primary for React frontend).
+
+---
+
+## Recent Critical Fixes (March 2026)
+
+### GraphQL Schema & Mutations
+- **Loan Creation Fix**: Added `LoanInput` and `LoanResponse` types to the GraphQL schema in `backend/app/graphql.py`. Implemented the `createLoan` mutation to correctly handle loan application submissions from the React frontend.
+- **Dynamic Field Resolution**: Enhanced `LoanNode` to resolve `borrowerName` and `productName` dynamically from PostgreSQL (instead of static demo values). This fixed empty/static display issues in the Loan list and detail pages.
+- **Virtual Field Support**: Added `referenceNo` and `startDate` as virtual fields to `LoanNode` for frontend compatibility.
+
+### Database Stability
+- **PostgreSQL Schema Sync**: Manually updated the `savings_accounts` table to include missing columns required by the ORM metadata (e.g., `maturity_date`, `principal`, `term_days`). This resolved a critical crash during startup/seeding where the database didn't match the model definitions.
+- **Query Error Handling**: Fixed a database error in the `loans` query resolver where it was attempting to filter by a non-existent `borrower_name` column in the `loan_applications` table.
 
 ---
 

@@ -659,19 +659,20 @@ class LoanMutation:
             )
             session.add(txn)
 
-            # 3. GL entries
+            # 3. GL entries - Reverse Disbursement Payable from approval and record cash outflow
+            # The Loans Receivable (1300) was already recognized on approval
             gl_lines = [
                 {
-                    "account_code": "1300",
+                    "account_code": "2010",
                     "debit": loan_qty,
                     "credit": Decimal(0),
-                    "description": "Loans Receivable",
+                    "description": "Reverse Disbursement Payable - Loan Approved",
                 },
                 {
                     "account_code": "1010",
                     "debit": Decimal(0),
                     "credit": net_disbursement,
-                    "description": "Cash in Bank",
+                    "description": "Cash Disbursed to Customer",
                 },
             ]
             if origination_fee > 0:
@@ -1116,7 +1117,11 @@ class LoanMutation:
         approved_principal: Optional[Decimal] = None,
         approved_rate: Optional[Decimal] = None,
     ) -> LoanResponse:
-        """Branch manager or admin approves a reviewed loan (reviewing → approved)."""
+        """Branch manager or admin approves a reviewed loan (reviewing → approved).
+        Creates journal entries following GAAP:
+        - Dr. Loans Receivable (1300) - recognizes the loan asset
+        - Cr. Disbursement Payable (2000) - recognizes liability to disburse funds
+        """
         current_user: UserInDB = info.context.get("current_user")
         if not current_user or current_user.role not in ["admin", "staff"]:
             raise HTTPException(
@@ -1137,12 +1142,46 @@ class LoanMutation:
                     message=f"Cannot approve a loan in '{loan.status}' status",
                 )
 
+            # Determine approved amount
+            approved_amount = approved_principal if approved_principal is not None else (loan.approved_principal or loan.principal)
+            
             loan.status = "approved"
             loan.approved_by = str(current_user.id)
             if approved_principal is not None:
                 loan.approved_principal = approved_principal
             if approved_rate is not None:
                 loan.approved_rate = approved_rate
+
+            # Create GAAP-compliant journal entry for loan approval
+            # Dr. Loans Receivable (1300) - recognizes the loan as an asset
+            # Cr. Disbursement Payable (2010) - recognizes liability to disburse funds
+            reference_no = f"JNL-APRV-{loan.id:06d}"
+            gl_lines = [
+                {
+                    "account_code": "1300",
+                    "debit": approved_amount,
+                    "credit": Decimal(0),
+                    "description": f"Loan Approval - {loan.customer_name or 'Customer'}",
+                },
+                {
+                    "account_code": "2010",
+                    "debit": Decimal(0),
+                    "credit": approved_amount,
+                    "description": f"Disbursement Payable - {loan.customer_name or 'Customer'}",
+                },
+            ]
+            
+            try:
+                await create_journal_entry(
+                    session=session,
+                    reference_no=reference_no,
+                    description=f"Loan Approval - Customer {loan.customer_id} - Principal {approved_amount}",
+                    created_by=str(current_user.id),
+                    lines=gl_lines,
+                )
+            except Exception as e:
+                import logging
+                logging.error(f"Failed to create journal entry for loan approval: {e}")
 
             await session.commit()
             return LoanResponse(

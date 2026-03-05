@@ -2,8 +2,20 @@ from decimal import Decimal
 from datetime import datetime
 from typing import List, Dict
 from sqlalchemy.orm import Session
-from .database.pg_accounting_models import JournalEntry, JournalLine
+from sqlalchemy import select
+from .database.pg_accounting_models import JournalEntry, JournalLine, GLAccount
 import uuid
+
+async def ensure_gl_account(session: Session, code: str, name: str, acc_type: str):
+    """Ensure a GL account exists, create if not."""
+    result = await session.execute(
+        select(GLAccount).filter(GLAccount.code == code)
+    )
+    existing = result.scalar_one_or_none()
+    if not existing:
+        new_account = GLAccount(code=code, name=name, type=acc_type)
+        session.add(new_account)
+        await session.flush()
 
 async def create_journal_entry(
     session: Session,
@@ -19,6 +31,43 @@ async def create_journal_entry(
         {"account_code": "4000", "debit": 0.00, "credit": 1000.00}
     ]
     """
+    # Ensure all account codes exist
+    account_map: Dict[str, tuple] = {
+        "1000": ("Cash on Hand", "asset"),
+        "1005": ("Petty Cash", "asset"),
+        "1010": ("Cash in Bank", "asset"),
+        "1100": ("Accounts Receivable", "asset"),
+        "1200": ("Loans Receivable - Current", "asset"),
+        "1300": ("Loans Receivable - Non-Current", "asset"),
+        "1400": ("Allowance for Loan Losses", "asset"),
+        "1500": ("Fixed Assets", "asset"),
+        "1600": ("Accumulated Depreciation", "asset"),
+        "2000": ("Accounts Payable", "liability"),
+        "2010": ("Disbursement Payable", "liability"),
+        "2020": ("Savings Deposits Payable", "liability"),
+        "2100": ("Customer Advances", "liability"),
+        "2200": ("Withholding Tax Payable", "liability"),
+        "2300": ("Other Liabilities", "liability"),
+        "3000": ("Share Capital", "equity"),
+        "3100": ("Retained Earnings", "equity"),
+        "4000": ("Interest Income - Savings", "income"),
+        "4100": ("Interest Income - Loans", "income"),
+        "4200": ("Fee Income - Origination", "income"),
+        "4300": ("Penalty Income", "income"),
+        "4400": ("Prepayment Penalty Income", "income"),
+        "4500": ("Service Fee Income", "income"),
+        "5000": ("Salaries & Wages", "expense"),
+        "5100": ("Office & Administrative Expenses", "expense"),
+        "5200": ("Loan Loss Expense", "expense"),
+        "5300": ("Depreciation Expense", "expense"),
+        "5400": ("Interest Expense", "expense"),
+    }
+    
+    for line in lines:
+        code = line.get("account_code")
+        if code and code in account_map:
+            await ensure_gl_account(session, code, account_map[code][0], account_map[code][1])
+    
     total_debit = sum(Decimal(str(line.get("debit", 0))) for line in lines)
     total_credit = sum(Decimal(str(line.get("credit", 0))) for line in lines)
     

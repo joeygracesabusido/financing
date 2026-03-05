@@ -3,8 +3,20 @@ import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@apollo/client'
 import { GET_LOAN, GET_LOAN_AMORTIZATION } from '@/api/queries'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { Calculator, Loader2, ArrowLeft, Printer } from 'lucide-react'
+
+const safeFormatCurrency = (value: any) => {
+    try {
+        const num = parseFloat(String(value || 0))
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+        }).format(num)
+    } catch (e) {
+        return `₱${value}`
+    }
+}
 
 interface LoanDetail {
     id: string
@@ -17,6 +29,7 @@ interface LoanDetail {
     status: string
     createdAt: string
     disbursedAt?: string
+    outstandingBalance?: number
     borrowerName: string
     productName: string
 }
@@ -24,39 +37,39 @@ interface LoanDetail {
 interface AmortizationRow {
     installmentNumber: number
     dueDate: string
-    principalDue: number
-    interestDue: number
-    penaltyDue: number
-    principalPaid: number
-    interestPaid: number
-    penaltyPaid: number
+    principalDue: number | string
+    interestDue: number | string
+    penaltyDue: number | string
+    principalPaid: number | string
+    interestPaid: number | string
+    penaltyPaid: number | string
     status: string
-    totalDue: number
-    totalPaid: number
+    totalDue: number | string
+    totalPaid: number | string
 }
 
 export default function AmortizationSchedulePage() {
     const { id } = useParams<{ id: string }>()
     const [showAll, setShowAll] = useState(false)
 
-    const { data: loanData, loading: loanLoading, error: loanError } = useQuery(GET_LOAN as any, {
+    const { data: loanData, loading: loanLoading, error: loanError } = useQuery(gql(GET_LOAN), {
         variables: { id },
         skip: !id
     })
 
-    const { data: amortizationData, loading: amortizationLoading, error: amortizationError } = useQuery(GET_LOAN_AMORTIZATION as any, {
-        variables: { loanId: id ? parseInt(id) : 0 },
-        skip: !id || isNaN(parseInt(id))
+    const { data: amortizationData, loading: amortizationLoading, error: amortizationError } = useQuery(gql(GET_LOAN_AMORTIZATION), {
+        variables: { loanId: id },
+        skip: !id
     })
 
-    const loan: LoanDetail = loanData?.loan?.loan
+    const loan: LoanDetail = loanData?.loan
     const amortizationRows: AmortizationRow[] = amortizationData?.loanAmortization?.rows || []
 
     const principal = parseFloat(String(loan?.approvedPrincipal || loan?.principal || 0))
     const annualRatePercent = parseFloat(String(loan?.approvedRate || 0))
     const termMonths = parseInt(String(loan?.termMonths || 0))
 
-    const totalInterest = amortizationRows.reduce((sum, row) => sum + (row.interestDue || 0), 0)
+    const totalInterest = amortizationRows.reduce((sum, row) => sum + parseFloat(String(row.interestDue || 0)), 0)
     const totalPayments = principal + totalInterest
     const periodicPayment = termMonths > 0 ? totalPayments / termMonths : 0
 
@@ -89,6 +102,26 @@ export default function AmortizationSchedulePage() {
             </div>
         )
     }
+
+    // Pre-calculate balances for display
+    let currentBalance = principal
+    const rowsWithBalance = (amortizationRows || []).map(row => {
+        const pDue = parseFloat(String(row.principalDue || 0))
+        const iDue = parseFloat(String(row.interestDue || 0))
+        const tDue = parseFloat(String(row.totalDue || (pDue + iDue)))
+        
+        currentBalance = Math.max(0, currentBalance - pDue)
+        
+        return {
+            ...row,
+            calculatedBalance: currentBalance,
+            parsedPrincipalDue: pDue,
+            parsedInterestDue: iDue,
+            parsedTotalDue: tDue
+        }
+    })
+
+    const displayRowsWithBalance = showAll ? rowsWithBalance : rowsWithBalance.slice(0, 12)
 
     return (
         <div className="space-y-6 animate-fade-in">
@@ -137,7 +170,7 @@ export default function AmortizationSchedulePage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
                     <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Principal</p>
-                        <p className="text-lg font-bold mt-1">{formatCurrency(principal)}</p>
+                        <p className="text-lg font-bold mt-1">{safeFormatCurrency(principal)}</p>
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Interest Rate</p>
@@ -164,11 +197,11 @@ export default function AmortizationSchedulePage() {
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Interest</p>
-                        <p className="text-lg font-bold mt-1">{formatCurrency(totalInterest)}</p>
+                        <p className="text-lg font-bold mt-1">{safeFormatCurrency(totalInterest)}</p>
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Payments</p>
-                        <p className="text-lg font-bold mt-1">{formatCurrency(totalPayments)}</p>
+                        <p className="text-lg font-bold mt-1">{safeFormatCurrency(totalPayments)}</p>
                     </div>
                 </div>
             </div>
@@ -176,7 +209,7 @@ export default function AmortizationSchedulePage() {
             {/* Periodic Payment Summary */}
             <div className="glass p-6 rounded-xl">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Monthly Payment</p>
-                <p className="text-3xl font-bold text-gray-900">{formatCurrency(periodicPayment)}</p>
+                <p className="text-3xl font-bold text-gray-900">{safeFormatCurrency(periodicPayment)}</p>
             </div>
 
             {/* Amortization Table */}
@@ -202,27 +235,23 @@ export default function AmortizationSchedulePage() {
                             <td className="px-3 py-2 text-right text-gray-500">-</td>
                             <td className="px-3 py-2 text-right text-gray-500">-</td>
                             <td className="px-3 py-2 text-right text-gray-500">-</td>
-                            <td className="px-3 py-2 text-right font-medium border border-gray-300 bg-white">
-                                {formatCurrency(principal)}
+                            <td className="px-3 py-2 text-right font-medium text-yellow-400 border border-gray-300 bg-white">
+                                {safeFormatCurrency(principal)}
                             </td>
                         </tr>
-                        {displayRows.map((row, index) => {
-                            const prevBalance = index === 0 ? principal : displayRows[index - 1].principalDue - displayRows[index - 1].principalPaid + (displayRows[index - 1].interestDue - displayRows[index - 1].interestPaid)
-                            const balance = prevBalance - (row.principalDue - row.principalPaid)
-                            return (
-                                <tr key={row.installmentNumber} className="border-b border-gray-200 hover:bg-gray-50">
-                                    <td className="px-3 py-2 text-center text-gray-600">{row.installmentNumber}</td>
-                                    <td className="px-3 py-2 text-center">{formatDate(row.dueDate)}</td>
-                                    <td className="px-3 py-2 text-right">{formatCurrency(row.totalDue)}</td>
-                                    <td className="px-3 py-2 text-right">{formatCurrency(row.principalDue)}</td>
-                                    <td className="px-3 py-2 text-right">{formatCurrency(row.interestDue)}</td>
-                                    <td className="px-3 py-2 text-right font-medium">{formatCurrency(row.totalDue)}</td>
-                                    <td className="px-3 py-2 text-right border border-gray-300 bg-white">
-                                        {balance > 0.01 ? formatCurrency(balance) : '0.00'}
-                                    </td>
-                                </tr>
-                            )
-                        })}
+                        {displayRowsWithBalance.map((row) => (
+                            <tr key={row.installmentNumber} className="border-b border-gray-200 hover:bg-gray-50/50">
+                                <td className="px-3 py-2 text-center text-gray-600">{row.installmentNumber}</td>
+                                <td className="px-3 py-2 text-center">{formatDate(row.dueDate)}</td>
+                                <td className="px-3 py-2 text-right font-medium">{safeFormatCurrency(row.parsedTotalDue)}</td>
+                                <td className="px-3 py-2 text-right text-white">{safeFormatCurrency(row.parsedPrincipalDue)}</td>
+                                <td className="px-3 py-2 text-right text-white">{safeFormatCurrency(row.parsedInterestDue)}</td>
+                                <td className="px-3 py-2 text-right font-semibold text-primary">{safeFormatCurrency(row.parsedTotalDue)}</td>
+                                <td className="px-3 py-2 text-right font-bold text-yellow-400 border-l border-gray-200">
+                                    {safeFormatCurrency(row.calculatedBalance)}
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
