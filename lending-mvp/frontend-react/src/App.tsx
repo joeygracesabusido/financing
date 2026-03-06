@@ -31,6 +31,7 @@ import TellerQRCodePage from '@/pages/TellerQRCodePage'
 import NotificationPreferencesPage from '@/pages/NotificationPreferencesPage'
 import CollectionDuePage from '@/pages/CollectionDuePage'
 import AmortizationSchedulePage from '@/pages/AmortizationSchedulePage'
+import PaymentHistoryPage from '@/pages/PaymentHistoryPage'
 
 function ProtectedLayout() {
     const { isAuthenticated } = useAuth()
@@ -69,6 +70,7 @@ function ProtectedLayout() {
                         <Route path="/collections" element={<CollectionsPage />} />
                         <Route path="/collection-due" element={<CollectionDuePage />} />
                         <Route path="/loans/:id/amortization" element={<AmortizationSchedulePage />} />
+                        <Route path="/loans/:id/payment-history" element={<PaymentHistoryPage />} />
                         <Route path="/chart-of-accounts" element={<ChartOfAccountsPage />} />
                         <Route path="/journal-entries" element={<JournalEntriesPage />} />
                         <Route path="/journal-entries/create" element={<CreateJournalEntryPage />} />

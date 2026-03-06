@@ -348,15 +348,16 @@ class LoanNode:
     async def borrowerName(self) -> str:
         session_factory = get_async_session_local()
         async with session_factory() as session:
-            # Check if customerId is numeric (PG ID) or string (Mongo ID)
-            if self.customerId.isdigit():
-                stmt = select(Customer).where(Customer.id == int(self.customerId))
+            # Check if customerId is numeric (PG ID)
+            if str(self.customerId).isdigit():
+                stmt = select(Customer).where(Customer.id == int(str(self.customerId)))
+                result = await session.execute(stmt)
+                customer = result.scalar_one_or_none()
+                return customer.display_name if customer else f"Customer {self.customerId}"
             else:
-                stmt = select(Customer).where(Customer.uuid == self.customerId)
-            
-            result = await session.execute(stmt)
-            customer = result.scalar_one_or_none()
-            return customer.display_name if customer else "Unknown Borrower"
+                # If it's a string (e.g. Mongo ID), we can't easily find it in PG without a mapping column
+                # For now, return a placeholder or just the ID
+                return f"Customer {self.customerId}"
 
     @strawberry.field
     async def productName(self) -> str:
@@ -651,6 +652,7 @@ class AmortizationScheduleRow:
     status: str
     totalDue: Decimal
     totalPaid: Decimal
+    paymentDate: Optional[date] = None
 
 
 @strawberry.type
@@ -1325,6 +1327,7 @@ class Query:
                         status=item.status,
                         totalDue=item.principal_due + item.interest_due + item.penalty_due,
                         totalPaid=item.principal_paid + item.interest_paid + item.penalty_paid,
+                        paymentDate=item.payment_date.date() if item.payment_date else None,
                     )
                 )
             return LoanAmortizationNode(
@@ -1400,7 +1403,13 @@ class Query:
                 query = query.filter(JournalEntry.id.in_(lines_subquery))
             
             if referenceNo:
-                query = query.filter(JournalEntry.reference_no == referenceNo)
+                from sqlalchemy import or_
+                query = query.filter(
+                    or_(
+                        JournalEntry.reference_no.ilike(f"%{referenceNo}%"),
+                        JournalEntry.description.ilike(f"%{referenceNo}%")
+                    )
+                )
 
             count_result = await session.execute(query)
             all_entries = count_result.scalars().all()
@@ -2172,6 +2181,19 @@ class Mutation:
             if approvedRate:
                 loan.approved_rate = approvedRate
             
+            # Get customer name for journal entries
+            from .database.pg_core_models import Customer
+            if str(loan.customer_id).isdigit():
+                customer_stmt = select(Customer).where(Customer.id == int(str(loan.customer_id)))
+            else:
+                # Fallback to display_name or ID if uuid is not present in model
+                # Based on previous investigation, Customer might not have uuid column yet
+                customer_stmt = select(Customer).where(Customer.id == int(str(loan.customer_id)) if str(loan.customer_id).isdigit() else False)
+            
+            customer_res = await session.execute(customer_stmt)
+            customer = customer_res.scalar_one_or_none()
+            customer_name = customer.display_name if customer else "Customer"
+
             # Create GAAP-compliant journal entry for loan approval
             from .accounting import create_journal_entry
             
@@ -2181,13 +2203,13 @@ class Mutation:
                     "account_code": "1300",
                     "debit": approved_amount,
                     "credit": Decimal(0),
-                    "description": f"Loan Approval - {loan.customer_name or 'Customer'}",
+                    "description": f"Loan Approval - {customer_name}",
                 },
                 {
                     "account_code": "2010",
                     "debit": Decimal(0),
                     "credit": approved_amount,
-                    "description": f"Disbursement Payable - {loan.customer_name or 'Customer'}",
+                    "description": f"Disbursement Payable - {customer_name}",
                 },
             ]
             
@@ -2564,12 +2586,13 @@ class Mutation:
 
     @strawberry.mutation
     async def repayLoan(
-        self, 
-        info: Info, 
+        self,
+        info: Info,
         id: strawberry.ID,
         amount: Decimal,
         paymentMethod: Optional[str] = "cash",
-        notes: Optional[str] = None
+        notes: Optional[str] = None,
+        paymentDate: Optional[date] = None
     ) -> LoanResponse:
         current_user = info.context.get("current_user")
         if not current_user:
@@ -2579,26 +2602,76 @@ class Mutation:
         async with session_factory() as session:
             try:
                 # 1. Fetch loan
+                loan_id_int = int(str(id))
                 result = await session.execute(
-                    select(LoanApplication).where(LoanApplication.id == int(str(id)))
+                    select(LoanApplication).where(LoanApplication.id == loan_id_int)
                 )
                 loan = result.scalar_one_or_none()
                 if not loan:
                     return LoanResponse(success=False, message="Loan not found")
-                
+
                 if loan.status != "active":
                     return LoanResponse(success=False, message="Only active loans can accept repayments")
 
                 # 2. Update balance
                 if not loan.outstanding_balance:
                     loan.outstanding_balance = loan.approved_principal or loan.principal
-                
+
                 loan.outstanding_balance -= amount
                 if loan.outstanding_balance <= 0:
                     loan.outstanding_balance = 0
                     loan.status = "paid"
+
+                # 3. Allocate payment to Amortization Schedule (Interest first, then Principal)
+                from .database.pg_loan_models import AmortizationSchedule
+                sched_result = await session.execute(
+                    select(AmortizationSchedule)
+                    .where(AmortizationSchedule.loan_id == loan_id_int)
+                    .where(AmortizationSchedule.status != "paid")
+                    .order_by(AmortizationSchedule.installment_number.asc())
+                )
+                schedules = sched_result.scalars().all()
                 
-                # 3. Create transaction record
+                remaining_payment = amount
+                total_interest_paid = Decimal("0.00")
+                total_principal_paid = Decimal("0.00")
+                
+                effective_payment_date = datetime.combine(paymentDate, datetime.min.time()) if paymentDate else datetime.now()
+
+                for sched in schedules:
+                    if remaining_payment <= 0:
+                        break
+                    
+                    # A. Satisfy Interest first
+                    interest_remaining = sched.interest_due - (sched.interest_paid or 0)
+                    if interest_remaining > 0:
+                        interest_to_pay = min(remaining_payment, interest_remaining)
+                        sched.interest_paid = (sched.interest_paid or 0) + interest_to_pay
+                        remaining_payment -= interest_to_pay
+                        total_interest_paid += interest_to_pay
+                    
+                    if remaining_payment <= 0:
+                        sched.payment_date = effective_payment_date
+                        sched.status = "partial"
+                        break
+                        
+                    # B. Satisfy Principal next
+                    principal_remaining = sched.principal_due - (sched.principal_paid or 0)
+                    if principal_remaining > 0:
+                        principal_to_pay = min(remaining_payment, principal_remaining)
+                        sched.principal_paid = (sched.principal_paid or 0) + principal_to_pay
+                        remaining_payment -= principal_to_pay
+                        total_principal_paid += principal_to_pay
+                    
+                    # Update status
+                    if (sched.principal_paid or 0) >= sched.principal_due and (sched.interest_paid or 0) >= sched.interest_due:
+                        sched.status = "paid"
+                    else:
+                        sched.status = "partial"
+                    
+                    sched.payment_date = effective_payment_date
+
+                # 4. Create transaction record
                 txn = LoanTransaction(
                     loan_id=loan.id,
                     type="repayment",
@@ -2607,8 +2680,58 @@ class Mutation:
                     description=notes or f"Repayment via {paymentMethod}",
                     processed_by=str(current_user.id)
                 )
-                session.add(txn)
                 
+                if paymentDate:
+                    txn.timestamp = datetime.combine(paymentDate, datetime.min.time())
+                
+                session.add(txn)
+
+                # 5. Create Journal Entries
+                # Debit Cash (1010), Credit Loans Receivable (1300) for Principal, Credit Interest Income (4100) for Interest
+                from .accounting import create_journal_entry
+                gl_lines = [
+                    {
+                        "account_code": "1010",
+                        "debit": amount,
+                        "credit": Decimal(0),
+                        "description": f"Loan Repayment - {loan.id}",
+                    }
+                ]
+                
+                if total_principal_paid > 0:
+                    gl_lines.append({
+                        "account_code": "1300",
+                        "debit": Decimal(0),
+                        "credit": total_principal_paid,
+                        "description": f"Principal Payment - {loan.id}",
+                    })
+                
+                if total_interest_paid > 0:
+                    gl_lines.append({
+                        "account_code": "4100",
+                        "debit": Decimal(0),
+                        "credit": total_interest_paid,
+                        "description": f"Interest Payment - {loan.id}",
+                    })
+                
+                # Handle unallocated amount (if any) as advance payment
+                unallocated = amount - (total_principal_paid + total_interest_paid)
+                if unallocated > 0:
+                    gl_lines.append({
+                        "account_code": "2100", # Customer Advances
+                        "debit": Decimal(0),
+                        "credit": unallocated,
+                        "description": f"Unallocated Advance - {loan.id}",
+                    })
+
+                await create_journal_entry(
+                    session=session,
+                    reference_no=txn.receipt_number,
+                    description=f"Loan Repayment - Loan {loan.id}",
+                    created_by=str(current_user.id),
+                    lines=gl_lines,
+                )
+
                 await session.commit()
                 await session.refresh(loan)
 

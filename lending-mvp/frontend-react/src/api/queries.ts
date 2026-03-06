@@ -232,10 +232,25 @@ export const GET_LOAN_AMORTIZATION = `
         principalPaid
         interestPaid
         penaltyPaid
+        paymentDate
         status
         totalDue
         totalPaid
       }
+    }
+  }
+`
+
+export const GET_LOAN_TRANSACTIONS = `
+  query GetLoanTransactions($loanId: ID) {
+    loanTransactions(loanId: $loanId) {
+      id
+      loanId
+      amount
+      transactionType
+      description
+      reference
+      createdAt
     }
   }
 `

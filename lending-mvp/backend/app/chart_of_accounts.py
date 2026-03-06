@@ -318,7 +318,13 @@ class ChartOfAccountsQuery:
                 query = query.filter(JournalEntry.id.in_(lines_subquery))
             
             if referenceNo:
-                query = query.filter(JournalEntry.reference_no == referenceNo)
+                from sqlalchemy import or_
+                query = query.filter(
+                    or_(
+                        JournalEntry.reference_no.ilike(f"%{referenceNo}%"),
+                        JournalEntry.description.ilike(f"%{referenceNo}%")
+                    )
+                )
 
             # Get total count
             count_result = await session.execute(query)

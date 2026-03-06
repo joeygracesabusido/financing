@@ -105,13 +105,15 @@ export const disburseLoan = async (loanId: string, disbursementMethod: string = 
   return response.json()
 }
 
-export const repayLoan = async (loanId: string, amount: number, paymentMethod: string = "cash", notes?: string) => {
+export const repayLoan = async (loanId: string, amount: number, paymentMethod: string = "cash", notes?: string, paymentDate?: string) => {
   const response = await fetch(`${API_URL}/graphql`, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({
-      query: `mutation RepayLoan($id: ID!, $amount: Decimal!, $paymentMethod: String, $notes: String) { repayLoan(id: $id, amount: $amount, paymentMethod: $paymentMethod, notes: $notes) { success message } }`,
-      variables: { id: loanId, amount, paymentMethod, notes }
+      query: `mutation RepayLoan($id: ID!, $amount: Decimal!, $paymentMethod: String, $notes: String, $paymentDate: Date) { 
+        repayLoan(id: $id, amount: $amount, paymentMethod: $paymentMethod, notes: $notes, paymentDate: $paymentDate) { success message } 
+      }`,
+      variables: { id: loanId, amount, paymentMethod, notes, paymentDate }
     }),
   })
   if (!response.ok) {

@@ -3,6 +3,7 @@ import { ArrowLeft, FileText, CheckCircle, XCircle, AlertCircle, PlayCircle, Eye
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { getLoan, submitLoan, reviewLoan, approveLoan, rejectLoan, disburseLoan, repayLoan } from '@/api/loans'
+import { GET_LOAN_TRANSACTIONS } from '@/api/queries'
 
 export default function LoanDetailPage() {
     const { user } = useAuth()
@@ -12,6 +13,8 @@ export default function LoanDetailPage() {
 
     const [loading, setLoading] = useState(true)
     const [loan, setLoan] = useState<any>(null)
+    const [transactions, setTransactions] = useState<any[]>([])
+    const [loadingTransactions, setLoadingTransactions] = useState(false)
     const [error, setError] = useState('')
     const [actionLoading, setActionLoading] = useState(false)
     
@@ -24,6 +27,31 @@ export default function LoanDetailPage() {
 
     // Repayment inputs
     const [repayAmount, setRepayAmount] = useState<string>('')
+    const [repayDate, setRepayDate] = useState<string>(new Date().toISOString().split('T')[0])
+
+    const loadTransactions = async () => {
+        setLoadingTransactions(true)
+        try {
+            const token = localStorage.getItem('access_token')
+            const res = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                },
+                body: JSON.stringify({
+                    query: GET_LOAN_TRANSACTIONS,
+                    variables: { loanId: id }
+                })
+            })
+            const data = await res.json()
+            setTransactions(data.data?.loanTransactions || [])
+        } catch (e) {
+            console.error('Failed to load transactions:', e)
+        } finally {
+            setLoadingTransactions(false)
+        }
+    }
 
     const loadLoan = async () => {
         try {
@@ -37,6 +65,11 @@ export default function LoanDetailPage() {
                 setInputApprovedRate(loanData.approvedRate?.toString() || '12.0')
                 // Default repay amount to something reasonable
                 setRepayAmount('')
+                
+                // If loan is active or disbursed, load transactions
+                if (['active', 'disbursed', 'repaid', 'paid'].includes(loanData.status)) {
+                    loadTransactions()
+                }
             }
         } catch (e) {
             console.error('Failed to load loan:', e)
@@ -62,6 +95,7 @@ export default function LoanDetailPage() {
             if (data?.success) {
                 alert(successMsg)
                 loadLoan()
+                loadTransactions()
             } else {
                 alert('Action failed: ' + (data?.message || 'Unknown error'))
             }
@@ -217,28 +251,48 @@ export default function LoanDetailPage() {
                                         <div className="flex gap-3">
                                             <button 
                                                 onClick={() => navigate(`/loans/${loan.id}/amortization`)}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:opacity-90 transition-opacity flex-1"
+                                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600/20 text-emerald-400 text-sm font-medium hover:bg-emerald-600/30 transition-colors flex-1"
                                             >
-                                                <FileText className="w-4 h-4" /> Amortization
+                                                <FileText className="w-4 h-4" /> Schedule
+                                            </button>
+                                            <button 
+                                                onClick={() => navigate(`/loans/${loan.id}/payment-history`)}
+                                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors flex-1"
+                                            >
+                                                <Banknote className="w-4 h-4" /> Payment History
                                             </button>
                                         </div>
                                         
                                         <div className="pt-4 border-t border-border/50 space-y-3">
                                             <label className="text-[10px] text-muted-foreground uppercase font-bold">Record Repayment</label>
-                                            <div className="flex gap-2">
-                                                <input 
-                                                    type="number" 
-                                                    placeholder="Amount"
-                                                    value={repayAmount}
-                                                    onChange={(e) => setRepayAmount(e.target.value)}
-                                                    className="bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50 flex-1"
-                                                />
+                                            <div className="flex flex-col gap-3">
+                                                <div className="flex gap-2">
+                                                    <div className="flex-1 space-y-1">
+                                                        <label className="text-[10px] text-muted-foreground">Amount (₱)</label>
+                                                        <input 
+                                                            type="number" 
+                                                            placeholder="Amount"
+                                                            value={repayAmount}
+                                                            onChange={(e) => setRepayAmount(e.target.value)}
+                                                            className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 space-y-1">
+                                                        <label className="text-[10px] text-muted-foreground">Payment Date</label>
+                                                        <input 
+                                                            type="date" 
+                                                            value={repayDate}
+                                                            onChange={(e) => setRepayDate(e.target.value)}
+                                                            className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                                        />
+                                                    </div>
+                                                </div>
                                                 <button 
                                                     disabled={actionLoading || !repayAmount}
-                                                    onClick={() => handleAction(() => repayLoan(loan.id, parseFloat(repayAmount)), 'Repayment recorded')}
-                                                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                                                    onClick={() => handleAction(() => repayLoan(loan.id, parseFloat(repayAmount), 'cash', '', repayDate), 'Repayment recorded')}
+                                                    className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
                                                 >
-                                                    <Banknote className="w-4 h-4" /> Pay
+                                                    <Banknote className="w-4 h-4" /> Record Payment
                                                 </button>
                                             </div>
                                         </div>
@@ -269,6 +323,52 @@ export default function LoanDetailPage() {
                                         </button>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+                    )}
+
+                    {transactions.length > 0 && (
+                        <div className="glass rounded-xl p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                                <Banknote className="w-4 h-4 text-emerald-400" /> Transaction History
+                            </h3>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-border/50 text-left">
+                                            <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">Date</th>
+                                            <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">Type</th>
+                                            <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">Ref</th>
+                                            <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase text-right">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-border/30">
+                                        {transactions.map((tx) => (
+                                            <tr key={tx.id} className="hover:bg-white/5 transition-colors">
+                                                <td className="px-2 py-3 text-muted-foreground whitespace-nowrap">
+                                                    {new Date(tx.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-2 py-3">
+                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
+                                                        tx.transactionType === 'repayment' ? 'bg-emerald-400/10 text-emerald-400' : 
+                                                        tx.transactionType === 'disbursement' ? 'bg-indigo-400/10 text-indigo-400' : 
+                                                        'bg-amber-400/10 text-amber-400'
+                                                    }`}>
+                                                        {tx.transactionType}
+                                                    </span>
+                                                </td>
+                                                <td className="px-2 py-3 font-mono text-xs text-muted-foreground">
+                                                    {tx.reference || '—'}
+                                                </td>
+                                                <td className={`px-2 py-3 text-right font-bold ${
+                                                    tx.transactionType === 'repayment' ? 'text-emerald-400' : 'text-foreground'
+                                                }`}>
+                                                    ₱{tx.amount?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     )}

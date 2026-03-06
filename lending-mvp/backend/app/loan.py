@@ -9,8 +9,6 @@ from sqlalchemy.future import select
 from .models import UserInDB
 from .database.postgres import get_db_session
 from .database.pg_loan_models import LoanApplication, PGLoanProduct
-from .database.customer_crud import CustomerCRUD
-from .database import get_customers_collection
 from .customer import CustomerType, convert_customer_db_to_customer_type
 from .auth.rbac import get_sql_branch_filter, require_approval_role
 import math
@@ -84,12 +82,16 @@ class LoanType:
     @strawberry.field(name="borrowerName")
     async def borrower_name(self) -> Optional[str]:
         try:
-            customers_collection = get_customers_collection()
-            customer_crud = CustomerCRUD(customers_collection)
-            customer_data = await customer_crud.get_customer_by_id(self.customer_id)
-            if customer_data:
-                return customer_data.display_name
-            return "N/A"
+            from .database import get_async_session_local
+            from .database.pg_core_models import Customer
+            session_factory = get_async_session_local()
+            async with session_factory() as session:
+                if str(self.customer_id).isdigit():
+                    stmt = select(Customer).where(Customer.id == int(str(self.customer_id)))
+                    result = await session.execute(stmt)
+                    customer = result.scalar_one_or_none()
+                    return customer.display_name if customer else f"Customer {self.customer_id}"
+                return f"Customer {self.customer_id}"
         except Exception:
             return "N/A"
 
@@ -705,11 +707,22 @@ class LoanMutation:
 
             await session.commit()
 
+            # Get customer name for receipt
+            from .database.pg_core_models import Customer
+            if str(loan.customer_id).isdigit():
+                customer_stmt = select(Customer).where(Customer.id == int(str(loan.customer_id)))
+            else:
+                customer_stmt = select(Customer).where(Customer.id == int(str(loan.customer_id)) if str(loan.customer_id).isdigit() else False)
+            
+            customer_res = await session.execute(customer_stmt)
+            customer = customer_res.scalar_one_or_none()
+            customer_name = customer.display_name if customer else "Customer"
+
             # Generate Official Receipt PDF
             receipt_data = {
                 "receipt_number": txn.receipt_number,
                 "date": datetime.now().strftime("%Y-%m-%d"),
-                "customer_name": loan.customer_name or "N/A",
+                "customer_name": customer_name,
                 "customer_id": loan.customer_id,
                 "customer_address": "N/A",  # Would need customer details
                 "loan_number": f"LOAN-{loan.id:06d}",
@@ -1146,10 +1159,15 @@ class LoanMutation:
             approved_amount = approved_principal if approved_principal is not None else (loan.approved_principal or loan.principal)
             
             # Get customer name for journal entries
-            customers_collection = get_customers_collection()
-            customer_crud = CustomerCRUD(customers_collection)
-            customer_data = await customer_crud.get_customer_by_id(loan.customer_id)
-            customer_name = customer_data.display_name if customer_data else "Customer"
+            from .database.pg_core_models import Customer
+            if str(loan.customer_id).isdigit():
+                customer_stmt = select(Customer).where(Customer.id == int(str(loan.customer_id)))
+            else:
+                customer_stmt = select(Customer).where(Customer.id == int(str(loan.customer_id)) if str(loan.customer_id).isdigit() else False)
+            
+            customer_res = await session.execute(customer_stmt)
+            customer = customer_res.scalar_one_or_none()
+            customer_name = customer.display_name if customer else "Customer"
             
             loan.status = "approved"
             loan.approved_by = str(current_user.id)
@@ -1167,13 +1185,13 @@ class LoanMutation:
                     "account_code": "1300",
                     "debit": approved_amount,
                     "credit": Decimal(0),
-                    "description": f"Loan Approval - {loan.customer_name or 'Customer'}",
+                    "description": f"Loan Approval - {customer_name}",
                 },
                 {
                     "account_code": "2010",
                     "debit": Decimal(0),
                     "credit": approved_amount,
-                    "description": f"Disbursement Payable - {loan.customer_name or 'Customer'}",
+                    "description": f"Disbursement Payable - {customer_name}",
                 },
             ]
             
