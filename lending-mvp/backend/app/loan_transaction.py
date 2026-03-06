@@ -70,6 +70,8 @@ class LoanTransactionType:
     beneficiary_account: Optional[str] = strawberry.field(name="beneficiaryAccount")
     approved_by: Optional[str] = strawberry.field(name="approvedBy")
     processed_by: Optional[str] = strawberry.field(name="processedBy")
+    invoice_number: Optional[str] = strawberry.field(name="invoiceNumber")
+    is_eft: bool = strawberry.field(name="isEft")
 
 
 @strawberry.input
@@ -94,6 +96,8 @@ class LoanTransactionCreateInput:
     beneficiary_account: Optional[str] = None
     approved_by: Optional[str] = None
     processed_by: Optional[str] = None
+    invoice_number: Optional[str] = None
+    is_eft: bool = False
 
 
 @strawberry.input
@@ -117,6 +121,8 @@ class LoanTransactionUpdateInput:
     beneficiary_account: Optional[str] = None
     approved_by: Optional[str] = None
     processed_by: Optional[str] = None
+    invoice_number: Optional[str] = None
+    is_eft: Optional[bool] = None
 
 
 @strawberry.type
@@ -162,6 +168,8 @@ def convert_loan_transaction_db_to_loan_transaction_type(
         beneficiary_account=transaction_db.beneficiary_account,
         approved_by=transaction_db.approved_by,
         processed_by=transaction_db.processed_by,
+        invoice_number=getattr(transaction_db, 'invoice_number', None),
+        is_eft=getattr(transaction_db, 'is_eft', False),
     )
 
 
@@ -283,18 +291,20 @@ class LoanTransactionQuery:
                             reference_number=t.receipt_number,
                             processed_by=t.processed_by,
                             _borrower_name=None,
-                            commercial_bank=None,
-                            servicing_branch=None,
-                            region=None,
+                            commercial_bank=t.commercial_bank,
+                            servicing_branch=t.servicing_branch,
+                            region=t.region,
                             loan_product=None,
-                            debit_account=None,
-                            credit_account=None,
-                            disbursement_method=None,
-                            disbursement_status=None,
-                            cheque_number=None,
-                            beneficiary_bank=None,
-                            beneficiary_account=None,
-                            approved_by=None,
+                            debit_account=t.debit_account,
+                            credit_account=t.credit_account,
+                            disbursement_method=t.disbursement_method,
+                            disbursement_status=t.disbursement_status,
+                            cheque_number=t.cheque_number,
+                            beneficiary_bank=t.beneficiary_bank,
+                            beneficiary_account=t.beneficiary_account,
+                            approved_by=t.approved_by,
+                            invoice_number=None,
+                            is_eft=t.is_eft if hasattr(t, 'is_eft') else False,
                         )
                         for t in transactions_db
                     ]
@@ -399,11 +409,30 @@ class LoanTransactionMutation:
                 beneficiary_account=input.beneficiary_account,
                 approved_by=input.approved_by,
                 processed_by=input.processed_by,
+                invoice_number=getattr(input, 'invoice_number', None),
+                is_eft=getattr(input, 'is_eft', False),
             )
 
             transaction_db = await transaction_crud.create_loan_transaction(
                 loan_transaction_base
             )
+            
+            # Create journal entry for the transaction (GAAP double-entry)
+            try:
+                je_ref = await create_journal_entry_for_loan_transaction(
+                    transaction_type=input.transaction_type,
+                    amount=input.amount,
+                    loan_id=str(input.loan_id),
+                    notes=input.notes,
+                    reference_number=input.reference_number,
+                    invoice_number=getattr(input, 'invoice_number', None),
+                    processed_by=current_user.username if current_user else None,
+                )
+                if je_ref:
+                    print(f"Journal entry {je_ref} created for transaction")
+            except Exception as je_error:
+                print(f"Warning: Could not create journal entry: {je_error}")
+            
             transaction_type = convert_loan_transaction_db_to_loan_transaction_type(
                 transaction_db
             )
@@ -432,10 +461,10 @@ class LoanTransactionMutation:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
             )
-        if current_user.role not in ["admin", "staff"]:
+        if current_user.role not in ["admin", "branch_manager"]:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to update loan transactions",
+                detail="Not authorized to update loan transactions. Only admin and branch manager can update transactions.",
             )
 
         try:
@@ -511,3 +540,109 @@ class LoanTransactionMutation:
             return LoanTransactionResponse(
                 success=False, message=f"Error deleting loan transaction: {str(e)}"
             )
+
+
+async def create_journal_entry_for_loan_transaction(
+    transaction_type: str,
+    amount: Decimal,
+    loan_id: str,
+    notes: Optional[str] = None,
+    reference_number: Optional[str] = None,
+    invoice_number: Optional[str] = None,
+    processed_by: Optional[str] = None,
+):
+    """
+    Create journal entries for loan transactions following GAAP.
+    
+    For disbursement:
+        Debit: Loans Receivable (1200) - increase in loan asset
+        Credit: Cash/Bank (1010) - money going out
+    
+    For repayment:
+        Debit: Cash/Bank (1010) - money coming in
+        Credit: Loans Receivable (1200) - reduction in loan asset
+    
+    For interest payment:
+        Debit: Cash/Bank (1010) - money coming in
+        Credit: Interest Income - Loans (4100) - income recognition
+    
+    For fee/penalty:
+        Debit: Cash/Bank (1010) - money coming in
+        Credit: Fee/Penalty Income (4300/4400) - income recognition
+    """
+    from .database.postgres import get_db_session
+    from .database.pg_accounting_models import JournalEntry, JournalLine
+    from .services.accounting_service import generate_reference_number
+    
+    try:
+        async for session in get_db_session():
+            if transaction_type == "disbursement":
+                debit_account = "1200"
+                credit_account = "1010"
+                description = f"Loan Disbursement - Loan #{loan_id}"
+            elif transaction_type == "repayment":
+                debit_account = "1010"
+                credit_account = "1200"
+                description = f"Loan Repayment - Loan #{loan_id}"
+            elif transaction_type == "interest":
+                debit_account = "1010"
+                credit_account = "4100"
+                description = f"Interest Payment - Loan #{loan_id}"
+            elif transaction_type == "fee":
+                debit_account = "1010"
+                credit_account = "4200"
+                description = f"Loan Fee - Loan #{loan_id}"
+            elif transaction_type == "penalty":
+                debit_account = "1010"
+                credit_account = "4300"
+                description = f"Penalty - Loan #{loan_id}"
+            elif transaction_type == "insurance":
+                debit_account = "1010"
+                credit_account = "2300"
+                description = f"Insurance Payment - Loan #{loan_id}"
+            else:
+                return None
+            
+            if invoice_number:
+                description += f" | Invoice: {invoice_number}"
+            if reference_number:
+                description += f" | Ref: {reference_number}"
+            if notes:
+                description += f" | {notes[:100]}"
+            
+            try:
+                je_reference = await generate_reference_number("JE")
+            except Exception:
+                import uuid
+                je_reference = f"JE-{uuid.uuid4().hex[:8].upper()}"
+            
+            journal_entry = JournalEntry(
+                reference_no=je_reference,
+                description=description[:500],
+                timestamp=datetime.utcnow(),
+                created_by=processed_by,
+                lines=[
+                    JournalLine(
+                        account_code=debit_account,
+                        debit=amount,
+                        credit=Decimal("0.00"),
+                        description=f"Dr: {description[:200]}"
+                    ),
+                    JournalLine(
+                        account_code=credit_account,
+                        debit=Decimal("0.00"),
+                        credit=amount,
+                        description=f"Cr: {description[:200]}"
+                    ),
+                ]
+            )
+            
+            session.add(journal_entry)
+            await session.commit()
+            
+            print(f"Created journal entry {je_reference} for {transaction_type} transaction")
+            return je_reference
+            
+    except Exception as e:
+        print(f"Error creating journal entry: {e}")
+        return None

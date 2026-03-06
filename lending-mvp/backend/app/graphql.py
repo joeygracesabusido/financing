@@ -624,6 +624,7 @@ class CollectionsDashboardNode:
 class CollectionNode:
     id: str
     customerId: str
+    borrowerName: Optional[str] = None
     amount: Decimal
     status: str
     dueDate: date
@@ -1111,10 +1112,28 @@ class Query:
                 .order_by(Collection.due_date.asc())
             )
             collections = result.scalars().all()
+            
+            # Fetch customer names
+            customer_ids = [c.customer_id for c in collections]
+            customer_names = {}
+            if customer_ids:
+                from .database.pg_core_models import Customer
+                # Convert string IDs to integers for comparison
+                try:
+                    int_ids = [int(cid) for cid in customer_ids]
+                    cust_result = await session.execute(
+                        select(Customer).where(Customer.id.in_(int_ids))
+                    )
+                    customers = cust_result.scalars().all()
+                    customer_names = {str(c.id): c.display_name for c in customers}
+                except (ValueError, TypeError):
+                    pass  # Skip if conversion fails
+            
             return [
                 CollectionNode(
                     id=str(c.id),
                     customerId=str(c.customer_id),
+                    borrowerName=customer_names.get(str(c.customer_id)),
                     amount=c.amount,
                     status=c.status,
                     dueDate=c.due_date,
@@ -2592,7 +2611,9 @@ class Mutation:
         amount: Decimal,
         paymentMethod: Optional[str] = "cash",
         notes: Optional[str] = None,
-        paymentDate: Optional[date] = None
+        paymentDate: Optional[date] = None,
+        invoiceNumber: Optional[str] = None,
+        isEft: bool = False
     ) -> LoanResponse:
         current_user = info.context.get("current_user")
         if not current_user:
@@ -2672,13 +2693,15 @@ class Mutation:
                     sched.payment_date = effective_payment_date
 
                 # 4. Create transaction record
+                receipt_no = invoiceNumber if invoiceNumber else f"PAY-{uuid.uuid4().hex[:8].upper()}"
                 txn = LoanTransaction(
                     loan_id=loan.id,
                     type="repayment",
                     amount=amount,
-                    receipt_number=f"PAY-{uuid.uuid4().hex[:8].upper()}",
+                    receipt_number=receipt_no,
                     description=notes or f"Repayment via {paymentMethod}",
-                    processed_by=str(current_user.id)
+                    processed_by=str(current_user.id),
+                    is_eft=isEft
                 )
                 
                 if paymentDate:

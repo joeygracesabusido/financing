@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     amount
                     transactionDate
                     notes
+                    invoiceNumber
+                    isEft
                 }
                 total
             }
@@ -80,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const transactionData = result.data?.loanTransactions;
             if (!transactionData || !Array.isArray(transactionData.transactions)) {
                 console.warn('No loan transactions data returned');
-                loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found or invalid response.</td></tr>';
+                loanTransactionTableBody.innerHTML = '<tr><td colspan="10" class="p-3 text-center">No loan transactions found or invalid response.</td></tr>';
                 return;
             }
 
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error fetching loan transactions:', error);
-            loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center text-red-500">Error loading loan transactions. Check console.</td></tr>';
+            loanTransactionTableBody.innerHTML = '<tr><td colspan="10" class="p-3 text-center text-red-500">Error loading loan transactions. Check console.</td></tr>';
         }
     };
 
@@ -153,9 +155,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const populateTable = (transactions) => {
         if (!transactions || transactions.length === 0) {
-            loanTransactionTableBody.innerHTML = '<tr><td colspan="9" class="p-3 text-center">No loan transactions found.</td></tr>';
+            loanTransactionTableBody.innerHTML = '<tr><td colspan="10" class="p-3 text-center">No loan transactions found.</td></tr>';
             return;
         }
+
+        // Get user role from token
+        const token = localStorage.getItem('accessToken');
+        let userRole = 'staff';
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            userRole = payload.role || 'staff';
+        } catch (e) {
+            console.warn('Could not parse user role from token');
+        }
+
+        const canEdit = userRole === 'admin' || userRole === 'branch_manager';
+
+        // Format number with thousand separator and 2 decimal places
+        const formatAmount = (amount) => {
+            if (amount === null || amount === undefined) return '0.00';
+            const num = parseFloat(amount);
+            return num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        };
 
         loanTransactionTableBody.innerHTML = '';
 
@@ -164,6 +185,15 @@ document.addEventListener('DOMContentLoaded', () => {
             row.className = 'border-b hover:bg-gray-50';
 
             const transactionDate = new Date(transaction.transactionDate).toLocaleDateString() + ' ' + new Date(transaction.transactionDate).toLocaleTimeString();
+            
+            // Format amount with thousand separator
+            const formattedAmount = formatAmount(transaction.amount);
+            
+            // EFT icon
+            const eftIcon = transaction.isEft ? '<i class="fas fa-exchange-alt text-blue-500 ml-1" title="EFT/Online Transfer"></i>' : '';
+            
+            // Invoice number display
+            const invoiceDisplay = transaction.invoiceNumber ? transaction.invoiceNumber : '—';
 
             row.innerHTML = `
                 <td class="p-3">${transaction.id || 'N/A'}</td>
@@ -171,12 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="p-3">${transaction.borrowerName || 'N/A'}</td>
                 <td class="p-3">${transaction.loanProduct || 'N/A'}</td>
                 <td class="p-3">${transaction.transactionType || 'N/A'}</td>
-                <td class="p-3">₱${transaction.amount ? parseFloat(transaction.amount).toFixed(2) : '0.00'}</td>
+                <td class="p-3 text-right">₱${formattedAmount}${eftIcon}</td>
                 <td class="p-3">${transactionDate}</td>
-                <td class="p-3">${transaction.notes || 'N/A'}</td>
+                <td class="p-3">${invoiceDisplay}</td>
+                <td class="p-3">${transaction.notes || '—'}</td>
                 <td class="p-3 text-sm">
                     <button class="text-blue-500 hover:text-blue-700 mr-2 view-loan-btn" data-loan-id="${transaction.loanId}" title="View Loan Details"><i class="fas fa-eye"></i> View</button>
-                    <button class="text-yellow-500 hover:text-yellow-700 mr-2 edit-transaction-btn" data-id="${transaction.id}" title="Edit Transaction"><i class="fas fa-edit"></i></button>
+                    ${canEdit ? `<button class="text-yellow-500 hover:text-yellow-700 mr-2 edit-transaction-btn" data-id="${transaction.id}" title="Edit Transaction"><i class="fas fa-edit"></i></button>` : ''}
                     <button class="text-red-500 hover:text-red-700 delete-transaction-btn" data-id="${transaction.id}" title="Delete Transaction"><i class="fas fa-trash"></i></button>
                 </td>
             `;

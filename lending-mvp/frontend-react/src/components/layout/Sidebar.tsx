@@ -38,7 +38,7 @@ const navItems = [
     { to: '/transactions', icon: ArrowLeftRight, label: 'Transactions', roles: ['admin', 'teller', 'loan_officer', 'branch_manager'] },
     { to: '/loan-products', icon: Package, label: 'Loan Products', roles: ['admin', 'loan_officer', 'branch_manager'] },
     { to: '/collections', icon: AlertTriangle, label: 'Collections', roles: ['admin', 'loan_officer', 'branch_manager'] },
-    { to: '/collection-due', icon: Calendar, label: 'Collection Due', roles: ['admin', 'loan_officer', 'branch_manager'] },
+    { to: '/collection-due', icon: Calendar, label: 'Due Collections', roles: ['admin', 'loan_officer', 'branch_manager'] },
     { to: '/chart-of-accounts', icon: BookOpen, label: 'Chart of Accounts', roles: ['admin', 'branch_manager'] },
     { to: '/journal-entries', icon: FileText, label: 'Journal Entries', roles: ['admin', 'branch_manager', 'auditor'] },
     { to: '/branches', icon: GitBranch, label: 'Branches', roles: ['admin', 'branch_manager'] },

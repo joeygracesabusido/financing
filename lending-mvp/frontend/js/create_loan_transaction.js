@@ -288,7 +288,9 @@ document.addEventListener('DOMContentLoaded', () => {
             beneficiaryBank: document.getElementById('beneficiary-bank')?.value.trim() || null,
             beneficiaryAccount: document.getElementById('beneficiary-account')?.value.trim() || null,
             approvedBy: document.getElementById('approved-by')?.value.trim() || null,
-            processedBy: document.getElementById('processed-by')?.value.trim() || null
+            processedBy: document.getElementById('processed-by')?.value.trim() || null,
+            invoiceNumber: document.getElementById('invoice-number')?.value.trim() || null,
+            isEft: document.getElementById('is-eft')?.checked || false
         };
 
         const transactionData = {
@@ -311,7 +313,9 @@ document.addEventListener('DOMContentLoaded', () => {
             beneficiaryBank: additionalData.beneficiaryBank,
             beneficiaryAccount: additionalData.beneficiaryAccount,
             approvedBy: additionalData.approvedBy,
-            processedBy: additionalData.processedBy
+            processedBy: additionalData.processedBy,
+            invoiceNumber: additionalData.invoiceNumber,
+            isEft: additionalData.isEft
         };
 
         formMessage.textContent = 'Creating loan transaction...';

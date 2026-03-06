@@ -111,7 +111,7 @@
                     <!-- Transaction Type & Date Section -->
                     <div class="mb-6 pb-6 border-b-2">
                         <h2 class="text-xl font-bold text-gray-800 mb-4">Transaction Details</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div>
                                 <label for="transaction-type" class="block text-gray-700 text-sm font-bold mb-2">Transaction Type: <span class="text-red-500">*</span></label>
                                 <select id="transaction-type" name="transactionType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
@@ -131,6 +131,18 @@
                             <div>
                                 <label for="reference-number" class="block text-gray-700 text-sm font-bold mb-2">Reference Number:</label>
                                 <input type="text" id="reference-number" name="referenceNumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div>
+                                <label for="invoice-number" class="block text-gray-700 text-sm font-bold mb-2">Invoice Number:</label>
+                                <input type="text" id="invoice-number" name="invoiceNumber" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Invoice or OR Number">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="inline-flex items-center mt-2">
+                                    <input type="checkbox" id="is-eft" name="isEft" class="form-checkbox h-5 w-5 text-green-600">
+                                    <span class="ml-2 text-gray-700 text-sm font-bold">EFT/Online Transfer</span>
+                                </label>
                             </div>
                         </div>
                     </div>

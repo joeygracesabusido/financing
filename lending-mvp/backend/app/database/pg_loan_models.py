@@ -251,6 +251,7 @@ class LoanTransaction(Base):
     created_by = Column(String(64), nullable=True)
     updated_by = Column(String(64), nullable=True)
     borrower_name = Column(String(200), nullable=True)
+    is_eft = Column(Boolean, nullable=True, default=False)
     
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

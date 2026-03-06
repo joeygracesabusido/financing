@@ -27,6 +27,8 @@ class LoanTransactionBase(BaseModel):
     beneficiary_account: Optional[str] = Field(None, alias="beneficiaryAccount")
     approved_by: Optional[str] = Field(None, alias="approvedBy")
     processed_by: Optional[str] = Field(None, alias="processedBy")
+    invoice_number: Optional[str] = Field(None, alias="invoiceNumber")
+    is_eft: Optional[bool] = Field(False, alias="isEft")
 
     @field_serializer('amount')
     def serialize_amount(self, value: Decimal):

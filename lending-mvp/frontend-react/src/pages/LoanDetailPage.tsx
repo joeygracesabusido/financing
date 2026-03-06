@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, FileText, CheckCircle, XCircle, AlertCircle, PlayCircle, Eye, Wallet, Banknote } from 'lucide-react'
+import { ArrowLeft, FileText, CheckCircle, XCircle, AlertCircle, PlayCircle, Eye, Wallet, Banknote, Pencil } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
-import { getLoan, submitLoan, reviewLoan, approveLoan, rejectLoan, disburseLoan, repayLoan } from '@/api/loans'
+import { getLoan, submitLoan, reviewLoan, approveLoan, rejectLoan, disburseLoan, repayLoan, updateLoanTransaction } from '@/api/loans'
 import { GET_LOAN_TRANSACTIONS } from '@/api/queries'
+import { formatCurrency } from '@/lib/utils'
 
 export default function LoanDetailPage() {
     const { user } = useAuth()
@@ -14,7 +15,6 @@ export default function LoanDetailPage() {
     const [loading, setLoading] = useState(true)
     const [loan, setLoan] = useState<any>(null)
     const [transactions, setTransactions] = useState<any[]>([])
-    const [loadingTransactions, setLoadingTransactions] = useState(false)
     const [error, setError] = useState('')
     const [actionLoading, setActionLoading] = useState(false)
     
@@ -28,9 +28,17 @@ export default function LoanDetailPage() {
     // Repayment inputs
     const [repayAmount, setRepayAmount] = useState<string>('')
     const [repayDate, setRepayDate] = useState<string>(new Date().toISOString().split('T')[0])
+    const [repayInvoiceNumber, setRepayInvoiceNumber] = useState<string>('')
+    const [repayRemarks, setRepayRemarks] = useState<string>('')
+
+    // Edit transaction inputs
+    const [editingTransaction, setEditingTransaction] = useState<any>(null)
+    const [editAmount, setEditAmount] = useState<string>('')
+    const [editInvoiceNumber, setEditInvoiceNumber] = useState<string>('')
+    const [editRemarks, setEditRemarks] = useState<string>('')
+    const [editLoading, setEditLoading] = useState(false)
 
     const loadTransactions = async () => {
-        setLoadingTransactions(true)
         try {
             const token = localStorage.getItem('access_token')
             const res = await fetch('/graphql', {
@@ -48,8 +56,6 @@ export default function LoanDetailPage() {
             setTransactions(data.data?.loanTransactions || [])
         } catch (e) {
             console.error('Failed to load transactions:', e)
-        } finally {
-            setLoadingTransactions(false)
         }
     }
 
@@ -106,6 +112,35 @@ export default function LoanDetailPage() {
         }
     }
 
+    const handleUpdateTransaction = async () => {
+        if (!editingTransaction) return
+        setEditLoading(true)
+        try {
+            const res = await updateLoanTransaction(
+                editingTransaction.id,
+                parseFloat(editAmount),
+                editInvoiceNumber,
+                editRemarks
+            )
+            if (res.errors && res.errors.length > 0) {
+                alert('GraphQL Error: ' + res.errors[0].message)
+                return
+            }
+            const data = res.data?.updateLoanTransaction
+            if (data?.success) {
+                alert('Transaction updated successfully')
+                setEditingTransaction(null)
+                loadTransactions()
+            } else {
+                alert('Failed to update: ' + (data?.message || 'Unknown error'))
+            }
+        } catch (e: any) {
+            alert('Failed to update transaction: ' + e.message)
+        } finally {
+            setEditLoading(false)
+        }
+    }
+
     if (loading) return <div className="text-center py-16 text-muted-foreground">Loading loan details...</div>
     if (error) return <div className="text-center py-16 text-destructive">{error}</div>
     if (!loan) return <div className="text-center py-16 text-muted-foreground">Loan not found</div>
@@ -154,7 +189,7 @@ export default function LoanDetailPage() {
                         <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                             <div>
                                 <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Principal</label>
-                                <p className="text-xl font-bold text-foreground">₱{loan.principal?.toLocaleString()}</p>
+                                <p className="text-xl font-bold text-foreground">{formatCurrency(loan.principal)}</p>
                             </div>
                             <div>
                                 <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Term</label>
@@ -162,7 +197,7 @@ export default function LoanDetailPage() {
                             </div>
                             <div>
                                 <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Approved Principal</label>
-                                <p className="text-lg font-semibold text-foreground">{loan.approvedPrincipal ? `₱${loan.approvedPrincipal.toLocaleString()}` : '—'}</p>
+                                <p className="text-lg font-semibold text-foreground">{loan.approvedPrincipal ? formatCurrency(loan.approvedPrincipal) : '—'}</p>
                             </div>
                             <div>
                                 <label className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Approved Rate</label>
@@ -170,7 +205,7 @@ export default function LoanDetailPage() {
                             </div>
                             <div>
                                 <label className="text-xs text-primary uppercase tracking-wider font-bold">Outstanding Balance</label>
-                                <p className="text-xl font-bold text-primary">₱{loan.outstandingBalance?.toLocaleString() || '0.00'}</p>
+                                <p className="text-xl font-bold text-primary">{formatCurrency(loan.outstandingBalance || 0)}</p>
                             </div>
                         </div>
                     </div>
@@ -287,9 +322,31 @@ export default function LoanDetailPage() {
                                                         />
                                                     </div>
                                                 </div>
+                                                <div className="flex gap-2">
+                                                    <div className="flex-1 space-y-1">
+                                                        <label className="text-[10px] text-muted-foreground">Invoice / OR Number</label>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Invoice or OR number"
+                                                            value={repayInvoiceNumber}
+                                                            onChange={(e) => setRepayInvoiceNumber(e.target.value)}
+                                                            className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 space-y-1">
+                                                        <label className="text-[10px] text-muted-foreground">Remarks</label>
+                                                        <input 
+                                                            type="text" 
+                                                            placeholder="Optional remarks"
+                                                            value={repayRemarks}
+                                                            onChange={(e) => setRepayRemarks(e.target.value)}
+                                                            className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                                                        />
+                                                    </div>
+                                                </div>
                                                 <button 
                                                     disabled={actionLoading || !repayAmount}
-                                                    onClick={() => handleAction(() => repayLoan(loan.id, parseFloat(repayAmount), 'cash', '', repayDate), 'Repayment recorded')}
+                                                    onClick={() => handleAction(() => repayLoan(loan.id, parseFloat(repayAmount), 'cash', repayInvoiceNumber, repayDate, repayRemarks), 'Repayment recorded')}
                                                     className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
                                                 >
                                                     <Banknote className="w-4 h-4" /> Record Payment
@@ -340,6 +397,7 @@ export default function LoanDetailPage() {
                                             <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">Type</th>
                                             <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase">Ref</th>
                                             <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase text-right">Amount</th>
+                                            <th className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase w-10"></th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-border/30">
@@ -363,7 +421,23 @@ export default function LoanDetailPage() {
                                                 <td className={`px-2 py-3 text-right font-bold ${
                                                     tx.transactionType === 'repayment' ? 'text-emerald-400' : 'text-foreground'
                                                 }`}>
-                                                    ₱{tx.amount?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                    {formatCurrency(tx.amount)}
+                                                </td>
+                                                <td className="px-2 py-3">
+                                                    {tx.transactionType === 'repayment' && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingTransaction(tx)
+                                                                setEditAmount(tx.amount?.toString() || '')
+                                                                setEditInvoiceNumber(tx.reference || '')
+                                                                setEditRemarks(tx.remarks || '')
+                                                            }}
+                                                            className="p-1.5 rounded hover:bg-white/10 text-muted-foreground hover:text-primary transition-colors"
+                                                            title="Edit repayment"
+                                                        >
+                                                            <Pencil className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}
@@ -390,6 +464,58 @@ export default function LoanDetailPage() {
                     </div>
                 </div>
             </div>
+
+            {editingTransaction && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+                    <div className="glass rounded-xl p-6 w-full max-w-md space-y-4">
+                        <h3 className="text-lg font-bold text-foreground">Edit Repayment Transaction</h3>
+                        <div className="space-y-3">
+                        <div>
+                            <label className="text-xs text-muted-foreground">Amount (₱)</label>
+                            <input
+                                type="number"
+                                value={editAmount}
+                                onChange={(e) => setEditAmount(e.target.value)}
+                                className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs text-muted-foreground">Invoice / OR Number</label>
+                            <input
+                                type="text"
+                                value={editInvoiceNumber}
+                                onChange={(e) => setEditInvoiceNumber(e.target.value)}
+                                className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                            />
+                        </div>
+                        <div>
+                            <label className="text-xs text-muted-foreground">Remarks</label>
+                            <input
+                                type="text"
+                                value={editRemarks}
+                                onChange={(e) => setEditRemarks(e.target.value)}
+                                className="w-full bg-background/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary/50"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex gap-3 pt-2">
+                        <button
+                            onClick={() => setEditingTransaction(null)}
+                            className="flex-1 px-4 py-2 rounded-lg border border-border text-muted-foreground text-sm font-medium hover:bg-white/5 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleUpdateTransaction}
+                            disabled={editLoading}
+                            className="flex-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+                        >
+                            {editLoading ? 'Saving...' : 'Save Changes'}
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
