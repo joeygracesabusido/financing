@@ -1145,6 +1145,12 @@ class LoanMutation:
             # Determine approved amount
             approved_amount = approved_principal if approved_principal is not None else (loan.approved_principal or loan.principal)
             
+            # Get customer name for journal entries
+            customers_collection = get_customers_collection()
+            customer_crud = CustomerCRUD(customers_collection)
+            customer_data = await customer_crud.get_customer_by_id(loan.customer_id)
+            customer_name = customer_data.display_name if customer_data else "Customer"
+            
             loan.status = "approved"
             loan.approved_by = str(current_user.id)
             if approved_principal is not None:

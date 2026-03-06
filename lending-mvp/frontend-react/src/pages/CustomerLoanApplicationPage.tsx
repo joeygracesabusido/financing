@@ -312,7 +312,6 @@ export default function CustomerLoanApplicationPage() {
                                 className="bg-background/50 border-border"
                                 required
                                 min="1000"
-                                step="1000"
                             />
                         </div>
 

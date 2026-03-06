@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             input: {
                 customerId: customerId,
                 accountNumber: accountNumber,
-                type: accountType,
+                accountType: accountType,
                 balance: initialDeposit,
                 openedAt: openingDate,
                 // description: description, // Uncomment if backend model accepts description

@@ -146,7 +146,7 @@ export default function SavingsPage() {
                         input: {
                             customerId: form.customerId,
                             accountNumber: form.accountNumber,
-                            type: form.type,
+                            accountType: form.type,
                             balance: parseFloat(form.initialBalance) || 0,
                             openedAt: new Date(form.openedAt).toISOString(),
                             status: 'active'

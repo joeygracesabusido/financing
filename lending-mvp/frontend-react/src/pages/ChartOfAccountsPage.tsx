@@ -445,11 +445,11 @@ export default function ChartOfAccountsPage() {
                         <div className="flex-1 overflow-auto p-4">
                             {entriesLoading ? (
                                 <div className="text-center py-8 text-muted-foreground">Loading entries...</div>
-                            ) : accountEntries.length === 0 ? (
+                            ) : accountEntries.filter(entry => entry.lines.some(line => line.accountCode === selectedAccount.code)).length === 0 ? (
                                 <div className="text-center py-8 text-muted-foreground">No journal entries found for this account.</div>
                             ) : (
                                 <div className="space-y-4">
-                                    {accountEntries.map((entry) => (
+                                    {accountEntries.filter(entry => entry.lines.some(line => line.accountCode === selectedAccount.code)).map((entry) => (
                                         <div key={entry.id} className="glass rounded-lg p-4">
                                             <div className="flex items-center justify-between mb-3">
                                                 <div>
@@ -468,7 +468,7 @@ export default function ChartOfAccountsPage() {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {entry.lines.map((line) => (
+                                                    {entry.lines.filter(line => line.accountCode === selectedAccount.code).map((line) => (
                                                         <tr key={line.id} className="border-b border-border/20">
                                                             <td className="py-2">
                                                                 <span className="font-mono text-xs">{line.accountCode}</span>
