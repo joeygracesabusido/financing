@@ -1,11 +1,40 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { GET_SAVINGS_ACCOUNT, GET_SAVINGS_TRANSACTIONS, GET_JOURNAL_ENTRY_BY_REFERENCE } from '@/api/queries'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate, cn } from '@/lib/utils'
 import {
     PiggyBank, ArrowLeft, Printer, Download,
-    AlertCircle, CheckCircle, ChevronDown, ChevronUp, Loader2, FileText, RefreshCw
+    AlertCircle, CheckCircle, ChevronDown, ChevronUp, Loader2, FileText, RefreshCw, ArrowDownLeft, ArrowUpRight
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
+const GET_JOURNAL_ENTRY_BY_REFERENCE = `
+  query GetJournalEntryByReference($referenceNo: String!) {
+    journalEntryByReference(referenceNo: $referenceNo) {
+      id
+      referenceNo
+      description
+      timestamp
+      lines {
+        id
+        accountCode
+        debit
+        credit
+        description
+      }
+    }
+  }
+`
+
+const getHeaders = () => {
+    const token = localStorage.getItem('access_token')
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+    }
+}
 
 interface SavingsAccount {
     id: string
@@ -126,57 +155,267 @@ export default function SavingsDetailPage() {
     const navigate = useNavigate()
     const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'passbook'>('overview')
     const [expandedTxn, setExpandedTxn] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [account, setAccount] = useState<any>(null)
+    const [transactions, setTransactions] = useState<any[]>([])
+    const [error, setError] = useState<string>('')
+    
+    // Deposit/Withdrawal Modal State
+    const [showTransactionModal, setShowTransactionModal] = useState(false)
+    const [transactionType, setTransactionType] = useState<'deposit' | 'withdrawal'>('deposit')
+    const [txAmount, setTxAmount] = useState('')
+    const [txDescription, setTxDescription] = useState('')
+    const [txReference, setTxReference] = useState('')
+    const [txLoading, setTxLoading] = useState(false)
+    const [txNotification, setTxNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
 
-    const { data, loading, error } = useQuery(GET_SAVINGS_ACCOUNT as any, {
-        variables: { id }
-    })
-
-    const { data: txnData, loading: loadingTxns, refetch: refetchTxns } = useQuery(GET_SAVINGS_TRANSACTIONS as any, {
-        variables: { accountId: id },
-        skip: !id
-    })
-
-    const account = data?.savingsAccount?.account as SavingsAccount | undefined
-    const transactions = txnData?.getTransactions?.transactions as Transaction[] || []
+    // Fetch account and transactions
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!id) return
+            setLoading(true)
+            setError('')
+            try {
+                // Fetch account directly by searchTerm
+                const res = await fetch('/graphql', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        query: `
+                            query GetSavingsAccount($searchTerm: String) {
+                                savingsAccounts(searchTerm: $searchTerm) {
+                                    accounts {
+                                        id
+                                        accountNumber
+                                        customerId
+                                        accountType
+                                        balance
+                                        currency
+                                        openedAt
+                                        status
+                                        customer {
+                                            displayName
+                                        }
+                                    }
+                                }
+                            }
+                        `,
+                        variables: { searchTerm: id }
+                    })
+                })
+                const data = await res.json()
+                console.log('SavingsDetailPage - full response:', data)
+                if (data.errors) {
+                    console.error('GraphQL errors:', data.errors)
+                    setError('GraphQL Error: ' + JSON.stringify(data.errors))
+                    setLoading(false)
+                    return
+                }
+                const accounts = data.data?.savingsAccounts?.accounts || []
+                console.log('SavingsDetailPage - accounts:', accounts)
+                
+                // Filter to find exact match by ID
+                let found = accounts.find((acc: any) => String(acc.id) === String(id))
+                
+                // If not found by ID, try finding by exact account number match
+                if (!found) {
+                    found = accounts.find((acc: any) => acc.accountNumber === id)
+                }
+                
+                // If still not found, try fetching all and find by ID
+                if (!found) {
+                    console.log('SavingsDetailPage - trying with account number search...')
+                    const res2 = await fetch('/graphql', {
+                        method: 'POST',
+                        headers: getHeaders(),
+                        body: JSON.stringify({
+                            query: `
+                                query GetSavingsAccounts {
+                                    savingsAccounts {
+                                        accounts {
+                                            id
+                                            accountNumber
+                                            customerId
+                                            accountType
+                                            balance
+                                            currency
+                                            openedAt
+                                            status
+                                            customer {
+                                                displayName
+                                            }
+                                        }
+                                    }
+                                }
+                            `
+                        })
+                    })
+                    const data2 = await res2.json()
+                    const allAccounts = data2.data?.savingsAccounts?.accounts || []
+                    found = allAccounts.find((acc: any) => String(acc.id) === String(id))
+                    console.log('SavingsDetailPage - found in all accounts:', found)
+                }
+                setAccount(found)
+                
+                // Fetch transactions
+                const txnRes = await fetch('/graphql', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        query: `
+                            query GetSavingsTransactions($accountId: ID!) {
+                                savingsTransactions(accountId: $accountId) {
+                                    id
+                                    accountType
+                                    amount
+                                    balanceBefore
+                                    balanceAfter
+                                    reference
+                                    description
+                                    createdAt
+                                }
+                            }
+                        `,
+                        variables: { accountId: id }
+                    })
+                })
+                const txnData = await txnRes.json()
+                console.log('SavingsDetailPage - txnData:', txnData)
+                setTransactions(txnData.data?.savingsTransactions || [])
+            } catch (e) {
+                console.error('Error:', e)
+                setError('Failed to load account')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchData()
+    }, [id])
 
     const toggleExpand = (txnId: string) => {
         setExpandedTxn(expandedTxn === txnId ? null : txnId)
     }
+    
+    const handleTransaction = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!txAmount || parseFloat(txAmount) <= 0) {
+            setTxNotification({ type: 'error', message: 'Please enter a valid amount' })
+            return
+        }
+        
+        setTxLoading(true)
+        setTxNotification(null)
+        
+        try {
+            const token = localStorage.getItem('access_token')
+            const res = await fetch('/graphql', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : ''
+                },
+                body: JSON.stringify({
+                    query: `
+                        mutation CreateSavingsTransaction($input: SavingsTransactionCreateInput!) {
+                            createSavingsTransaction(input: $input) {
+                                success
+                                message
+                            }
+                        }
+                    `,
+                    variables: {
+                        input: {
+                            accountId: String(id),
+                            amount: parseFloat(txAmount),
+                            transactionType: transactionType,
+                            description: txDescription || null,
+                            reference: txReference || null
+                        }
+                    }
+                })
+            })
+            
+            const data = await res.json()
+            
+            if (data.data?.createSavingsTransaction?.success) {
+                setTxNotification({ type: 'success', message: data.data.createSavingsTransaction.message })
+                setTxAmount('')
+                setTxDescription('')
+                setTxReference('')
+                setTimeout(() => {
+                    setShowTransactionModal(false)
+                    setTxNotification(null)
+                    refetchTxns()
+                }, 1500)
+            } else {
+                setTxNotification({ type: 'error', message: data.data?.createSavingsTransaction?.message || 'Transaction failed' })
+            }
+        } catch (err) {
+            setTxNotification({ type: 'error', message: 'Network error. Please try again.' })
+        } finally {
+            setTxLoading(false)
+        }
+    }
+    
     const handlePrintPassbook = () => {
+        const formatCurrencyPrint = (amount: number) => {
+            return '₱' + amount.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        }
+        
+        const formatDatePrint = (dateStr: string) => {
+            if (!dateStr) return '-'
+            return new Date(dateStr).toLocaleDateString('en-PH')
+        }
+        
+        // Build transaction rows
+        const txnRows = transactions && transactions.length > 0 
+            ? transactions.slice().reverse().map((txn: any) => `
+                <tr>
+                    <td>${formatDatePrint(txn.createdAt)}</td>
+                    <td>${txn.accountType ? txn.accountType.charAt(0).toUpperCase() + txn.accountType.slice(1) : '-'}</td>
+                    <td>${txn.description || txn.reference || '-'}</td>
+                    <td style="text-align: right; ${txn.accountType === 'withdrawal' ? 'color: red;' : 'color: green;'}">
+                        ${txn.accountType === 'withdrawal' ? '-' : '+'}${formatCurrencyPrint(Number(txn.amount))}
+                    </td>
+                    <td style="text-align: right; font-weight: bold;">
+                        ${txn.balanceAfter !== null ? formatCurrencyPrint(Number(txn.balanceAfter)) : '-'}
+                    </td>
+                </tr>
+            `).join('')
+            : '<tr><td colspan="5" style="text-align: center;">No transactions</td></tr>'
+        
         const printContent = `
             <!DOCTYPE html>
             <html>
             <head>
+                <title>Savings Passbook - ${account?.accountNumber}</title>
                 <style>
                     body { font-family: Arial, sans-serif; padding: 20px; }
                     .header { text-align: center; margin-bottom: 20px; }
-                    .header h1 { margin: 0; font-size: 24px; }
-                    .header p { color: #666; margin: 5px 0; }
-                    .account-info { margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; }
-                    .account-info div { margin: 8px 0; }
-                    .account-info strong { color: #333; }
-                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-                    th { background: #f5f5f5; font-weight: bold; }
-                    .balance { font-size: 18px; font-weight: bold; color: #275e35; margin-top: 20px; }
-                    .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
+                    .header h1 { margin: 0; color: #2e7d32; }
+                    .account-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px; }
+                    .account-info div { margin: 5px 0; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background: #2e7d32; color: white; }
+                    .balance { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; padding: 10px; background: #e8f5e9; border-radius: 5px; }
+                    .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+                    @media print { body { padding: 0; } }
                 </style>
             </head>
             <body>
                 <div class="header">
                     <h1>SAVINGS PASSBOOK</h1>
-                    <p>Cooperative Credit Union</p>
-                    <p>Official Passbook Record</p>
+                    <p>Official Transaction Record</p>
                 </div>
                 
                 <div class="account-info">
-                    <div><strong>Account Number:</strong> ${account?.accountNumber}</div>
-                    <div><strong>Account Type:</strong> ${account?.type?.replace('_', ' ')}</div>
-                    <div><strong>Current Balance:</strong> ${formatCurrency(account?.balance || 0)}</div>
-                    <div><strong>Currency:</strong> ${account?.currency}</div>
-                    <div><strong>Opening Date:</strong> ${formatDate(account?.openedAt)}</div>
-                    ${account?.interestRate ? `<div><strong>Interest Rate:</strong> ${account.interestRate}%</div>` : ''}
-                    ${account?.status === 'active' ? '<div><strong>Status:</strong> <span style="color: green;">Active</span></div>' : ''}
+                    <div><strong>Account Number:</strong> ${account?.accountNumber || '-'}</div>
+                    <div><strong>Account Type:</strong> ${(account?.accountType || '').replace('_', ' ')}</div>
+                    <div><strong>Current Balance:</strong> ${formatCurrencyPrint(Number(account?.balance) || 0)}</div>
+                    <div><strong>Currency:</strong> ${account?.currency || 'PHP'}</div>
+                    <div><strong>Opening Date:</strong> ${formatDatePrint(account?.openedAt)}</div>
+                    <div><strong>Status:</strong> ${account?.status === 'active' ? 'Active' : 'Inactive'}</div>
                 </div>
                 
                 <h3>Transaction History</h3>
@@ -185,28 +424,21 @@ export default function SavingsDetailPage() {
                         <tr>
                             <th>Date</th>
                             <th>Type</th>
-                            <th>Notes</th>
-                            <th>Amount</th>
-                            <th>Balance</th>
+                            <th>Reference/Notes</th>
+                            <th style="text-align: right;">Amount</th>
+                            <th style="text-align: right;">Balance</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${account?.balance ? `
-                        <tr>
-                            <td>${new Date().toLocaleDateString('en-PH')}</td>
-                            <td>Current</td>
-                            <td>Passbook printout</td>
-                            <td>-</td>
-                            <td>${formatCurrency(account.balance)}</td>
-                        </tr>` : ''}
+                        ${txnRows}
                     </tbody>
                 </table>
                 
-                <div class="balance">TOTAL BALANCE: ${formatCurrency(account?.balance || 0)}</div>
+                <div class="balance">CURRENT BALANCE: ${formatCurrencyPrint(Number(account?.balance) || 0)}</div>
                 
                 <div class="footer">
-                    <p>This passbook is valid for transaction records.</p>
-                    <p>Printed on ${new Date().toLocaleDateString('en-PH')}</p>
+                    <p>This passbook is a valid transaction record.</p>
+                    <p>Printed on ${new Date().toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
             </body>
             </html>
@@ -227,7 +459,7 @@ export default function SavingsDetailPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[50vh]">
-                <PiggyBank className="w-8 h-8 animate-spin text-emerald-400" />
+                <Loader2 className="w-8 h-8 animate-spin text-emerald-400" />
             </div>
         )
     }
@@ -237,7 +469,7 @@ export default function SavingsDetailPage() {
             <div className="py-20 text-center">
                 <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
                 <h3 className="text-xl font-semibold mb-2">Error loading account</h3>
-                <p className="text-muted-foreground">{error.message}</p>
+                <p className="text-muted-foreground">{error}</p>
             </div>
         )
     }
@@ -306,14 +538,30 @@ export default function SavingsDetailPage() {
                             <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground">Account Type</p>
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 rounded-md border text-xs font-medium ${accountTypeBadge[account.type] ?? ''}`}>
-                                        {account.type.replace('_', ' ')}
+                                    <span className={`px-2 py-1 rounded-md border text-xs font-medium ${accountTypeBadge[account.accountType] ?? ''}`}>
+                                        {account.accountType.replace('_', ' ')}
                                     </span>
                                 </div>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground">Current Balance</p>
                                 <p className="text-2xl font-bold text-emerald-500">{formatCurrency(account.balance)}</p>
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                                <button
+                                    onClick={() => { setTransactionType('deposit'); setShowTransactionModal(true) }}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors font-medium"
+                                >
+                                    <ArrowDownLeft className="w-4 h-4" />
+                                    Deposit
+                                </button>
+                                <button
+                                    onClick={() => { setTransactionType('withdrawal'); setShowTransactionModal(true) }}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors font-medium"
+                                >
+                                    <ArrowUpRight className="w-4 h-4" />
+                                    Withdraw
+                                </button>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm text-muted-foreground">Currency</p>
@@ -348,19 +596,19 @@ export default function SavingsDetailPage() {
                                     <p className="text-sm text-foreground">{account.interestRate}% per annum</p>
                                 </div>
                             )}
-                            {account.type === 'time_deposit' && account.maturityDate && (
+                            {account.accountType === 'time_deposit' && account.maturityDate && (
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Maturity Date</p>
                                     <p className="text-sm text-foreground">{formatDate(account.maturityDate)}</p>
                                 </div>
                             )}
-                            {account.type === 'goal_savings' && (
+                            {account.accountType === 'goal_savings' && (
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Target Amount</p>
                                     <p className="text-sm text-foreground">{formatCurrency(account.targetAmount || 0)}</p>
                                 </div>
                             )}
-                            {account.type === 'share_capital' && (
+                            {account.accountType === 'share_capital' && (
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Share Value</p>
                                     <p className="text-sm text-foreground">₱100.00 per share</p>
@@ -407,11 +655,37 @@ export default function SavingsDetailPage() {
                 {activeTab === 'overview' && (
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Quick Actions</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <button className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left">
-                                <Download className="w-5 h-5 text-blue-500" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button 
+                                onClick={() => { setTransactionType('deposit'); setShowTransactionModal(true) }}
+                                className="flex items-center gap-3 p-4 border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-colors text-left"
+                            >
+                                <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                                    <ArrowDownLeft className="w-5 h-5 text-emerald-500" />
+                                </div>
                                 <div>
-                                    <h4 className="font-medium">Download Statement</h4>
+                                    <h4 className="font-medium">Deposit</h4>
+                                    <p className="text-xs text-muted-foreground">Add funds</p>
+                                </div>
+                            </button>
+                            <button 
+                                onClick={() => { setTransactionType('withdrawal'); setShowTransactionModal(true) }}
+                                className="flex items-center gap-3 p-4 border border-orange-500/30 rounded-lg hover:bg-orange-500/10 transition-colors text-left"
+                            >
+                                <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                                    <ArrowUpRight className="w-5 h-5 text-orange-500" />
+                                </div>
+                                <div>
+                                    <h4 className="font-medium">Withdraw</h4>
+                                    <p className="text-xs text-muted-foreground">Take funds</p>
+                                </div>
+                            </button>
+                            <button className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left">
+                                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                                    <Download className="w-5 h-5 text-blue-500" />
+                                </div>
+                                <div>
+                                    <h4 className="font-medium">Statement</h4>
                                     <p className="text-xs text-muted-foreground">PDF format</p>
                                 </div>
                             </button>
@@ -419,10 +693,12 @@ export default function SavingsDetailPage() {
                                 onClick={handlePrintPassbook}
                                 className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-secondary transition-colors text-left"
                             >
-                                <Printer className="w-5 h-5 text-emerald-500" />
+                                <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                                    <Printer className="w-5 h-5 text-purple-500" />
+                                </div>
                                 <div>
-                                    <h4 className="font-medium">Print Passbook</h4>
-                                    <p className="text-xs text-muted-foreground">Dot-matrix format</p>
+                                    <h4 className="font-medium">Passbook</h4>
+                                    <p className="text-xs text-muted-foreground">Print view</p>
                                 </div>
                             </button>
                         </div>
@@ -547,7 +823,7 @@ export default function SavingsDetailPage() {
                                 </div>
                                 <div>
                                     <p className="text-xs text-muted-foreground">Account Type</p>
-                                    <p className="text-sm font-medium capitalize">{account.type.replace('_', ' ')}</p>
+                                    <p className="text-sm font-medium capitalize">{account.accountType.replace('_', ' ')}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-muted-foreground">Current Balance</p>
@@ -573,20 +849,39 @@ export default function SavingsDetailPage() {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-border">
+                                            {/* Opening Balance */}
                                             <tr>
-                                                <td className="px-4 py-2 text-sm">{new Date().toLocaleDateString('en-PH')}</td>
+                                                <td className="px-4 py-2 text-sm">{account.openedAt ? new Date(account.openedAt).toLocaleDateString('en-PH') : '-'}</td>
                                                 <td className="px-4 py-2 text-sm text-muted-foreground">Opening Balance</td>
                                                 <td className="px-4 py-2 text-sm text-right">-</td>
                                                 <td className="px-4 py-2 text-sm text-right">-</td>
-                                                <td className="px-4 py-2 text-sm text-right font-mono">{formatCurrency(account.balance)}</td>
+                                                <td className="px-4 py-2 text-sm text-right font-mono">{formatCurrency(0)}</td>
                                             </tr>
-                                            <tr>
-                                                <td className="px-4 py-2 text-sm">{new Date().toLocaleDateString('en-PH')}</td>
-                                                <td className="px-4 py-2 text-sm text-muted-foreground">Daily Interest</td>
-                                                <td className="px-4 py-2 text-sm text-right">{account.interestRate ? formatCurrency((account.balance * account.interestRate / 365) / 100) : '-'}</td>
-                                                <td className="px-4 py-2 text-sm text-right">-</td>
-                                                <td className="px-4 py-2 text-sm text-right font-mono">{formatCurrency(account.balance)}</td>
-                                            </tr>
+                                            {/* Actual Transactions - show newest first */}
+                                            {transactions && transactions.length > 0 ? (
+                                                transactions.slice().reverse().map((txn: any) => (
+                                                    <tr key={txn.id}>
+                                                        <td className="px-4 py-2 text-sm">{txn.createdAt ? new Date(txn.createdAt).toLocaleDateString('en-PH') : '-'}</td>
+                                                        <td className="px-4 py-2 text-sm capitalize">{txn.accountType} {txn.description ? `- ${txn.description}` : ''}</td>
+                                                        {txn.accountType === 'withdrawal' ? (
+                                                            <>
+                                                                <td className="px-4 py-2 text-sm text-right text-red-500">{formatCurrency(Number(txn.amount))}</td>
+                                                                <td className="px-4 py-2 text-sm text-right">-</td>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <td className="px-4 py-2 text-sm text-right">-</td>
+                                                                <td className="px-4 py-2 text-sm text-right text-emerald-500">{formatCurrency(Number(txn.amount))}</td>
+                                                            </>
+                                                        )}
+                                                        <td className="px-4 py-2 text-sm text-right font-mono">{txn.balanceAfter !== null ? formatCurrency(Number(txn.balanceAfter)) : '-'}</td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={5} className="px-4 py-4 text-center text-sm text-muted-foreground">No transactions yet</td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
@@ -600,6 +895,78 @@ export default function SavingsDetailPage() {
                     </div>
                 )}
             </div>
+
+            {/* Deposit/Withdrawal Modal */}
+            <Dialog open={showTransactionModal} onOpenChange={setShowTransactionModal}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            {transactionType === 'deposit' ? (
+                                <>
+                                    <ArrowDownLeft className="w-5 h-5 text-emerald-500" />
+                                    Deposit Funds
+                                </>
+                            ) : (
+                                <>
+                                    <ArrowUpRight className="w-5 h-5 text-orange-500" />
+                                    Withdraw Funds
+                                </>
+                            )}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleTransaction} className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Amount</label>
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₱</span>
+                                <Input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={txAmount}
+                                    onChange={(e) => setTxAmount(e.target.value)}
+                                    placeholder="0.00"
+                                    required
+                                    className="pl-8"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Reference (Optional)</label>
+                            <Input
+                                type="text"
+                                value={txReference}
+                                onChange={(e) => setTxReference(e.target.value)}
+                                placeholder="e.g. OR-12345"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Notes (Optional)</label>
+                            <Input
+                                type="text"
+                                value={txDescription}
+                                onChange={(e) => setTxDescription(e.target.value)}
+                                placeholder="e.g. Cash deposit"
+                            />
+                        </div>
+                        
+                        {txNotification && (
+                            <Alert variant={txNotification.type === 'success' ? 'default' : 'destructive'}>
+                                <AlertDescription>{txNotification.message}</AlertDescription>
+                            </Alert>
+                        )}
+                        
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setShowTransactionModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" disabled={txLoading} className={transactionType === 'deposit' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-orange-600 hover:bg-orange-700'}>
+                                {txLoading ? 'Processing...' : transactionType === 'deposit' ? 'Deposit' : 'Withdraw'}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

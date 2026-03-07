@@ -24,8 +24,8 @@
 // Apollo Client GraphQL queries (deprecated - keep for backward compatibility)
 export const GET_SAVINGS_ACCOUNT = `
   query GetSavingsAccount($id: ID!) {
-    savingsAccount(id: $id) {
-      account {
+    savingsAccounts(searchTerm: $id) {
+      accounts {
         id
         accountNumber
         userId
@@ -40,6 +40,9 @@ export const GET_SAVINGS_ACCOUNT = `
         maturityDate
         targetAmount
         targetDate
+        customer {
+          displayName
+        }
       }
     }
   }
@@ -60,8 +63,8 @@ export const GET_SAVINGS_TRANSACTIONS = `
 `
 
 export const GET_JOURNAL_ENTRY_BY_REFERENCE = `
-  query GetJournalEntryByReference($reference: String!) {
-    journalEntryByReference(reference: $reference) {
+  query GetJournalEntryByReference($referenceNo: String!) {
+    journalEntryByReference(referenceNo: $referenceNo) {
       id
       referenceNo
       description

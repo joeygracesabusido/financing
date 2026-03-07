@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Search, ChevronDown, CheckCircle, XCircle } from 'lucide-react'
+import { Plus, Search, ChevronDown, CheckCircle, XCircle, ArrowDownLeft, ArrowUpRight, Eye } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { getCustomers } from '@/api/customers'
+import { useNavigate } from 'react-router-dom'
 
 interface Customer {
     id: string
@@ -33,6 +34,7 @@ const getHeaders = () => {
 export default function SavingsPage() {
     const { user } = useAuth()
     const isAdmin = user?.role === 'admin' || user?.role === 'branch_manager'
+    const navigate = useNavigate()
 
     const [loading, setLoading] = useState(true)
     const [accountsData, setAccountsData] = useState<SavingsAccount[]>([])
@@ -240,11 +242,12 @@ export default function SavingsPage() {
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
                                 <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Balance</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="text-center px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredAccounts.length === 0 ? (
-                                <tr><td colSpan={5} className="text-center py-12 text-muted-foreground">No savings accounts found.</td></tr>
+                                <tr><td colSpan={6} className="text-center py-12 text-muted-foreground">No savings accounts found.</td></tr>
                             ) : filteredAccounts.map((account) => (
                                 <tr key={account.id} className="border-b border-border/30 hover:bg-white/5 transition-colors">
                                     <td className="px-4 py-3 font-mono text-foreground font-medium">{account.accountNumber}</td>
@@ -254,11 +257,36 @@ export default function SavingsPage() {
                                             {getAccountTypeLabel(account.accountType)}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-right text-foreground font-medium">₱{account.balance.toLocaleString()}</td>
+                                    <td className="px-4 py-3 text-right text-foreground font-medium">₱{account.balance.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                                     <td className="px-4 py-3">
                                         <span className={`text-xs px-2 py-1 rounded-full ${account.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
                                             {account.status}
                                         </span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center gap-2">
+                                            <button 
+                                                onClick={() => navigate(`/savings/${account.id}`)}
+                                                className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg text-xs font-medium transition-colors"
+                                            >
+                                                <Eye className="w-3.5 h-3.5" />
+                                                View
+                                            </button>
+                                            <button 
+                                                onClick={() => navigate(`/savings/${account.id}/transaction?type=deposit`)}
+                                                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-lg text-xs font-medium transition-colors"
+                                            >
+                                                <ArrowDownLeft className="w-3.5 h-3.5" />
+                                                Deposit
+                                            </button>
+                                            <button 
+                                                onClick={() => navigate(`/savings/${account.id}/transaction?type=withdrawal`)}
+                                                className="flex items-center gap-1 px-3 py-1.5 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 rounded-lg text-xs font-medium transition-colors"
+                                            >
+                                                <ArrowUpRight className="w-3.5 h-3.5" />
+                                                Withdraw
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

@@ -106,6 +106,8 @@ class UserNode:
     fullName: str
     isActive: bool
     role: str
+    branchId: Optional[int] = None
+    branchCode: Optional[str] = None
 
 
 @strawberry.input
@@ -290,6 +292,8 @@ class SavingsTransactionNode:
     accountType: str
     reference: Optional[str] = None
     description: Optional[str] = None
+    balanceBefore: Optional[Decimal] = None
+    balanceAfter: Optional[Decimal] = None
     createdAt: datetime
 
 
@@ -733,6 +737,8 @@ class Query:
                     fullName=u.full_name,
                     isActive=u.is_active,
                     role=u.role,
+                    branchId=u.branch_id,
+                    branchCode=u.branch_code,
                 )
                 for u in users
             ]
@@ -1053,9 +1059,11 @@ class Query:
                     id=str(t.id),
                     accountId=str(t.account_id),
                     amount=t.amount,
-                    type=t.transaction_type,
+                    accountType=t.transaction_type,
                     reference=t.reference,
                     description=t.description,
+                    balanceBefore=t.balance_before,
+                    balanceAfter=t.balance_after,
                     createdAt=t.created_at,
                 )
                 for t in transactions
@@ -1346,7 +1354,6 @@ class Query:
                         status=item.status,
                         totalDue=item.principal_due + item.interest_due + item.penalty_due,
                         totalPaid=item.principal_paid + item.interest_paid + item.penalty_paid,
-                        paymentDate=item.payment_date.date() if item.payment_date else None,
                     )
                 )
             return LoanAmortizationNode(
@@ -2359,9 +2366,14 @@ class Mutation:
                 if not tx:
                     return LoanTransactionResponse(success=False, message="Transaction not found")
 
+                old_amount = tx.amount
+                print(f"DEBUG updateLoanTransaction: old_amount={old_amount}, input.amount={input.amount}")
+                
                 # Update fields if provided
                 if input.transactionType is not None: tx.type = input.transactionType
-                if input.amount is not None: tx.amount = input.amount
+                if input.amount is not None: 
+                    print(f"DEBUG: Setting tx.amount from {tx.amount} to {input.amount}")
+                    tx.amount = input.amount
                 if input.description is not None: tx.description = input.description
                 if input.receiptNumber is not None: tx.receipt_number = input.receiptNumber
                 if input.commercialBank is not None: tx.commercial_bank = input.commercialBank
@@ -2380,6 +2392,147 @@ class Mutation:
                 
                 tx.updated_by = str(current_user.id)
                 tx.updated_at = datetime.now()
+
+                # If amount changed and this is a repayment, recalculate amortization
+                if input.amount is not None and old_amount != input.amount and tx.type == "repayment":
+                    print(f"DEBUG: Recalculating amortization. old={old_amount}, new={input.amount}")
+                    
+                    # Update loan outstanding balance
+                    loan_result = await session.execute(
+                        select(LoanApplication).where(LoanApplication.id == tx.loan_id)
+                    )
+                    loan = loan_result.scalar_one_or_none()
+                    if loan:
+                        # Reverse the old amount and apply new amount
+                        loan.outstanding_balance = (loan.outstanding_balance or 0) + old_amount - input.amount
+                        print(f"DEBUG: Updated loan outstanding balance to {loan.outstanding_balance}")
+                    
+                    # Recalculate amortization - get all schedules and recalculate properly
+                    from .database.pg_loan_models import AmortizationSchedule
+                    
+                    # Get all schedules for this loan ordered by installment number
+                    sched_result = await session.execute(
+                        select(AmortizationSchedule)
+                        .where(AmortizationSchedule.loan_id == tx.loan_id)
+                        .order_by(AmortizationSchedule.installment_number.asc())
+                    )
+                    schedules = sched_result.scalars().all()
+                    
+                    # Reset all principal_paid and interest_paid to 0
+                    for sched in schedules:
+                        sched.principal_paid = Decimal("0.00")
+                        sched.interest_paid = Decimal("0.00")
+                        sched.status = "pending"
+                    
+                    # Apply the new payment amount properly (interest first, then principal)
+                    remaining_payment = input.amount
+                    for sched in schedules:
+                        if remaining_payment <= 0:
+                            break
+                        
+                        # Apply to interest first
+                        interest_remaining = (sched.interest_due or Decimal("0.00")) - (sched.interest_paid or Decimal("0.00"))
+                        if interest_remaining > 0:
+                            interest_to_pay = min(remaining_payment, interest_remaining)
+                            sched.interest_paid = (sched.interest_paid or Decimal("0.00")) + interest_to_pay
+                            remaining_payment -= interest_to_pay
+                        
+                        if remaining_payment <= 0:
+                            sched.status = "partial"
+                            break
+                        
+                        # Apply to principal
+                        principal_remaining = (sched.principal_due or Decimal("0.00")) - (sched.principal_paid or Decimal("0.00"))
+                        if principal_remaining > 0:
+                            principal_to_pay = min(remaining_payment, principal_remaining)
+                            sched.principal_paid = (sched.principal_paid or Decimal("0.00")) + principal_to_pay
+                            remaining_payment -= principal_to_pay
+                        
+                        # Update status
+                        if (sched.principal_paid or Decimal("0.00")) >= (sched.principal_due or Decimal("0.00")) and (sched.interest_paid or Decimal("0.00")) >= (sched.interest_due or Decimal("0.00")):
+                            sched.status = "paid"
+                        else:
+                            sched.status = "partial"
+                    
+                    print(f"DEBUG: Applied payment to schedules")
+                    
+                    # Update journal entry for the repayment
+                    from .accounting import create_journal_entry
+                    
+                    # Find the old journal entry for this transaction
+                    from .database.pg_accounting_models import JournalEntry, JournalLine
+                    
+                    # Search by loan_id in description instead
+                    je_result = await session.execute(
+                        select(JournalEntry).where(JournalEntry.description.like(f"%Loan 9%"))
+                    )
+                    journal_entries = je_result.scalars().all()
+                    print(f"DEBUG: Found {len(journal_entries)} journal entries for Loan 9")
+                    
+                    journal_entry = None
+                    if journal_entries and len(journal_entries) > 0:
+                        # Get the most recent one by sorting by created_at
+                        journal_entry = journal_entries[-1]
+                        print(f"DEBUG: Using journal entry id={journal_entry.id}, description={journal_entry.description}")
+                    else:
+                        # Try searching by receipt number
+                        print(f"DEBUG: No journal entry found, trying receipt number")
+                    
+                    if journal_entry:
+                        # Delete old journal entry lines
+                        old_lines_result = await session.execute(
+                            select(JournalLine).where(JournalLine.entry_id == journal_entry.id)
+                        )
+                        old_lines = old_lines_result.scalars().all()
+                        print(f"DEBUG: Deleting {len(old_lines)} old journal lines")
+                        for line in old_lines:
+                            await session.delete(line)
+                        
+                        # Recalculate principal and interest from schedules
+                        sched_result = await session.execute(
+                            select(AmortizationSchedule)
+                            .where(AmortizationSchedule.loan_id == tx.loan_id)
+                            .order_by(AmortizationSchedule.installment_number.asc())
+                        )
+                        schedules = sched_result.scalars().all()
+                        
+                        total_principal_paid = sum(s.principal_paid or Decimal("0.00") for s in schedules)
+                        total_interest_paid = sum(s.interest_paid or Decimal("0.00") for s in schedules)
+                        
+                        # Create new journal entry lines
+                        # Debit Cash (1010)
+                        cash_line = JournalLine(
+                            entry_id=journal_entry.id,
+                            account_code="1010",
+                            debit=input.amount,
+                            credit=Decimal("0.00"),
+                            description=f"Loan Repayment - {tx.loan_id}"
+                        )
+                        session.add(cash_line)
+                        
+                        # Credit Loans Receivable (1300) for principal
+                        if total_principal_paid > 0:
+                            principal_line = JournalLine(
+                                entry_id=journal_entry.id,
+                                account_code="1300",
+                                debit=Decimal("0.00"),
+                                credit=total_principal_paid,
+                                description=f"Principal Payment - {tx.loan_id}"
+                            )
+                            session.add(principal_line)
+                        
+                        # Credit Interest Income (4100) for interest
+                        if total_interest_paid > 0:
+                            interest_line = JournalLine(
+                                entry_id=journal_entry.id,
+                                account_code="4100",
+                                debit=Decimal("0.00"),
+                                credit=total_interest_paid,
+                                description=f"Interest Payment - {tx.loan_id}"
+                            )
+                            session.add(interest_line)
+                        
+                        print(f"DEBUG: Updated journal entry for repayment")
 
                 await session.commit()
                 await session.refresh(tx)
@@ -2822,6 +2975,20 @@ class Mutation:
                 )
                 
                 session.add(new_tx)
+                
+                # 3. Create Journal Entry for Double-Entry Accounting
+                from .utils.savings_accounting_utils import post_savings_transaction_accounting
+                reference_no = input.reference or f"SAV-{uuid.uuid4().hex[:8].upper()}"
+                
+                await post_savings_transaction_accounting(
+                    session=session,
+                    account_type=acc.account_type or "regular",
+                    transaction_type=input.transactionType,
+                    amount=Decimal(str(amount)),
+                    reference_no=reference_no,
+                    created_by=str(current_user.id) if current_user else None
+                )
+                
                 await session.commit()
                 await session.refresh(new_tx)
 

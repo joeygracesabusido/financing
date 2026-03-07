@@ -9,15 +9,15 @@ from ..accounting import create_journal_entry
 SAVINGS_GL_CONFIG = {
     "regular": {
         "asset": "1010",        # Cash in Bank
-        "liability": "2010"     # Savings Deposits Payable
+        "liability": "2020"     # Savings Deposits Payable
     },
     "high_yield": {
         "asset": "1010",
-        "liability": "2010"
+        "liability": "2020"
     },
     "time_deposit": {
         "asset": "1010",
-        "liability": "2010"
+        "liability": "2020"
     },
     "share_capital": {
         "asset": "1010",
@@ -25,15 +25,15 @@ SAVINGS_GL_CONFIG = {
     },
     "goal_savings": {
         "asset": "1010",
-        "liability": "2010"
+        "liability": "2020"
     },
     "minor_savings": {
         "asset": "1010",
-        "liability": "2010"
+        "liability": "2020"
     },
     "joint_account": {
         "asset": "1010",
-        "liability": "2010"
+        "liability": "2020"
     }
 }
 
@@ -76,5 +76,5 @@ async def post_savings_transaction_accounting(
         reference_no=reference_no,
         description=description,
         lines=lines,
-        created_by=created_by
+        created_by=created_by or ""
     )

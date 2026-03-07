@@ -428,9 +428,9 @@ export default function LoanDetailPage() {
                                                         <button
                                                             onClick={() => {
                                                                 setEditingTransaction(tx)
-                                                                setEditAmount(tx.amount?.toString() || '')
+                                                                setEditAmount(String(tx.amount))
                                                                 setEditInvoiceNumber(tx.reference || '')
-                                                                setEditRemarks(tx.remarks || '')
+                                                                setEditRemarks(tx.description || '')
                                                             }}
                                                             className="p-1.5 rounded hover:bg-white/10 text-muted-foreground hover:text-primary transition-colors"
                                                             title="Edit repayment"

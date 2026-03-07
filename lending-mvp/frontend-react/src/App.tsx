@@ -18,6 +18,7 @@ import ChartOfAccountsPage from '@/pages/ChartOfAccountsPage'
 import JournalEntriesPage from '@/pages/JournalEntriesPage'
 import CreateJournalEntryPage from '@/pages/CreateJournalEntryPage'
 import SavingsDetailPage from '@/pages/SavingsDetailPage'
+import SavingsTransactionPage from '@/pages/SavingsTransactionPage'
 import CustomerDashboardPage from '@/pages/CustomerDashboardPage'
 import CustomerLoanApplicationPage from '@/pages/CustomerLoanApplicationPage'
 import CustomerRepaymentHistoryPage from '@/pages/CustomerRepaymentHistoryPage'
@@ -75,6 +76,7 @@ function ProtectedLayout() {
                         <Route path="/journal-entries" element={<JournalEntriesPage />} />
                         <Route path="/journal-entries/create" element={<CreateJournalEntryPage />} />
                         <Route path="/savings/:id" element={<SavingsDetailPage />} />
+                        <Route path="/savings/:id/transaction" element={<SavingsTransactionPage />} />
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                 </div>

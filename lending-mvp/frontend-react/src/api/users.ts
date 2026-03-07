@@ -13,7 +13,7 @@ export const getUsers = async () => {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({
-      query: `query GetUsers { users { id username email fullName role isActive } }`
+      query: `query GetUsers { users { id username email fullName role isActive branchCode branchId } }`
     }),
   })
   if (!response.ok) {

@@ -64,7 +64,7 @@ services:
     networks:
       - lending_net
     ports:
-      - "8001:8000"
+      - "8002:8000"
     volumes:
       - ./backend/app:/app/app
       - ./backend/alembic:/app/alembic

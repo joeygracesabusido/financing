@@ -46,7 +46,7 @@ export const getUsers = async (skip: number = 0, limit: number = 100) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      query: `{ users(skip: ${skip}, limit: ${limit}) { id email username fullName isActive role } }`
+      query: `{ users(skip: ${skip}, limit: ${limit}) { id email username fullName isActive role branchCode branchId } }`
     }),
   })
   if (!response.ok) {

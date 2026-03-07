@@ -69,11 +69,49 @@ export default function AmortizationSchedulePage() {
     const annualRatePercent = parseFloat(String(loan?.approvedRate || 0))
     const termMonths = parseInt(String(loan?.termMonths || 0))
 
-    const totalInterest = amortizationRows.reduce((sum, row) => sum + parseFloat(String(row.interestDue || 0)), 0)
+    // Calculate amortization locally if backend returns empty
+    const calculateLocalAmortization = (): AmortizationRow[] => {
+        if (amortizationRows.length > 0) return amortizationRows
+        if (principal <= 0 || termMonths <= 0) return []
+        
+        const monthlyRate = annualRatePercent / 100 / 12
+        const monthlyPayment = (principal * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / (Math.pow(1 + monthlyRate, termMonths) - 1)
+        
+        const rows: AmortizationRow[] = []
+        let balance = principal
+        
+        for (let i = 1; i <= termMonths; i++) {
+            const interestDue = balance * monthlyRate
+            const principalDue = monthlyPayment - interestDue
+            balance = Math.max(0, balance - principalDue)
+            
+            const dueDate = new Date()
+            dueDate.setMonth(dueDate.getMonth() + i)
+            
+            rows.push({
+                installmentNumber: i,
+                dueDate: dueDate.toISOString().split('T')[0],
+                principalDue: principalDue,
+                interestDue: interestDue,
+                penaltyDue: 0,
+                principalPaid: 0,
+                interestPaid: 0,
+                penaltyPaid: 0,
+                status: 'pending',
+                totalDue: principalDue + interestDue,
+                totalPaid: 0
+            })
+        }
+        return rows
+    }
+
+    const effectiveRows = amortizationRows.length > 0 ? amortizationRows : calculateLocalAmortization()
+    
+    const totalInterest = effectiveRows.reduce((sum, row) => sum + parseFloat(String(row.interestDue || 0)), 0)
     const totalPayments = principal + totalInterest
     const periodicPayment = termMonths > 0 ? totalPayments / termMonths : 0
 
-    const displayRows = showAll ? amortizationRows : amortizationRows.slice(0, 12)
+    const displayRows = showAll ? effectiveRows : effectiveRows.slice(0, 12)
 
     const handlePrint = () => {
         window.print()
