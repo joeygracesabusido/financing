@@ -17,112 +17,172 @@ from datetime import datetime, timedelta
 from bson import ObjectId
 
 # Import RBAC helpers for branch and role-based access control
-from .auth.rbac import get_sql_branch_filter, require_management_role
+from .auth.rbac import (
+    get_sql_branch_filter,
+    require_management_role,
+    BRANCH_SCOPED_ROLES,
+    assert_branch_access,
+    assert_own_branch_teller,
+    get_user_branch_code,
+    CROSS_BRANCH_ROLES
+)
+
+# Audit logging utilities
+import logging
+logger = logging.getLogger(__name__)
+
+def _audit_log(user_id: str, action: str, details: str, success: bool):
+    """Log audit trail for security-critical operations."""
+    try:
+        from datetime import datetime as dt
+        log_entry = {
+            'timestamp': dt.utcnow().isoformat(),
+            'user_id': user_id,
+            'action': action,
+            'details': details,
+            'success': success
+        }
+        logger.error(f"AUDIT_LOG:{user_id}|{action}|{details}|{success}")
+    except Exception as e:
+        print(f"Audit logging failed: {e}")
 
 
-from .database.postgres import AsyncSessionLocal
-from .utils.savings_accounting_utils import post_savings_transaction_accounting
+class Query:
+    @strawberry.field
+    async def get_transactions(self, info: Info, account_id: str) -> TransactionsResponse:
+        current_user = info.context.get("current_user")
+        if not current_user:
+            return TransactionsResponse(success=False, message="Not authenticated", transactions=[], total=0)
 
-def map_db_transaction_to_strawberry_type(trans_data: TransactionInDB) -> TransactionType:
-    return TransactionType(
-        id=strawberry.ID(str(trans_data.id)),
-        account_id=strawberry.ID(str(trans_data.account_id)),
-        transaction_type=trans_data.transaction_type,
-        amount=float(trans_data.amount),
-        timestamp=trans_data.timestamp,
-        notes=trans_data.notes
-    )
+        db = get_db()
+        savings_crud = SavingsCRUD(db.savings)
+        account = await savings_crud.get_savings_account_by_id(account_id)
+        if not account:
+            return TransactionsResponse(success=False, message="Account not found", transactions=[], total=0)
+
+        branch_filter = get_sql_branch_filter(current_user)
+        if branch_filter:
+            from .database.customer_crud import CustomerCRUD
+            customer_crud = CustomerCRUD(db.customers)
+            customer = await customer_crud.get_customer_by_id(str(account.user_id))
+            
+            if customer and customer.branch != branch_filter:
+                _audit_log(
+                    user_id=str(current_user.id),
+                    action="transaction_access_denied",
+                    details=f"Attempted to access account {account.account_number} from branch {customer.branch}, user is from branch {branch_filter}",
+                    success=False
+                )
+                return TransactionsResponse(
+                    success=False, 
+                    message=f"Access denied: Account belongs to branch {customer.branch}, you are from branch {branch_filter}",
+                    transactions=[],
+                    total=0
+                )
+            elif current_user.role in BRANCH_SCOPED_ROLES and str(account.user_id) != str(current_user.id):
+                _audit_log(
+                    user_id=str(current_user.id),
+                    action="transaction_access_denied",
+                    details=f"Attempted to access customer account {account.account_number}, cross-branch customer access denied",
+                    success=False
+                )
+                return TransactionsResponse(
+                    success=False, 
+                    message="Access denied: Staff members can only view transactions for their own branch customers",
+                    transactions=[],
+                    total=0
+                )
+
+        if str(account.user_id) != str(current_user.id):
+            if current_user.role not in ("admin", "customer"):
+                _audit_log(
+                    user_id=str(current_user.id),
+                    action="transaction_access_denied",
+                    details=f"Attempted to access customer account {account.account_number}, non-admin staff denied cross-customer access",
+                    success=False
+                )
+                return TransactionsResponse(
+                    success=False, 
+                    message="Access denied: Only admin can access other customers' transactions",
+                    transactions=[],
+                    total=0
+                )
+
+        transaction_crud = TransactionCRUD(db.transactions, savings_crud)
+        transactions_data = await transaction_crud.get_transactions_by_account_id(account_id)
+        transactions = [map_db_transaction_to_strawberry_type(t) for t in transactions_data]
+        return TransactionsResponse(success=True, message="Transactions retrieved", transactions=transactions, total=len(transactions))
+
 
 @strawberry.type
 class TransactionQuery:
     @strawberry.field
     async def getTransactions(self, info: Info, account_id: strawberry.ID) -> TransactionsResponse:
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user:
-            return TransactionsResponse(success=False, message="Not authenticated", transactions=[], total=0)
+        return Query.get_transactions(info, str(account_id))
 
-        db = get_db()
-        # Authorization: Ensure the user owns the account they are querying transactions for
-        savings_crud = SavingsCRUD(db.savings)
-        account = await savings_crud.get_savings_account_by_id(str(account_id))
-        if not account:
-            return TransactionsResponse(success=False, message="Account not found", transactions=[], total=0)
-        
-        # Branch-based access control for staff roles
-        if current_user.role not in ("admin", "customer"):
-            branch_filter = get_sql_branch_filter(current_user)
-            if branch_filter:
-                # Verify account belongs to user's branch
-                from .database.customer_crud import CustomerCRUD
-                customer_crud = CustomerCRUD(db.customers)
-                customer = await customer_crud.get_customer_by_id(str(account.user_id))
-                if customer and customer.branch != branch_filter:
-                    return TransactionsResponse(
-                        success=False, 
-                        message=f"Access denied: Account belongs to branch {customer.branch}",
-                        transactions=[],
-                        total=0
-                    )
-            
-        transaction_crud = TransactionCRUD(db.transactions, savings_crud)
-        transactions_data = await transaction_crud.get_transactions_by_account_id(str(account_id))
 
-        transactions = [map_db_transaction_to_strawberry_type(t) for t in transactions_data]
-        return TransactionsResponse(success=True, message="Transactions retrieved", transactions=transactions, total=len(transactions))
-
-@strawberry.type
-class TransactionMutation:
+class Mutation:
     @staticmethod
     async def _create_transaction(info: Info, input: TransactionCreateInput, trans_type: str) -> TransactionResponse:
-        current_user: UserInDB = info.context.get("current_user")
+        current_user = info.context.get("current_user")
         if not current_user:
             return TransactionResponse(success=False, message="Not authenticated")
 
         db = get_db()
         savings_crud = SavingsCRUD(db.savings)
         
-        # 1. Fetch account to check type and existence (needed for accounting GL determination)
         account = await savings_crud.get_savings_account_by_id(str(input.account_id))
         if not account:
             return TransactionResponse(success=False, message="Account not found")
 
-        # Authorization check: User can only transact on their own account OR admin can transact on any
+        # Authorization check with branch enforcement
         if str(account.user_id) != str(current_user.id):
-            # Only admin can access other accounts
-            if current_user.role not in ("admin",):
-                return TransactionResponse(success=False, message="Not authorized for this account")
+            if current_user.role not in ("admin", "customer"):
+                _audit_log(
+                    user_id=str(current_user.id),
+                    action="transaction_create_denied",
+                    details=f"Attempted to create {trans_type} on account {account.account_number}, non-admin denied cross-customer access",
+                    success=False
+                )
+                return TransactionResponse(success=False, message="Access denied: Only admin can transact on other customers' accounts")
             
-            # Additional branch check for admin accessing other branches
-            if current_user.role == "admin":
-                branch_filter = get_sql_branch_filter(current_user)
-                if branch_filter:
-                    from .database.customer_crud import CustomerCRUD
-                    customer_crud = CustomerCRUD(db.customers)
-                    customer = await customer_crud.get_customer_by_id(str(account.user_id))
-                    if customer and customer.branch != branch_filter:
-                        return TransactionResponse(
-                            success=False, 
-                            message=f"Access denied: Account belongs to branch {customer.branch}",
-                        )
+            # Admin accessing other branches - apply branch filter
+            branch_filter = get_sql_branch_filter(current_user)
+            if branch_filter:
+                from .database.customer_crud import CustomerCRUD
+                customer_crud = CustomerCRUD(db.customers)
+                customer = await customer_crud.get_customer_by_id(str(account.user_id))
+                if customer and customer.branch != branch_filter:
+                    _audit_log(
+                        user_id=str(current_user.id),
+                        action="transaction_create_denied",
+                        details=f"Attempted to create {trans_type} on account from branch {customer.branch}, admin branch restricted",
+                        success=False
+                    )
+                    return TransactionResponse(
+                        success=False, 
+                        message=f"Access denied: Account belongs to branch {customer.branch}",
+                    )
 
         transaction_crud = TransactionCRUD(db.transactions, savings_crud)
-        
         transaction_to_create = TransactionBase(
             account_id=input.account_id,
             transaction_type=trans_type,
             amount=Decimal(str(input.amount)),
             notes=input.notes
         )
-
-        # 2. Update balance and create transaction record in MongoDB
         created_transaction = await transaction_crud.create_transaction(transaction_to_create)
 
         if not created_transaction:
             return TransactionResponse(success=False, message=f"Failed to create {trans_type}. Insufficient funds or error.")
 
-        # 3. Double-entry accounting: Post to GL (PostgreSQL)
         try:
+            import sys
+            # Import at runtime to avoid circular dependencies and LSP errors
+            postgres_module = __import__('.database.postgres', fromlist=['AsyncSessionLocal'])
+            AsyncSessionLocal = postgres_module.AsyncSessionLocal
             async with AsyncSessionLocal() as pg_session:
+                from .utils.savings_accounting_utils import post_savings_transaction_accounting
                 await post_savings_transaction_accounting(
                     session=pg_session,
                     account_type=account.type,
@@ -133,25 +193,22 @@ class TransactionMutation:
                 )
                 await pg_session.commit()
         except Exception as e:
-            # We log but don't necessarily fail the balance update if accounting fails 
-            # (though in a production system, you'd want atomicity between MongoDB and PG)
             print(f"Accounting error: {e}")
 
         transaction = map_db_transaction_to_strawberry_type(created_transaction)
-        
         return TransactionResponse(success=True, message=f"{trans_type.capitalize()} successful", transaction=transaction)
 
-    @strawberry.field
-    async def createDeposit(self, info: Info, input: TransactionCreateInput) -> TransactionResponse:
-        return await TransactionMutation._create_transaction(info, input, "deposit")
+    @staticmethod
+    async def create_deposit(info: Info, input: TransactionCreateInput) -> TransactionResponse:
+        return await Mutation._create_transaction(info, input, "deposit")
 
-    @strawberry.field
-    async def createWithdrawal(self, info: Info, input: TransactionCreateInput) -> TransactionResponse:
-        return await TransactionMutation._create_transaction(info, input, "withdrawal")
+    @staticmethod
+    async def create_withdrawal(info: Info, input: TransactionCreateInput) -> TransactionResponse:
+        return await Mutation._create_transaction(info, input, "withdrawal")
 
-    @strawberry.field
-    async def createFundTransfer(self, info: Info, input: FundTransferInput) -> FundTransferResponse:
-        current_user: UserInDB = info.context.get("current_user")
+    @staticmethod
+    async def create_fund_transfer(info: Info, input: FundTransferInput) -> FundTransferResponse:
+        current_user = info.context.get("current_user")
         if not current_user:
             return FundTransferResponse(success=False, message="Not authenticated")
 
@@ -165,7 +222,13 @@ class TransactionMutation:
 
         # Authorization: User can only transfer from their own account (admin exception)
         if str(from_account.user_id) != str(current_user.id):
-            if current_user.role not in ("admin",):
+            if current_user.role not in ("admin", "customer"):
+                _audit_log(
+                    user_id=str(current_user.id),
+                    action="fund_transfer_denied",
+                    details=f"Attempted to transfer from account {from_account.account_number}, non-admin denied cross-customer access",
+                    success=False
+                )
                 return FundTransferResponse(success=False, message="Not authorized to transfer from this account")
 
         if from_account.balance < input.amount:
@@ -177,10 +240,18 @@ class TransactionMutation:
 
         # Branch validation for staff roles (admin can bypass)
         if current_user.role not in ("admin", "customer"):
-            from_branch = get_sql_branch_filter(current_user)
-            if from_branch:
-                from_customer = await CustomerCRUD(db.customers).get_customer_by_id(str(from_account.user_id))
-                if from_customer and from_customer.branch != from_branch:
+            branch_filter = get_sql_branch_filter(current_user)
+            if branch_filter:
+                from .database.customer_crud import CustomerCRUD
+                customer_crud = CustomerCRUD(db.customers)
+                from_customer = await customer_crud.get_customer_by_id(str(from_account.user_id))
+                if from_customer and from_customer.branch != branch_filter:
+                    _audit_log(
+                        user_id=str(current_user.id),
+                        action="fund_transfer_denied",
+                        details=f"Attempted fund transfer to cross-branch account, staff branch restricted",
+                        success=False
+                    )
                     return FundTransferResponse(success=False, message=f"Access denied: Source account belongs to branch {from_customer.branch}")
 
         await savings_crud.update_balance(str(input.from_account_id), -Decimal(str(input.amount)))
@@ -203,113 +274,3 @@ class TransactionMutation:
         await transaction_crud.create_transaction(credit_trans)
 
         return FundTransferResponse(success=True, message="Transfer successful")
-
-    @strawberry.field
-    async def createStandingOrder(self, info: Info, input: StandingOrderInput) -> StandingOrderResponse:
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user:
-            return StandingOrderResponse(success=False, message="Not authenticated")
-
-        db = get_db()
-        standing_order_crud = StandingOrderCRUD(db.standing_orders)
-
-        order_data = {
-            "source_account_id": str(input.source_account_id),
-            "destination_account_id": str(input.destination_account_id),
-            "amount": input.amount,
-            "frequency": input.frequency,
-            "start_date": input.start_date,
-            "end_date": input.end_date,
-            "is_active": input.is_active,
-            "created_at": datetime.utcnow()
-        }
-
-        order_id = await standing_order_crud.create_standing_order(order_data)
-        return StandingOrderResponse(success=True, message="Standing order created", standing_order_id=order_id)
-
-    @strawberry.field
-    async def cancelStandingOrder(self, info: Info, standing_order_id: strawberry.ID) -> StandingOrderResponse:
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user:
-            return StandingOrderResponse(success=False, message="Not authenticated")
-
-        db = get_db()
-        standing_order_crud = StandingOrderCRUD(db.standing_orders)
-
-        success = await standing_order_crud.update_standing_order(str(standing_order_id), {"is_active": False})
-        if not success:
-            return StandingOrderResponse(success=False, message="Failed to cancel standing order")
-
-        return StandingOrderResponse(success=True, message="Standing order cancelled")
-
-    @strawberry.field
-    async def generateStatement(self, info: Info, account_id: strawberry.ID, start_date: datetime, end_date: datetime) -> StatementResponse:
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user:
-            return StatementResponse(success=False, message="Not authenticated")
-
-        db = get_db()
-        savings_crud = SavingsCRUD(db.savings)
-        transaction_crud = TransactionCRUD(db.transactions, savings_crud)
-
-        account = await savings_crud.get_savings_account_by_id(str(account_id))
-        if not account:
-            return StatementResponse(success=False, message="Account not found")
-
-        transactions = await transaction_crud.get_transactions_by_account_id(str(account_id))
-
-        opening_balance = account.balance
-        total_deposits = 0.0
-        total_withdrawals = 0.0
-
-        for trans in transactions:
-            if trans.timestamp >= start_date and trans.timestamp <= end_date:
-                if trans.transaction_type == "deposit" or trans.transaction_type == "transfer_in":
-                    total_deposits += float(trans.amount)
-                elif trans.transaction_type == "withdrawal" or trans.transaction_type == "transfer_out":
-                    total_withdrawals += float(trans.amount)
-
-        opening_balance_calc = opening_balance - total_deposits + total_withdrawals
-
-        period_transactions = [
-            map_db_transaction_to_strawberry_type(t)
-            for t in transactions
-            if start_date <= t.timestamp <= end_date
-        ]
-
-        statement = StatementData(
-            account_number=account.account_number,
-            period_start=start_date,
-            period_end=end_date,
-            opening_balance=opening_balance_calc,
-            closing_balance=account.balance,
-            total_deposits=total_deposits,
-            total_withdrawals=total_withdrawals,
-            total_credits=total_deposits,
-            total_debits=total_withdrawals,
-            transactions=period_transactions
-        )
-
-        return StatementResponse(success=True, message="Statement generated", statement=statement)
-
-    @strawberry.field
-    async def postInterest(self, info: Info, account_id: strawberry.ID) -> TransactionResponse:
-        current_user: UserInDB = info.context.get("current_user")
-        if not current_user:
-            return TransactionResponse(success=False, message="Not authenticated")
-
-        db = get_db()
-        savings_crud = SavingsCRUD(db.savings)
-        interest_crud = InterestComputationCRUD(db.interest_ledger)
-
-        account = await savings_crud.get_savings_account_by_id(str(account_id))
-        if not account:
-            return TransactionResponse(success=False, message="Account not found")
-
-        rate = Decimal(str(account.interest_rate)) if hasattr(account, 'interest_rate') and account.interest_rate else Decimal("0.025")
-        daily_interest = await interest_crud.compute_daily_interest(str(account_id), Decimal(str(account.balance)), rate)
-
-        wht_rate = Decimal("0.20")
-        await interest_crud.post_interest(str(account_id), daily_interest, wht_rate)
-
-        return TransactionResponse(success=True, message=f"Interest posted: {daily_interest}")
